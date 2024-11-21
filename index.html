@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원 정보 관리</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container">
+    <h1>회원 정보 관리 시스템</h1>
+
+    <!-- 회원 등록 폼 -->
+    <form id="memberForm">
+        <label for="name">이름:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="age">나이:</label>
+        <input type="number" id="age" name="age" required>
+
+        <label for="address">주소:</label>
+        <input type="text" id="address" name="address" required>
+
+        <button type="submit">등록</button>
+    </form>
+
+    <!-- 회원 리스트 -->
+    <h2>회원 리스트</h2>
+    <table id="memberTable">
+        <thead>
+        <tr>
+            <th>이름</th>
+            <th>나이</th>
+            <th>주소</th>
+            <th>삭제</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- 회원 데이터가 여기에 추가됩니다 -->
+        </tbody>
+    </table>
+</div>
+
+<script src="script.js"></script>
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('memberForm');
+        const tableBody = document.querySelector('#memberTable tbody');
+
+        // 회원 정보 저장 리스트
+        let members = [];
+
+        // 폼 제출 이벤트
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            // 입력 값 가져오기
+            const name = document.getElementById('name').value;
+            const age = document.getElementById('age').value;
+            const address = document.getElementById('address').value;
+
+            // 회원 추가
+            const member = { name, age, address };
+            members.push(member);
+
+            // 테이블 갱신
+            renderTable();
+
+            // 폼 초기화
+            form.reset();
+        });
+
+        // 테이블 렌더링 함수
+        function renderTable() {
+            tableBody.innerHTML = '';
+
+            members.forEach((member, index) => {
+                const row = document.createElement('tr');
+
+                row.innerHTML = `
+                <td>${member.name}</td>
+                <td>${member.age}</td>
+                <td>${member.address}</td>
+                <td><button class="delete-btn" data-index="${index}">삭제</button></td>
+            `;
+
+                tableBody.appendChild(row);
+            });
+
+            // 삭제 버튼 이벤트 추가
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const index = event.target.getAttribute('data-index');
+                    members.splice(index, 1);
+                    renderTable();
+                });
+            });
+        }
+    });
+</script>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 20px auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    h1, h2 {
+        text-align: center;
+        color: #333;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    form label {
+        font-weight: bold;
+    }
+
+    form input {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    form button {
+        background: #007BFF;
+        color: #fff;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+
+    form button:hover {
+        background: #0056b3;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    table th, table td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: center;
+    }
+
+    table th {
+        background-color: #f8f8f8;
+    }
+
+    button.delete-btn {
+        background-color: #FF6B6B;
+        color: #fff;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+
+    button.delete-btn:hover {
+        background-color: #d43f3f;
+    }
+</style>
+</html>
