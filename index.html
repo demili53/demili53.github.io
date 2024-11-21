@@ -1,184 +1,90 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>회원 정보 관리</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-<div class="container">
-    <h1>회원 정보 관리 시스템</h1>
+<template>
+    <div class="container mx-auto p-4">
+        <h1 class="text-2xl font-bold mb-4">Admin Dashboard</h1>
 
-    <!-- 회원 등록 폼 -->
-    <form id="memberForm">
-        <label for="name">이름:</label>
-        <input type="text" id="name" name="name" required>
+        <!-- Add Member Form -->
+        <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Add New Member</h2>
+            <form @submit.prevent="addMember" class="space-y-4">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+                    <input
+                            id="name"
+                            v-model="newMember.name"
+                            type="text"
+                            required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                            placeholder="Enter name"
+                    >
+                </div>
+                <div>
+                    <label for="age" class="block text-sm font-medium text-gray-700">Age</label>
+                    <input
+                            id="age"
+                            v-model="newMember.age"
+                            type="number"
+                            required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                            placeholder="Enter age"
+                    >
+                </div>
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Add Member
+                </button>
+            </form>
+        </div>
 
-        <label for="age">나이:</label>
-        <input type="number" id="age" name="age" required>
+        <!-- Member List -->
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <h2 class="text-xl font-semibold p-6 bg-gray-50 border-b">Member List</h2>
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Age</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                <tr v-for="member in members" :key="member.id">
+                    <td class="px-6 py-4 whitespace-nowrap">{{ member.name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ member.age }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <button @click="deleteMember(member.id)" class="text-red-600 hover:text-red-900">
+                            <Trash2Icon class="h-5 w-5" />
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</template>
 
-        <label for="address">주소:</label>
-        <input type="text" id="address" name="address" required>
+<script setup>
+    import { ref } from 'vue'
+    import { Trash2Icon } from 'lucide-vue-next'
 
-        <button type="submit">등록</button>
-    </form>
+    const members = ref([
+        { id: 1, name: "John Doe", age: 30 },
+        { id: 2, name: "Jane Smith", age: 28 },
+        { id: 3, name: "Bob Johnson", age: 35 },
+    ])
 
-    <!-- 회원 리스트 -->
-    <h2>회원 리스트</h2>
-    <table id="memberTable">
-        <thead>
-        <tr>
-            <th>이름</th>
-            <th>나이</th>
-            <th>주소</th>
-            <th>삭제</th>
-        </tr>
-        </thead>
-        <tbody>
-        <!-- 회원 데이터가 여기에 추가됩니다 -->
-        </tbody>
-    </table>
-</div>
+    const newMember = ref({ name: '', age: '' })
 
-<script src="script.js"></script>
-</body>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const form = document.getElementById('memberForm');
-        const tableBody = document.querySelector('#memberTable tbody');
-
-        // 회원 정보 저장 리스트
-        let members = [];
-
-        // 폼 제출 이벤트
-        form.addEventListener('submit', (event) => {
-            event.preventDefault();
-
-            // 입력 값 가져오기
-            const name = document.getElementById('name').value;
-            const age = document.getElementById('age').value;
-            const address = document.getElementById('address').value;
-
-            // 회원 추가
-            const member = { name, age, address };
-            members.push(member);
-
-            // 테이블 갱신
-            renderTable();
-
-            // 폼 초기화
-            form.reset();
-        });
-
-        // 테이블 렌더링 함수
-        function renderTable() {
-            tableBody.innerHTML = '';
-
-            members.forEach((member, index) => {
-                const row = document.createElement('tr');
-
-                row.innerHTML = `
-                <td>${member.name}</td>
-                <td>${member.age}</td>
-                <td>${member.address}</td>
-                <td><button class="delete-btn" data-index="${index}">삭제</button></td>
-            `;
-
-                tableBody.appendChild(row);
-            });
-
-            // 삭제 버튼 이벤트 추가
-            document.querySelectorAll('.delete-btn').forEach(button => {
-                button.addEventListener('click', (event) => {
-                    const index = event.target.getAttribute('data-index');
-                    members.splice(index, 1);
-                    renderTable();
-                });
-            });
+    const addMember = () => {
+        if (newMember.value.name && newMember.value.age) {
+            members.value.push({
+                id: Date.now(),
+                name: newMember.value.name,
+                age: parseInt(newMember.value.age)
+            })
+            newMember.value = { name: '', age: '' }
         }
-    });
+    }
+
+    const deleteMember = (id) => {
+        members.value = members.value.filter(member => member.id !== id)
+    }
 </script>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        line-height: 1.6;
-        background-color: #f4f4f4;
-        margin: 0;
-        padding: 0;
-    }
-
-    .container {
-        max-width: 800px;
-        margin: 20px auto;
-        background: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    h1, h2 {
-        text-align: center;
-        color: #333;
-    }
-
-    form {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
-
-    form label {
-        font-weight: bold;
-    }
-
-    form input {
-        padding: 8px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-    }
-
-    form button {
-        background: #007BFF;
-        color: #fff;
-        border: none;
-        padding: 10px;
-        cursor: pointer;
-        border-radius: 4px;
-    }
-
-    form button:hover {
-        background: #0056b3;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-    }
-
-    table th, table td {
-        border: 1px solid #ddd;
-        padding: 10px;
-        text-align: center;
-    }
-
-    table th {
-        background-color: #f8f8f8;
-    }
-
-    button.delete-btn {
-        background-color: #FF6B6B;
-        color: #fff;
-        border: none;
-        padding: 5px 10px;
-        cursor: pointer;
-        border-radius: 4px;
-    }
-
-    button.delete-btn:hover {
-        background-color: #d43f3f;
-    }
-</style>
-</html>
