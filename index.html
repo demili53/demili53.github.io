@@ -1,41 +1,73 @@
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Company Search</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap3 - 카드 3장 (상단 이미지 + 하단 바로가기 버튼)</title>
+
+    <!-- Bootstrap 3 CDN -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <style>
-        body { padding-top: 50px; }
-        .navbar-inverse { background-color: #34495e; border-color: #2c3e50; }
-        .navbar-inverse .navbar-brand { color: #ecf0f1; }
-        .panel-primary > .panel-heading { background-color: #34495e; border-color: #2c3e50; }
+        /* 간단한 여백과 정렬 스타일 */
+        body { padding-top: 30px; }
+        .card-row { margin-bottom: 20px; }
+        .thumbnail { border-radius: 6px; }
+        .thumbnail img { border-top-left-radius: 6px; border-top-right-radius: 6px; }
+        .btn-block { border-radius: 0 0 6px 6px; }
     </style>
 </head>
 <body>
 
-<div id="app">
-    <!-- 여기 #app 내부에 템플릿을 출력할 것입니다. -->
-    <ol>
-        <li v-for="item in list">{{ item }}</li>
-    </ol>
-    <button v-on:click="handleClick">변경하기</button>
-    <a href="/post.html">포스트</a>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
-<script>
-    var app = new Vue({
-        el: '#app',
-        data: {
-            list: ['사과', '바나나', '딸기']
-        },
-        methods:{
-            handleClick: function (event) {
-                this.list=['set','s','ss'];
-            }
-        }
+<div class="container">
+    <h3 class="text-center">Bootstrap 3 - 카드 3장 (상단 이미지, 하단 버튼)</h3>
 
-    })
-</script>
+    <div class="row card-row">
+
+        <!-- 카드 1 -->
+        <div class="col-sm-4">
+            <div class="thumbnail">
+                <img src="https://via.placeholder.com/600x300?text=Image+1" alt="이미지1" class="img-responsive">
+                <div class="caption text-center">
+                    <h4>카드 제목 1</h4>
+                    <p>구글 바로가기 새창열기/p>
+                </div>
+                <a href="https://www.google.com" target="_blank" class="btn btn-primary btn-block" role="button">바로가기</a>
+            </div>
+        </div>
+
+        <!-- 카드 2 -->
+        <div class="col-sm-4">
+            <div class="thumbnail">
+                <img src="https://via.placeholder.com/600x300?text=Image+2" alt="이미지2" class="img-responsive">
+                <div class="caption text-center">
+                    <h4>카드 제목 2</h4>
+                    <p>MSN 바로가기 새창열기</p>
+                </div>
+                <a href="https://www.msn.com" target="_blank" class="btn btn-success btn-block" role="button">바로가기</a>
+            </div>
+        </div>
+
+        <!-- 카드 3 -->
+        <div class="col-sm-4">
+            <div class="thumbnail">
+                <img src="https://via.placeholder.com/600x300?text=Image+3" alt="이미지3" class="img-responsive">
+                <div class="caption text-center">
+                    <h4>카드 제목 3</h4>
+                    <p>카카오 바로가기 같은창에서열기</p>
+                </div>
+                <a href="https://www.kakao.com"  class="btn btn-info btn-block" role="button">바로가기</a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 반응형 확인을 위한 예시 텍스트 -->
+    <p class="text-muted text-center">화면 크기에 따라 1~3열로 자동 배치됩니다. (Bootstrap 3 grid)</p>
+</div>
+
+<!-- jQuery 및 Bootstrap JS (CDN) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </body>
 </html>
