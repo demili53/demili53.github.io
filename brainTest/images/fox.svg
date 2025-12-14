@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="200" viewBox="0 0 320 200" role="img" aria-label="Fox">
+  <defs>
+    <linearGradient id="f1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffe5d3"/>
+      <stop offset="100%" stop-color="#fdba74"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="200" rx="24" fill="url(#f1)"/>
+  <path d="M80 160 Q160 40 240 160 Z" fill="#f97316" stroke="#111827" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M110 120 L160 70 L210 120" fill="#fef3c7" stroke="#111827" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M92 94 L150 122" stroke="#111827" stroke-width="5" stroke-linecap="round"/>
+  <path d="M228 94 L170 122" stroke="#111827" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="136" cy="130" r="10" fill="#111827"/>
+  <circle cx="184" cy="130" r="10" fill="#111827"/>
+  <path d="M152 148 Q160 160 168 148" stroke="#111827" stroke-width="5" stroke-linecap="round"/>
+  <polygon points="160,136 148,150 172,150" fill="#fef3c7" stroke="#111827" stroke-width="3"/>
+  <path d="M138 162 Q160 176 182 162" stroke="#111827" stroke-width="4" stroke-linecap="round"/>
+  <text x="50%" y="185" text-anchor="middle" fill="#111827" font-family="Arial, sans-serif" font-size="18">Fox · 유연형</text>
+</svg>

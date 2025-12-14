@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="200" viewBox="0 0 320 200" role="img" aria-label="Fennec Fox">
+  <defs>
+    <linearGradient id="ff1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff7c2"/>
+      <stop offset="100%" stop-color="#fde68a"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="200" rx="24" fill="url(#ff1)"/>
+  <path d="M50 135 L160 20 L270 135 Z" fill="#fef3c7" stroke="#111827" stroke-width="5" stroke-linejoin="round" opacity="0.95"/>
+  <path d="M70 155 L160 60 L250 155 Z" fill="#f4a15d" stroke="#111827" stroke-width="6" stroke-linejoin="round"/>
+  <ellipse cx="160" cy="155" rx="85" ry="30" fill="#f4a15d" stroke="#111827" stroke-width="6"/>
+  <circle cx="138" cy="135" r="9" fill="#111827"/>
+  <circle cx="182" cy="135" r="9" fill="#111827"/>
+  <path d="M150 150 Q160 162 170 150" stroke="#111827" stroke-width="5" stroke-linecap="round"/>
+  <polygon points="160,140 148,154 172,154" fill="#fef3c7" stroke="#111827" stroke-width="3"/>
+  <text x="50%" y="185" text-anchor="middle" fill="#111827" font-family="Arial, sans-serif" font-size="18">Fennec · 신중형</text>
+</svg>

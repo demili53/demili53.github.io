@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="10개의 질문으로 나와 닮은 동물을 알려주는 동물 성격 심리 테스트. 쉽고 재미있게 성격 유형을 알아보세요.">
+  <meta name="keywords" content="동물 성격 테스트, 심리 테스트, 파티 게임, 성격 유형, 브레인 테스트">
+  <meta name="author" content="partygame.pe.kr">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/animal-test.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="동물 성격 심리 테스트 | Brain Test">
+  <meta property="og:description" content="10개의 질문을 통해 당신을 닮은 동물을 알려드립니다. 재미있는 심리 테스트로 친구와 함께 즐겨보세요.">
+  <meta property="og:url" content="https://partygame.pe.kr/brainTest/pages/brainTest/animal-test.html">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/tiger.svg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="동물 성격 심리 테스트 | Brain Test">
+  <meta name="twitter:description" content="간단한 질문으로 나와 닮은 동물을 찾아보세요.">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+          crossorigin="anonymous"></script>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({
+      google_ad_client: "ca-pub-1087435977438565",
+      enable_page_level_ads: true
+    });
+  </script>
+  <title>동물 성격 심리 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12">
+    <header class="text-center mb-10 space-y-3">
+      <p class="text-sm uppercase tracking-[0.25em] text-indigo-200">Brain Test</p>
+      <h1 class="text-3xl md:text-4xl font-bold">동물 성격 심리 테스트</h1>
+      <p class="text-slate-200">10개의 질문을 단계별로 답하면, 당신을 닮은 동물을 알려드려요.</p>
+    </header>
+
+    <div class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <div id="progress" class="space-y-3">
+        <div class="flex justify-between text-sm text-indigo-100">
+          <span id="progressLabel">1 / 10</span>
+          <span id="progressPercent">0%</span>
+        </div>
+        <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+          <div id="progressBar" class="h-2 bg-gradient-to-r from-indigo-400 to-cyan-300 w-0"></div>
+        </div>
+      </div>
+
+      <section id="questionCard" class="space-y-4">
+        <div class="text-xs font-semibold text-indigo-100 uppercase tracking-widest" id="stepLabel">문항 1</div>
+        <h2 id="questionText" class="text-xl md:text-2xl font-semibold"></h2>
+        <div class="grid gap-3">
+          <button class="option-btn" data-key="A"></button>
+          <button class="option-btn" data-key="B"></button>
+          <button class="option-btn" data-key="C"></button>
+        </div>
+        <div class="flex justify-between pt-2 text-sm text-slate-200">
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-white/40 hover:bg-white/10 transition disabled:opacity-40 disabled:cursor-not-allowed">이전</button>
+          <button id="skipBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-white/40 hover:bg-white/10 transition">나중에 선택</button>
+        </div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-indigo-100 uppercase tracking-widest">결과</div>
+        <div class="flex flex-col md:flex-row gap-4 md:items-center">
+          <div class="w-full md:w-40">
+            <img id="resultImage" alt="animal" class="w-full h-40 object-cover rounded-xl border border-white/15 shadow-lg bg-white/10" src="">
+          </div>
+          <div class="flex-1 space-y-2">
+            <h2 class="text-2xl md:text-3xl font-bold" id="resultTitle"></h2>
+            <div id="resultBadges" class="flex flex-wrap gap-2"></div>
+          </div>
+        </div>
+        <p id="resultDesc" class="text-lg text-slate-100 leading-relaxed whitespace-pre-line"></p>
+        <button id="restartBtn" class="mt-2 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-500 text-white font-semibold shadow-lg hover:bg-indigo-400 transition">
+          다시 하기
+        </button>
+      </section>
+    </div>
+
+    <footer class="mt-10 text-center text-sm text-indigo-100">
+      Tailwind CDN 기반 단일 페이지 · 선택을 변경하면 즉시 반영됩니다.
+    </footer>
+  </div>
+
+  <script>
+    const data = {
+      title: "동물 성격 심리 테스트",
+      questions: [
+        { text: "중요한 약속이 있는 날, 시간이 조금 남았다면?", options: [
+          { key: "A", text: "일찍 가서 주변을 살핀다", trait: "owl" },
+          { key: "B", text: "딱 맞춰 도착한다", trait: "fox" },
+          { key: "C", text: "다른 일부터 처리한다", trait: "fox" },
+        ]},
+        { text: "팀 프로젝트에서 갈등이 생기면?", options: [
+          { key: "A", text: "중재하며 모두의 의견을 듣는다", trait: "dolphin" },
+          { key: "B", text: "결정권자에게 방향을 맡긴다", trait: "fennec" },
+          { key: "C", text: "내 주장을 밀어붙인다", trait: "tiger" },
+        ]},
+        { text: "새 취미를 시작할 때?", options: [
+          { key: "A", text: "자료를 충분히 조사하고 시작한다", trait: "owl" },
+          { key: "B", text: "일단 해보며 배우는 편이다", trait: "tiger" },
+          { key: "C", text: "주변 사람을 끌어들여 함께 한다", trait: "dolphin" },
+        ]},
+        { text: "예상치 못한 일정 변경이 생기면?", options: [
+          { key: "A", text: "빠르게 플랜 B를 세운다", trait: "owl" },
+          { key: "B", text: "큰 그림만 맞으면 괜찮다", trait: "fox" },
+          { key: "C", text: "당황하지만 금방 적응한다", trait: "fox" },
+        ]},
+        { text: "스트레스 해소법은?", options: [
+          { key: "A", text: "혼자 집중할 수 있는 활동", trait: "owl" },
+          { key: "B", text: "운동/액션", trait: "tiger" },
+          { key: "C", text: "사람들과 수다/모임", trait: "dolphin" },
+        ]},
+        { text: "목표를 세울 때?", options: [
+          { key: "A", text: "세부 계획과 체크리스트", trait: "owl" },
+          { key: "B", text: "큰 목표 하나로 밀어붙이기", trait: "tiger" },
+          { key: "C", text: "상황을 보며 유연하게 조정", trait: "fox" },
+        ]},
+        { text: "새로운 사람을 만날 때?", options: [
+          { key: "A", text: "먼저 질문하며 알아간다", trait: "dolphin" },
+          { key: "B", text: "관찰 후 천천히 가까워진다", trait: "fennec" },
+          { key: "C", text: "분위기를 주도하며 친해진다", trait: "tiger" },
+        ]},
+        { text: "실수를 했을 때?", options: [
+          { key: "A", text: "원인 분석부터 한다", trait: "fennec" },
+          { key: "B", text: "일단 수습하고 나중에 정리", trait: "tiger" },
+          { key: "C", text: "주변 도움을 받아 공유하며 해결", trait: "dolphin" },
+        ]},
+        { text: "복잡한 문제를 풀 때?", options: [
+          { key: "A", text: "구조를 그리며 분해한다", trait: "owl" },
+          { key: "B", text: "직관적으로 핵심부터 건드린다", trait: "tiger" },
+          { key: "C", text: "여러 사람 의견을 모아본다", trait: "fox" },
+        ]},
+        { text: "여행을 갈 때?", options: [
+          { key: "A", text: "상세 일정표를 만든다", trait: "owl" },
+          { key: "B", text: "주요 스폿만 정해두고 즉흥적으로", trait: "fox" },
+          { key: "C", text: "동행자와 즉석에서 정한다", trait: "dolphin" },
+        ]},
+      ],
+      traits: {
+        owl: {
+          name: "부엉이",
+          tagline: "계획형·분석형",
+          image: "../../images/owl.svg",
+          desc: "넓게 보고 조용히 계산하는 전략가입니다. 정보를 차분히 모으고 요약해 패턴을 찾고, 실행 전에 리스크를 줄이는 플랜을 세웁니다. 체크리스트와 히스토리를 좋아하며, 팀에서 의사결정 가이드 역할을 합니다."
+        },
+        tiger: {
+          name: "호랑이",
+          tagline: "주도형·직진형",
+          image: "../../images/tiger.svg",
+          desc: "목표에 집중하고 추진력이 강한 리더 타입입니다. 거침없는 실행과 빠른 피벗으로 팀의 속도를 끌어올리며, 성과와 명확한 방향성을 중시합니다. 도전적 목표에서 에너지를 얻습니다."
+        },
+        dolphin: {
+          name: "돌고래",
+          tagline: "사교형·협력형",
+          image: "../../images/dolphin.svg",
+          desc: "팀워크와 소통으로 문제를 풀어가는 타입입니다. 유머와 공감을 섞어 분위기를 부드럽게 만들고, 협업을 통해 창의적 해법을 찾습니다. 사람을 연결하고, 모두가 즐겁게 참여하는 환경을 만듭니다."
+        },
+        fox: {
+          name: "여우",
+          tagline: "적응형·유연형",
+          image: "../../images/fox.svg",
+          desc: "환경에 따라 빠르게 전술을 바꾸는 유연한 해결사입니다. 즉흥적 변화에도 금방 적응하고, 실용적인 선택으로 효율을 챙깁니다. 다양한 관점을 섞어 새로운 조합을 만드는 데 능숙합니다."
+        },
+        fennec: {
+          name: "사막여우",
+          tagline: "관찰형·신중형",
+          image: "../../images/fennec.svg",
+          desc: "조용히 살피고 안전을 확보한 뒤 움직이는 안정 추구자입니다. 섬세한 관찰과 깊이 있는 분석으로 리스크를 줄이고, 팀이 넘어갈 함정을 미리 발견합니다. 차분하지만 꾸준한 성취를 선호합니다."
+        },
+      }
+    };
+
+    const questionText = document.getElementById("questionText");
+    const stepLabel = document.getElementById("stepLabel");
+    const progressLabel = document.getElementById("progressLabel");
+    const progressPercent = document.getElementById("progressPercent");
+    const progressBar = document.getElementById("progressBar");
+    const optionButtons = Array.from(document.querySelectorAll(".option-btn"));
+    const prevBtn = document.getElementById("prevBtn");
+    const skipBtn = document.getElementById("skipBtn");
+    const questionCard = document.getElementById("questionCard");
+    const resultCard = document.getElementById("resultCard");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultBadges = document.getElementById("resultBadges");
+    const restartBtn = document.getElementById("restartBtn");
+    const resultImage = document.getElementById("resultImage");
+
+    let current = 0;
+    let currentQuestions = data.questions;
+    let traitMeta = data.traits;
+    let answers = new Array(currentQuestions.length).fill(null);
+
+    function renderQuestion() {
+      const q = currentQuestions[current];
+      questionText.textContent = q.text;
+      stepLabel.textContent = `문항 ${current + 1}`;
+      progressLabel.textContent = `${current + 1} / ${currentQuestions.length}`;
+      const percent = Math.round(((current) / currentQuestions.length) * 100);
+      progressPercent.textContent = `${percent}%`;
+      progressBar.style.width = `${percent}%`;
+
+      optionButtons.forEach((btn, idx) => {
+        const opt = q.options[idx];
+        btn.textContent = `${opt.key}. ${opt.text}`;
+        btn.dataset.trait = opt.trait;
+        const isSelected = answers[current]?.key === opt.key;
+        btn.className = `option-btn w-full text-left px-4 py-3 rounded-xl border transition ${
+          isSelected
+            ? "border-indigo-300 bg-white/15 shadow-md"
+            : "border-white/15 hover:border-indigo-200 hover:bg-white/10"
+        }`;
+      });
+
+      prevBtn.disabled = current === 0;
+    }
+
+    function showResult() {
+      const counts = Object.create(null);
+      answers.forEach(ans => {
+        if (!ans) return;
+        counts[ans.trait] = (counts[ans.trait] || 0) + 1;
+      });
+      const values = Object.values(counts);
+      if (values.length === 0) {
+        resultTitle.textContent = "아직 선택이 없어요";
+        resultDesc.textContent = "문항을 선택해 결과를 확인해 주세요.";
+        resultBadges.innerHTML = "";
+        return;
+      }
+
+      const max = Math.max(...values);
+      const topTraits = Object.keys(counts).filter(k => counts[k] === max);
+
+      resultBadges.innerHTML = "";
+      topTraits.forEach(trait => {
+        const meta = traitMeta[trait];
+        const badge = document.createElement("span");
+        badge.className = "inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm";
+        badge.textContent = `${meta.name} · ${meta.tagline}`;
+        resultBadges.appendChild(badge);
+      });
+
+      const primary = traitMeta[topTraits[0]];
+      resultTitle.textContent = topTraits.length > 1
+        ? `당신을 닮은 동물은 ${topTraits.length}가지!`
+        : `당신을 닮은 동물: ${primary.name}`;
+
+      resultImage.src = primary.image || "";
+      resultImage.alt = primary.name;
+
+      const desc = topTraits
+        .map(trait => {
+          const meta = traitMeta[trait];
+          return `• ${meta.name} (${meta.tagline}) — ${meta.desc}`;
+        })
+        .join("\n\n");
+
+      resultDesc.textContent = desc;
+      progressLabel.textContent = `${currentQuestions.length} / ${currentQuestions.length}`;
+      progressPercent.textContent = "100%";
+      progressBar.style.width = "100%";
+
+      questionCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+    }
+
+    function handleOption(key) {
+      const q = currentQuestions[current];
+      const selected = q.options.find(o => o.key === key);
+      answers[current] = selected;
+
+      if (current === currentQuestions.length - 1) {
+        showResult();
+        return;
+      }
+      current += 1;
+      renderQuestion();
+    }
+
+    function goPrev() {
+      if (current === 0) return;
+      current -= 1;
+      renderQuestion();
+    }
+
+    function skipQuestion() {
+      if (current === currentQuestions.length - 1) {
+        showResult();
+        return;
+      }
+      current += 1;
+      renderQuestion();
+    }
+
+    function restart() {
+      for (let i = 0; i < answers.length; i += 1) answers[i] = null;
+      current = 0;
+      resultCard.classList.add("hidden");
+      questionCard.classList.remove("hidden");
+      renderQuestion();
+    }
+
+    optionButtons.forEach(btn => {
+      btn.addEventListener("click", () => handleOption(btn.dataset.key || btn.textContent[0]));
+    });
+    prevBtn.addEventListener("click", goPrev);
+    skipBtn.addEventListener("click", skipQuestion);
+    restartBtn.addEventListener("click", restart);
+
+    renderQuestion();
+  </script>
+</body>
+</html>
