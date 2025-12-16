@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="10개의 질문으로 나와 닮은 동물을 알려주는 동물 성격 심리 테스트. 쉽고 재미있게 성격 유형을 알아보세요.">
+  <meta name="description" content="9개의 질문으로 나와 닮은 동물을 알려주는 동물 성격 심리 테스트. 쉽고 재미있게 성격 유형을 알아보세요.">
   <meta name="keywords" content="동물 성격 테스트, 심리 테스트, 파티 게임, 성격 유형, 브레인 테스트">
   <meta name="author" content="partygame.pe.kr">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/animal-test.html">
   <meta property="og:type" content="article">
   <meta property="og:title" content="동물 성격 심리 테스트 | Brain Test">
-  <meta property="og:description" content="10개의 질문을 통해 당신을 닮은 동물을 알려드립니다. 재미있는 심리 테스트로 친구와 함께 즐겨보세요.">
+  <meta property="og:description" content="9개의 질문을 통해 당신을 닮은 동물을 알려드립니다. 재미있는 심리 테스트로 친구와 함께 즐겨보세요.">
   <meta property="og:url" content="https://partygame.pe.kr/brainTest/pages/brainTest/animal-test.html">
-  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/tiger.svg">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/tiger.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="동물 성격 심리 테스트 | Brain Test">
   <meta name="twitter:description" content="간단한 질문으로 나와 닮은 동물을 찾아보세요.">
@@ -33,13 +33,13 @@
     <header class="text-center mb-10 space-y-3">
       <p class="text-sm uppercase tracking-[0.25em] text-indigo-200">Brain Test</p>
       <h1 class="text-3xl md:text-4xl font-bold">동물 성격 심리 테스트</h1>
-      <p class="text-slate-200">10개의 질문을 단계별로 답하면, 당신을 닮은 동물을 알려드려요.</p>
+      <p class="text-slate-200">9개의 질문을 단계별로 답하면, 당신을 닮은 동물을 알려드려요.</p>
     </header>
 
     <div class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
       <div id="progress" class="space-y-3">
         <div class="flex justify-between text-sm text-indigo-100">
-          <span id="progressLabel">1 / 10</span>
+          <span id="progressLabel">1 / 9</span>
           <span id="progressPercent">0%</span>
         </div>
         <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden">
@@ -73,6 +73,7 @@
           </div>
         </div>
         <p id="resultDesc" class="text-lg text-slate-100 leading-relaxed whitespace-pre-line"></p>
+        <div id="resultCompatibility" class="space-y-3"></div>
         <button id="restartBtn" class="mt-2 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-500 text-white font-semibold shadow-lg hover:bg-indigo-400 transition">
           다시 하기
         </button>
@@ -133,42 +134,82 @@
           { key: "B", text: "직관적으로 핵심부터 건드린다", trait: "tiger" },
           { key: "C", text: "여러 사람 의견을 모아본다", trait: "fox" },
         ]},
-        { text: "여행을 갈 때?", options: [
-          { key: "A", text: "상세 일정표를 만든다", trait: "owl" },
-          { key: "B", text: "주요 스폿만 정해두고 즉흥적으로", trait: "fox" },
-          { key: "C", text: "동행자와 즉석에서 정한다", trait: "dolphin" },
-        ]},
       ],
       traits: {
         owl: {
           name: "부엉이",
           tagline: "계획형·분석형",
-          image: "../../images/owl.svg",
-          desc: "넓게 보고 조용히 계산하는 전략가입니다. 정보를 차분히 모으고 요약해 패턴을 찾고, 실행 전에 리스크를 줄이는 플랜을 세웁니다. 체크리스트와 히스토리를 좋아하며, 팀에서 의사결정 가이드 역할을 합니다."
+          image: "https://images.unsplash.com/photo-1501706362039-c6e08e4b2487?auto=format&fit=crop&w=600&q=80",
+          desc: "넓게 보고 조용히 계산하는 전략가입니다. 정보를 차분히 모으고 요약해 패턴을 찾고, 실행 전에 리스크를 줄이는 플랜을 세웁니다. 체크리스트와 히스토리를 좋아하며, 팀에서 의사결정 가이드 역할을 합니다.",
+          compatibility: {
+            best: [
+              { trait: "dolphin", reason: "사교성과 분석력이 만나 팀워크가 빠르게 정렬됩니다." },
+              { trait: "fox", reason: "유연한 실행력과 계획력이 균형을 이룹니다." }
+            ],
+            challenge: [
+              { trait: "tiger", reason: "속도 우선 사고와 안정 추구가 충돌할 수 있어요." }
+            ]
+          }
         },
         tiger: {
           name: "호랑이",
           tagline: "주도형·직진형",
-          image: "../../images/tiger.svg",
-          desc: "목표에 집중하고 추진력이 강한 리더 타입입니다. 거침없는 실행과 빠른 피벗으로 팀의 속도를 끌어올리며, 성과와 명확한 방향성을 중시합니다. 도전적 목표에서 에너지를 얻습니다."
+          image: "https://images.unsplash.com/photo-1501700493788-fa1a4fc9fe62?auto=format&fit=crop&w=600&q=80",
+          desc: "목표에 집중하고 추진력이 강한 리더 타입입니다. 거침없는 실행과 빠른 피벗으로 팀의 속도를 끌어올리며, 성과와 명확한 방향성을 중시합니다. 도전적 목표에서 에너지를 얻습니다.",
+          compatibility: {
+            best: [
+              { trait: "fox", reason: "호흡이 맞으면 빠르고 유연한 실행 콤비가 됩니다." },
+              { trait: "owl", reason: "장기 전략을 부엉이가 잡아주면 추진력이 더 안정됩니다." }
+            ],
+            challenge: [
+              { trait: "fennec", reason: "신중함과 과감함이 엇갈리면 의사결정이 늦어질 수 있어요." }
+            ]
+          }
         },
         dolphin: {
           name: "돌고래",
           tagline: "사교형·협력형",
-          image: "../../images/dolphin.svg",
-          desc: "팀워크와 소통으로 문제를 풀어가는 타입입니다. 유머와 공감을 섞어 분위기를 부드럽게 만들고, 협업을 통해 창의적 해법을 찾습니다. 사람을 연결하고, 모두가 즐겁게 참여하는 환경을 만듭니다."
+          image: "https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&w=600&q=80",
+          desc: "팀워크와 소통으로 문제를 풀어가는 타입입니다. 유머와 공감을 섞어 분위기를 부드럽게 만들고, 협업을 통해 창의적 해법을 찾습니다. 사람을 연결하고, 모두가 즐겁게 참여하는 환경을 만듭니다.",
+          compatibility: {
+            best: [
+              { trait: "owl", reason: "소통과 분석이 서로 빈틈을 메워줍니다." },
+              { trait: "fennec", reason: "세심함과 공감력이 조합돼 갈등을 줄입니다." }
+            ],
+            challenge: [
+              { trait: "tiger", reason: "결정 속도와 공감 과정이 다르면 피로감을 느낄 수 있어요." }
+            ]
+          }
         },
         fox: {
           name: "여우",
           tagline: "적응형·유연형",
-          image: "../../images/fox.svg",
-          desc: "환경에 따라 빠르게 전술을 바꾸는 유연한 해결사입니다. 즉흥적 변화에도 금방 적응하고, 실용적인 선택으로 효율을 챙깁니다. 다양한 관점을 섞어 새로운 조합을 만드는 데 능숙합니다."
+          image: "https://images.unsplash.com/photo-1504208434309-cb69f4fe52b0?auto=format&fit=crop&w=600&q=80",
+          desc: "환경에 따라 빠르게 전술을 바꾸는 유연한 해결사입니다. 즉흥적 변화에도 금방 적응하고, 실용적인 선택으로 효율을 챙깁니다. 다양한 관점을 섞어 새로운 조합을 만드는 데 능숙합니다.",
+          compatibility: {
+            best: [
+              { trait: "tiger", reason: "유연한 전술로 호랑이의 추진력을 뒷받침합니다." },
+              { trait: "fennec", reason: "섬세함과 기민함이 만나 리스크를 잘 조절합니다." }
+            ],
+            challenge: [
+              { trait: "owl", reason: "계획 대비 즉흥 실행 비율을 맞추는 노력이 필요해요." }
+            ]
+          }
         },
         fennec: {
           name: "사막여우",
           tagline: "관찰형·신중형",
-          image: "../../images/fennec.svg",
-          desc: "조용히 살피고 안전을 확보한 뒤 움직이는 안정 추구자입니다. 섬세한 관찰과 깊이 있는 분석으로 리스크를 줄이고, 팀이 넘어갈 함정을 미리 발견합니다. 차분하지만 꾸준한 성취를 선호합니다."
+          image: "https://images.unsplash.com/photo-1506719040632-7d586470c936?auto=format&fit=crop&w=600&q=80",
+          desc: "조용히 살피고 안전을 확보한 뒤 움직이는 안정 추구자입니다. 섬세한 관찰과 깊이 있는 분석으로 리스크를 줄이고, 팀이 넘어갈 함정을 미리 발견합니다. 차분하지만 꾸준한 성취를 선호합니다.",
+          compatibility: {
+            best: [
+              { trait: "dolphin", reason: "공감 능력과 섬세함이 만나 조직 온도를 지켜줍니다." },
+              { trait: "fox", reason: "위험 감지와 기민한 실행이 절묘하게 조합됩니다." }
+            ],
+            challenge: [
+              { trait: "tiger", reason: "과감한 결정과 신중함이 부딪히면 피로감을 줄 수 있어요." }
+            ]
+          }
         },
       }
     };
@@ -218,54 +259,113 @@
       prevBtn.disabled = current === 0;
     }
 
-    function showResult() {
-      const counts = Object.create(null);
-      answers.forEach(ans => {
-        if (!ans) return;
-        counts[ans.trait] = (counts[ans.trait] || 0) + 1;
-      });
-      const values = Object.values(counts);
-      if (values.length === 0) {
-        resultTitle.textContent = "아직 선택이 없어요";
-        resultDesc.textContent = "문항을 선택해 결과를 확인해 주세요.";
-        resultBadges.innerHTML = "";
-        return;
+    function updateTraitQuery(traitKey) {
+      const url = new URL(window.location.href);
+      if (traitKey) {
+        url.searchParams.set("trait", traitKey);
+      } else {
+        url.searchParams.delete("trait");
       }
+      const next = `${url.pathname}${url.search}${url.hash || ""}`;
+      window.history.replaceState({}, "", next);
+    }
 
-      const max = Math.max(...values);
-      const topTraits = Object.keys(counts).filter(k => counts[k] === max);
-
+    function renderTraitProfile(traitKey) {
+      const meta = traitMeta[traitKey];
+      if (!meta) return;
       resultBadges.innerHTML = "";
-      topTraits.forEach(trait => {
-        const meta = traitMeta[trait];
-        const badge = document.createElement("span");
-        badge.className = "inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm";
-        badge.textContent = `${meta.name} · ${meta.tagline}`;
-        resultBadges.appendChild(badge);
-      });
+      const badge = document.createElement("span");
+      badge.className = "inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm";
+      badge.textContent = `${meta.name} · ${meta.tagline}`;
+      resultBadges.appendChild(badge);
 
-      const primary = traitMeta[topTraits[0]];
-      resultTitle.textContent = topTraits.length > 1
-        ? `당신을 닮은 동물은 ${topTraits.length}가지!`
-        : `당신을 닮은 동물: ${primary.name}`;
-
-      resultImage.src = primary.image || "";
-      resultImage.alt = primary.name;
-
-      const desc = topTraits
-        .map(trait => {
-          const meta = traitMeta[trait];
-          return `• ${meta.name} (${meta.tagline}) — ${meta.desc}`;
-        })
-        .join("\n\n");
-
-      resultDesc.textContent = desc;
+      resultTitle.textContent = `당신을 닮은 동물: ${meta.name}`;
+      resultImage.src = meta.image || "";
+      resultImage.alt = meta.name;
+      resultDesc.textContent = `• ${meta.name} (${meta.tagline}) — ${meta.desc}`;
+      renderCompatibility(meta);
       progressLabel.textContent = `${currentQuestions.length} / ${currentQuestions.length}`;
       progressPercent.textContent = "100%";
       progressBar.style.width = "100%";
-
       questionCard.classList.add("hidden");
       resultCard.classList.remove("hidden");
+    }
+
+    function showTraitProfile(traitKey) {
+      renderTraitProfile(traitKey);
+      updateTraitQuery(traitKey);
+    }
+
+    function showResult() {
+      const counts = Object.create(null);
+      const tieBreak = Object.create(null);
+      answers.forEach((ans, idx) => {
+        if (!ans) return;
+        counts[ans.trait] = (counts[ans.trait] || 0) + 1;
+        const weight = currentQuestions.length - idx;
+        tieBreak[ans.trait] = (tieBreak[ans.trait] || 0) + weight;
+      });
+      const ranked = Object.keys(counts).sort((a, b) => {
+        if (counts[b] !== counts[a]) return counts[b] - counts[a];
+        return (tieBreak[b] || 0) - (tieBreak[a] || 0);
+      });
+      if (ranked.length === 0) {
+        resultTitle.textContent = "아직 선택이 없어요";
+        resultDesc.textContent = "문항을 선택해 결과를 확인해 주세요.";
+        resultBadges.innerHTML = "";
+        document.getElementById("resultCompatibility").innerHTML = "";
+        return;
+      }
+
+      const primary = ranked[0];
+      showTraitProfile(primary);
+    }
+
+    function renderCompatibility(meta) {
+      const container = document.getElementById("resultCompatibility");
+      if (!meta.compatibility) {
+        container.innerHTML = "";
+        return;
+      }
+      const section = document.createElement("div");
+      section.className = "rounded-2xl bg-white/5 border border-white/10 p-4 space-y-3";
+      const title = document.createElement("div");
+      title.className = "text-sm font-semibold text-indigo-200 tracking-widest uppercase";
+      title.textContent = "궁합 리포트";
+      section.appendChild(title);
+
+      const bestBlock = document.createElement("div");
+      bestBlock.innerHTML = `<p class="text-indigo-100 text-sm mb-2">잘 맞는 타입</p>`;
+      meta.compatibility.best?.forEach(info => {
+        const item = createCompatibilityItem(info);
+        if (item) bestBlock.appendChild(item);
+      });
+      section.appendChild(bestBlock);
+
+      const challengeBlock = document.createElement("div");
+      challengeBlock.innerHTML = `<p class="text-indigo-100 text-sm mb-2">주의할 타입</p>`;
+      meta.compatibility.challenge?.forEach(info => {
+        const item = createCompatibilityItem(info);
+        if (item) challengeBlock.appendChild(item);
+      });
+      section.appendChild(challengeBlock);
+
+      container.innerHTML = "";
+      container.appendChild(section);
+    }
+
+    function createCompatibilityItem(info) {
+      const traitInfo = traitMeta[info.trait];
+      if (!traitInfo) return null;
+      const link = document.createElement("a");
+      link.href = `?trait=${info.trait}#result`;
+      link.className = "flex flex-col gap-1 text-left text-slate-50 text-sm border border-white/15 rounded-xl px-3 py-2 mb-2 hover:border-indigo-200 hover:bg-white/10 transition trait-link";
+      link.innerHTML = `<span class="font-semibold text-indigo-100">${traitInfo.name}</span><span class="text-xs text-slate-200">${info.reason}</span>`;
+      link.addEventListener("click", (evt) => {
+        evt.preventDefault();
+        showTraitProfile(info.trait);
+      });
+      return link;
     }
 
     function handleOption(key) {
@@ -299,6 +399,7 @@
     function restart() {
       for (let i = 0; i < answers.length; i += 1) answers[i] = null;
       current = 0;
+      updateTraitQuery(null);
       resultCard.classList.add("hidden");
       questionCard.classList.remove("hidden");
       renderQuestion();
@@ -312,6 +413,10 @@
     restartBtn.addEventListener("click", restart);
 
     renderQuestion();
+    const initialTrait = new URLSearchParams(window.location.search).get("trait");
+    if (initialTrait && traitMeta[initialTrait]) {
+      renderTraitProfile(initialTrait);
+    }
   </script>
 </body>
 </html>

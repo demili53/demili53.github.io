@@ -12,7 +12,7 @@
   <meta property="og:title" content="잼있는 심리 테스트 모음 | Brain Test Hub">
   <meta property="og:description" content="간단한 질문에 답하며 동물 성격 테스트 등 다양한 심리 테스트를 즐기세요.">
   <meta property="og:url" content="https://partygame.pe.kr/">
-  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/fox.svg">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/fox.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="잼있는 심리 테스트 모음 | Brain Test Hub">
   <meta name="twitter:description" content="모임에서 바로 즐길 수 있는 심리 테스트 컬렉션">
@@ -20,10 +20,14 @@
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
           crossorigin="anonymous"></script>
   <script>
-    (adsbygoogle = window.adsbygoogle || []).push({
-      google_ad_client: "ca-pub-1087435977438565",
-      enable_page_level_ads: true
-    });
+    window.adsbygoogle = window.adsbygoogle || [];
+    if (!window.__AD_SENSE_INITIALIZED__) {
+      window.adsbygoogle.push({
+        google_ad_client: "ca-pub-1087435977438565",
+        enable_page_level_ads: true
+      });
+      window.__AD_SENSE_INITIALIZED__ = true;
+    }
   </script>
   <script type="application/ld+json">
     {
@@ -46,22 +50,26 @@
       <p class="text-slate-200">아래 목록에서 테스트를 선택해 즐겨보세요.</p>
     </header>
 
-    <section class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-4">
+    <section class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
       <div class="space-y-1">
-        <div class="text-xs font-semibold text-indigo-100 uppercase tracking-widest">테스트 목록</div>
-        <p class="text-sm text-slate-200">아래 링크를 클릭하면 해당 테스트 페이지가 열립니다.</p>
+        <div class="text-xs font-semibold text-indigo-100 uppercase tracking-widest">내부 제작 테스트</div>
+        <p class="text-sm text-slate-200">Brain Test Hub에서 직접 제작한 인터랙티브 테스트입니다.</p>
       </div>
-      <div class="grid gap-3">
-        <a href="./brainTest/pages/brainTest/animal-test.html" class="block rounded-xl border border-white/15 bg-white/5 hover:border-indigo-200 hover:bg-white/10 transition p-4">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-indigo-100">MD 기반 스태틱 페이지</p>
-              <h2 class="text-lg font-semibold text-slate-50">동물 성격 심리 테스트</h2>
-            </div>
-            <span class="text-xs px-3 py-1 rounded-full bg-indigo-500/30 border border-indigo-200/40 text-indigo-50">열기</span>
-          </div>
-          <p class="mt-2 text-sm text-slate-200">brainTest/pages/brainTest/animal-test.html</p>
-        </a>
+
+      <div class="space-y-3">
+        <div class="flex flex-col gap-3 md:flex-row md:items-center">
+          <label class="flex-1 text-sm text-slate-200">
+            <span class="sr-only">검색</span>
+            <input id="searchInput" type="text" placeholder="테스트 이름, 설명 또는 키워드로 검색하세요" class="mt-1 w-full rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-slate-50 placeholder:text-slate-400 focus:border-indigo-300 focus:outline-none">
+          </label>
+          <button id="clearSearchBtn" class="text-sm px-4 py-2 rounded-xl border border-white/20 text-slate-200 hover:bg-white/10 transition">검색 초기화</button>
+        </div>
+        <div id="keywordFilters" class="flex flex-wrap gap-2 text-sm"></div>
+      </div>
+
+      <div id="testList" class="grid gap-3"></div>
+      <div class="text-center">
+        <button id="loadMoreBtn" class="hidden px-4 py-2 rounded-xl border border-white/20 text-sm text-slate-200 hover:bg-white/10 transition">더 보기</button>
       </div>
     </section>
 
@@ -70,4 +78,162 @@
     </footer>
   </div>
 </body>
+<script id="testListData" type="application/json">
+[
+  {"id":"animal-test","title":"동물 성격 심리 테스트","path":"/brainTest/pages/brainTest/animal-test.html","description":"9개의 질문으로 나와 닮은 동물을 찾아주는 테스트","keywords":["동물","궁합","성격","테스트"]},
+  {"id":"tree-test","title":"나만의 트리 연애 테스트","path":"/brainTest/pages/brainTest/tree-test.html","description":"연애 나무 타입을 알려주는 6문항 연애 심리 테스트","keywords":["연애","나무","감성","테스트"]},
+  {"id":"love-count-test","title":"내 생에 남은 연애 횟수 테스트","path":"/brainTest/pages/brainTest/love-count-test.html","description":"남은 연애 횟수와 연애 스타일을 알아보는 6문항 테스트","keywords":["연애","횟수","전망","테스트"]},
+  {"id":"alien-test","title":"나만의 외계인 테스트","path":"/brainTest/pages/brainTest/alien-test.html","description":"6문항으로 외계인 타입을 알아보는 심리 테스트","keywords":["외계인","모험","성향","테스트"]},
+  {"id":"starlit-mood-test","title":"별빛 감정 궤도 테스트","path":"/brainTest/pages/brainTest/starlit-mood-test.html","description":"감정의 궤도를 별빛 타입으로 알아보는 6문항 테스트","keywords":["감정","별빛","무드","테스트"]},
+  {"id":"cute-animal-test","title":"하찮은 동물 테스트","path":"/brainTest/pages/brainTest/cute-animal-test.html","description":"8개의 질문으로 하찮고 귀여운 동물 타입을 알아보는 테스트","keywords":["동물","귀여움","하찮음","테스트"]},
+  {"id":"backrooms-survival-test","title":"백룸 생존 유형 테스트","path":"/brainTest/pages/brainTest/backrooms-survival-test.html","description":"백룸 탈출 시나리오로 생존 유형을 알아보는 6문항 테스트","keywords":["백룸","생존","모험","테스트"]},
+  {"id":"aurora-guardian-test","title":"오로라 수호자 테스트","path":"/brainTest/pages/brainTest/aurora-guardian-test.html","description":"빛의 에너지로 나의 오로라 수호 타입을 알아보는 6문항 테스트","keywords":["오로라","수호자","에너지","테스트"]}
+]
+</script>
+<script>
+  const listUrl = "/brainTest/pages/list.json";
+  const listEl = document.getElementById("testList");
+  const keywordWrap = document.getElementById("keywordFilters");
+  const searchInput = document.getElementById("searchInput");
+  const clearSearchBtn = document.getElementById("clearSearchBtn");
+  const loadMoreBtn = document.getElementById("loadMoreBtn");
+  const PAGE_SIZE = 10;
+  const LOAD_MORE_COUNT = 5;
+  const palette = [
+    { text: "text-indigo-100", badge: "bg-indigo-500/20 border-indigo-200/40 text-indigo-50" },
+    { text: "text-emerald-100", badge: "bg-emerald-500/20 border-emerald-200/40 text-emerald-50" },
+    { text: "text-rose-100", badge: "bg-rose-500/20 border-rose-200/40 text-rose-50" },
+    { text: "text-teal-100", badge: "bg-teal-500/20 border-teal-200/40 text-teal-50" },
+    { text: "text-purple-100", badge: "bg-purple-500/20 border-purple-200/40 text-purple-50" },
+    { text: "text-yellow-100", badge: "bg-yellow-500/20 border-yellow-200/40 text-yellow-50" },
+    { text: "text-amber-100", badge: "bg-amber-500/20 border-amber-200/40 text-amber-50" },
+    { text: "text-cyan-100", badge: "bg-cyan-500/20 border-cyan-200/40 text-cyan-50" }
+  ];
+
+  const inlineDataEl = document.getElementById("testListData");
+  const inlineData = inlineDataEl ? JSON.parse(inlineDataEl.textContent) : [];
+
+  let tests = [];
+  let filtered = [];
+  let visibleCount = PAGE_SIZE;
+
+  function prepareData(data) {
+    tests = data.map((item, idx) => ({
+      ...item,
+      keywords: item.keywords || [],
+      palette: palette[idx % palette.length]
+    }));
+    filtered = tests;
+    renderKeywordFilters();
+    renderCards();
+  }
+
+  async function initList() {
+    if (window.location.protocol === "file:") {
+      prepareData(inlineData);
+      return;
+    }
+    try {
+      const res = await fetch(listUrl, { cache: "no-cache" });
+      const data = await res.json();
+      prepareData(data);
+    } catch (err) {
+      console.warn("리스트를 불러오지 못해 로컬 데이터를 사용합니다.", err);
+      prepareData(inlineData);
+    }
+  }
+
+  function renderKeywordFilters() {
+    const keywords = new Set();
+    tests.forEach(test => test.keywords.forEach(k => keywords.add(k)));
+    keywordWrap.innerHTML = "";
+    if (!keywords.size) return;
+    keywords.forEach(keyword => {
+      const btn = document.createElement("button");
+      btn.className = "px-3 py-1 rounded-full border border-white/20 text-slate-200 hover:bg-white/10 transition";
+      btn.textContent = `#${keyword}`;
+      btn.addEventListener("click", () => {
+        searchInput.value = keyword;
+        applyFilter();
+      });
+      keywordWrap.appendChild(btn);
+    });
+  }
+
+  function createCard(test) {
+    const card = document.createElement("a");
+    card.href = test.path;
+    card.className = "block rounded-xl border border-white/15 bg-white/5 hover:border-indigo-200/60 hover:bg-white/10 transition p-4";
+    card.innerHTML = `
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs ${test.palette.text} uppercase tracking-widest">${test.title}</p>
+          <h2 class="text-xl font-semibold text-slate-50 mt-1">${test.title}</h2>
+          <p class="mt-2 text-sm text-slate-200">${test.description}</p>
+        </div>
+        <span class="text-xs px-3 py-1 rounded-full ${test.palette.badge}">열기</span>
+      </div>
+    `;
+    if (test.keywords.length) {
+      const keywordBox = document.createElement("div");
+      keywordBox.className = "mt-3 flex flex-wrap gap-2";
+      test.keywords.forEach(keyword => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "text-xs px-3 py-1 rounded-full border border-white/15 text-slate-200 hover:bg-white/10 transition";
+        btn.textContent = keyword;
+        btn.addEventListener("click", event => {
+          event.preventDefault();
+          searchInput.value = keyword;
+          applyFilter();
+        });
+        keywordBox.appendChild(btn);
+      });
+      card.appendChild(keywordBox);
+    }
+    return card;
+  }
+
+  function renderCards() {
+    listEl.innerHTML = "";
+    const items = filtered.slice(0, visibleCount);
+    if (!items.length) {
+      listEl.innerHTML = '<div class="rounded-xl border border-white/15 bg-white/5 p-4 text-center text-sm text-slate-200">검색 결과가 없습니다.</div>';
+    } else {
+      items.forEach(test => listEl.appendChild(createCard(test)));
+    }
+    if (filtered.length > visibleCount) {
+      loadMoreBtn.classList.remove("hidden");
+    } else {
+      loadMoreBtn.classList.add("hidden");
+    }
+  }
+
+  function applyFilter() {
+    const query = searchInput.value.trim().toLowerCase();
+    visibleCount = PAGE_SIZE;
+    if (!query) {
+      filtered = tests;
+    } else {
+      filtered = tests.filter(test => {
+        const text = `${test.title} ${test.description}`.toLowerCase();
+        const keywordMatch = (test.keywords || []).some(keyword => keyword.toLowerCase().includes(query));
+        return text.includes(query) || keywordMatch;
+      });
+    }
+    renderCards();
+  }
+
+  searchInput.addEventListener("input", () => applyFilter());
+  clearSearchBtn.addEventListener("click", () => {
+    searchInput.value = "";
+    applyFilter();
+  });
+  loadMoreBtn.addEventListener("click", () => {
+    visibleCount += LOAD_MORE_COUNT;
+    renderCards();
+  });
+
+  initList();
+</script>
 </html>

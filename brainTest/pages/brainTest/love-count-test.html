@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="6개의 질문으로 남은 연애 횟수와 연애 스타일을 전망해 보는 심리 테스트">
+  <meta name="keywords" content="연애 테스트, 남은 연애 횟수, 연애 전망, 연애 스타일">
+  <meta name="author" content="partygame.pe.kr">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/love-count-test.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="내 생에 남은 연애 횟수 테스트">
+  <meta property="og:description" content="남은 연애 횟수와 연애 스타일을 알려주는 6문항 심리 테스트">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=900&q=80">
+  <title>내 생에 남은 연애 횟수 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-rose-900 via-slate-900 to-indigo-900 text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.3em] text-rose-200">Love Forecast</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">내 생에 남은 연애 횟수 테스트</h1>
+      <p class="text-slate-200">6개의 질문으로 남은 연애 횟수와 연애 스타일을 전망해보는 심리 테스트입니다. <a href="/" class="underline text-rose-200 hover:text-rose-100 transition">홈으로 돌아가기</a></p>
+    </header>
+
+    <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section id="quiz" class="space-y-5">
+        <div class="text-xs font-semibold text-rose-100 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <h2 id="question" class="text-2xl font-semibold"></h2>
+        <div id="options" class="space-y-3"></div>
+        <div class="flex justify-between text-sm text-slate-300">
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-white/40 hover:bg-white/10 transition disabled:opacity-40">이전</button>
+          <span id="progress" class="text-rose-200">0% 완료</span>
+        </div>
+      </section>
+
+      <section id="result" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-rose-100 uppercase tracking-[0.3em]">연애 전망</div>
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="md:w-48 w-full">
+            <img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-48 object-cover" alt="result">
+          </div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm"></div>
+            <p id="resultDesc" class="text-slate-100 leading-relaxed"></p>
+          </div>
+        </div>
+        <div id="resultTips" class="space-y-2"></div>
+        <button id="restartBtn" class="mt-2 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-rose-500 text-white font-semibold shadow-lg hover:bg-rose-400 transition">다시 시작하기</button>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const quiz = {
+      questions: [
+        {
+          text: "연애를 떠올리면 가장 먼저 드는 생각은?",
+          options: [
+            { label: "내 사람을 만나 꾸준히 지키고 싶다", trait: "soulmate" },
+            { label: "설레는 인연을 자주 만나보고 싶다", trait: "multi" },
+            { label: "관계보다 나 자신이 먼저다", trait: "solo" },
+            { label: "운명 같은 불꽃을 기다린다", trait: "destiny" }
+          ]
+        },
+        {
+          text: "마지막 연애에서 가장 아쉬웠던 점은?",
+          options: [
+            { label: "타이밍이 맞지 않았다", trait: "destiny" },
+            { label: "열정이 너무 빨리 식었다", trait: "multi" },
+            { label: "서로 성장 단계가 달랐다", trait: "solo" },
+            { label: "좋은 사람인데 내가 더 노력했어야 했다", trait: "soulmate" }
+          ]
+        },
+        {
+          text: "주변에서 듣고 싶은 말은?",
+          options: [
+            { label: "둘이 오래 간다", trait: "soulmate" },
+            { label: "너 진짜 인기 많아", trait: "multi" },
+            { label: "자기 길을 잘 간다", trait: "solo" },
+            { label: "드라마 주인공 같다", trait: "destiny" }
+          ]
+        },
+        {
+          text: "요즘 연애에 쓰는 에너지 비중은?",
+          options: [
+            { label: "실제로 누군가와 진지하게 연락 중", trait: "soulmate" },
+            { label: "여러 사람을 알아보며 탐색 중", trait: "multi" },
+            { label: "거의 0, 쉬고 싶다", trait: "solo" },
+            { label: "기회만 오면 바로 직진", trait: "destiny" }
+          ]
+        },
+        {
+          text: "연애 횟수가 늘어나야 하는 이유는?",
+          options: [
+            { label: "운명적 경험을 더 찾고 싶어서", trait: "destiny" },
+            { label: "다양한 사람을 만나며 배울 수 있으니까", trait: "multi" },
+            { label: "진짜 한 번 더 제대로 해보고 싶어서", trait: "soulmate" },
+            { label: "지금은 내 삶을 가꾸는 게 우선이라서 굳이?", trait: "solo" }
+          ]
+        },
+        {
+          text: "가장 끌리는 데이트 플랜은?",
+          options: [
+            { label: "집밥과 영화, 편안한 일상", trait: "soulmate" },
+            { label: "다른 동네 맛집 투어", trait: "multi" },
+            { label: "혼자 여행 다녀와 공유", trait: "solo" },
+            { label: "새벽 드라이브와 별 보기", trait: "destiny" }
+          ]
+        }
+      ],
+      traits: {
+        soulmate: {
+          name: "단 한 번 더, 평생 한 사람",
+          badge: "연애 횟수 1회 · 깊은 인연형",
+          desc: "당신에게 남은 연애는 단 한 번일 가능성이 높아요. 하지만 그 한 번은 평생을 함께할 동반자를 의미합니다.",
+          image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=900&q=80",
+          tips: [
+            "관계를 시작할 때 기준을 분명히 하세요.",
+            "깊은 대화와 믿음이 곧 당신의 무기입니다."
+          ]
+        },
+        multi: {
+          name: "3~4번의 설렘이 기다리는 중",
+          badge: "연애 횟수 3~4회 · 탐험가형",
+          desc: "다양한 인연을 통해 자신에게 맞는 사랑을 찾아가는 중입니다. 경험이 쌓일수록 취향이 또렷해집니다.",
+          image: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80",
+          tips: [
+            "감정 기복에 대비해 휴식 시간을 정해 두세요.",
+            "새로운 만남에서도 자신의 기준을 잃지 마세요."
+          ]
+        },
+        solo: {
+          name: "한동안 솔로를 즐기는 시기",
+          badge: "연애 횟수 0회 · 나 중심형",
+          desc: "지금은 연애보다 자신을 돌보는 시기입니다. 새로운 사랑은 당신이 준비되었을 때 자연스럽게 찾아올 거예요.",
+          image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80",
+          tips: [
+            "자기 관리와 취미에 집중하세요.",
+            "마음이 열릴 때 작은 인연부터 받아들여 보세요."
+          ]
+        },
+        destiny: {
+          name: "운명 같은 만남을 여러 번",
+          badge: "연애 횟수 2회 · 불꽃형",
+          desc: "당신은 운명 같은 사람을 최대 2번 더 만날 가능성이 있습니다. 감정선이 뜨거운 만큼 재충전도 필요합니다.",
+          image: "https://images.unsplash.com/photo-1500048993953-d23a436266cf?auto=format&fit=crop&w=900&q=80",
+          tips: [
+            "감정이 폭발하기 전에 솔직하게 표현하세요.",
+            "불꽃이 꺼지기 전에 현실적인 대화도 잊지 마세요."
+          ]
+        }
+      }
+    };
+
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const stepLabel = document.getElementById("stepLabel");
+    const progressEl = document.getElementById("progress");
+    const resultCard = document.getElementById("result");
+    const quizCard = document.getElementById("quiz");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultBadge = document.getElementById("resultBadge");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultImage = document.getElementById("resultImage");
+    const resultTips = document.getElementById("resultTips");
+    const restartBtn = document.getElementById("restartBtn");
+    const prevBtn = document.getElementById("prevBtn");
+
+    let current = 0;
+    const answers = Array(quiz.questions.length).fill(null);
+
+    function renderQuestion() {
+      const q = quiz.questions[current];
+      questionEl.textContent = q.text;
+      stepLabel.textContent = `문항 ${current + 1} / ${quiz.questions.length}`;
+      progressEl.textContent = `${Math.round((current / quiz.questions.length) * 100)}% 완료`;
+      optionsEl.innerHTML = "";
+
+      q.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-white/20 hover:border-rose-200 hover:bg-white/10 transition";
+        btn.textContent = opt.label;
+        btn.addEventListener("click", () => handleOption(opt.trait));
+        optionsEl.appendChild(btn);
+      });
+
+      prevBtn.disabled = current === 0;
+    }
+
+    function handleOption(trait) {
+      answers[current] = trait;
+      if (current === quiz.questions.length - 1) {
+        showResult();
+        return;
+      }
+      current += 1;
+      renderQuestion();
+    }
+
+    function showResult() {
+      const counter = answers.reduce((map, trait) => {
+        if (!trait) return map;
+        map[trait] = (map[trait] || 0) + 1;
+        return map;
+      }, {});
+
+      let winner = null;
+      Object.keys(counter).forEach(trait => {
+        if (!winner || counter[trait] > counter[winner]) winner = trait;
+      });
+
+      if (!winner) {
+        resultTitle.textContent = "아직 결과가 없어요";
+        resultDesc.textContent = "문항을 모두 선택하면 연애 횟수 전망을 알려드릴게요.";
+        return;
+      }
+
+      const meta = quiz.traits[winner];
+      resultTitle.textContent = meta.name;
+      resultBadge.textContent = meta.badge;
+      resultDesc.textContent = meta.desc;
+      resultImage.src = meta.image;
+      resultImage.alt = meta.name;
+      resultTips.innerHTML = "";
+      meta.tips.forEach(t => {
+        const item = document.createElement("div");
+        item.className = "border border-white/15 rounded-xl px-3 py-2 text-sm text-slate-100";
+        item.textContent = `• ${t}`;
+        resultTips.appendChild(item);
+      });
+
+      quizCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+      progressEl.textContent = "100% 완료";
+    }
+
+    function goPrev() {
+      if (current === 0) return;
+      current -= 1;
+      renderQuestion();
+    }
+
+    function restart() {
+      for (let i = 0; i < answers.length; i += 1) answers[i] = null;
+      current = 0;
+      quizCard.classList.remove("hidden");
+      resultCard.classList.add("hidden");
+      progressEl.textContent = "0% 완료";
+      renderQuestion();
+    }
+
+    prevBtn.addEventListener("click", goPrev);
+    restartBtn.addEventListener("click", restart);
+
+    renderQuestion();
+  </script>
+</body>
+</html>

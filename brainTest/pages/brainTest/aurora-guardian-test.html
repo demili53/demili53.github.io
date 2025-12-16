@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="6개의 질문으로 나의 오로라 수호자 성향을 알아보는 심리 테스트">
+  <meta name="keywords" content="오로라 테스트, 수호자 테스트, aurora guardian, 심리 테스트">
+  <meta name="author" content="partygame.pe.kr">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/aurora-guardian-test.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="오로라 수호자 테스트">
+  <meta property="og:description" content="빛의 수호자, 공감자, 탐험자, 연금술사 중 나의 오로라 타입을 찾아보세요">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80">
+  <title>오로라 수호자 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-cyan-950 via-violet-900 to-black text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.3em] text-cyan-200">Aurora Guardian</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">오로라 수호자 테스트</h1>
+      <p class="text-slate-200">6개의 질문으로 나의 오로라 에너지를 지키는 방식이 무엇인지 알아보세요. <a href="/" class="underline text-cyan-200 hover:text-cyan-100 transition">홈으로 돌아가기</a></p>
+    </header>
+
+    <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section id="quiz" class="space-y-5">
+        <div class="text-xs font-semibold text-cyan-100 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <h2 id="question" class="text-2xl font-semibold"></h2>
+        <div id="options" class="space-y-3"></div>
+        <div class="flex justify-between text-sm text-slate-300">
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-white/40 hover:bg-white/10 transition disabled:opacity-40">이전</button>
+          <span id="progress" class="text-cyan-200">0% 완료</span>
+        </div>
+      </section>
+
+      <section id="result" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-cyan-100 uppercase tracking-[0.3em]">오로라 프로필</div>
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="md:w-48 w-full">
+            <img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-48 object-cover" alt="result">
+          </div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm"></div>
+            <p id="resultDesc" class="text-slate-100 leading-relaxed"></p>
+          </div>
+        </div>
+        <div id="resultTips" class="space-y-2"></div>
+        <button id="restartBtn" class="mt-2 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500 text-white font-semibold shadow-lg hover:bg-cyan-400 transition">다시 시작하기</button>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const quiz = {
+      questions: [
+        {
+          text: "밤하늘을 바라볼 때 가장 떠오르는 감정은?",
+          options: [
+            { label: "어디선가 누군가를 지켜주고 싶다", trait: "guardian" },
+            { label: "빛의 언어를 더 배우고 싶다", trait: "empath" },
+            { label: "미지의 별들로 뛰어오르고 싶다", trait: "explorer" },
+            { label: "빛을 모아 새로운 형태로 재구성하고 싶다", trait: "alchemist" }
+          ]
+        },
+        {
+          text: "친구가 무거운 하루를 털어놓을 때 나는?",
+          options: [
+            { label: "현실적인 조언과 계획을 제시한다", trait: "guardian" },
+            { label: "감정을 흡수해 대신 울어준다", trait: "empath" },
+            { label: "새로운 경험으로 기분 전환을 제안한다", trait: "explorer" },
+            { label: "작은 선물이나 프로젝트로 변화를 만든다", trait: "alchemist" }
+          ]
+        },
+        {
+          text: "마음이 지칠 때 필요한 것은?",
+          options: [
+            { label: "안전한 공간과 명확한 할일", trait: "guardian" },
+            { label: "깊은 공감과 감정의 배출", trait: "empath" },
+            { label: "낯선 곳으로 잠깐 사라지기", trait: "explorer" },
+            { label: "손으로 만드는 창작 활동", trait: "alchemist" }
+          ]
+        },
+        {
+          text: "오로라 에너지를 색으로 표현하면?",
+          options: [
+            { label: "짙고 안전한 블루", trait: "guardian" },
+            { label: "파스텔 핑크와 라벤더", trait: "empath" },
+            { label: "강렬한 네온 그린", trait: "explorer" },
+            { label: "금빛이 섞인 퍼플", trait: "alchemist" }
+          ]
+        },
+        {
+          text: "내가 가진 빛의 장점은?",
+          options: [
+            { label: "사람들을 보호하는 안정감", trait: "guardian" },
+            { label: "감정을 읽고 보듬는 능력", trait: "empath" },
+            { label: "새로운 길을 밝히는 용기", trait: "explorer" },
+            { label: "빛을 새롭게 조합하는 창의력", trait: "alchemist" }
+          ]
+        },
+        {
+          text: "올해 나에게 필요한 다짐은?",
+          options: [
+            { label: "무너지지 않을 구조를 세우자", trait: "guardian" },
+            { label: "내 마음도 돌보자", trait: "empath" },
+            { label: "미지의 모험을 주저하지 말자", trait: "explorer" },
+            { label: "감각을 깨우는 작품을 남기자", trait: "alchemist" }
+          ]
+        }
+      ],
+      traits: {
+        guardian: {
+          name: "빛의 요새",
+          badge: "안정 · 보호",
+          desc: "당신은 주변의 빛을 안정시키고 지켜주는 오로라 수호자입니다. 계획적인 행동과 신뢰감이 오로라를 더 밝게 만듭니다.",
+          image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=900&q=80",
+          tips: ["모든 책임을 혼자 떠안지 말고 휴식 규칙을 세우세요.", "빛을 나누되 나만의 성역도 지켜보세요."]
+        },
+        empath: {
+          name: "감응의 물결",
+          badge: "공감 · 치유",
+          desc: "섬세한 감각으로 다른 이의 감정을 빛으로 번역하는 타입입니다. 당신의 존재만으로도 주변은 위로를 느낍니다.",
+          image: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=80",
+          tips: ["감정을 너무 오래 붙잡지 말고 종종 비워주세요.", "당신을 비춰주는 거울 같은 사람도 중요합니다."]
+        },
+        explorer: {
+          name: "별빛 개척자",
+          badge: "모험 · 추진",
+          desc: "새로운 길을 열며 오로라를 넓게 퍼뜨리는 타입입니다. 호기심과 용기가 곧 빛의 근원입니다.",
+          image: "https://images.unsplash.com/photo-1470163395405-d2b80e7450ed?auto=format&fit=crop&w=900&q=80",
+          tips: ["도전 후에는 에너지를 충전할 공간을 마련하세요.", "발견한 길을 기록해 두면 다음 빛을 준비하기 쉬워요."]
+        },
+        alchemist: {
+          name: "빛의 연금술사",
+          badge: "창의 · 변환",
+          desc: "빛과 감정을 새로운 형태로 재조합하는 창작형 타입입니다. 아이디어와 손끝에서 독특한 오로라가 탄생합니다.",
+          image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80",
+          tips: ["완벽주의보다 실험 정신을 우선하세요.", "작은 작업이라도 꾸준히 이어가면 큰 작품으로 성장합니다."]
+        }
+      }
+    };
+
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const stepLabel = document.getElementById("stepLabel");
+    const progressEl = document.getElementById("progress");
+    const resultCard = document.getElementById("result");
+    const quizCard = document.getElementById("quiz");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultBadge = document.getElementById("resultBadge");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultImage = document.getElementById("resultImage");
+    const resultTips = document.getElementById("resultTips");
+    const restartBtn = document.getElementById("restartBtn");
+    const prevBtn = document.getElementById("prevBtn");
+
+    let current = 0;
+    const answers = Array(quiz.questions.length).fill(null);
+
+    function renderQuestion() {
+      const q = quiz.questions[current];
+      questionEl.textContent = q.text;
+      stepLabel.textContent = `문항 ${current + 1} / ${quiz.questions.length}`;
+      progressEl.textContent = `${Math.round((current / quiz.questions.length) * 100)}% 완료`;
+      optionsEl.innerHTML = "";
+      q.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-white/20 hover:border-cyan-200 hover:bg-white/10 transition";
+        btn.textContent = opt.label;
+        btn.addEventListener("click", () => handleOption(opt.trait));
+        optionsEl.appendChild(btn);
+      });
+      prevBtn.disabled = current === 0;
+    }
+
+    function handleOption(trait) {
+      answers[current] = trait;
+      if (current === quiz.questions.length - 1) {
+        showResult();
+        return;
+      }
+      current += 1;
+      renderQuestion();
+    }
+
+    function showResult() {
+      const tally = answers.reduce((map, trait) => {
+        if (!trait) return map;
+        map[trait] = (map[trait] || 0) + 1;
+        return map;
+      }, {});
+      let winner = null;
+      Object.keys(tally).forEach(trait => {
+        if (!winner || tally[trait] > tally[winner]) winner = trait;
+      });
+      if (!winner) {
+        resultTitle.textContent = "아직 결과가 없어요";
+        resultDesc.textContent = "모든 문항을 선택하면 결과를 확인할 수 있어요.";
+        return;
+      }
+      const meta = quiz.traits[winner];
+      resultTitle.textContent = meta.name;
+      resultBadge.textContent = meta.badge;
+      resultDesc.textContent = meta.desc;
+      resultImage.src = meta.image;
+      resultImage.alt = meta.name;
+      resultTips.innerHTML = "";
+      meta.tips.forEach(t => {
+        const item = document.createElement("div");
+        item.className = "border border-white/15 rounded-xl px-3 py-2 text-sm text-slate-100";
+        item.textContent = `• ${t}`;
+        resultTips.appendChild(item);
+      });
+      quizCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+      progressEl.textContent = "100% 완료";
+    }
+
+    function goPrev() {
+      if (current === 0) return;
+      current -= 1;
+      renderQuestion();
+    }
+
+    function restart() {
+      for (let i = 0; i < answers.length; i += 1) answers[i] = null;
+      current = 0;
+      quizCard.classList.remove("hidden");
+      resultCard.classList.add("hidden");
+      progressEl.textContent = "0% 완료";
+      renderQuestion();
+    }
+
+    prevBtn.addEventListener("click", goPrev);
+    restartBtn.addEventListener("click", restart);
+
+    renderQuestion();
+  </script>
+</body>
+</html>
