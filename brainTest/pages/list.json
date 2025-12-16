@@ -54,5 +54,12 @@
         "path":  "/brainTest/pages/brainTest/aurora-guardian-test.html",
         "description":  "빛의 에너지로 나의 오로라 수호 타입을 알아보는 6문항 테스트",
         "keywords": ["오로라", "수호자", "에너지", "테스트"]
+    },
+    {
+        "id":  "wiki-profile-test",
+        "title":  "나만의 위키 프로필 테스트",
+        "path":  "/brainTest/pages/brainTest/wiki-profile-test.html",
+        "description":  "7개의 질문으로 나의 위키 기록 성향과 메인 섹션을 알려주는 테스트",
+        "keywords": ["위키", "기록", "성향", "테스트"]
     }
 ]

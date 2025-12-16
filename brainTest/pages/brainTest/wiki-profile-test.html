@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="7개의 질문으로 나만의 위키 페이지를 편집하는 방식과 기록 성향을 알려주는 심리 테스트.">
+  <meta name="keywords" content="위키 테스트, 기록 성향, 심리 테스트, 위키 편집, 성향 테스트">
+  <meta name="author" content="partygame.pe.kr">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/wiki-profile-test.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="나만의 위키 프로필 테스트 | Brain Test">
+  <meta property="og:description" content="당신의 위키 페이지에는 어떤 섹션이 가장 먼저 적힐까요? 7문항으로 알아보는 기록 성향 테스트.">
+  <meta property="og:url" content="https://partygame.pe.kr/brainTest/pages/brainTest/wiki-profile-test.html">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/fox.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="나만의 위키 프로필 테스트 | Brain Test">
+  <meta name="twitter:description" content="실시간 편집 vs 서사 수집? 나만의 위키 스타일을 확인해보세요.">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+          crossorigin="anonymous"></script>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({
+      google_ad_client: "ca-pub-1087435977438565",
+      enable_page_level_ads: true
+    });
+  </script>
+  <title>나만의 위키 프로필 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12">
+    <header class="text-center mb-10 space-y-3">
+      <p class="text-sm uppercase tracking-[0.25em] text-indigo-200">Brain Test</p>
+      <h1 class="text-3xl md:text-4xl font-bold">나만의 위키 프로필 테스트</h1>
+      <p class="text-slate-200">7개의 질문에 답하며 내 위키 페이지 첫 문단을 채워보세요.</p>
+    </header>
+
+    <div class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <div id="progress" class="space-y-3">
+        <div class="flex justify-between text-sm text-indigo-100">
+          <span id="progressLabel">1 / 7</span>
+          <span id="progressPercent">0%</span>
+        </div>
+        <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+          <div id="progressBar" class="h-2 bg-gradient-to-r from-indigo-400 to-cyan-300 w-0"></div>
+        </div>
+      </div>
+
+      <section id="questionCard" class="space-y-4">
+        <div class="text-xs font-semibold text-indigo-100 uppercase tracking-widest" id="stepLabel">문항 1</div>
+        <h2 id="questionText" class="text-xl md:text-2xl font-semibold"></h2>
+        <div class="grid gap-3" id="optionsWrap">
+          <button class="option-btn" data-key="A"></button>
+          <button class="option-btn" data-key="B"></button>
+          <button class="option-btn" data-key="C"></button>
+        </div>
+        <div class="flex justify-between pt-2 text-sm text-slate-200">
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-white/40 hover:bg-white/10 transition disabled:opacity-40 disabled:cursor-not-allowed">이전</button>
+          <button id="skipBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-white/40 hover:bg-white/10 transition">나중에 선택</button>
+        </div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-indigo-100 uppercase tracking-widest">결과</div>
+        <div class="flex flex-col md:flex-row gap-4 md:items-center">
+          <div class="w-full md:w-40">
+            <img id="resultImage" alt="result preview" class="w-full h-40 object-cover rounded-xl border border-white/15 shadow-lg bg-white/10" src="">
+          </div>
+          <div class="flex-1 space-y-2">
+            <h2 class="text-2xl md:text-3xl font-bold" id="resultTitle"></h2>
+            <div id="resultBadges" class="flex flex-wrap gap-2"></div>
+          </div>
+        </div>
+        <p id="resultDesc" class="text-lg text-slate-100 leading-relaxed whitespace-pre-line"></p>
+        <div id="resultCompatibility" class="space-y-3"></div>
+        <button id="restartBtn" class="mt-2 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-500 text-white font-semibold shadow-lg hover:bg-indigo-400 transition">
+          다시 하기
+        </button>
+      </section>
+    </div>
+
+    <footer class="mt-10 text-center text-sm text-indigo-100">
+      Tailwind CDN 기반 단일 페이지 · 선택을 바꾸면 기록 성향도 즉시 다시 계산됩니다.
+    </footer>
+  </div>
+
+  <script>
+    const data = {
+      title: "나만의 위키 프로필 테스트",
+      questions: [
+        { text: "나만의 위키에서 소개 문단을 장식할 첫 줄은?", options: [
+          { key: "A", text: "연도별 변곡점을 정리한 한 문장", trait: "chronicle" },
+          { key: "B", text: "현재 상태를 생중계하는 짧은 속보", trait: "signal" },
+          { key: "C", text: "별명과 밈으로 채운 감성 문장", trait: "lore" },
+        ]},
+        { text: "새 정보를 얻었을 때 기록 방식은?", options: [
+          { key: "A", text: "실험→결론→교훈으로 로그 남기기", trait: "lab" },
+          { key: "B", text: "근거 출처를 대조해 타임라인에 붙임", trait: "chronicle" },
+          { key: "C", text: "메신저로 먼저 공유하고 반응을 수집", trait: "signal" },
+        ]},
+        { text: "사진/이미지 섹션을 고를 때?", options: [
+          { key: "A", text: "스토리를 담은 필름 사진", trait: "lore" },
+          { key: "B", text: "실험실 노트나 스케치", trait: "lab" },
+          { key: "C", text: "연표에 어울리는 도식 이미지", trait: "chronicle" },
+        ]},
+        { text: "위키에 '논란' 항목이 생기면?", options: [
+          { key: "A", text: "사실 확인 후 타임라인을 재정리", trait: "chronicle" },
+          { key: "B", text: "실시간 Q&A를 열어 바로 대응", trait: "signal" },
+          { key: "C", text: "개인적 서사를 덧붙여 톤을 바꾼다", trait: "lore" },
+        ]},
+        { text: "협업 편집자가 합류했다. 당신은?", options: [
+          { key: "A", text: "이슈별 태그 규칙을 만들어 공유", trait: "chronicle" },
+          { key: "B", text: "실험 레포트 템플릿을 배포", trait: "lab" },
+          { key: "C", text: "하이라이트 문장을 짧게 요약해 전달", trait: "signal" },
+        ]},
+        { text: "위키에 색감을 더하고 싶을 때?", options: [
+          { key: "A", text: "사운드, 냄새 등 감각 묘사를 써넣음", trait: "lore" },
+          { key: "B", text: "데이터 시각화와 대시보드를 삽입", trait: "lab" },
+          { key: "C", text: "상황판을 만들어 실시간 수치를 표시", trait: "signal" },
+        ]},
+        { text: "새로운 프로젝트 섹션을 열 때?", options: [
+          { key: "A", text: "실험 가설과 다음 업데이트 체크리스트", trait: "lab" },
+          { key: "B", text: "사람들과의 연결고리와 비하인드", trait: "lore" },
+          { key: "C", text: "최근 사건→앞으로의 단계 순으로 정리", trait: "chronicle" },
+        ]},
+      ],
+      traits: {
+        chronicle: {
+          name: "연대기 큐레이터",
+          tagline: "흐름 정리 · 패턴 추적",
+          image: "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=600&q=80",
+          desc: "변화의 순서를 잡아주는 기록 전문가입니다. 사건을 시간축에 맞춰 정리하며 맥락 속에서 나를 설명합니다. 어떤 정보를 만나도 근거와 출처를 먼저 표시하고, 팀을 위해 기준선을 잡아줍니다.",
+          compatibility: {
+            best: [
+              { trait: "signal", reason: "신호국 타입이 실시간 데이터를 주고, 당신은 골라서 정리합니다." },
+              { trait: "lore", reason: "연대기 위에 이야기가 덧입혀져 완성도가 높아집니다." }
+            ],
+            challenge: [
+              { trait: "lab", reason: "실험적 편집 주기와 정제된 문체 사이 템포 차이가 날 수 있어요." }
+            ]
+          }
+        },
+        signal: {
+          name: "라이브 신호국",
+          tagline: "실시간 · 속보 중심",
+          image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80",
+          desc: "순간의 온도를 포착해 바로 송출하는 정보 중계자입니다. 빠르게 공유하고 반응을 보며 편집 방향을 조정합니다. 실시간 대시보드와 알림을 좋아하며, 빠른 의사결정의 촉매제 역할을 합니다.",
+          compatibility: {
+            best: [
+              { trait: "chronicle", reason: "속보와 정제본이 한 페이지에서 공존해 균형이 잡힙니다." },
+              { trait: "lab", reason: "실험 데이터가 도착하면 즉시 외부에 전파할 수 있습니다." }
+            ],
+            challenge: [
+              { trait: "lore", reason: "정제된 서사를 기다리다가 속도 조절이 어려울 수 있어요." }
+            ]
+          }
+        },
+        lore: {
+          name: "서사 채집가",
+          tagline: "감성 · 비하인드 중심",
+          image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=80",
+          desc: "작은 비유와 비하인드를 모아 위키에 온기를 넣는 타입입니다. 에피소드, 인터뷰, 감각 묘사를 통해 사람 냄새 나는 항목을 만들어내며, 독자가 페이지를 끝까지 읽게 만드는 힘이 있습니다.",
+          compatibility: {
+            best: [
+              { trait: "chronicle", reason: "구조가 잡힌 글에 감성 주석이 붙어 이야기성이 살아납니다." },
+              { trait: "lab", reason: "실험 배경에 서사를 덧붙여 파급력을 크게 합니다." }
+            ],
+            challenge: [
+              { trait: "signal", reason: "새 감정을 정리하기 전에 속보가 올라오면 집중이 흐트러질 수 있어요." }
+            ]
+          }
+        },
+        lab: {
+          name: "실험 데이터 편집자",
+          tagline: "아이디어 · 프로토타입",
+          image: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=600&q=80",
+          desc: "가설을 세우고 실험 기록을 남기는 창의 연구원입니다. 체크리스트, 메트릭, 실험 로그를 위키에 올리며, 끊임없이 페이지를 베타 버전처럼 발전시킵니다. 시도 자체를 즐기는 편입니다.",
+          compatibility: {
+            best: [
+              { trait: "signal", reason: "새 시도를 즉시 배포해 피드백을 받으면 실험 속도가 붙습니다." },
+              { trait: "lore", reason: "실험 배경을 감성적으로 번역해 주어 공감대를 만듭니다." }
+            ],
+            challenge: [
+              { trait: "chronicle", reason: "완벽한 구조를 원하는 파트너에게는 변동 폭이 크게 느껴질 수 있어요." }
+            ]
+          }
+        },
+      }
+    };
+
+    const questionText = document.getElementById("questionText");
+    const stepLabel = document.getElementById("stepLabel");
+    const progressLabel = document.getElementById("progressLabel");
+    const progressPercent = document.getElementById("progressPercent");
+    const progressBar = document.getElementById("progressBar");
+    const optionButtons = Array.from(document.querySelectorAll(".option-btn"));
+    const prevBtn = document.getElementById("prevBtn");
+    const skipBtn = document.getElementById("skipBtn");
+    const questionCard = document.getElementById("questionCard");
+    const resultCard = document.getElementById("resultCard");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultBadges = document.getElementById("resultBadges");
+    const restartBtn = document.getElementById("restartBtn");
+    const resultImage = document.getElementById("resultImage");
+
+    let current = 0;
+    let currentQuestions = data.questions;
+    let traitMeta = data.traits;
+    let answers = new Array(currentQuestions.length).fill(null);
+
+    function renderQuestion() {
+      const q = currentQuestions[current];
+      questionText.textContent = q.text;
+      stepLabel.textContent = `문항 ${current + 1}`;
+      progressLabel.textContent = `${current + 1} / ${currentQuestions.length}`;
+      const percent = Math.round((current / currentQuestions.length) * 100);
+      progressPercent.textContent = `${percent}%`;
+      progressBar.style.width = `${percent}%`;
+
+      optionButtons.forEach((btn, idx) => {
+        const opt = q.options[idx];
+        btn.textContent = `${opt.key}. ${opt.text}`;
+        btn.dataset.trait = opt.trait;
+        btn.dataset.key = opt.key;
+        const isSelected = answers[current]?.key === opt.key;
+        btn.className = `option-btn w-full text-left px-4 py-3 rounded-xl border transition ${
+          isSelected
+            ? "border-indigo-300 bg-white/15 shadow-md"
+            : "border-white/15 hover:border-indigo-200 hover:bg-white/10"
+        }`;
+      });
+
+      prevBtn.disabled = current === 0;
+    }
+
+    function updateTraitQuery(traitKey) {
+      const url = new URL(window.location.href);
+      if (traitKey) {
+        url.searchParams.set("trait", traitKey);
+      } else {
+        url.searchParams.delete("trait");
+      }
+      const next = `${url.pathname}${url.search}${url.hash || ""}`;
+      window.history.replaceState({}, "", next);
+    }
+
+    function renderTraitProfile(traitKey) {
+      const meta = traitMeta[traitKey];
+      if (!meta) return;
+      resultBadges.innerHTML = "";
+      const badge = document.createElement("span");
+      badge.className = "inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm";
+      badge.textContent = `${meta.name} · ${meta.tagline}`;
+      resultBadges.appendChild(badge);
+
+      resultTitle.textContent = `당신의 위키 메인 섹션: ${meta.name}`;
+      resultImage.src = meta.image || "";
+      resultImage.alt = meta.name;
+      resultDesc.textContent = meta.desc;
+      renderCompatibility(meta);
+      progressLabel.textContent = `${currentQuestions.length} / ${currentQuestions.length}`;
+      progressPercent.textContent = "100%";
+      progressBar.style.width = "100%";
+      questionCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+    }
+
+    function showTraitProfile(traitKey) {
+      renderTraitProfile(traitKey);
+      updateTraitQuery(traitKey);
+    }
+
+    function showResult() {
+      const counts = Object.create(null);
+      const tieBreak = Object.create(null);
+      answers.forEach((ans, idx) => {
+        if (!ans) return;
+        counts[ans.trait] = (counts[ans.trait] || 0) + 1;
+        const weight = currentQuestions.length - idx;
+        tieBreak[ans.trait] = (tieBreak[ans.trait] || 0) + weight;
+      });
+      const ranked = Object.keys(counts).sort((a, b) => {
+        if (counts[b] !== counts[a]) return counts[b] - counts[a];
+        return (tieBreak[b] || 0) - (tieBreak[a] || 0);
+      });
+      if (!ranked.length) {
+        resultTitle.textContent = "아직 선택이 없습니다";
+        resultDesc.textContent = "문항을 선택하면 위키 타입을 알려드릴게요.";
+        resultBadges.innerHTML = "";
+        document.getElementById("resultCompatibility").innerHTML = "";
+        return;
+      }
+
+      const primary = ranked[0];
+      showTraitProfile(primary);
+    }
+
+    function renderCompatibility(meta) {
+      const container = document.getElementById("resultCompatibility");
+      if (!meta.compatibility) {
+        container.innerHTML = "";
+        return;
+      }
+      const section = document.createElement("div");
+      section.className = "rounded-2xl bg-white/5 border border-white/10 p-4 space-y-3";
+      const title = document.createElement("div");
+      title.className = "text-sm font-semibold text-indigo-200 tracking-widest uppercase";
+      title.textContent = "궁합 리포트";
+      section.appendChild(title);
+
+      const bestBlock = document.createElement("div");
+      bestBlock.innerHTML = `<p class="text-indigo-100 text-sm mb-2">잘 맞는 타입</p>`;
+      meta.compatibility.best?.forEach(info => {
+        const item = createCompatibilityItem(info);
+        if (item) bestBlock.appendChild(item);
+      });
+      section.appendChild(bestBlock);
+
+      const challengeBlock = document.createElement("div");
+      challengeBlock.innerHTML = `<p class="text-indigo-100 text-sm mb-2">주의할 타입</p>`;
+      meta.compatibility.challenge?.forEach(info => {
+        const item = createCompatibilityItem(info);
+        if (item) challengeBlock.appendChild(item);
+      });
+      section.appendChild(challengeBlock);
+
+      container.innerHTML = "";
+      container.appendChild(section);
+    }
+
+    function createCompatibilityItem(info) {
+      const traitInfo = traitMeta[info.trait];
+      if (!traitInfo) return null;
+      const link = document.createElement("a");
+      link.href = `?trait=${info.trait}#result`;
+      link.className = "flex flex-col gap-1 text-left text-slate-50 text-sm border border-white/15 rounded-xl px-3 py-2 mb-2 hover:border-indigo-200 hover:bg-white/10 transition trait-link";
+      link.innerHTML = `<span class="font-semibold text-indigo-100">${traitInfo.name}</span><span class="text-xs text-slate-200">${info.reason}</span>`;
+      link.addEventListener("click", (evt) => {
+        evt.preventDefault();
+        showTraitProfile(info.trait);
+      });
+      return link;
+    }
+
+    function handleOption(key) {
+      const q = currentQuestions[current];
+      const selected = q.options.find(o => o.key === key);
+      answers[current] = selected;
+
+      if (current === currentQuestions.length - 1) {
+        showResult();
+        return;
+      }
+      current += 1;
+      renderQuestion();
+    }
+
+    function goPrev() {
+      if (current === 0) return;
+      current -= 1;
+      renderQuestion();
+    }
+
+    function skipQuestion() {
+      if (current === currentQuestions.length - 1) {
+        showResult();
+        return;
+      }
+      current += 1;
+      renderQuestion();
+    }
+
+    function restart() {
+      for (let i = 0; i < answers.length; i += 1) answers[i] = null;
+      current = 0;
+      updateTraitQuery(null);
+      resultCard.classList.add("hidden");
+      questionCard.classList.remove("hidden");
+      renderQuestion();
+    }
+
+    optionButtons.forEach(btn => {
+      btn.addEventListener("click", () => handleOption(btn.dataset.key || btn.textContent[0]));
+    });
+    prevBtn.addEventListener("click", goPrev);
+    skipBtn.addEventListener("click", skipQuestion);
+    restartBtn.addEventListener("click", restart);
+
+    renderQuestion();
+    const initialTrait = new URLSearchParams(window.location.search).get("trait");
+    if (initialTrait && traitMeta[initialTrait]) {
+      renderTraitProfile(initialTrait);
+    }
+  </script>
+</body>
+</html>
