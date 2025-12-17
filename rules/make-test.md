@@ -3,6 +3,7 @@
 1. **기본 위치 및 구조**
    - 새 테스트는 모두 `/brainTest/pages/brainTest/`에 HTML 단일 파일로 작성한다.
    - Tailwind CDN 또는 기존 레이아웃을 재사용하고, 질문 흐름과 결과 계산 로직을 포함한다.
+   - `<head>` 영역에는 `<link rel="icon" type="image/x-icon" href="/favicon.ico">` 파비콘 태그를 반드시 추가한다.
 
 2. **목록 및 홈 연동**
    - 테스트를 추가/수정하면 `brainTest/pages/list.json`에 `id`, `title`, `path`, `description`을 반드시 기록한다.
