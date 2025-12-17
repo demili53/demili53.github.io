@@ -241,6 +241,12 @@
     let currentQuestions = data.questions;
     let traitMeta = data.traits;
     let answers = new Array(currentQuestions.length).fill(null);
+    const shareContent = {
+      title: data.title,
+      description: "9개의 질문으로 나와 닮은 동물을 찾아주는 테스트",
+      imageUrl: "https://partygame.pe.kr/brainTest/images/tiger.png",
+      webUrl: "https://partygame.pe.kr/brainTest/pages/brainTest/animal-test.html"
+    };
 
     function renderQuestion() {
       const q = currentQuestions[current];
@@ -291,6 +297,9 @@
       resultImage.alt = meta.name;
       resultDesc.textContent = `• ${meta.name} (${meta.tagline}) — ${meta.desc}`;
       renderCompatibility(meta);
+      shareContent.title = `${meta.name} | 동물 성격 심리 테스트`;
+      shareContent.description = meta.desc;
+      shareContent.imageUrl = meta.image || shareContent.imageUrl;
       progressLabel.textContent = `${currentQuestions.length} / ${currentQuestions.length}`;
       progressPercent.textContent = "100%";
       progressBar.style.width = "100%";
@@ -425,16 +434,10 @@
       renderTraitProfile(initialTrait);
     }
 
-    setupKakaoShare("shareKakaoBtn", {
-      title: data.title,
-      description: "9개의 질문으로 나와 닮은 동물을 찾아주는 테스트",
-      imageUrl: "https://partygame.pe.kr/brainTest/images/tiger.png",
-      webUrl: "https://partygame.pe.kr/brainTest/pages/brainTest/animal-test.html"
-    });
+    setupKakaoShare("shareKakaoBtn", shareContent);
   </script>
 </body>
 </html>
-
 
 
 

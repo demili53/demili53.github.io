@@ -169,6 +169,12 @@
     const resultTips = document.getElementById("resultTips");
     const restartBtn = document.getElementById("restartBtn");
     const prevBtn = document.getElementById("prevBtn");
+    const shareContent = {
+      title: "백룸 생존 유형 테스트",
+      description: "6개의 질문으로 내가 어떤 백룸 생존 유형인지 알아보는 테스트",
+      imageUrl: "https://pixabay.com/get/geb673062d9087f36e1ce00bd58e217cfaa051fef4fcf238df4c022ace3cf68dadd4784f042f9304e4adfba895beae28bd409ea29907d7b0e7512688ac1316652_1280.jpg",
+      webUrl: "https://partygame.pe.kr/brainTest/pages/brainTest/backrooms-survival-test.html"
+    };
 
     let current = 0;
     const answers = Array(quiz.questions.length).fill(null);
@@ -227,6 +233,9 @@
         item.textContent = `• ${t}`;
         resultTips.appendChild(item);
       });
+      shareContent.title = `${meta.name} | 백룸 생존 유형 테스트`;
+      shareContent.description = meta.desc;
+      shareContent.imageUrl = meta.image;
       quizCard.classList.add("hidden");
       resultCard.classList.remove("hidden");
       progressEl.textContent = "100% 완료";
@@ -252,16 +261,10 @@
 
     renderQuestion();
 
-    setupKakaoShare("shareKakaoBtn", {
-      title: "백룸 생존 유형 테스트",
-      description: "6개의 질문으로 내가 어떤 백룸 생존 유형인지 알아보는 테스트",
-      imageUrl: "https://pixabay.com/get/geb673062d9087f36e1ce00bd58e217cfaa051fef4fcf238df4c022ace3cf68dadd4784f042f9304e4adfba895beae28bd409ea29907d7b0e7512688ac1316652_1280.jpg",
-      webUrl: "https://partygame.pe.kr/brainTest/pages/brainTest/backrooms-survival-test.html"
-    });
+    setupKakaoShare("shareKakaoBtn", shareContent);
   </script>
 </body>
 </html>
-
 
 
 

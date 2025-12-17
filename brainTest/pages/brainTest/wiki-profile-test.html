@@ -211,6 +211,12 @@
     const resultBadges = document.getElementById("resultBadges");
     const restartBtn = document.getElementById("restartBtn");
     const resultImage = document.getElementById("resultImage");
+    const shareContent = {
+      title: "나만의 위키 프로필 테스트",
+      description: "7개의 질문으로 나의 위키 기록 성향과 메인 섹션을 알려주는 테스트",
+      imageUrl: "https://pixabay.com/get/g88bd58921afa14cae6e75881883678974c0dde85fa2ab28a3e499c4687c6ed40a044800382bda6d6471455d70f5d5c16bf9bfb5d82ffb704f15f49338c2c4a40_1280.jpg",
+      webUrl: "https://partygame.pe.kr/brainTest/pages/brainTest/wiki-profile-test.html"
+    };
 
     let current = 0;
     let currentQuestions = data.questions;
@@ -267,6 +273,9 @@
       resultImage.alt = meta.name;
       resultDesc.textContent = meta.desc;
       renderCompatibility(meta);
+      shareContent.title = `${meta.name} | 나만의 위키 프로필 테스트`;
+      shareContent.description = meta.desc;
+      shareContent.imageUrl = meta.image || shareContent.imageUrl;
       progressLabel.textContent = `${currentQuestions.length} / ${currentQuestions.length}`;
       progressPercent.textContent = "100%";
       progressBar.style.width = "100%";
@@ -401,16 +410,9 @@
       renderTraitProfile(initialTrait);
     }
 
-    setupKakaoShare("shareKakaoBtn", {
-      title: data.title,
-      description: "7개의 질문으로 나만의 위키 페이지 기록 성향을 알아보는 테스트",
-      imageUrl: "https://partygame.pe.kr/brainTest/images/fox.png",
-      webUrl: "https://partygame.pe.kr/brainTest/pages/brainTest/wiki-profile-test.html"
-    });
+    setupKakaoShare("shareKakaoBtn", shareContent);
   </script>
 </body>
 </html>
-
-
 
 

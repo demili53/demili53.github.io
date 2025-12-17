@@ -172,6 +172,12 @@
     const resultTips = document.getElementById("resultTips");
     const restartBtn = document.getElementById("restartBtn");
     const prevBtn = document.getElementById("prevBtn");
+    const shareContent = {
+      title: "뜨밤 테스트",
+      description: "6개의 질문으로 나의 이불 속 에너지와 뜨밤 무드를 알아보아요.",
+      imageUrl: "https://pixabay.com/get/g81821c7736d84cd7aa8a27f0b1c07369cca6aac5ed49f14d0c11fa26f9b2d19d60e0e42e11c934bcf88783eab01a607df183a198bfaecdb840dfafb69289e217_1280.jpg",
+      webUrl: "https://partygame.pe.kr/brainTest/pages/brainTest/hot-night-test.html"
+    };
 
     let current = 0;
     const answers = Array(quiz.questions.length).fill(null);
@@ -235,6 +241,9 @@
         item.textContent = `• ${t}`;
         resultTips.appendChild(item);
       });
+      shareContent.title = `${meta.name} | 뜨밤 테스트`;
+      shareContent.description = meta.desc;
+      shareContent.imageUrl = meta.image;
 
       quizCard.classList.add("hidden");
       resultCard.classList.remove("hidden");
@@ -261,12 +270,7 @@
 
     renderQuestion();
 
-    setupKakaoShare("shareKakaoBtn", {
-      title: "뜨밤 테스트",
-      description: "6개의 질문으로 나의 이불 속 에너지와 뜨밤 무드를 알아보아요.",
-      imageUrl: "https://pixabay.com/get/g81821c7736d84cd7aa8a27f0b1c07369cca6aac5ed49f14d0c11fa26f9b2d19d60e0e42e11c934bcf88783eab01a607df183a198bfaecdb840dfafb69289e217_1280.jpg",
-      webUrl: "https://partygame.pe.kr/brainTest/pages/brainTest/hot-night-test.html"
-    });
+    setupKakaoShare("shareKakaoBtn", shareContent);
   </script>
 </body>
 </html>

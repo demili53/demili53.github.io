@@ -181,6 +181,12 @@
     const resultTips = document.getElementById("resultTips");
     const restartBtn = document.getElementById("restartBtn");
     const prevBtn = document.getElementById("prevBtn");
+    const shareContent = {
+      title: "내 생에 남은 연애 횟수 테스트",
+      description: "남은 연애 횟수와 연애 스타일을 알아보는 6문항 테스트",
+      imageUrl: "https://pixabay.com/get/gb95ceb15c5c06d3c8bb90b1480feb2b79ae96b86fcdefb35588bddb9193c057bede464e1cae394b223daf1d007b5ac13a117114acc94073da547960f70e00afb_1280.jpg",
+      webUrl: "https://partygame.pe.kr/brainTest/pages/brainTest/love-count-test.html"
+    };
 
     let current = 0;
     const answers = Array(quiz.questions.length).fill(null);
@@ -270,16 +276,9 @@
 
     renderQuestion();
 
-    setupKakaoShare("shareKakaoBtn", {
-      title: "내 생에 남은 연애 횟수 테스트",
-      description: "6개의 질문으로 남은 연애 횟수와 연애 스타일을 전망해 보는 심리 테스트",
-      imageUrl: "https://pixabay.com/get/gb95ceb15c5c06d3c8bb90b1480feb2b79ae96b86fcdefb35588bddb9193c057bede464e1cae394b223daf1d007b5ac13a117114acc94073da547960f70e00afb_1280.jpg",
-      webUrl: "https://partygame.pe.kr/brainTest/pages/brainTest/love-count-test.html"
-    });
+    setupKakaoShare("shareKakaoBtn", shareContent);
   </script>
 </body>
 </html>
-
-
 
 

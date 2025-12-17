@@ -233,6 +233,10 @@
         resultTips.appendChild(item);
       });
 
+      shareContent.title = `${meta.name} | 나만의 외계인 테스트`;
+      shareContent.description = meta.desc;
+      shareContent.imageUrl = meta.image;
+
       quizCard.classList.add("hidden");
       resultCard.classList.remove("hidden");
       progressEl.textContent = "100% 완료";
@@ -258,16 +262,17 @@
 
     renderQuestion();
 
-    setupKakaoShare("shareKakaoBtn", {
+    const shareContent = {
       title: "나만의 외계인 테스트",
       description: "6개의 질문으로 내가 어떤 외계인 타입인지 알아보는 심리 테스트",
       imageUrl: "https://pixabay.com/get/g893cd249d2726993c2072e1923c3e191ef7f39885115f1aea0aea3edddeb31b5b8c78920b09e70973d181aedce078cea2f3c2f1872135a1d21b89ff3eb67aab4_1280.jpg",
       webUrl: "https://partygame.pe.kr/brainTest/pages/brainTest/alien-test.html"
-    });
+    };
+
+    setupKakaoShare("shareKakaoBtn", shareContent);
   </script>
 </body>
 </html>
-
 
 
 

@@ -169,6 +169,12 @@
     const resultTips = document.getElementById("resultTips");
     const restartBtn = document.getElementById("restartBtn");
     const prevBtn = document.getElementById("prevBtn");
+    const shareContent = {
+      title: "별빛 감정 궤도 테스트",
+      description: "감정의 궤도를 별빛 타입으로 알아보는 6문항 테스트",
+      imageUrl: "https://pixabay.com/get/g45da56a2f98fd9313313943f172108b8efdad56c7a23dbd83683de2394c41566c4ed99148808fe628ec65c1a131e5023e73707c106e7530615e0f8c6ebb68581_1280.jpg",
+      webUrl: "https://partygame.pe.kr/brainTest/pages/brainTest/starlit-mood-test.html"
+    };
 
     let current = 0;
     const answers = Array(quiz.questions.length).fill(null);
@@ -227,6 +233,9 @@
         item.textContent = `• ${t}`;
         resultTips.appendChild(item);
       });
+      shareContent.title = `${meta.name} | 별빛 감정 궤도 테스트`;
+      shareContent.description = meta.desc;
+      shareContent.imageUrl = meta.image;
       quizCard.classList.add("hidden");
       resultCard.classList.remove("hidden");
       progressEl.textContent = "100% 완료";
@@ -252,16 +261,8 @@
 
     renderQuestion();
 
-    setupKakaoShare("shareKakaoBtn", {
-      title: "별빛 감정 궤도 테스트",
-      description: "6개의 질문으로 나의 감정 궤도를 별빛으로 표현해 보는 심리 테스트",
-      imageUrl: "https://pixabay.com/get/g45da56a2f98fd9313313943f172108b8efdad56c7a23dbd83683de2394c41566c4ed99148808fe628ec65c1a131e5023e73707c106e7530615e0f8c6ebb68581_1280.jpg",
-      webUrl: "https://partygame.pe.kr/brainTest/pages/brainTest/starlit-mood-test.html"
-    });
+    setupKakaoShare("shareKakaoBtn", shareContent);
   </script>
 </body>
 </html>
-
-
-
 
