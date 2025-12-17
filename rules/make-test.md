@@ -8,6 +8,7 @@
    - 테스트를 추가/수정하면 `brainTest/pages/list.json`에 `id`, `title`, `path`, `description`을 반드시 기록한다.
    - `index.html`의 카드 섹션도 `list.json` 내용과 동일하게 유지한다.
    - 홈으로 이동하는 버튼을 추가한다
+   - sitemap.xml에도 추가한다.
   
 
 3. **콘텐츠 작성 원칙**

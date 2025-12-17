@@ -68,5 +68,12 @@
         "path":  "/brainTest/pages/brainTest/wiki-profile-test.html",
         "description":  "7개의 질문으로 나의 위키 기록 성향과 메인 섹션을 알려주는 테스트",
         "keywords": ["위키", "기록", "성향", "테스트"]
+    },
+    {
+        "id":  "new-year-fortune-test",
+        "title":  "2026 신년 종합 운세 뽑기",
+        "path":  "/brainTest/pages/brainTest/new-year-fortune-test.html",
+        "description":  "붉은 말의 해에 어울리는 운세 타입과 궁합 전략을 알려주는 6문항 테스트",
+        "keywords": ["운세", "신년", "행운", "테스트"]
     }
 ]
