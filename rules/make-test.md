@@ -7,6 +7,7 @@
 2. **목록 및 홈 연동**
    - 테스트를 추가/수정하면 `brainTest/pages/list.json`에 `id`, `title`, `path`, `description`을 반드시 기록한다.
    - `index.html`의 카드 섹션도 `list.json` 내용과 동일하게 유지한다.
+   - 홈으로 이동하는 버튼을 추가한다
   
 
 3. **콘텐츠 작성 원칙**
@@ -19,7 +20,8 @@
    - 결과페이지에는 항상 다른결과와 궁합을 표시하고 해당 결과의 링크도 포함한다.
 
 5. **이미지 사용**
-   - 결과 카드나 대표 이미지는 `https://pixabay.com/api/docs/+` api를 사용해서 적절한 이미지를 사용합니다.
+   - 결과 카드나 대표 이미지는 `https://pixabay.com/api/docs/` api를 사용해서 적절한 이미지를 사용합니다.
+   - api key는 53761312-8e8e82ca5d56622afe4689c50 로 합니다.
 
 6. **광고 스니펫**
    - `<meta name="google-adsense-account" content="ca-pub-1087435977438565">` 메타 태그를 `<head>` 안에 반드시 포함한다.
