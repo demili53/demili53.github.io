@@ -28,7 +28,5 @@
      
 7. **공유 기능**
    - 결과 카드에는 카카오톡 공유 버튼을 필수로 배치한다.
-   - `https://developers.kakao.com/sdk/js/kakao.min.js` 스크립트를 로드하고 `Kakao.init("af0f520240f2c824b721bbd002c45178")` 뒤 `Kakao.Share.sendDefault`를 이용해 현재 테스트 링크를 공유한다.
+   - `https://developers.kakao.com/sdk/js/kakao.min.js` 스크립트를 로드하고 전역에 `window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178"` 값을 지정한 뒤, `Kakao.init("af0f520240f2c824b721bbd002c45178")` → `Kakao.Share.sendDefault` 순으로 현재 테스트 링크를 공유한다.
    - 공유 버튼은 결과 노출 영역 하단에 위치시키고 클릭 시 공유 다이얼로그가 뜨도록 한다.
-
-  

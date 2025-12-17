@@ -80,11 +80,16 @@
     </div>
 
     <footer class="mt-10 text-center text-sm text-indigo-100">
-      Tailwind CDN 기반 단일 페이지 · 선택을 변경하면 즉시 반영됩니다.
     </footer>
   </div>
 
   <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+      window.Kakao.init(window.__KAKAO_APP_KEY__);
+    }
+  </script>
   <script src="/brainTest/scripts/kakao-share.js"></script>
   <script>
     const data = {
@@ -428,7 +433,6 @@
   </script>
 </body>
 </html>
-
 
 
 
