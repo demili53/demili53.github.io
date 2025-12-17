@@ -59,11 +59,16 @@
           </div>
         </div>
         <div id="resultTips" class="space-y-2"></div>
-        <button id="restartBtn" class="mt-2 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 text-white font-semibold shadow-lg hover:bg-emerald-400 transition">다시 시작하기</button>
+        <div class="flex flex-wrap gap-3">
+          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-emerald-300 text-emerald-100 hover:bg-emerald-400/10 transition">카카오톡 공유</button>
+          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 text-white font-semibold shadow-lg hover:bg-emerald-400 transition">다시 시작하기</button>
+        </div>
       </section>
     </main>
   </div>
 
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js" crossorigin="anonymous"></script>
+  <script src="/brainTest/scripts/kakao-share.js"></script>
   <script>
     const quiz = {
       questions: [
@@ -267,6 +272,13 @@
     restartBtn.addEventListener("click", restart);
 
     renderQuestion();
+
+    setupKakaoShare("shareKakaoBtn", {
+      title: "나만의 트리 연애 테스트",
+      description: "6개의 질문으로 나만의 연애 나무 타입을 찾아보는 심리 테스트",
+      imageUrl: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=800&q=80",
+      webUrl: "https://partygame.pe.kr/brainTest/pages/brainTest/tree-test.html"
+    });
   </script>
 </body>
 </html>

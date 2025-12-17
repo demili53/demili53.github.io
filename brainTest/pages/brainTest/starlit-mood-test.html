@@ -59,11 +59,16 @@
           </div>
         </div>
         <div id="resultTips" class="space-y-2"></div>
-        <button id="restartBtn" class="mt-2 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-500 text-white font-semibold shadow-lg hover:bg-purple-400 transition">다시 시작하기</button>
+        <div class="flex flex-wrap gap-3">
+          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-purple-300 text-purple-100 hover:bg-purple-400/10 transition">카카오톡 공유</button>
+          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-500 text-white font-semibold shadow-lg hover:bg-purple-400 transition">다시 시작하기</button>
+        </div>
       </section>
     </main>
   </div>
 
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js" crossorigin="anonymous"></script>
+  <script src="/brainTest/scripts/kakao-share.js"></script>
   <script>
     const quiz = {
       questions: [
@@ -249,6 +254,13 @@
     restartBtn.addEventListener("click", restart);
 
     renderQuestion();
+
+    setupKakaoShare("shareKakaoBtn", {
+      title: "별빛 감정 궤도 테스트",
+      description: "6개의 질문으로 나의 감정 궤도를 별빛으로 표현해 보는 심리 테스트",
+      imageUrl: "https://images.unsplash.com/photo-1470472304068-4398a9daab00?auto=format&fit=crop&w=900&q=80",
+      webUrl: "https://partygame.pe.kr/brainTest/pages/brainTest/starlit-mood-test.html"
+    });
   </script>
 </body>
 </html>
