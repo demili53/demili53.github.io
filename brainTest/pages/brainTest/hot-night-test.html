@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="6개의 질문으로 나의 이불 속 에너지와 뜨밤 무드를 알아보는 심리 테스트">
+  <meta name="keywords" content="뜨밤 테스트, 야간 성향, 뜨밤 심리, 핫 나이트, 연애 테스트">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <meta name="author" content="partygame.pe.kr">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/hot-night-test.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="뜨밤 테스트">
+  <meta property="og:description" content="나의 이불 속 온도와 야간 무드를 알아보는 6문항 테스트">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1497996378524-7c23d24d6971?auto=format&fit=crop&w=900&q=80">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+          crossorigin="anonymous"></script>
+  <title>뜨밤 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-rose-950 via-slate-900 to-black text-rose-50">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.3em] text-rose-200">Hot Night Mood Test</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">뜨밤 테스트</h1>
+      <p class="text-rose-100 leading-relaxed">
+        포근한 이불 속에서 드러나는 나의 밤 무드를 파악해보세요.
+        <a href="/" class="underline text-rose-200 hover:text-rose-100 transition">홈으로 돌아가기</a>
+      </p>
+    </header>
+
+    <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section id="quiz" class="space-y-5">
+        <div id="stepLabel" class="text-xs font-semibold text-rose-100 uppercase tracking-[0.3em]">문항 1 / 6</div>
+        <h2 id="question" class="text-2xl font-semibold"></h2>
+        <div id="options" class="space-y-3"></div>
+        <div class="flex justify-between text-sm text-rose-200">
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-white/40 hover:bg-white/10 transition disabled:opacity-40">이전</button>
+          <span id="progress" class="text-rose-100">0% 완료</span>
+        </div>
+      </section>
+
+      <section id="result" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-rose-100 uppercase tracking-[0.3em]">결과</div>
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="md:w-52 w-full">
+            <img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-52 object-cover" alt="result">
+          </div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm"></div>
+            <p id="resultDesc" class="text-rose-50 leading-relaxed"></p>
+          </div>
+        </div>
+        <div id="resultTips" class="space-y-2"></div>
+        <div class="flex flex-wrap gap-3">
+          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-rose-300 text-rose-100 hover:bg-rose-400/10 transition">카카오톡 공유</button>
+          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-rose-500 text-white font-semibold shadow-lg hover:bg-rose-400 transition">다시 시작하기</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+      window.Kakao.init(window.__KAKAO_APP_KEY__);
+    }
+  </script>
+  <script src="/brainTest/scripts/kakao-share.js"></script>
+  <script>
+    const quiz = {
+      questions: [
+        {
+          text: "밤이 깊어지면 가장 먼저 떠오르는 루틴은?",
+          options: [
+            { label: "차분하게 조명 낮추고 향초 켠다", trait: "ember" },
+            { label: "음악 크게 틀고 춤부터 춘다", trait: "blaze" },
+            { label: "대본처럼 두근거리는 상상을 한다", trait: "spark" },
+            { label: "담요 안에서 잔잔한 대화를 준비한다", trait: "moon" }
+          ]
+        },
+        {
+          text: "이불 속 온도를 결정하는 것은?",
+          options: [
+            { label: "상대방의 리듬을 따라 맞추기", trait: "moon" },
+            { label: "내 직감과 순간 스파크", trait: "spark" },
+            { label: "끓는 듯 몰입되는 에너지", trait: "blaze" },
+            { label: "따뜻하지만 안정적인 스킨십", trait: "ember" }
+          ]
+        },
+        {
+          text: "코끝을 스치는 향에서 가장 설레는 것은?",
+          options: [
+            { label: "달콤한 머스크 향", trait: "spark" },
+            { label: "짙고 묵직한 우드 향", trait: "blaze" },
+            { label: "포근한 솜사탕 향", trait: "ember" },
+            { label: "차분한 허브티 향", trait: "moon" }
+          ]
+        },
+        {
+          text: "뜨거운 밤을 기획한다면?",
+          options: [
+            { label: "즉흥 이벤트로 놀래키기", trait: "spark" },
+            { label: "플레이리스트와 조명까지 직접 셋업", trait: "blaze" },
+            { label: "감각적인 영화와 간식 준비", trait: "ember" },
+            { label: "솔직 토크로 마음 문을 여는 시간", trait: "moon" }
+          ]
+        },
+        {
+          text: "상대가 먼저 다가올 때 나는?",
+          options: [
+            { label: "순간 온도가 확 올라간다", trait: "spark" },
+            { label: "리듬을 주도하며 이끈다", trait: "blaze" },
+            { label: "부드럽게 안아주며 안정감을 준다", trait: "ember" },
+            { label: "눈빛과 속삭임으로 천천히 맞춘다", trait: "moon" }
+          ]
+        },
+        {
+          text: "뜨밤 후 가장 하고 싶은 말은?",
+          options: [
+            { label: "\"우리 다음엔 더 대담하게 가볼까?\"", trait: "blaze" },
+            { label: "\"아까 설렜던 순간 다시 이야기해줘\"", trait: "spark" },
+            { label: "\"따뜻하게 껴안고 그대로 잠들자\"", trait: "ember" },
+            { label: "\"지금 마음을 편하게 나눠볼래?\"", trait: "moon" }
+          ]
+        }
+      ],
+      traits: {
+        blaze: {
+          name: "블레이즈 타입",
+          badge: "불꽃 설계자",
+          desc: "온도를 리드하며 연출하는 걸 즐기는 타입입니다. 기획력과 에너지로 분위기를 순식간에 끓여 올립니다.",
+          image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=900&q=80",
+          tips: ["자극적인 기획 사이에 휴식 구간을 두면 몰입력이 오래갑니다.", "상대의 속도도 존중하면 감정선이 더 단단해져요."]
+        },
+        spark: {
+          name: "스파크 타입",
+          badge: "번뜩이는 즉흥러",
+          desc: "짧고 강렬한 설렘을 즐기는 번개 같은 에너지! 입맞춤 하나에도 스토리를 담아 밤을 반짝이게 만듭니다.",
+          image: "https://images.unsplash.com/photo-1492683574112-9a22f51d1e1f?auto=format&fit=crop&w=900&q=80",
+          tips: ["먼저 입을 열어 감정선을 설명하면 상대가 안심합니다.", "스스로도 충분히 충전할 시간을 챙겨보세요."]
+        },
+        ember: {
+          name: "엠버 타입",
+          badge: "잔열 유지 장인",
+          desc: "포근한 체온과 섬세한 손길로 상대를 감싸는 스타일입니다. 급하지 않게, 하지만 진득한 여운을 남깁니다.",
+          image: "https://images.unsplash.com/photo-1459257868276-5e65389e2722?auto=format&fit=crop&w=900&q=80",
+          tips: ["진심을 말로 표현하면 더 깊은 신뢰가 생겨요.", "나만의 감각을 믿고 스킨십 리듬을 주도해보세요."]
+        },
+        moon: {
+          name: "문드 타입",
+          badge: "감정 소곤대장",
+          desc: "고요한 달빛처럼 마음을 어루만지는 타입으로, 대화와 시선 교환만으로도 온도를 높일 줄 압니다.",
+          image: "https://images.unsplash.com/photo-1470102282808-83dd86c126cc?auto=format&fit=crop&w=900&q=80",
+          tips: ["때론 작은 터치가 긴 대화보다 빠른 신호가 됩니다.", "감정선을 솔직하게 공유하면 더 깊게 연결돼요."]
+        }
+      }
+    };
+
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const stepLabel = document.getElementById("stepLabel");
+    const progressEl = document.getElementById("progress");
+    const resultCard = document.getElementById("result");
+    const quizCard = document.getElementById("quiz");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultBadge = document.getElementById("resultBadge");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultImage = document.getElementById("resultImage");
+    const resultTips = document.getElementById("resultTips");
+    const restartBtn = document.getElementById("restartBtn");
+    const prevBtn = document.getElementById("prevBtn");
+
+    let current = 0;
+    const answers = Array(quiz.questions.length).fill(null);
+
+    function renderQuestion() {
+      const q = quiz.questions[current];
+      questionEl.textContent = q.text;
+      stepLabel.textContent = `문항 ${current + 1} / ${quiz.questions.length}`;
+      progressEl.textContent = `${Math.round((current / quiz.questions.length) * 100)}% 완료`;
+      optionsEl.innerHTML = "";
+
+      q.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-white/20 hover:border-rose-200 hover:bg-white/10 transition";
+        btn.textContent = opt.label;
+        btn.addEventListener("click", () => handleOption(opt.trait));
+        optionsEl.appendChild(btn);
+      });
+
+      prevBtn.disabled = current === 0;
+    }
+
+    function handleOption(trait) {
+      answers[current] = trait;
+      if (current === quiz.questions.length - 1) {
+        showResult();
+        return;
+      }
+      current += 1;
+      renderQuestion();
+    }
+
+    function showResult() {
+      const count = answers.reduce((map, trait) => {
+        if (!trait) return map;
+        map[trait] = (map[trait] || 0) + 1;
+        return map;
+      }, {});
+
+      let winner = null;
+      Object.keys(count).forEach(trait => {
+        if (!winner || count[trait] > count[winner]) winner = trait;
+      });
+
+      if (!winner) {
+        resultTitle.textContent = "아직 결과가 없어요";
+        resultDesc.textContent = "모든 문항을 선택한 뒤 다시 확인해 주세요.";
+        return;
+      }
+
+      const meta = quiz.traits[winner];
+      resultTitle.textContent = meta.name;
+      resultBadge.textContent = meta.badge;
+      resultDesc.textContent = meta.desc;
+      resultImage.src = meta.image;
+      resultImage.alt = meta.name;
+      resultTips.innerHTML = "";
+      meta.tips.forEach(t => {
+        const item = document.createElement("div");
+        item.className = "border border-white/15 rounded-xl px-3 py-2 text-sm text-rose-100";
+        item.textContent = `• ${t}`;
+        resultTips.appendChild(item);
+      });
+
+      quizCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+      progressEl.textContent = "100% 완료";
+    }
+
+    function goPrev() {
+      if (current === 0) return;
+      current -= 1;
+      renderQuestion();
+    }
+
+    function restart() {
+      for (let i = 0; i < answers.length; i += 1) answers[i] = null;
+      current = 0;
+      quizCard.classList.remove("hidden");
+      resultCard.classList.add("hidden");
+      progressEl.textContent = "0% 완료";
+      renderQuestion();
+    }
+
+    prevBtn.addEventListener("click", goPrev);
+    restartBtn.addEventListener("click", restart);
+
+    renderQuestion();
+
+    setupKakaoShare("shareKakaoBtn", {
+      title: "뜨밤 테스트",
+      description: "6개의 질문으로 나의 이불 속 에너지와 뜨밤 무드를 알아보아요.",
+      imageUrl: "https://images.unsplash.com/photo-1497996378524-7c23d24d6971?auto=format&fit=crop&w=900&q=80",
+      webUrl: "https://partygame.pe.kr/brainTest/pages/brainTest/hot-night-test.html"
+    });
+  </script>
+</body>
+</html>

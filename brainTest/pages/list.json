@@ -21,6 +21,13 @@
         "keywords": ["연애", "횟수", "전망", "테스트"]
     },
     {
+        "id":  "hot-night-test",
+        "title":  "뜨밤 테스트",
+        "path":  "/brainTest/pages/brainTest/hot-night-test.html",
+        "description":  "6개의 질문으로 나의 이불 속 에너지와 뜨밤 무드를 알아보는 테스트",
+        "keywords": ["뜨밤", "야간", "연애", "테스트"]
+    },
+    {
         "id":  "alien-test",
         "title":  "나만의 외계인 테스트",
         "path":  "/brainTest/pages/brainTest/alien-test.html",
