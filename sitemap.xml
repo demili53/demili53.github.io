@@ -11,11 +11,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://partygame.pe.kr/brainTest/pages/brainTest/animal-test.html</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://partygame.pe.kr/brainTest/pages/brainTest/tree-test.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -31,6 +26,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://partygame.pe.kr/brainTest/pages/brainTest/new-year-fortune-test.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://partygame.pe.kr/brainTest/pages/brainTest/cosmic-alien-test.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -42,36 +42,6 @@
   </url>
   <url>
     <loc>https://partygame.pe.kr/brainTest/pages/brainTest/dinner-spin-test.html</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://partygame.pe.kr/brainTest/pages/brainTest/alien-test.html</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://partygame.pe.kr/brainTest/pages/brainTest/starlit-mood-test.html</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://partygame.pe.kr/brainTest/pages/brainTest/cute-animal-test.html</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://partygame.pe.kr/brainTest/pages/brainTest/backrooms-survival-test.html</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://partygame.pe.kr/brainTest/pages/brainTest/aurora-guardian-test.html</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://partygame.pe.kr/brainTest/pages/brainTest/wiki-profile-test.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
