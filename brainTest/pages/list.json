@@ -82,5 +82,19 @@
         "path": "/brainTest/pages/brainTest/year-end-summary-test.html",
         "description": "2025년 하이라이트와 루틴을 압축해 내년 전략을 추천하는 6문항 연말 결산 테스트",
         "keywords": ["연말", "결산", "성격", "테스트"]
+    },
+    {
+        "id": "fishbread-test",
+        "title": "따끈따끈 붕어빵 테스트",
+        "path": "/brainTest/pages/brainTest/fishbread-test.html",
+        "description": "붕어빵 취향으로 겨울 페르소나와 궁합을 알아보는 6문항 테스트",
+        "keywords": ["붕어빵", "겨울간식", "음식", "테스트"]
+    },
+    {
+        "id": "hamster-test",
+        "title": "나만의 햄스터 테스트",
+        "path": "/brainTest/pages/brainTest/hamster-test.html",
+        "description": "집콕 루틴과 간식 취향으로 햄스터 페르소나를 찾아보는 6문항 테스트",
+        "keywords": ["햄스터", "동물", "집콕", "테스트"]
     }
 ]

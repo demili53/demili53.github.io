@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="겨울 간식 붕어빵 취향과 성격 루틴을 6문항으로 알아보는 테스트">
+  <meta name="keywords" content="붕어빵 테스트, 겨울 간식 심리, 붕세권, 스트리트 푸드 테스트">
+  <meta name="author" content="partygame.pe.kr">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/fishbread-test.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="따끈따끈 붕어빵 테스트">
+  <meta property="og:description" content="어떤 붕어빵이 당신의 겨울 에너지를 채워줄까? 6문항으로 확인해 보세요.">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/fishbread-og.jpg">
+  <meta property="og:url" content="https://partygame.pe.kr/brainTest/pages/brainTest/fishbread-test.html">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+          crossorigin="anonymous"></script>
+  <title>따끈따끈 붕어빵 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-rose-950 via-amber-950 to-slate-950 text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.35em] text-amber-200">Street Snack Studio</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">따끈따끈 붕어빵 테스트</h1>
+      <p class="text-slate-200">
+        붕어빵 꼬리에 취향이 다 담겨 있다? 6개의 감각 질문으로 올겨울 내 붕어빵 페르소나와 궁합을 확인해 보세요.
+        <a href="/" class="underline text-amber-200 hover:text-amber-100 transition">홈으로 이동</a>
+      </p>
+    </header>
+
+    <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section class="space-y-3">
+        <div class="text-xs font-semibold text-amber-100 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+          <div id="progressBar" class="h-2 bg-gradient-to-r from-amber-300 via-red-300 to-violet-300 w-0 transition-all duration-300"></div>
+        </div>
+        <div class="text-sm text-slate-200 flex justify-between">
+          <span>붕어빵 굽는 중...</span>
+          <span id="progressText">0% 완료</span>
+        </div>
+      </section>
+
+      <section id="quizCard" class="space-y-5">
+        <h2 id="question" class="text-2xl font-semibold"></h2>
+        <div id="options" class="space-y-3"></div>
+        <div class="flex justify-between text-sm text-slate-300">
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-white/40 hover:bg-white/10 transition disabled:opacity-40 disabled:cursor-not-allowed">이전</button>
+          <span class="text-amber-200">뜨거울 때 골라주세요!</span>
+        </div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-amber-100 uppercase tracking-[0.3em]">결과</div>
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="md:w-48 w-full">
+            <img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-48 object-cover bg-white/5" alt="result visual">
+          </div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm"></div>
+            <p id="resultDesc" class="text-slate-100 leading-relaxed"></p>
+          </div>
+        </div>
+        <div id="resultTips" class="grid gap-3"></div>
+        <div id="resultCompatibility"></div>
+        <div class="flex flex-wrap gap-3">
+          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-amber-200 text-amber-100 hover:bg-amber-400/10 transition">카카오톡 공유</button>
+          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500 text-white font-semibold shadow-lg hover:bg-amber-400 transition">다시 시작하기</button>
+          <a href="/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 text-slate-100 hover:bg-white/10 transition">홈으로 이동</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+      window.Kakao.init(window.__KAKAO_APP_KEY__);
+    }
+  </script>
+  <script src="/brainTest/scripts/kakao-share.js"></script>
+  <script>
+    const quiz = {
+      questions: [
+        {
+          text: "붕어빵 줄에 섰을 때 가장 먼저 떠오르는 생각은?",
+          options: [
+            { label: "오늘도 붕세권 유지! 분단위로 잘 굽혔나 체크한다", trait: "classic" },
+            { label: "튀는 토핑 있나? 커스터드/치즈 추가 옵션부터 찾는다", trait: "cream" },
+            { label: "쫀득한 이색 반죽 없나? 떡이나 말차 조합을 기대한다", trait: "mochi" },
+            { label: "일단 사서 친구들과 나눌 생각을 한다", trait: "mood" }
+          ]
+        },
+        {
+          text: "붕어빵 먹는 최애 장소는?",
+          options: [
+            { label: "집 앞, 회사 앞 익숙한 골목", trait: "classic" },
+            { label: "카페나 책방 앞 감성 포토존", trait: "cream" },
+            { label: "먹거리 골목 팝업/축제 현장", trait: "mochi" },
+            { label: "강변/놀이터 등 친구들 모이는 회동 장소", trait: "mood" }
+          ]
+        },
+        {
+          text: "어떤 순간에 붕어빵이 가장 생각나나요?",
+          options: [
+            { label: "퇴근길, 손 시릴 때 자동으로 떠오르는 루틴", trait: "classic" },
+            { label: "금요일 저녁, 달콤한 씨앗으로 기분 전환할 때", trait: "cream" },
+            { label: "새로운 프로젝트 끝나고 나에게 주는 리워드", trait: "mochi" },
+            { label: "따뜻한 위로가 필요한 친구가 있을 때", trait: "mood" }
+          ]
+        },
+        {
+          text: "올겨울 붕어빵 위시리스트는?",
+          options: [
+            { label: "바삭한 꼬리와 꾸덕한 팥 비율 완벽한 집", trait: "classic" },
+            { label: "라떼/밀크티와 어울리는 크림 붕어빵", trait: "cream" },
+            { label: "치즈·말차·흑임자 등 퓨전 트렌드 붕어빵", trait: "mochi" },
+            { label: "친구와 나눠 먹기 좋은 하프 사이즈 세트", trait: "mood" }
+          ]
+        },
+        {
+          text: "붕어빵 굽기 대회를 한다면 나는?",
+          options: [
+            { label: "레시피를 철저히 지키며 비율을 맞춘다", trait: "classic" },
+            { label: "토핑을 아낌없이 넣어 비주얼 승부를 본다", trait: "cream" },
+            { label: "각종 시즈닝과 반죽을 실험하며 즐긴다", trait: "mochi" },
+            { label: "음악과 조명까지 세팅해 축제 분위기를 만든다", trait: "mood" }
+          ]
+        },
+        {
+          text: "2025년 겨울을 보내는 나만의 다짐?",
+          options: [
+            { label: "\"일상 루틴 속 행복을 꾸준히 지키자\"", trait: "classic" },
+            { label: "\"감각적인 취미로 나를 리프레시하자\"", trait: "cream" },
+            { label: "\"새로운 조합을 두려워하지 말자\"", trait: "mochi" },
+            { label: "\"사람들과 따뜻한 순간을 기록하자\"", trait: "mood" }
+          ]
+        }
+      ],
+      traits: {
+        classic: {
+          name: "클래식 팥 꼬리 수호자",
+          tagline: "루틴과 균형을 지키는 정통 붕어빵 러버",
+          desc: "익숙한 골목에서 늘 같은 굽기를 찾는 당신은 꾸준함으로 겨울을 버팁니다. 손이 얼어붙을 듯할 때도 팥 붕어빵 한 입으로 리듬을 되찾죠.",
+          image: "/brainTest/images/fishbread-classic.jpg",
+          tips: [
+            "단골 붕어빵집 리뷰를 남겨 작지만 확실한 공생을 만들어 보세요.",
+            "주말엔 새로운 골목을 탐방해 루틴에 작은 변주를 주면 에너지가 올라갑니다."
+          ],
+          compatibility: {
+            best: [
+              { trait: "cream", reason: "크림 드리머와 함께하면 클래식 맛에 감성 포인트가 더해집니다." },
+              { trait: "mood", reason: "무드 메이커가 가져온 따뜻한 사람들과의 순간에 잘 어울립니다." }
+            ],
+            watch: [
+              { trait: "mochi", reason: "과감한 실험이 과하면 리듬이 깨질 수 있으니 속도를 맞추세요." }
+            ]
+          }
+        },
+        cream: {
+          name: "크림 드리머 파티시에",
+          tagline: "달콤한 비주얼로 겨울을 리프레시하는 타입",
+          desc: "커스터드, 초콜릿, 라떼와 어울리는 조합을 누구보다 빠르게 시도합니다. 감각적인 토핑 덕분에 주변 사람들도 당신을 '겨울 맛집 큐레이터'로 기억하죠.",
+          image: "/brainTest/images/fishbread-cream.jpg",
+          tips: [
+            "새로운 붕어빵을 맛봤다면 레시피를 카드 뉴스처럼 정리해 공유해 보세요.",
+            "단것을 많이 먹었다면 이온음료나 우롱차로 입맛을 재정비하면 더 행복해집니다."
+          ],
+          compatibility: {
+            best: [
+              { trait: "classic", reason: "클래식 수호자가 제공하는 안정감이 크림 드리머의 실험을 지지해요." },
+              { trait: "mochi", reason: "퓨전 마스터와 함께하면 상상도 못한 신상 붕어빵이 탄생합니다." }
+            ],
+            watch: [
+              { trait: "mood", reason: "분위기 담당에게는 과한 디테일보다 스토리가 중요할 수 있어요." }
+            ]
+          }
+        },
+        mochi: {
+          name: "퓨전 모찌 마스터",
+          tagline: "쫀득한 실험으로 붕어빵 판을 뒤흔드는 타입",
+          desc: "치즈, 말차, 흑임자를 붕어빵에 마구 투입하는 과감한 혁신가입니다. 남들과 다른 식감을 탐험하며 새로운 붕어빵 시장을 개척하죠.",
+          image: "/brainTest/images/fishbread-mochi.jpg",
+          tips: [
+            "즉석 믹스를 사서 직접 구워 보면 창의력이 한층 폭발합니다.",
+            "실험 결과를 모아 '붕어빵 레시피 노트'를 만들면 내년 겨울에 더 큰 시도를 할 수 있어요."
+          ],
+          compatibility: {
+            best: [
+              { trait: "cream", reason: "크림 드리머가 모찌 마스터의 실험에 달콤함을 더합니다." },
+              { trait: "mood", reason: "무드 메이커가 사람들을 불러 모아 실험 과정을 즐겁게 만들어 줍니다." }
+            ],
+            watch: [
+              { trait: "classic", reason: "전통파에게 과감한 조합이 부담이 될 수 있으니 배려가 필요해요." }
+            ]
+          }
+        },
+        mood: {
+          name: "무드 시나몬 토퍼",
+          tagline: "사람과 분위기를 먼저 생각하는 겨울 온도조절자",
+          desc: "누구와 먹는지가 중요해 붕어빵을 파티처럼 즐깁니다. 핫팩과 음악까지 챙기며 붕어빵을 감성 에너지로 바꾸죠.",
+          image: "/brainTest/images/fishbread-mood.jpg",
+          tips: [
+            "붕어빵 투어 지도를 만들어 친구들과 공유하면 최고의 겨울 이벤트가 됩니다.",
+            "사진과 음성메모를 함께 남기면 추억 기록이 더 풍성해져요."
+          ],
+          compatibility: {
+            best: [
+              { trait: "classic", reason: "클래식 수호자가 무드 토퍼의 따듯한 시간을 안정적으로 지켜줍니다." },
+              { trait: "mochi", reason: "모찌 마스터의 신상 실험을 무드 토퍼가 스토리텔링해 줍니다." }
+            ],
+            watch: [
+              { trait: "cream", reason: "감각 디테일 논쟁이 길어지면 분위기가 흐려질 수 있으니 적당히 조율하세요." }
+            ]
+          }
+        }
+      }
+    };
+
+    const totalQuestions = quiz.questions.length;
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const quizCard = document.getElementById("quizCard");
+    const resultCard = document.getElementById("resultCard");
+    const stepLabel = document.getElementById("stepLabel");
+    const progressText = document.getElementById("progressText");
+    const progressBar = document.getElementById("progressBar");
+    const prevBtn = document.getElementById("prevBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultBadge = document.getElementById("resultBadge");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultImage = document.getElementById("resultImage");
+    const resultTips = document.getElementById("resultTips");
+    const resultCompatibility = document.getElementById("resultCompatibility");
+
+    const baseShareUrl = `${window.location.origin}${window.location.pathname}`;
+    const shareContent = {
+      title: "따끈따끈 붕어빵 테스트",
+      description: "붕어빵 취향으로 알아보는 당신의 겨울 페르소나!",
+      imageUrl: "https://partygame.pe.kr/brainTest/images/fishbread-og.jpg",
+      webUrl: baseShareUrl
+    };
+    const PARAM_KEY = "result";
+
+    let current = 0;
+    const answers = Array(totalQuestions).fill(null);
+
+    function renderQuestion() {
+      const q = quiz.questions[current];
+      stepLabel.textContent = `문항 ${current + 1} / ${totalQuestions}`;
+      const percent = Math.round((current / totalQuestions) * 100);
+      progressText.textContent = `${percent}% 완료`;
+      progressBar.style.width = `${percent}%`;
+      questionEl.textContent = q.text;
+      optionsEl.innerHTML = "";
+      q.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-white/20 hover:border-amber-300 hover:bg-white/10 transition";
+        btn.textContent = option.label;
+        btn.addEventListener("click", () => handleOption(option.trait));
+        optionsEl.appendChild(btn);
+      });
+      prevBtn.disabled = current === 0;
+    }
+
+    function handleOption(trait) {
+      answers[current] = trait;
+      if (current === totalQuestions - 1) {
+        showResult();
+        return;
+      }
+      current += 1;
+      renderQuestion();
+    }
+
+    function goPrev() {
+      if (current === 0) return;
+      current -= 1;
+      renderQuestion();
+    }
+
+    function restartQuiz() {
+      for (let i = 0; i < answers.length; i += 1) answers[i] = null;
+      current = 0;
+      quizCard.classList.remove("hidden");
+      resultCard.classList.add("hidden");
+      progressText.textContent = "0% 완료";
+      progressBar.style.width = "0%";
+      updateTraitQuery(null);
+      resultCompatibility.innerHTML = "";
+      renderQuestion();
+      window.scrollTo({ top: 0 });
+    }
+
+    function showResult() {
+      const counts = {};
+      const tieBreaker = {};
+      answers.forEach((trait, idx) => {
+        if (!trait) return;
+        counts[trait] = (counts[trait] || 0) + 1;
+        tieBreaker[trait] = (tieBreaker[trait] || 0) + (totalQuestions - idx);
+      });
+      const ranked = Object.keys(counts).sort((a, b) => {
+        if (counts[b] !== counts[a]) return counts[b] - counts[a];
+        return (tieBreaker[b] || 0) - (tieBreaker[a] || 0);
+      });
+      const bestTrait = ranked[0] || Object.keys(quiz.traits)[0];
+      presentResult(bestTrait);
+    }
+
+    function presentResult(traitKey) {
+      const trait = quiz.traits[traitKey];
+      if (!trait) return;
+      quizCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+      progressText.textContent = "100% 완료";
+      progressBar.style.width = "100%";
+      resultTitle.textContent = trait.name;
+      resultBadge.textContent = trait.tagline;
+      resultDesc.textContent = trait.desc;
+      resultImage.src = trait.image;
+      resultImage.alt = trait.name;
+      resultTips.innerHTML = "";
+      trait.tips.forEach(tip => {
+        const card = document.createElement("div");
+        card.className = "rounded-2xl border border-white/15 bg-white/5 p-4 text-sm text-slate-100";
+        card.textContent = tip;
+        resultTips.appendChild(card);
+      });
+
+      renderCompatibilityList(traitKey);
+      updateTraitQuery(traitKey);
+      updateShareMeta(traitKey, trait);
+      window.scrollTo({ top: resultCard.offsetTop - 40, behavior: "smooth" });
+    }
+
+    function renderCompatibilityList(traitKey) {
+      const trait = quiz.traits[traitKey];
+      if (!trait || !trait.compatibility) {
+        resultCompatibility.innerHTML = "";
+        return;
+      }
+      const wrapper = document.createElement("div");
+      wrapper.className = "rounded-2xl border border-white/15 bg-white/5 p-4 space-y-4";
+
+      const title = document.createElement("div");
+      title.className = "text-sm font-semibold text-amber-200 tracking-[0.2em] uppercase";
+      title.textContent = "궁합 리포트";
+      wrapper.appendChild(title);
+
+      if (trait.compatibility.best?.length) {
+        const bestBlock = document.createElement("div");
+        bestBlock.innerHTML = `<p class="text-xs text-emerald-200 mb-2">잘 맞는 타입</p>`;
+        trait.compatibility.best.forEach(item => {
+          const el = createCompatibilityItem(item);
+          if (el) bestBlock.appendChild(el);
+        });
+        wrapper.appendChild(bestBlock);
+      }
+
+      if (trait.compatibility.watch?.length) {
+        const watchBlock = document.createElement("div");
+        watchBlock.innerHTML = `<p class="text-xs text-rose-200 mb-2">주의할 타입</p>`;
+        trait.compatibility.watch.forEach(item => {
+          const el = createCompatibilityItem(item);
+          if (el) watchBlock.appendChild(el);
+        });
+        wrapper.appendChild(watchBlock);
+      }
+
+      resultCompatibility.innerHTML = "";
+      resultCompatibility.appendChild(wrapper);
+    }
+
+    function createCompatibilityItem(info) {
+      const trait = quiz.traits[info.trait];
+      if (!trait) return null;
+      const link = document.createElement("a");
+      link.href = `?${PARAM_KEY}=${info.trait}#result`;
+      link.className = "block rounded-xl border border-white/15 bg-white/5 px-3 py-2 mb-2 text-left text-sm hover:border-amber-200 hover:bg-white/10 transition";
+      link.innerHTML = `<span class="font-semibold text-slate-50">${trait.name}</span><br><span class="text-xs text-slate-300">${info.reason}</span>`;
+      link.addEventListener("click", event => {
+        event.preventDefault();
+        presentResult(info.trait);
+      });
+      return link;
+    }
+
+    function updateTraitQuery(traitKey) {
+      if (!window.history?.replaceState) return;
+      const url = new URL(window.location.href);
+      if (traitKey) {
+        url.searchParams.set(PARAM_KEY, traitKey);
+        url.hash = "result";
+      } else {
+        url.searchParams.delete(PARAM_KEY);
+        url.hash = "";
+      }
+      window.history.replaceState({}, "", url.toString());
+    }
+
+    function updateShareMeta(traitKey, trait) {
+      if (!trait) return;
+      shareContent.title = `${trait.name} | 따끈따끈 붕어빵 테스트`;
+      shareContent.description = trait.desc;
+      shareContent.imageUrl = `https://partygame.pe.kr${trait.image}`;
+      shareContent.webUrl = traitKey ? `${baseShareUrl}?${PARAM_KEY}=${traitKey}#result` : baseShareUrl;
+    }
+
+    prevBtn.addEventListener("click", goPrev);
+    restartBtn.addEventListener("click", restartQuiz);
+
+    renderQuestion();
+
+    const initialTrait = new URLSearchParams(window.location.search).get(PARAM_KEY);
+    if (initialTrait && quiz.traits[initialTrait]) {
+      presentResult(initialTrait);
+    }
+
+    setupKakaoShare("shareKakaoBtn", shareContent);
+  </script>
+</body>
+</html>
