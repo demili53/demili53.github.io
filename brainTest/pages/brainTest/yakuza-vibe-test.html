@@ -12,7 +12,7 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="야쿠자 무드 테스트">
   <meta property="og:description" content="6개의 질문으로 나의 야쿠자 감성과 팀 케미 유닛을 알아보는 테스트">
-  <meta property="og:image" content="https://pixabay.com/get/g216b3c6ee88b43d636c3aea09da12b74e9dc76436555ee368d386c6ffc85b795eb711916ff788078a19cadc4fc5a36122da623b9c0961f3d591b4c274644bea7_1280.jpg">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/yakuza-og.jpg">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
           crossorigin="anonymous"></script>
   <title>야쿠자 무드 테스트</title>
@@ -140,7 +140,7 @@
           name: "네온 스파크 보스",
           badge: "번쩍 · 카리스마",
           desc: "당신은 한마디로 조직의 휘황찬란한 간판. 감정선을 읽고 분위기를 장악하는 능력이 뛰어나 긴급한 상황에서도 모두가 당신만 바라봅니다.",
-          image: "https://pixabay.com/get/g216b3c6ee88b43d636c3aea09da12b74e9dc76436555ee368d386c6ffc85b795eb711916ff788078a19cadc4fc5a36122da623b9c0961f3d591b4c274644bea7_1280.jpg",
+          image: "/brainTest/images/yakuza-neon.jpg",
           tips: [
             "광채에 속마음을 숨기지 말고 솔직한 피드백을 구해보세요.",
             "자신의 휴식 루틴을 공개하면 팀이 더 안심합니다."
@@ -154,7 +154,7 @@
           name: "실크타이 전략가",
           badge: "정교 · 계산형",
           desc: "차분한 필기와 정리력으로 판을 설계합니다. 리스크를 예측해 차분히 대응하며, 조직의 뒷골목까지 머릿속 지도로 정리해 두는 타입.",
-          image: "https://pixabay.com/get/g1954d60dcbb44d6b45fce0ec565afb62c2fc5d33478835c620b4ac6a17cbaf9f0a6cb3fda46a893cce3d0bdc6844ccea90bcd554a92bff60a67d0e11017cc02f_1280.jpg",
+          image: "/brainTest/images/yakuza-silk.jpg",
           tips: [
             "완벽주의 대신 ‘임시판’을 허용하면 속도가 붙습니다.",
             " 리더 계획을 공유할 때 감정의 목적도 함께 적어보세요."
@@ -168,7 +168,7 @@
           name: "거리 신호국",
           badge: "정보 · 순발형",
           desc: "소문의 흐름과 위험 신호를 가장 먼저 포착합니다. 당신 덕분에 팀은 항상 두 발짝 앞서 움직이며 예상치 못한 기회를 잡습니다.",
-          image: "https://pixabay.com/get/gfcecb9a02a23fd11cc1c6d65850b897b7dd04600dee46d3b6de4ed14352dc82fd4aa48fcebca60dbeec33560dcc13077b0e0fb30d98cdee27fbc418b453f02d2_1280.jpg",
+          image: "/brainTest/images/yakuza-signal.jpg",
           tips: [
             "정보를 모으는 속도만큼 휴식 타이밍도 기록하세요.",
             "나만 알고 있는 팁을 문서로 남기면 책임감이 덜어집니다."
@@ -182,7 +182,7 @@
           name: "철혈 실험러",
           badge: "혁신 · 돌파형",
           desc: "미지의 아이디어를 바로 실행해 보는 타입. 실패를 두려워하지 않고 새로운 장비나 루틴으로 조직의 미래를 여는 역할을 합니다.",
-          image: "https://pixabay.com/get/g1bc263379042cea65a06a0821e0eb852debfae09fff31b7af1dace37dfe3c618b909ecb05cb3df5b227c949ce78ed905ff03f9cd8550d13b95c70eda24cc0a5a_1280.jpg",
+          image: "/brainTest/images/yakuza-lab.jpg",
           tips: [
             "실험 결과를 기록하고 공유하면 신뢰가 높아집니다.",
             "돌파 직후엔 팀과 감정을 나누는 시간을 갖는 게 좋아요."
@@ -213,7 +213,7 @@
     const shareContent = {
       title: "야쿠자 무드 테스트",
       description: "밤거리 감성으로 알아보는 나만의 조직 스타일",
-      imageUrl: "https://pixabay.com/get/g216b3c6ee88b43d636c3aea09da12b74e9dc76436555ee368d386c6ffc85b795eb711916ff788078a19cadc4fc5a36122da623b9c0961f3d591b4c274644bea7_1280.jpg",
+      imageUrl: "https://partygame.pe.kr/brainTest/images/yakuza-og.jpg",
       webUrl: `${window.location.origin}${window.location.pathname}`
     };
     const PARAM_KEY = "result";
@@ -270,6 +270,7 @@
 
     function applyResult(trait) {
       const meta = quiz.traits[trait];
+      const resolvedImage = meta.image.startsWith("http") ? meta.image : `${window.location.origin}${meta.image}`;
       resultTitle.textContent = meta.name;
       resultBadge.textContent = meta.badge;
       resultDesc.textContent = meta.desc;
@@ -286,7 +287,7 @@
       updateResultParam(trait);
       shareContent.title = `${meta.name} | 야쿠자 무드 테스트`;
       shareContent.description = meta.desc;
-      shareContent.imageUrl = meta.image;
+      shareContent.imageUrl = resolvedImage;
       shareContent.webUrl = `${window.location.origin}${window.location.pathname}?${PARAM_KEY}=${trait}#result`;
 
       quizCard.classList.add("hidden");
