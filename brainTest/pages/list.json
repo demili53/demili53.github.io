@@ -14,6 +14,13 @@
         "keywords": ["연애", "나무", "감성", "테스트"]
     },
     {
+        "id": "yakuza-vibe-test",
+        "title": "야쿠자 무드 테스트",
+        "path": "/brainTest/pages/brainTest/yakuza-vibe-test.html",
+        "description": "6개의 질문으로 나의 야쿠자 감성과 리더십 스타일을 알아보는 테스트",
+        "keywords": ["야쿠자", "무드", "리더십", "테스트"]
+    },
+    {
         "id":  "love-count-test",
         "title":  "내 생에 남은 연애 횟수 테스트",
         "path":  "/brainTest/pages/brainTest/love-count-test.html",

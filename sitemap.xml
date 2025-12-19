@@ -21,6 +21,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://partygame.pe.kr/brainTest/pages/brainTest/yakuza-vibe-test.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://partygame.pe.kr/brainTest/pages/brainTest/love-count-test.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

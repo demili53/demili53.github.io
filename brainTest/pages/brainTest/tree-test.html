@@ -50,6 +50,13 @@
           </div>
         </div>
         <div id="resultTips" class="space-y-2"></div>
+        <div class="space-y-2 bg-white/5 border border-white/10 rounded-2xl p-4">
+          <h3 class="text-lg font-semibold text-amber-200">테스트 내 궁합</h3>
+          <div class="flex flex-col gap-2 text-sm">
+            <a id="bestLink" class="inline-flex items-center gap-2 text-slate-100 underline underline-offset-4 hover:text-emerald-200" href="#">최고 궁합 결과 보기</a>
+            <a id="worstLink" class="inline-flex items-center gap-2 text-slate-300 underline underline-offset-4 hover:text-rose-200" href="#">주의 궁합 결과 보기</a>
+          </div>
+        </div>
         <div class="flex flex-wrap gap-3">
           <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-emerald-300 text-emerald-100 hover:bg-emerald-400/10 transition">카카오톡 공유</button>
           <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 text-white font-semibold shadow-lg hover:bg-emerald-400 transition">다시 시작하기</button>
@@ -134,7 +141,11 @@
           tips: [
             "때로는 감정을 더 선명하게 표현해 주세요.",
             "당신의 꾸준함은 최고의 매력입니다."
-          ]
+          ],
+          compatibility: {
+            best: { trait: "cherry", reason: "벚꽃나무의 설렘이 전나무의 안정감을 화사하게 밝혀줘요." },
+            watch: { trait: "cactus", reason: "즉흥적인 선인장을 따라가기엔 휴식이 먼저 필요할 수 있어요." }
+          }
         },
         cherry: {
           name: "벚꽃나무",
@@ -144,7 +155,11 @@
           tips: [
             "감정 기복이 클 땐 충분한 휴식이 필요해요.",
             "설렘과 현실의 균형을 맞추면 더욱 빛납니다."
-          ]
+          ],
+          compatibility: {
+            best: { trait: "birch", reason: "자작나무의 담백함 덕분에 감성이 안정적으로 빛납니다." },
+            watch: { trait: "evergreen", reason: "꾸준함이 때로는 답답하게 느껴질 수 있어요." }
+          }
         },
         birch: {
           name: "하얀 자작나무",
@@ -154,7 +169,11 @@
           tips: [
             "감정을 숨기지 말고 조금 더 보여주세요.",
             "체크리스트보다 마음을 따라가는 날도 필요합니다."
-          ]
+          ],
+          compatibility: {
+            best: { trait: "evergreen", reason: "두 나무 모두 근성과 믿음으로 관계를 단단히 지켜요." },
+            watch: { trait: "cherry", reason: "벚꽃의 감정 파동이 조용한 자작나무에겐 버거울 수 있어요." }
+          }
         },
         cactus: {
           name: "사막의 선인장",
@@ -164,7 +183,11 @@
           tips: [
             "때로는 리듬을 늦추고 상대의 속도를 기다려 주세요.",
             "감정을 쌓아두면 폭발할 수 있으니 조금씩 나눠요."
-          ]
+          ],
+          compatibility: {
+            best: { trait: "birch", reason: "자작나무의 균형감이 선인장의 열정을 든든하게 지지해줘요." },
+            watch: { trait: "evergreen", reason: "꾸준함과 즉흥성의 간극을 좁히려면 대화가 필요해요." }
+          }
         }
       }
     };
@@ -180,14 +203,17 @@
     const resultDesc = document.getElementById("resultDesc");
     const resultImage = document.getElementById("resultImage");
     const resultTips = document.getElementById("resultTips");
+    const bestLink = document.getElementById("bestLink");
+    const worstLink = document.getElementById("worstLink");
     const restartBtn = document.getElementById("restartBtn");
     const prevBtn = document.getElementById("prevBtn");
     const shareContent = {
       title: "나만의 트리 연애 테스트",
       description: "6개의 질문으로 나만의 연애 나무 타입을 찾아보는 심리 테스트",
       imageUrl: "https://pixabay.com/get/g36bdd9bdc349d208a6bbb6b4e79c395759e09c5277147e790a8d83d284b9f2732fdb8666b6ccfbaf84042e7c111211f40cd547dfc0ddf9220d3e161890d21556_1280.jpg",
-      webUrl: "https://partygame.pe.kr/brainTest/pages/brainTest/tree-test.html"
+      webUrl: `${window.location.origin}${window.location.pathname}`
     };
+    const PARAM_KEY = "result";
 
     let current = 0;
     const answers = Array(quiz.questions.length).fill(null);
@@ -196,22 +222,22 @@
       const q = quiz.questions[current];
       questionEl.textContent = q.text;
       stepLabel.textContent = `문항 ${current + 1} / ${quiz.questions.length}`;
-      progressEl.textContent = `${Math.round(((current) / quiz.questions.length) * 100)}% 완료`;
+      progressEl.textContent = `${Math.round((current / quiz.questions.length) * 100)}% 완료`;
 
       optionsEl.innerHTML = "";
       q.options.forEach(opt => {
         const btn = document.createElement("button");
         btn.className = "w-full text-left px-4 py-3 rounded-xl border border-white/20 hover:border-emerald-200 hover:bg-white/10 transition";
         btn.textContent = opt.label;
-        btn.addEventListener("click", () => handleOption(opt));
+        btn.addEventListener("click", () => handleOption(opt.trait));
         optionsEl.appendChild(btn);
       });
 
       prevBtn.disabled = current === 0;
     }
 
-    function handleOption(option) {
-      answers[current] = option.trait;
+    function handleOption(trait) {
+      answers[current] = trait;
       if (current === quiz.questions.length - 1) {
         showResult();
         return;
@@ -220,25 +246,31 @@
       renderQuestion();
     }
 
-    function showResult() {
+    function determineWinner() {
       const tally = answers.reduce((map, trait) => {
         if (!trait) return map;
         map[trait] = (map[trait] || 0) + 1;
         return map;
       }, {});
-
       let winner = null;
       Object.keys(tally).forEach(trait => {
         if (!winner || tally[trait] > tally[winner]) winner = trait;
       });
+      return winner;
+    }
 
-      if (!winner) {
+    function showResult(traitKey) {
+      const winner = traitKey || determineWinner();
+      if (!winner || !quiz.traits[winner]) {
         resultTitle.textContent = "아직 선택이 부족해요";
-        resultDesc.textContent = "모든 문항을 답하면 결과를 볼 수 있어요.";
+        resultDesc.textContent = "문항을 모두 선택하면 결과를 볼 수 있어요.";
         return;
       }
+      applyResult(winner);
+    }
 
-      const meta = quiz.traits[winner];
+    function applyResult(trait) {
+      const meta = quiz.traits[trait];
       resultTitle.textContent = meta.name;
       resultBadge.textContent = meta.tagline;
       resultDesc.textContent = meta.desc;
@@ -251,9 +283,12 @@
         item.textContent = `• ${t}`;
         resultTips.appendChild(item);
       });
+      updateRelationLinks(trait);
+      updateResultParam(trait);
       shareContent.title = `${meta.name} | 나만의 트리 연애 테스트`;
       shareContent.description = meta.desc;
       shareContent.imageUrl = meta.image;
+      shareContent.webUrl = `${window.location.origin}${window.location.pathname}?${PARAM_KEY}=${trait}#result`;
 
       quizCard.classList.add("hidden");
       resultCard.classList.remove("hidden");
@@ -272,13 +307,74 @@
       quizCard.classList.remove("hidden");
       resultCard.classList.add("hidden");
       progressEl.textContent = "0% 완료";
+      updateResultParam(null);
       renderQuestion();
+    }
+
+    function updateResultParam(trait) {
+      const url = new URL(window.location.href);
+      if (trait) {
+        url.searchParams.set(PARAM_KEY, trait);
+        url.hash = "result";
+      } else {
+        url.searchParams.delete(PARAM_KEY);
+        url.hash = "";
+      }
+      window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+    }
+
+    function updateRelationLinks(trait) {
+      const info = quiz.traits[trait]?.compatibility || {};
+      setRelationLink(bestLink, info.best, "최고 궁합", trait);
+      setRelationLink(worstLink, info.watch, "주의 궁합", trait);
+    }
+
+    function setRelationLink(element, detail, label, sourceTrait) {
+      if (!detail || !detail.trait || !quiz.traits[detail.trait]) {
+        element.classList.add("hidden");
+        element.removeAttribute("href");
+        element.removeAttribute("data-trait");
+        element.textContent = "";
+        return;
+      }
+      const target = quiz.traits[detail.trait];
+      const reason = detail.reason || relationFallbackReason(label, sourceTrait, detail.trait);
+      element.classList.remove("hidden");
+      element.dataset.trait = detail.trait;
+      element.textContent = `${label} · ${target.name} – ${reason}`;
+      element.href = `${window.location.pathname}?${PARAM_KEY}=${detail.trait}#result`;
+    }
+
+    function relationFallbackReason(type, sourceTrait, targetTrait) {
+      const source = quiz.traits[sourceTrait];
+      const target = quiz.traits[targetTrait];
+      if (!source || !target) {
+        return type === "최고 궁합" ? "서로의 분위기가 자연스럽게 어울려요." : "감정 속도가 달라 조율이 필요해요.";
+      }
+      if (type === "최고 궁합") {
+        return `${target.tagline} 감각이 ${source.tagline}과 시너지를 만듭니다.`;
+      }
+      return `${target.name}의 리듬과 ${source.name}이 엇갈릴 수 있어요.`;
+    }
+
+    function handleRelationClick(event) {
+      const trait = event.currentTarget.dataset.trait;
+      if (!trait || !quiz.traits[trait]) return;
+      event.preventDefault();
+      applyResult(trait);
+      window.scrollTo({ top: resultCard.offsetTop - 40, behavior: "smooth" });
     }
 
     prevBtn.addEventListener("click", goPrev);
     restartBtn.addEventListener("click", restart);
+    bestLink.addEventListener("click", handleRelationClick);
+    worstLink.addEventListener("click", handleRelationClick);
 
     renderQuestion();
+    const initialResult = new URLSearchParams(window.location.search).get(PARAM_KEY);
+    if (initialResult && quiz.traits[initialResult]) {
+      applyResult(initialResult);
+    }
 
     setupKakaoShare("shareKakaoBtn", shareContent);
   </script>
