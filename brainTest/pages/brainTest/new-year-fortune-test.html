@@ -61,6 +61,13 @@
           </div>
         </div>
         <div id="resultTips" class="grid gap-3"></div>
+        <div class="space-y-2 bg-white/5 border border-white/10 rounded-2xl p-4">
+          <h3 class="text-lg font-semibold text-amber-200">테스트 내 궁합</h3>
+          <div class="flex flex-col gap-2 text-sm">
+            <a id="bestLink" class="inline-flex items-center gap-2 text-slate-100 underline underline-offset-4 hover:text-amber-200" href="#">최고 궁합 결과 보기</a>
+            <a id="worstLink" class="inline-flex items-center gap-2 text-slate-300 underline underline-offset-4 hover:text-rose-200" href="#">주의 궁합 결과 보기</a>
+          </div>
+        </div>
         <div id="resultCompatibility"></div>
         <div class="flex flex-wrap gap-3">
           <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-amber-300 text-amber-100 hover:bg-amber-400/10 transition">카카오톡 공유</button>
@@ -233,13 +240,17 @@
     const resultImage = document.getElementById("resultImage");
     const resultTips = document.getElementById("resultTips");
     const resultCompatibility = document.getElementById("resultCompatibility");
+    const bestLink = document.getElementById("bestLink");
+    const worstLink = document.getElementById("worstLink");
 
+    const baseShareUrl = `${window.location.origin}${window.location.pathname}`;
     const shareContent = {
       title: "2026 신년 종합 운세 뽑기",
       description: "붉은 말의 해 에너지와 어울리는 나의 운세 타입을 6문항으로 확인하세요!",
       imageUrl: "https://pixabay.com/get/ge6808d7a4f3e1f34bf2bf75b18f12392b919b3176378ad8a21917263b975bd0361c22680c0b57a87913584c8a6ae73db2e14b1b2e140a200602334e24e939980_1280.jpg",
-      webUrl: "https://partygame.pe.kr/brainTest/pages/brainTest/new-year-fortune-test.html"
+      webUrl: baseShareUrl
     };
+    const PARAM_KEY = "trait";
 
     let current = 0;
     const answers = Array(totalQuestions).fill(null);
@@ -284,6 +295,7 @@
       quizSection.classList.remove("hidden");
       resultSection.classList.add("hidden");
       updateTraitQuery(null);
+      updateRelationLinks(null);
       renderQuestion();
       window.scrollTo({ top: 0 });
     }
@@ -313,6 +325,8 @@
       if (!trait) return;
       quizSection.classList.add("hidden");
       resultSection.classList.remove("hidden");
+      progressText.textContent = "100% 완료";
+      progressBar.style.width = "100%";
       resultTitle.textContent = trait.title;
       resultBadge.textContent = trait.badge;
       resultDesc.textContent = trait.desc;
@@ -327,8 +341,10 @@
         resultTips.appendChild(card);
       });
 
+      updateRelationLinks(traitKey);
       renderCompatibility(traitKey);
       updateTraitQuery(traitKey);
+      updateShareMeta(traitKey, trait);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
@@ -369,11 +385,72 @@
       resultCompatibility.appendChild(section);
     }
 
+    function updateRelationLinks(traitKey) {
+      const compat = traitKey ? (quiz.results[traitKey]?.compatibility || {}) : {};
+      setRelationLink(bestLink, pickRelationDetail(compat.best), "최고 궁합", traitKey);
+      setRelationLink(worstLink, pickRelationDetail(compat.watch), "주의 궁합", traitKey);
+    }
+
+    function pickRelationDetail(detail) {
+      if (!detail) return null;
+      if (Array.isArray(detail)) return detail[0] || null;
+      return detail;
+    }
+
+    function setRelationLink(element, detail, label, sourceTrait) {
+      if (!element) return;
+      if (!detail || !detail.trait || !quiz.results[detail.trait]) {
+        element.classList.add("hidden");
+        element.removeAttribute("href");
+        element.removeAttribute("data-trait");
+        element.textContent = `${label} 결과 보기`;
+        return;
+      }
+      const target = quiz.results[detail.trait];
+      const reason = detail.reason || relationFallbackReason(label, sourceTrait, detail.trait);
+      element.classList.remove("hidden");
+      element.dataset.trait = detail.trait;
+      element.textContent = `${label} · ${target.title} – ${reason}`;
+      element.href = `${window.location.pathname}?${PARAM_KEY}=${detail.trait}#result`;
+    }
+
+    function relationFallbackReason(type, sourceTrait, targetTrait) {
+      const source = quiz.results[sourceTrait];
+      const target = quiz.results[targetTrait];
+      if (!source || !target) {
+        return type === "최고 궁합"
+          ? "에너지가 자연스럽게 맞물립니다."
+          : "리듬 차이가 있어 호흡을 맞출 필요가 있어요.";
+      }
+      if (type === "최고 궁합") {
+        return `${target.badge} 기운이 ${source.badge} 흐름을 보완합니다.`;
+      }
+      return `${target.title}의 페이스가 ${source.title}과 엇갈릴 수 있어요.`;
+    }
+
+    function handleRelationClick(event) {
+      const trait = event.currentTarget?.dataset?.trait;
+      if (!trait || !quiz.results[trait]) return;
+      event.preventDefault();
+      presentResult(trait);
+      window.scrollTo({ top: resultSection.offsetTop - 40, behavior: "smooth" });
+    }
+
+    function updateShareMeta(traitKey, trait) {
+      if (!trait) return;
+      shareContent.title = `${trait.title} | 2026 신년 종합 운세 뽑기`;
+      shareContent.description = trait.desc;
+      shareContent.imageUrl = trait.image;
+      shareContent.webUrl = traitKey
+        ? `${baseShareUrl}?${PARAM_KEY}=${traitKey}#result`
+        : baseShareUrl;
+    }
+
     function createCompatibilityItem(info) {
       const trait = quiz.results[info.trait];
       if (!trait) return null;
       const link = document.createElement("a");
-      link.href = `?trait=${info.trait}#result`;
+      link.href = `?${PARAM_KEY}=${info.trait}#result`;
       link.className = "block rounded-xl border border-white/15 bg-white/5 px-3 py-2 mb-2 text-left text-sm hover:border-amber-200 hover:bg-white/10 transition";
       link.innerHTML = `<span class="font-semibold text-slate-50">${trait.title}</span><br><span class="text-xs text-slate-300">${info.reason}</span>`;
       link.addEventListener("click", event => {
@@ -387,10 +464,10 @@
       if (!window.history?.replaceState) return;
       const url = new URL(window.location.href);
       if (traitKey) {
-        url.searchParams.set("trait", traitKey);
+        url.searchParams.set(PARAM_KEY, traitKey);
         url.hash = "result";
       } else {
-        url.searchParams.delete("trait");
+        url.searchParams.delete(PARAM_KEY);
         url.hash = "";
       }
       window.history.replaceState({}, "", url.toString());
@@ -398,10 +475,12 @@
 
     prevBtn.addEventListener("click", goPrev);
     restartBtn.addEventListener("click", restartQuiz);
+    if (bestLink) bestLink.addEventListener("click", handleRelationClick);
+    if (worstLink) worstLink.addEventListener("click", handleRelationClick);
 
     renderQuestion();
 
-    const initialTrait = new URLSearchParams(window.location.search).get("trait");
+    const initialTrait = new URLSearchParams(window.location.search).get(PARAM_KEY);
     if (initialTrait && quiz.results[initialTrait]) {
       presentResult(initialTrait);
     }

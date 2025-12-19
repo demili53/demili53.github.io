@@ -28,6 +28,27 @@
         "keywords": ["연애", "횟수", "전망", "테스트"]
     },
     {
+        "id": "cosmic-alien-test",
+        "title": "코스믹 외계 본능 테스트",
+        "path": "/brainTest/pages/brainTest/cosmic-alien-test.html",
+        "description": "지구에 불시착한 외계 본능을 6문항으로 확인하는 테스트",
+        "keywords": ["외계인", "우주", "감성", "테스트"]
+    },
+    {
+        "id": "all-season-tree-test",
+        "title": "올인원 트리 꾸미기 테스트",
+        "path": "/brainTest/pages/brainTest/all-season-tree-test.html",
+        "description": "나만의 트리 감성과 장식 스타일을 6문항으로 알아보는 테스트",
+        "keywords": ["트리", "크리스마스", "장식", "테스트"]
+    },
+    {
+        "id": "dinner-spin-test",
+        "title": "오늘의 저메추 스핀 테스트",
+        "path": "/brainTest/pages/brainTest/dinner-spin-test.html",
+        "description": "입맛 시그널로 오늘 먹으면 행복한 저녁 메뉴를 골라주는 6문항 테스트",
+        "keywords": ["저메추", "음식", "저녁", "테스트"]
+    },
+    {
         "id":  "hot-night-test",
         "title":  "뜨밤 테스트",
         "path":  "/brainTest/pages/brainTest/hot-night-test.html",
