@@ -23,9 +23,9 @@
    - 결과페이지에는 항상 결과의 궁합을 표시하고 해당 결과의 링크도 포함한다.
 
 5. **이미지 사용**
-   - /brainTest/images 폴더에 적절한 이미지가 있을경우 해당 이미지를 사용합니다. 적절한 결과이미지가 없는경우  `https://pixabay.com/api/docs/` api를 사용해서 적절한 이미지를 사용합니다.
+   - /brainTest/images 폴더에 적절한 이미지가 있을경우 해당 이미지를 사용합니다. 적절한 결과이미지가 없는경우  `https://pixabay.com/api/docs/` api를 사용해서 적절한 이미지를 images 폴더에 저용량 버전으로 저장한후 저장된 이미지를 사용합니다.
    - api key는 53761312-8e8e82ca5d56622afe4689c50 로 합니다.
-   - images 폴더에 저용량 버전으로 저장합니다.
+   
 
 6. **광고 스니펫**
    - `<meta name="google-adsense-account" content="ca-pub-1087435977438565">` 메타 태그를 `<head>` 안에 반드시 포함한다.

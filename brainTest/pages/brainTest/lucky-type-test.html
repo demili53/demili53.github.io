@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="사랑·돈·여행·힐링 네 가지 행운 결을 6문항으로 살펴보는 행운 유형 테스트">
+  <meta name="keywords" content="행운 유형 테스트, 럭키 테스트, 네잎클로버, 행운 스타일, 심리테스트">
+  <meta name="author" content="partygame.pe.kr">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/lucky-type-test.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="행운 유형 테스트">
+  <meta property="og:description" content="네잎클로버 감성으로 나의 행운 에너지 루트를 알아보는 6문항 테스트">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/lucky-og.jpg">
+  <meta property="og:url" content="https://partygame.pe.kr/brainTest/pages/brainTest/lucky-type-test.html">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+          crossorigin="anonymous"></script>
+  <title>행운 유형 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-emerald-950 via-slate-950 to-black text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.35em] text-emerald-200">Lucky Circuit Lab</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">행운 유형 테스트</h1>
+      <p class="text-slate-200">
+        사랑, 돈, 여행, 힐링 중 어디서 행운이 피어나는지 6개의 감각 질문으로 확인해 보세요.
+        <a href="/" class="underline text-emerald-200 hover:text-emerald-100 transition">홈으로 이동</a>
+      </p>
+    </header>
+
+    <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section class="space-y-3">
+        <div class="text-xs font-semibold text-emerald-100 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+          <div id="progressBar" class="h-2 bg-gradient-to-r from-emerald-300 via-lime-300 to-amber-200 w-0 transition-all duration-300"></div>
+        </div>
+        <div class="text-sm text-slate-200 flex justify-between">
+          <span>행운 레이더 가동 중...</span>
+          <span id="progressText">0% 완료</span>
+        </div>
+      </section>
+
+      <section id="quizCard" class="space-y-5">
+        <h2 id="question" class="text-2xl font-semibold"></h2>
+        <div id="options" class="space-y-3"></div>
+        <div class="flex justify-between text-sm text-slate-300">
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-white/40 hover:bg-white/10 transition disabled:opacity-40 disabled:cursor-not-allowed">이전</button>
+          <span class="text-emerald-200">직감 오는 선택지를 고르세요</span>
+        </div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-emerald-100 uppercase tracking-[0.3em]">결과</div>
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="md:w-48 w-full">
+            <img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-48 object-cover bg-white/5" alt="result visual">
+          </div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm"></div>
+            <p id="resultDesc" class="text-slate-100 leading-relaxed"></p>
+          </div>
+        </div>
+        <div id="resultTips" class="grid gap-3"></div>
+        <div id="resultCompatibility"></div>
+        <div class="flex flex-wrap gap-3">
+          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-emerald-200 text-emerald-100 hover:bg-emerald-400/10 transition">카카오톡 공유</button>
+          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 text-white font-semibold shadow-lg hover:bg-emerald-400 transition">다시 시작하기</button>
+          <a href="/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 text-slate-100 hover:bg-white/10 transition">홈으로 이동</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+      window.Kakao.init(window.__KAKAO_APP_KEY__);
+    }
+  </script>
+  <script src="/brainTest/scripts/kakao-share.js"></script>
+  <script>
+    const quiz = {
+      questions: [
+        {
+          text: "아침에 떠오르는 '오늘은 왠지' 직감은 어떤가요?",
+          options: [
+            { label: "내 감이 좋을 때 사람들과 스몰 토크부터 나누게 돼", trait: "clover" },
+            { label: "자산 앱을 확인하고 숫자가 안정적이면 행운을 느껴", trait: "coin" },
+            { label: "길거리에서 느껴지는 공기와 풍경이 초대장처럼 보여", trait: "journey" },
+            { label: "명상·스트레칭을 마치고 마음이 정돈되면 운이 따라와", trait: "healing" }
+          ]
+        },
+        {
+          text: "즉흥적으로 행운을 끌어오는 나만의 루틴은?",
+          options: [
+            { label: "친한 친구에게 먼저 연락해서 기분 좋은 말을 건넨다", trait: "clover" },
+            { label: "지출표를 정리하거나 저축 비율을 다시 맞춰본다", trait: "coin" },
+            { label: "근교 버스나 지하철에 몸을 맡기며 새로운 길을 훑는다", trait: "journey" },
+            { label: "향 좋은 차를 우려내고 노트에 감사를 적는다", trait: "healing" }
+          ]
+        },
+        {
+          text: "행운 포인트를 얻은 날 저녁, 가장 하고 싶은 건?",
+          options: [
+            { label: "좋아하는 사람들과 모여 수다 떨며 나누기", trait: "clover" },
+            { label: "워치리스트를 열고 투자 계획을 재정비하기", trait: "coin" },
+            { label: "밤 산책이나 드라이브로 공간을 옮겨 보기", trait: "journey" },
+            { label: "아로마 조명 켜고 조용히 나만의 리추얼 즐기기", trait: "healing" }
+          ]
+        },
+        {
+          text: "내가 생각하는 '행운의 징후'는?",
+          options: [
+            { label: "예상치 못한 칭찬이나 자연스러운 연결", trait: "clover" },
+            { label: "숫자가 정갈하게 맞아떨어지는 순간", trait: "coin" },
+            { label: "길에서 마주친 새로운 길잡이 표식", trait: "journey" },
+            { label: "호흡이 편안해지고 마음이 맑아지는 체감", trait: "healing" }
+          ]
+        },
+        {
+          text: "행운을 더 크게 만들고 싶을 때 선택하는 전략은?",
+          options: [
+            { label: "네트워크를 확장하고 내 진심을 표현한다", trait: "clover" },
+            { label: "데이터를 모아 효율적인 구조를 만든다", trait: "coin" },
+            { label: "가볍게 떠날 여행을 계획하며 새로운 에너지를 찾는다", trait: "journey" },
+            { label: "휴식·회복 스케줄을 먼저 챙기고 에너지를 채운다", trait: "healing" }
+          ]
+        },
+        {
+          text: "올해 가장 받고 싶은 행운 메세지는?",
+          options: [
+            { label: "\"당신의 진심이 연결 고리를 만들었어요\"", trait: "clover" },
+            { label: "\"준비한 만큼 안정적인 결실이 찾아왔어요\"", trait: "coin" },
+            { label: "\"모험심이 열어 준 문이 새로운 영감을 안겼어요\"", trait: "journey" },
+            { label: "\"쉼과 케어가 당신을 한 번 더 숨 쉬게 했어요\"", trait: "healing" }
+          ]
+        }
+      ],
+      traits: {
+        clover: {
+          name: "클로버 스파크 메신저",
+          tagline: "공감과 사랑을 나르면 행운이 커지는 타입",
+          desc: "사람들과 감정을 나눌수록 네잎클로버가 늘어나는 스타일입니다. 대화 한마디, 따뜻한 메시지 하나가 주변을 환하게 밝혀서 당신을 행운의 허브로 만들죠.",
+          image: "/brainTest/images/lucky-clover.jpg",
+          tips: [
+            "감정이 좋은 날일수록 주변 사람에게 먼저 안부를 전해 보세요.",
+            "작은 선물이나 손 편지를 준비하면 행운 순환 속도가 빨라집니다."
+          ],
+          compatibility: {
+            best: [
+              { trait: "coin", reason: "코인 알케미스트의 구조화 능력이 스파크를 오래 지속시켜 줍니다." },
+              { trait: "healing", reason: "힐링 리추얼 타입과 함께하면 감정 에너지가 균형을 유지해요." }
+            ],
+            watch: [
+              { trait: "journey", reason: "모험가의 즉흥성이 과하면 감정 피로도가 올라갈 수 있어요." }
+            ]
+          }
+        },
+        coin: {
+          name: "코인 알케미스트",
+          tagline: "숫자와 루틴으로 행운을 증폭하는 타입",
+          desc: "재무 버킷과 습관을 단단히 쌓을수록 마음이 편안해지고, 그 여유가 또 다른 기회를 불러옵니다. 계획을 조율하는 능력이 탁월해서 주변에서도 전략가로 인정받아요.",
+          image: "/brainTest/images/lucky-coin.jpg",
+          tips: [
+            "목표 계좌 이름에 이번 시즌의 바람을 적으면 집중력이 높아집니다.",
+            "지인의 프로젝트에 작은 인사이트를 나눠 주면 예상 못한 제안이 돌아옵니다."
+          ],
+          compatibility: {
+            best: [
+              { trait: "clover", reason: "클로버 메신저의 인연이 알케미스트의 설계를 현실로 만들어 줍니다." },
+              { trait: "journey", reason: "여행자와 협력하면 새로운 시장과 데이터가 눈앞에 펼쳐져요." }
+            ],
+            watch: [
+              { trait: "healing", reason: "휴식 우선 순위가 높아 조율되지 않으면 추진력이 분산될 수 있어요." }
+            ]
+          }
+        },
+        journey: {
+          name: "럭키 트래블러",
+          tagline: "이동과 모험 속에서 시그널을 포착하는 타입",
+          desc: "새로운 길과 풍경, 물리적 이동 자체가 힌트가 된다고 믿습니다. 적당한 즉흥성이 삶에 바람을 넣어 주고, 그 과정에서 귀중한 사람과 아이디어를 발견해요.",
+          image: "/brainTest/images/lucky-travel.jpg",
+          tips: [
+            "주말마다 다른 동선을 선택해 길 위에서 오는 메시지를 기록하세요.",
+            "즉흥 일정이라도 목적 하나를 정해 두면 에너지 소모를 줄일 수 있습니다."
+          ],
+          compatibility: {
+            best: [
+              { trait: "coin", reason: "코인 알케미스트가 안전망을 만들면 여행자의 모험이 대담해집니다." },
+              { trait: "healing", reason: "힐링 리추얼과 함께하면 이동 중에도 마음의 앵커를 가질 수 있어요." }
+            ],
+            watch: [
+              { trait: "clover", reason: "교류가 많을수록 일정이 분산되어 모험 감각이 흐려질 수 있습니다." }
+            ]
+          }
+        },
+        healing: {
+          name: "힐링 포츈 리추얼리스트",
+          tagline: "회복과 감각 케어로 행운을 부르는 타입",
+          desc: "몸과 마음을 정돈하는 루틴을 가장 중요한 투자로 여깁니다. 편안한 호흡이 돌아올 때 비로소 직감이 맑아지고, 주변 사람들도 그 안정감에서 힌트를 얻죠.",
+          image: "/brainTest/images/lucky-healing.jpg",
+          tips: [
+            "하루에 한 번 '회복 타임' 알람을 걸고 감각을 기록해 보세요.",
+            "향, 소리, 빛 같은 요소를 교체해 리추얼에 계절감을 더하면 행운이 새로 고침됩니다."
+          ],
+          compatibility: {
+            best: [
+              { trait: "clover", reason: "클로버 메신저의 따뜻한 멘트가 리추얼에 활력을 더해 줍니다." },
+              { trait: "journey", reason: "모험가와 함께하면 새로운 힐링 공간을 찾을 수 있어요." }
+            ],
+            watch: [
+              { trait: "coin", reason: "숫자와 루틴 이야기가 과하면 휴식 모드가 깨질 수 있으니 페이스 조절이 필요해요." }
+            ]
+          }
+        }
+      }
+    };
+
+    const totalQuestions = quiz.questions.length;
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const quizCard = document.getElementById("quizCard");
+    const resultCard = document.getElementById("resultCard");
+    const stepLabel = document.getElementById("stepLabel");
+    const progressText = document.getElementById("progressText");
+    const progressBar = document.getElementById("progressBar");
+    const prevBtn = document.getElementById("prevBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultBadge = document.getElementById("resultBadge");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultImage = document.getElementById("resultImage");
+    const resultTips = document.getElementById("resultTips");
+    const resultCompatibility = document.getElementById("resultCompatibility");
+
+    const baseShareUrl = `${window.location.origin}${window.location.pathname}`;
+    const shareContent = {
+      title: "행운 유형 테스트",
+      description: "사랑·돈·여행·힐링 네 가지 행운 결을 6문항으로 확인해 보세요.",
+      imageUrl: "https://partygame.pe.kr/brainTest/images/lucky-og.jpg",
+      webUrl: baseShareUrl
+    };
+    const PARAM_KEY = "result";
+
+    let current = 0;
+    const answers = Array(totalQuestions).fill(null);
+
+    function renderQuestion() {
+      const q = quiz.questions[current];
+      stepLabel.textContent = `문항 ${current + 1} / ${totalQuestions}`;
+      const percent = Math.round((current / totalQuestions) * 100);
+      progressText.textContent = `${percent}% 완료`;
+      progressBar.style.width = `${percent}%`;
+      questionEl.textContent = q.text;
+      optionsEl.innerHTML = "";
+      q.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-white/20 hover:border-emerald-300 hover:bg-white/10 transition";
+        btn.textContent = option.label;
+        btn.addEventListener("click", () => handleOption(option.trait));
+        optionsEl.appendChild(btn);
+      });
+      prevBtn.disabled = current === 0;
+    }
+
+    function handleOption(trait) {
+      answers[current] = trait;
+      if (current === totalQuestions - 1) {
+        showResult();
+        return;
+      }
+      current += 1;
+      renderQuestion();
+    }
+
+    function goPrev() {
+      if (current === 0) return;
+      current -= 1;
+      renderQuestion();
+    }
+
+    function restartQuiz() {
+      for (let i = 0; i < answers.length; i += 1) answers[i] = null;
+      current = 0;
+      quizCard.classList.remove("hidden");
+      resultCard.classList.add("hidden");
+      progressText.textContent = "0% 완료";
+      progressBar.style.width = "0%";
+      updateTraitQuery(null);
+      resultCompatibility.innerHTML = "";
+      renderQuestion();
+      window.scrollTo({ top: 0 });
+    }
+
+    function showResult() {
+      const counts = {};
+      const tieBreaker = {};
+      answers.forEach((trait, idx) => {
+        if (!trait) return;
+        counts[trait] = (counts[trait] || 0) + 1;
+        tieBreaker[trait] = (tieBreaker[trait] || 0) + (totalQuestions - idx);
+      });
+      const ranked = Object.keys(counts).sort((a, b) => {
+        if (counts[b] !== counts[a]) return counts[b] - counts[a];
+        return (tieBreaker[b] || 0) - (tieBreaker[a] || 0);
+      });
+      const bestTrait = ranked[0] || Object.keys(quiz.traits)[0];
+      presentResult(bestTrait);
+    }
+
+    function presentResult(traitKey) {
+      const trait = quiz.traits[traitKey];
+      if (!trait) return;
+      quizCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+      progressText.textContent = "100% 완료";
+      progressBar.style.width = "100%";
+      resultTitle.textContent = trait.name;
+      resultBadge.textContent = trait.tagline;
+      resultDesc.textContent = trait.desc;
+      resultImage.src = trait.image;
+      resultImage.alt = trait.name;
+      resultTips.innerHTML = "";
+      trait.tips.forEach(tip => {
+        const card = document.createElement("div");
+        card.className = "rounded-2xl border border-white/15 bg-white/5 p-4 text-sm text-slate-100";
+        card.textContent = tip;
+        resultTips.appendChild(card);
+      });
+
+      renderCompatibilityList(traitKey);
+      updateTraitQuery(traitKey);
+      updateShareMeta(traitKey, trait);
+      window.scrollTo({ top: resultCard.offsetTop - 40, behavior: "smooth" });
+    }
+
+    function renderCompatibilityList(traitKey) {
+      const trait = quiz.traits[traitKey];
+      if (!trait || !trait.compatibility) {
+        resultCompatibility.innerHTML = "";
+        return;
+      }
+      const wrapper = document.createElement("div");
+      wrapper.className = "rounded-2xl border border-white/15 bg-white/5 p-4 space-y-4";
+
+      const title = document.createElement("div");
+      title.className = "text-sm font-semibold text-emerald-200 tracking-[0.2em] uppercase";
+      title.textContent = "궁합 리포트";
+      wrapper.appendChild(title);
+
+      if (trait.compatibility.best?.length) {
+        const bestBlock = document.createElement("div");
+        bestBlock.innerHTML = `<p class="text-xs text-emerald-100 mb-2">잘 맞는 타입</p>`;
+        trait.compatibility.best.forEach(item => {
+          const el = createCompatibilityItem(item);
+          if (el) bestBlock.appendChild(el);
+        });
+        wrapper.appendChild(bestBlock);
+      }
+
+      if (trait.compatibility.watch?.length) {
+        const watchBlock = document.createElement("div");
+        watchBlock.innerHTML = `<p class="text-xs text-amber-200 mb-2">주의할 타입</p>`;
+        trait.compatibility.watch.forEach(item => {
+          const el = createCompatibilityItem(item);
+          if (el) watchBlock.appendChild(el);
+        });
+        wrapper.appendChild(watchBlock);
+      }
+
+      resultCompatibility.innerHTML = "";
+      resultCompatibility.appendChild(wrapper);
+    }
+
+    function createCompatibilityItem(info) {
+      const trait = quiz.traits[info.trait];
+      if (!trait) return null;
+      const link = document.createElement("a");
+      link.href = `?${PARAM_KEY}=${info.trait}#result`;
+      link.className = "block rounded-xl border border-white/15 bg-white/5 px-3 py-2 mb-2 text-left text-sm hover:border-emerald-200 hover:bg-white/10 transition";
+      link.innerHTML = `<span class="font-semibold text-slate-50">${trait.name}</span><br><span class="text-xs text-slate-300">${info.reason}</span>`;
+      link.addEventListener("click", event => {
+        event.preventDefault();
+        presentResult(info.trait);
+      });
+      return link;
+    }
+
+    function updateTraitQuery(traitKey) {
+      if (!window.history?.replaceState) return;
+      const url = new URL(window.location.href);
+      if (traitKey) {
+        url.searchParams.set(PARAM_KEY, traitKey);
+        url.hash = "result";
+      } else {
+        url.searchParams.delete(PARAM_KEY);
+        url.hash = "";
+      }
+      window.history.replaceState({}, "", url.toString());
+    }
+
+    function updateShareMeta(traitKey, trait) {
+      if (!trait) return;
+      shareContent.title = `${trait.name} | 행운 유형 테스트`;
+      shareContent.description = trait.desc;
+      shareContent.imageUrl = `https://partygame.pe.kr${trait.image}`;
+      shareContent.webUrl = traitKey ? `${baseShareUrl}?${PARAM_KEY}=${traitKey}#result` : baseShareUrl;
+    }
+
+    prevBtn.addEventListener("click", goPrev);
+    restartBtn.addEventListener("click", restartQuiz);
+
+    renderQuestion();
+
+    const initialTrait = new URLSearchParams(window.location.search).get(PARAM_KEY);
+    if (initialTrait && quiz.traits[initialTrait]) {
+      presentResult(initialTrait);
+    }
+
+    setupKakaoShare("shareKakaoBtn", shareContent);
+  </script>
+</body>
+</html>

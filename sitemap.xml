@@ -45,4 +45,19 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://partygame.pe.kr/brainTest/pages/brainTest/menhera-test.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://partygame.pe.kr/brainTest/pages/brainTest/lucky-type-test.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://partygame.pe.kr/brainTest/pages/brainTest/charm-guardian-test.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>

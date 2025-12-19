@@ -47,5 +47,26 @@
         "path": "/brainTest/pages/brainTest/dinner-spin-test.html",
         "description": "입맛 시그널로 오늘 먹으면 행복한 저녁 메뉴를 골라주는 6문항 테스트",
         "keywords": ["저메추", "음식", "저녁", "테스트"]
+    },
+    {
+        "id": "menhera-test",
+        "title": "멘헤라 감정 스펙트럼 테스트",
+        "path": "/brainTest/pages/brainTest/menhera-test.html",
+        "description": "연애와 일상에서 표출되는 멘헤라 에너지 레벨을 6문항으로 알아보는 테스트",
+        "keywords": ["멘헤라", "감정", "연애", "테스트"]
+    },
+    {
+        "id": "lucky-type-test",
+        "title": "행운 유형 테스트",
+        "path": "/brainTest/pages/brainTest/lucky-type-test.html",
+        "description": "사랑·돈·여행·힐링 네 가지 결로 행운 에너지 루트를 짚어보는 6문항 테스트",
+        "keywords": ["행운", "클로버", "재물", "테스트"]
+    },
+    {
+        "id": "charm-guardian-test",
+        "title": "나만의 액막이 찾기",
+        "path": "/brainTest/pages/brainTest/charm-guardian-test.html",
+        "description": "불운을 삼켜 줄 액막이 캐릭터와 정화 루틴을 6문항으로 알아보는 테스트",
+        "keywords": ["액막이", "부적", "정화", "테스트"]
     }
 ]
