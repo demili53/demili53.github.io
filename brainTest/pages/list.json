@@ -124,5 +124,68 @@
         "path": "/brainTest/pages/brainTest/smooth-texture-test.html",
         "description": "촉감 취향으로 내 리듬을 알아보는 8문항 성향 테스트",
         "keywords": ["동물", "촉감", "성향", "테스트"]
+    },
+    {
+        "id": "fact-assault-test",
+        "title": "팩트 폭행 테스트",
+        "path": "/brainTest/pages/brainTest/fact-assault-test.html",
+        "description": "유리 멘탈은 가라... 당신의 팩폭 레벨을 알아보는 6문항 진실 폭행 테스트",
+        "keywords": ["팩트 폭행", "팩폭", "MBTI", "진실", "테스트"]
+    },
+    {
+        "id": "personality-fourcut-test",
+        "title": "성격 네컷 테스트",
+        "path": "/brainTest/pages/brainTest/personality-fourcut-test.html",
+        "description": "포토부스에서 찍을 나만의 성격 네컷 사진 스타일을 6문항으로 알아보는 테스트",
+        "keywords": ["성격 네컷", "포토부스", "사진", "포즈", "테스트"]
+    },
+    {
+        "id": "wiki-test",
+        "title": "나만의 위키 테스트",
+        "path": "/brainTest/pages/brainTest/wiki-test.html",
+        "description": "기록 습관과 정보 정리 방식으로 나의 위키 타입을 알려주는 6문항 테스트",
+        "keywords": ["위키", "기록", "정리", "테스트"]
+    },
+    {
+        "id": "magic-girl-test",
+        "title": "마법 소녀 테스트",
+        "path": "/brainTest/pages/brainTest/magic-girl-test.html",
+        "description": "요술봉을 받은 순간 드러나는 마법 소녀 타입을 확인하는 6문항 테스트",
+        "keywords": ["마법", "소녀", "요술봉", "테스트"]
+    },
+    {
+        "id": "dere-test",
+        "title": "데레 테스트",
+        "path": "/brainTest/pages/brainTest/dere-test.html",
+        "description": "감정 표현 리듬으로 나만의 데레 타입을 확인하는 6문항 테스트",
+        "keywords": ["데레", "감정", "관계", "테스트"]
+    },
+    {
+        "id": "little-ghost-test",
+        "title": "꼬마유령 테스트",
+        "path": "/brainTest/pages/brainTest/little-ghost-test.html",
+        "description": "밤 분위기 속에서 드러나는 꼬마유령 타입을 알아보는 6문항 테스트",
+        "keywords": ["유령", "밤", "감성", "테스트"]
+    },
+    {
+        "id": "pastlife-animal-test",
+        "title": "전생 동물 테스트",
+        "path": "/brainTest/pages/brainTest/pastlife-animal-test.html",
+        "description": "선택한 본능과 습관으로 전생 동물 타입을 알아보는 6문항 테스트",
+        "keywords": ["전생", "동물", "본능", "테스트"]
+    },
+    {
+        "id": "mbti-face-test",
+        "title": "MBTI 관상 테스트",
+        "path": "/brainTest/pages/brainTest/mbti-face-test.html",
+        "description": "첫인상 단서로 MBTI 관상 타입을 알아보는 6문항 테스트",
+        "keywords": ["MBTI", "관상", "인상", "테스트"]
+    },
+    {
+        "id": "inner-devil-test",
+        "title": "내 안의 악마 테스트",
+        "path": "/brainTest/pages/brainTest/inner-devil-test.html",
+        "description": "선택한 반응으로 내 안의 악마 에너지를 확인하는 6문항 테스트",
+        "keywords": ["악마", "심리", "감정", "테스트"]
     }
 ]

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="유리 멘탈은 가라... 지금부터 시작되는 팩트 폭행! 당신이 어떤 기존쎄 MBTI라도 순살로 만들어드립니다. 반박 불가 팩폭 테스트!">
+  <meta name="keywords" content="팩트 폭행, 팩폭, MBTI, 심리 테스트, 성격 테스트">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <meta name="author" content="partygame.pe.kr">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/fact-assault-test.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="팩트 폭행 테스트">
+  <meta property="og:description" content="유리 멘탈은 가라... 지금부터 시작되는 팩트 폭행! 당신이 어떤 기존쎄 MBTI라도 순살로 만들어드립니다.">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/fact-assault-og.jpg">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+         crossorigin="anonymous"></script>
+  <title>팩트 폭행 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-red-900 via-purple-900 to-indigo-900 text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.3em] text-red-200">Fact Assault Test</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">팩트 폭행 테스트</h1>
+      <p class="text-slate-200">유리 멘탈은 가라... 지금부터 시작되는 팩트 폭행👊💥 당신이 어떤 기존쎄 MBTI라도 순살로 만들어드립니다. <a href="/" class="underline text-red-200 hover:text-red-100 transition">홈으로 돌아가기</a></p>
+    </header>
+
+    <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section id="quizCard" class="space-y-5">
+        <div class="text-xs font-semibold text-red-100 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <h2 id="question" class="text-2xl font-semibold"></h2>
+        <div class="space-y-3" id="options"></div>
+        <div class="flex justify-between text-sm text-slate-300">
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-white/40 hover:bg-white/10 transition disabled:opacity-40">이전</button>
+          <span id="progress" class="text-red-200">0% 완료</span>
+        </div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-red-100 uppercase tracking-[0.3em">결과</div>
+        <div class="flex flex-col gap-4 md:flex-row">
+          <div class="md:w-48 w-full">
+            <img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-48 object-cover" alt="fact assault result" src="">
+          </div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm"></div>
+            <p id="resultDesc" class="text-slate-100 leading-relaxed"></p>
+            <div id="resultMatch" class="text-sm text-slate-300"></div>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-3 pt-4">
+          <button id="restartBtn" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition font-medium">다시 하기</button>
+          <button id="shareBtn" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition font-medium">카카오톡 공유</button>
+          <a href="/" class="px-4 py-2 border border-white/20 hover:border-white/40 hover:bg-white/10 rounded-lg transition font-medium">홈으로</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="text-center text-sm text-slate-400">
+      <p>© 2024 partygame.pe.kr. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+  </script>
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    const quizData = [
+      {
+        question: "일을 시작할 때 나의 태도는?",
+        options: [
+          { text: "계획부터 철저히 세운다", type: "planner" },
+          { text: "일단 시작하고 보자", type: "action" },
+          { text: "주변 사람들 의견을 구한다", type: "social" },
+          { text: "최악의 경우를 대비한다", type: "defensive" }
+        ]
+      },
+      {
+        question: "친구가 약속 시간에 30분 늦었다면?",
+        options: [
+          { text: "왜 늦었는지 따진다", type: "direct" },
+          { text: "괜찮다고 말하지만 속으로는 화난다", type: "passive" },
+          { text: "다음부터는 시간 잘 지키자고 조언한다", type: "wise" },
+          { text: "늦은 만큼 다음 약속도 늦게 간다", type: "revenge" }
+        ]
+      },
+      {
+        question: "내 의견과 다른 사람이 있을 때?",
+        options: [
+          { text: "내가 맞다는 걸 증명해야 한다", type: "prove" },
+          { text: "그 사람 말도 일리가 있을 수 있다", type: "open" },
+          { text: "일단 들어보고 판단한다", type: "neutral" },
+          { text: "논쟁은 피하고 싶다", type: "avoid" }
+        ]
+      },
+      {
+        question: "팀 프로젝트에서 내 역할은?",
+        options: [
+          { text: "리더로서 모든 걸 책임진다", type: "leader" },
+          { text: "아이디어를 많이 낸다", type: "creative" },
+          { text: "실수를 잘 잡아준다", type: "critic" },
+          { text: "조용히 내 할 일만 한다", type: "quiet" }
+        ]
+      },
+      {
+        question: "스트레스 받을 때 나의 행동은?",
+        options: [
+          { text: "원인을 분석하고 해결책을 찾는다", type: "analytical" },
+          { text: "친구에게 계속 불평한다", type: "complain" },
+          { text: "혼자 조용히 시간을 보낸다", type: "introvert" },
+          { text: "운동이나 게임으로 푼다", type: "active" }
+        ]
+      },
+      {
+        question: "사람들을 평가할 때 가장 중요한 기준은?",
+        options: [
+          { text: "성실함과 책임감", type: "responsible" },
+          { text: "유머 감각과 재미", type: "fun" },
+          { text: "지능과 논리력", type: "intelligent" },
+          { text: "공감 능력과 친절함", type: "empathetic" }
+        ]
+      }
+    ];
+
+    const results = [
+      {
+        type: "brutal_honest",
+        title: "냉정한 팩트폭행자",
+        badge: "🔪 반박 불가",
+        description: "당신은 감정을 배제하고 오직 사실만으로 말하는 진짜 팩트폭행자다. 상대방이 듣기 싫어해도 진실을 말해야 직성이 풀린다. '그게 현실이야'라는 말을 가장 많이 하며, 주변 사람들에게는 공포의 대상이지만 동시에 가장 믿을 만한 사람이다.",
+        image: "/brainTest/images/fact-assault-brutal.jpg",
+        match: "가장 잘 맞는 타입: 🎯 논리폭행자, 📊 데이터광"
+      },
+      {
+        type: "passive_aggressive",
+        title: "수동공격형 팩폭러",
+        badge: "😌 가식 미소",
+        description: "당신은 직접적으로 공격하지 않지만, 비꼬는 말과 냉소로 상대를 무너뜨리는 수동공격의 달인이다. '네 말이 맞네~'라며 미소 짓지만 눈은 전혀 안 웃고 있다. 상대는 화가 나지만 딱히 잡을 건 없어서 더 답답하다.",
+        image: "/brainTest/images/fact-assault-passive.jpg",
+        match: "가장 잘 맞는 타입: 🎭 비꼬기 장인, 😈 악플러"
+      },
+      {
+        type: "wise_analyst",
+        title: "지혜로운 분석가",
+        badge: "🧠 현실주의자",
+        description: "당신은 감정과 사실의 균형을 잘 맞추는 현명한 팩폭러다. 상대의 기분을 생각하면서도 필요한 진실은 정확하게 전달한다. '충격적인 진실'을 '들어보면 좋을 이야기'로 포장하는 능력이 탁월하다.",
+        image: "/brainTest/images/fact-assault-wise.jpg",
+        match: "가장 잘 맞는 타입: 📚 조언자, 🌱 성장형 인간"
+      },
+      {
+        type: "empathetic_truth",
+        title: "공감형 진실 전달자",
+        badge: "💗 따뜻한 현실",
+        description: "당신은 진실을 말하되, 상대의 상처를 최소화하려는 공감 능력을 가졌다. '사실이지만...'으로 시작하며 위로와 함께 현실을 전달한다. 팩트 폭행이 아니라 '팩트 포옹'을 하는 사람이다.",
+        image: "/brainTest/images/fact-assault-empathetic.jpg",
+        match: "가장 잘 맞는 타입: 🤗 위로자, 🌟 긍정의 힘"
+      },
+      {
+        type: "data_driven",
+        title: "데이터 기반 폭행자",
+        badge: "📊 숫자로 말해",
+        description: "당신은 감정이나 추측 대신 데이터와 통계로 말하는 냉철한 분석가다. '실제로 통계에 따르면...'으로 시작하며 주장의 정당성을 숫자로 증명한다. 상대는 감정적으로 반박할 수 없어 무력해진다.",
+        image: "/brainTest/images/fact-assault-data.jpg",
+        match: "가장 잘 맞는 타입: 🔍 리서처, 📈 분석 전문가"
+      },
+      {
+        type: "avoidant_truth",
+        title: "회피형 진실주의자",
+        badge: "🙈 눈 가리고 아웅",
+        description: "당신은 진실을 알지만 말하기가 두려워 회피하는 타입이다. '사실은 그런데...'으로 시작하다 말고, 결국 아무 말도 못 한다. 진실이 밝혀질까 봐 두렵지만, 동시에 거짓말도 하지 못한다.",
+        image: "/brainTest/images/fact-assault-avoidant.jpg",
+        match: "가장 잘 맞는 타입: 😰 불안장이, 🕊️ 평화주의자"
+      }
+    ];
+
+    let currentQuestion = 0;
+    let answers = [];
+    let resultType = '';
+
+    function initQuiz() {
+      showQuestion();
+      updateProgress();
+    }
+
+    function showQuestion() {
+      const question = quizData[currentQuestion];
+      document.getElementById('question').textContent = question.question;
+      document.getElementById('stepLabel').textContent = `문항 ${currentQuestion + 1} / ${quizData.length}`;
+      
+      const optionsContainer = document.getElementById('options');
+      optionsContainer.innerHTML = '';
+      
+      question.options.forEach((option, index) => {
+        const button = document.createElement('button');
+        button.className = 'w-full text-left p-4 rounded-lg border border-white/20 hover:border-white/40 hover:bg-white/10 transition text-slate-100';
+        button.textContent = option.text;
+        button.onclick = () => selectAnswer(option.type);
+        optionsContainer.appendChild(button);
+      });
+
+      document.getElementById('prevBtn').disabled = currentQuestion === 0;
+    }
+
+    function selectAnswer(type) {
+      answers[currentQuestion] = type;
+      
+      if (currentQuestion < quizData.length - 1) {
+        currentQuestion++;
+        showQuestion();
+        updateProgress();
+      } else {
+        showResult();
+      }
+    }
+
+    function updateProgress() {
+      const progress = Math.round((currentQuestion / quizData.length) * 100);
+      document.getElementById('progress').textContent = `${progress}% 완료`;
+    }
+
+    function calculateResult() {
+      const typeCount = {};
+      answers.forEach(type => {
+        typeCount[type] = (typeCount[type] || 0) + 1;
+      });
+
+      const maxCount = Math.max(...Object.values(typeCount));
+      const dominantTypes = Object.keys(typeCount).filter(type => typeCount[type] === maxCount);
+      
+      const typeMap = {
+        'planner': 'wise_analyst',
+        'action': 'brutal_honest',
+        'social': 'empathetic_truth',
+        'defensive': 'avoidant_truth',
+        'direct': 'brutal_honest',
+        'passive': 'passive_aggressive',
+        'wise': 'wise_analyst',
+        'revenge': 'passive_aggressive',
+        'prove': 'brutal_honest',
+        'open': 'empathetic_truth',
+        'neutral': 'wise_analyst',
+        'avoid': 'avoidant_truth',
+        'leader': 'brutal_honest',
+        'creative': 'empathetic_truth',
+        'critic': 'data_driven',
+        'quiet': 'avoidant_truth',
+        'analytical': 'data_driven',
+        'complain': 'passive_aggressive',
+        'introvert': 'avoidant_truth',
+        'active': 'brutal_honest',
+        'responsible': 'wise_analyst',
+        'fun': 'empathetic_truth',
+        'intelligent': 'data_driven',
+        'empathetic': 'empathetic_truth'
+      };
+
+      const resultTypes = dominantTypes.map(type => typeMap[type] || 'wise_analyst');
+      resultType = resultTypes[0];
+      
+      return results.find(r => r.type === resultType) || results[2];
+    }
+
+    function showResult() {
+      const result = calculateResult();
+      
+      document.getElementById('quizCard').classList.add('hidden');
+      document.getElementById('resultCard').classList.remove('hidden');
+      
+      document.getElementById('resultTitle').textContent = result.title;
+      document.getElementById('resultBadge').textContent = result.badge;
+      document.getElementById('resultDesc').textContent = result.description;
+      document.getElementById('resultMatch').textContent = result.match;
+      document.getElementById('resultImage').src = result.image;
+    }
+
+    function restartQuiz() {
+      currentQuestion = 0;
+      answers = [];
+      resultType = '';
+      
+      document.getElementById('resultCard').classList.add('hidden');
+      document.getElementById('quizCard').classList.remove('hidden');
+      
+      initQuiz();
+    }
+
+    function shareToKakao() {
+      Kakao.init('af0f520240f2c824b721bbd002c45178');
+      
+      Kakao.Share.sendDefault({
+        objectType: 'feed',
+        content: {
+          title: '팩트 폭행 테스트',
+          description: '유리 멘탈은 가라... 지금부터 시작되는 팩트 폭행! 당신의 팩폭 레벨은?',
+          imageUrl: 'https://partygame.pe.kr/brainTest/images/fact-assault-og.jpg',
+          link: {
+            mobileWebUrl: window.location.href,
+            webUrl: window.location.href
+          }
+        },
+        buttons: [
+          {
+            title: '테스트 하기',
+            link: {
+              mobileWebUrl: window.location.href,
+              webUrl: window.location.href
+            }
+          }
+        ]
+      });
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', () => {
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        showQuestion();
+        updateProgress();
+      }
+    });
+
+    document.getElementById('restartBtn').addEventListener('click', restartQuiz);
+    document.getElementById('shareBtn').addEventListener('click', shareToKakao);
+
+    initQuiz();
+  </script>
+</body>
+</html>

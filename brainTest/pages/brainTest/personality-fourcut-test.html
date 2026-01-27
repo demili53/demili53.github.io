@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="포토부스 가서 어떤 포즈로 사진 찍을지 고민해 본 적 있지 않아? 나의 성격이 담긴 네컷 사진이 있다면 어떨까? 나만의 성격 네컷을 완성해 봐!">
+  <meta name="keywords" content="성격 네컷, 포토부스, 사진, 성격 테스트, 포즈">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <meta name="author" content="partygame.pe.kr">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/personality-fourcut-test.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="성격 네컷 테스트">
+  <meta property="og:description" content="포토부스 가서 어떤 포즈로 사진 찍을지 고민해 본 적 있지 않아? 나의 성격이 담긴 네컷 사진을 완성해 봐!">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/personality-fourcut-og.jpg">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+         crossorigin="anonymous"></script>
+  <title>성격 네컷 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-pink-900 via-purple-900 to-indigo-900 text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.3em] text-pink-200">Personality 4-cut Test</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">성격 네컷 테스트</h1>
+      <p class="text-slate-200">포토부스 가서 어떤 포즈로 사진 찍을지 고민해 본 적 있지 않아?📷✨ 나의 성격이 담긴 네컷 사진이 있다면 어떨까? 나만의 성격 네컷을 완성해 봐! <a href="/" class="underline text-pink-200 hover:text-pink-100 transition">홈으로 돌아가기</a></p>
+    </header>
+
+    <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section id="quizCard" class="space-y-5">
+        <div class="text-xs font-semibold text-pink-100 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <h2 id="question" class="text-2xl font-semibold"></h2>
+        <div class="space-y-3" id="options"></div>
+        <div class="flex justify-between text-sm text-slate-300">
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-white/40 hover:bg-white/10 transition disabled:opacity-40">이전</button>
+          <span id="progress" class="text-pink-200">0% 완료</span>
+        </div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-pink-100 uppercase tracking-[0.3em">결과</div>
+        <div class="flex flex-col gap-4 md:flex-row">
+          <div class="md:w-48 w-full">
+            <img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-48 object-cover" alt="personality fourcut result" src="">
+          </div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm"></div>
+            <p id="resultDesc" class="text-slate-100 leading-relaxed"></p>
+            <div id="resultMatch" class="text-sm text-slate-300"></div>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-3 pt-4">
+          <button id="restartBtn" class="px-4 py-2 bg-pink-600 hover:bg-pink-700 rounded-lg transition font-medium">다시 하기</button>
+          <button id="shareBtn" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition font-medium">카카오톡 공유</button>
+          <a href="/" class="px-4 py-2 border border-white/20 hover:border-white/40 hover:bg-white/10 rounded-lg transition font-medium">홈으로</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="text-center text-sm text-slate-400">
+      <p>© 2024 partygame.pe.kr. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+  </script>
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    const quizData = [
+      {
+        question: "포토부스에서 첫 번째 사진을 찍을 때 나의 포즈는?",
+        options: [
+          { text: "손하트를 하며 웃는다", type: "sweet" },
+          { text: "무표정으로 카메라를 바라본다", type: "cool" },
+          { text: "V자를 하며 활짝 웃는다", type: "bright" },
+          { text: "삐딱하게 고개를 돌린다", type: "unique" }
+        ]
+      },
+      {
+        question: "친구들이 갑자기 단체사진을 찍자고 할 때 나의 반응은?",
+        options: [
+          { text: "가운데에 서서 리드한다", type: "leader" },
+          { text: "조용히 구석에서 찍는다", type: "quiet" },
+          { text: "웃음 유머로 분위기를 띄운다", type: "funny" },
+          { text: "포즈를 가장 멋지게 잡는다", type: "pose" }
+        ]
+      },
+      {
+        question: "인스타그램에 사진을 올릴 때 나의 스타일은?",
+        options: [
+          { text: "감성적인 필터와 문구를 추가한다", type: "emotional" },
+          { text: "있는 그대로의 자연스러운 사진", type: "natural" },
+          { text: "트렌디한 해시태그와 함께 올린다", type: "trendy" },
+          { text: "센스 있는 짤로 재미있게 올린다", type: "meme" }
+        ]
+      },
+      {
+        question: "사진 찍기 전 나의 준비 과정은?",
+        options: [
+          { text: "거울 앞에서 포즈 연습을 한다", type: "practice" },
+          { text: "그냥 바로 찍는다", type: "spontaneous" },
+          { text: "옷차림과 헤어스타일을 신경 쓴다", type: "style" },
+          { text: "주변 배경을 먼저 확인한다", type: "background" }
+        ]
+      },
+      {
+        question: "내가 가장 좋아하는 사진 분위기는?",
+        options: [
+          { text: "따뜻하고 포근한 느낌", type: "warm" },
+          { text: "시크하고 도시적인 느낌", type: "chic" },
+          { text: "밝고 활기찬 느낌", type: "energetic" },
+          { text: "몽환적이고 예술적인 느낌", type: "artistic" }
+        ]
+      },
+      {
+        question: "사진을 찍고 나서 나의 소감은?",
+        options: [
+          { text: "결과물을 바로 확인한다", type: "result" },
+          { text: "친구들과 함께 웃으며 본다", type: "social" },
+          { text: "다음 포즈를 생각한다", type: "next" },
+          { text: "만족하며 저장한다", type: "satisfied" }
+        ]
+      }
+    ];
+
+    const results = [
+      {
+        type: "sweet_cute",
+        title: "달콤 귀여운 네컷",
+        badge: "🍬 손하트 장인",
+        description: "당신의 네컷은 달콤함과 귀여움으로 가득 차 있다. 손하트는 기본이고, 살짝 볼을 터치하는 포즈까지 완벽하게 소화한다. 보는 사람의 마음을 녹이는 매력의 소유자다.",
+        image: "/brainTest/images/personality-fourcut-sweet.jpg",
+        match: "가장 잘 맞는 타입: 🌸 감성 포토, 🎀 키치감성"
+      },
+      {
+        type: "cool_chic",
+        title: "시크 무심한 네컷",
+        badge: "😎 무표정 전문가",
+        description: "당신의 네컷은 시크함과 무심함이 어우러진 감성적인 작품이다. 애써 웃지 않아도 자연스러운 매력이 넘친다. '찍는 순간이 예술'이라는 말을 몸으로 보여준다.",
+        image: "/brainTest/images/personality-fourcut-cool.jpg",
+        match: "가장 잘 맞는 타입: 🖤 다크포트, 🌃 야경사진"
+      },
+      {
+        type: "bright_energy",
+        title: "밝은 에너지 네컷",
+        badge: "✨ V자 자랑",
+        description: "당신의 네컷은 밝은 에너지로 가득 차 있다. V자는 기본이고, 활짝 웃는 얼굴로 주변 모두를 행복하게 만든다. 보기만 해도 기분이 좋아지는 사람이다.",
+        image: "/brainTest/images/personality-fourcut-bright.jpg",
+        match: "가장 잘 맞는 타입: 🌞 야외 촬영, 🎉 축제 포토"
+      },
+      {
+        type: "unique_artistic",
+        title: "독특 예술적 네컷",
+        badge: "🎨 삐딱한 미학",
+        description: "당신의 네컷은 독창성과 예술성으로 가득하다. 남들이 생각지 못한 각도와 포즈로 사진을 예술 작품으로 만든다. '평범함은 죄악'이라는 신조를 가졌다.",
+        image: "/brainTest/images/personality-fourcut-unique.jpg",
+        match: "가장 잘 맞는 타입: 🎭 퍼포먼스, 📸 감성사진"
+      },
+      {
+        type: "natural_comfortable",
+        title: "자연스러운 편안 네컷",
+        badge: "🌿 있는 그대로",
+        description: "당신의 네컷은 꾸밈없는 자연스러움이 매력이다. 애써 포즈를 잡지 않아도 편안하고 아름답다. '자연이 최고의 필터'라는 것을 증명하는 사람이다.",
+        image: "/brainTest/images/personality-fourcut-natural.jpg",
+        match: "가장 잘 맞는 타입: 🍃 일상 포토, ☕ 카페 사진"
+      },
+      {
+        type: "funny_playful",
+        title: "재치 있는 장난 네컷",
+        badge: "😜 짤 방출기",
+        description: "당신의 네컷은 재치와 장난기로 가득하다. 엉뚱한 표정과 포즈로 웃음을 유발하고, 그 사진은 바로 짤이 된다. '찍는 순간부터 밈이 된다'는 사람이다.",
+        image: "/brainTest/images/personality-fourcut-funny.jpg",
+        match: "가장 잘 맞는 타입: 🎪 유머 포토, 🤪 개그맨"
+      }
+    ];
+
+    let currentQuestion = 0;
+    let answers = [];
+    let resultType = '';
+
+    function initQuiz() {
+      showQuestion();
+      updateProgress();
+    }
+
+    function showQuestion() {
+      const question = quizData[currentQuestion];
+      document.getElementById('question').textContent = question.question;
+      document.getElementById('stepLabel').textContent = `문항 ${currentQuestion + 1} / ${quizData.length}`;
+      
+      const optionsContainer = document.getElementById('options');
+      optionsContainer.innerHTML = '';
+      
+      question.options.forEach((option, index) => {
+        const button = document.createElement('button');
+        button.className = 'w-full text-left p-4 rounded-lg border border-white/20 hover:border-white/40 hover:bg-white/10 transition text-slate-100';
+        button.textContent = option.text;
+        button.onclick = () => selectAnswer(option.type);
+        optionsContainer.appendChild(button);
+      });
+
+      document.getElementById('prevBtn').disabled = currentQuestion === 0;
+    }
+
+    function selectAnswer(type) {
+      answers[currentQuestion] = type;
+      
+      if (currentQuestion < quizData.length - 1) {
+        currentQuestion++;
+        showQuestion();
+        updateProgress();
+      } else {
+        showResult();
+      }
+    }
+
+    function updateProgress() {
+      const progress = Math.round((currentQuestion / quizData.length) * 100);
+      document.getElementById('progress').textContent = `${progress}% 완료`;
+    }
+
+    function calculateResult() {
+      const typeCount = {};
+      answers.forEach(type => {
+        typeCount[type] = (typeCount[type] || 0) + 1;
+      });
+
+      const maxCount = Math.max(...Object.values(typeCount));
+      const dominantTypes = Object.keys(typeCount).filter(type => typeCount[type] === maxCount);
+      
+      const typeMap = {
+        'sweet': 'sweet_cute',
+        'cool': 'cool_chic',
+        'bright': 'bright_energy',
+        'unique': 'unique_artistic',
+        'leader': 'bright_energy',
+        'quiet': 'natural_comfortable',
+        'funny': 'funny_playful',
+        'pose': 'unique_artistic',
+        'emotional': 'sweet_cute',
+        'natural': 'natural_comfortable',
+        'trendy': 'bright_energy',
+        'meme': 'funny_playful',
+        'practice': 'cool_chic',
+        'spontaneous': 'natural_comfortable',
+        'style': 'unique_artistic',
+        'background': 'sweet_cute',
+        'warm': 'sweet_cute',
+        'chic': 'cool_chic',
+        'energetic': 'bright_energy',
+        'artistic': 'unique_artistic',
+        'result': 'cool_chic',
+        'social': 'bright_energy',
+        'next': 'unique_artistic',
+        'satisfied': 'natural_comfortable'
+      };
+
+      const resultTypes = dominantTypes.map(type => typeMap[type] || 'natural_comfortable');
+      resultType = resultTypes[0];
+      
+      return results.find(r => r.type === resultType) || results[4];
+    }
+
+    function showResult() {
+      const result = calculateResult();
+      
+      document.getElementById('quizCard').classList.add('hidden');
+      document.getElementById('resultCard').classList.remove('hidden');
+      
+      document.getElementById('resultTitle').textContent = result.title;
+      document.getElementById('resultBadge').textContent = result.badge;
+      document.getElementById('resultDesc').textContent = result.description;
+      document.getElementById('resultMatch').textContent = result.match;
+      document.getElementById('resultImage').src = result.image;
+    }
+
+    function restartQuiz() {
+      currentQuestion = 0;
+      answers = [];
+      resultType = '';
+      
+      document.getElementById('resultCard').classList.add('hidden');
+      document.getElementById('quizCard').classList.remove('hidden');
+      
+      initQuiz();
+    }
+
+    function shareToKakao() {
+      Kakao.init('af0f520240f2c824b721bbd002c45178');
+      
+      Kakao.Share.sendDefault({
+        objectType: 'feed',
+        content: {
+          title: '성격 네컷 테스트',
+          description: '포토부스에서 찍을 나만의 성격 네컷은? 나의 포즈 스타일을 알아보자!',
+          imageUrl: 'https://partygame.pe.kr/brainTest/images/personality-fourcut-og.jpg',
+          link: {
+            mobileWebUrl: window.location.href,
+            webUrl: window.location.href
+          }
+        },
+        buttons: [
+          {
+            title: '테스트 하기',
+            link: {
+              mobileWebUrl: window.location.href,
+              webUrl: window.location.href
+            }
+          }
+        ]
+      });
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', () => {
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        showQuestion();
+        updateProgress();
+      }
+    });
+
+    document.getElementById('restartBtn').addEventListener('click', restartQuiz);
+    document.getElementById('shareBtn').addEventListener('click', shareToKakao);
+
+    initQuiz();
+  </script>
+</body>
+</html>
