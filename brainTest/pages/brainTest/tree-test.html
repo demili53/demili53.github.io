@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="6가지 질문으로 나만의 연애 나무 타입을 찾아보는 심리 테스트입니다.">
+  <meta name="keywords" content="트리 테스트, 연애 심리 테스트, tree test, 연애 나무">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <meta name="author" content="partygame.pe.kr">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/tree-test.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="나만의 트리 연애 테스트">
+  <meta property="og:description" content="연애 성향을 나무에 비유해 알려주는 6문항 심리 테스트">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/tree-love-og.jpg">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+         ></script>
+  <title>나만의 트리 연애 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-emerald-900 via-slate-900 to-indigo-900 text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.3em] text-emerald-200">Tree Love Test</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">나만의 트리 연애 테스트</h1>
+      <p class="text-slate-200">6개의 질문으로 나의 연애 나무 타입을 알아보는 심리 테스트입니다. <a href="/" class="underline text-emerald-200 hover:text-emerald-100 transition">홈으로 돌아가기</a></p>
+    </header>
+
+    <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section id="quizCard" class="space-y-5">
+        <div class="text-xs font-semibold text-emerald-100 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <h2 id="question" class="text-2xl font-semibold"></h2>
+        <div class="space-y-3" id="options"></div>
+        <div class="flex justify-between text-sm text-slate-300">
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-white/40 hover:bg-white/10 transition disabled:opacity-40">이전</button>
+          <span id="progress" class="text-emerald-200">0% 완료</span>
+        </div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-emerald-100 uppercase tracking-[0.3em]">결과</div>
+        <div class="flex flex-col gap-4 md:flex-row">
+          <div class="md:w-48 w-full">
+            <img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-48 object-cover" alt="tree result" src="">
+          </div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm"></div>
+            <p id="resultDesc" class="text-slate-100 leading-relaxed"></p>
+          </div>
+        </div>
+        <div id="resultTips" class="space-y-2"></div>
+        <div class="space-y-2 bg-white/5 border border-white/10 rounded-2xl p-4">
+          <h3 class="text-lg font-semibold text-amber-200">테스트 내 궁합</h3>
+          <div class="flex flex-col gap-2 text-sm">
+            <a id="bestLink" class="inline-flex items-center gap-2 text-slate-100 underline underline-offset-4 hover:text-emerald-200" href="#">최고 궁합 결과 보기</a>
+            <a id="worstLink" class="inline-flex items-center gap-2 text-slate-300 underline underline-offset-4 hover:text-rose-200" href="#">주의 궁합 결과 보기</a>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-emerald-300 text-emerald-100 hover:bg-emerald-400/10 transition">카카오톡 공유</button>
+          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 text-white font-semibold shadow-lg hover:bg-emerald-400 transition">다시 시작하기</button>
+          <a href="/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 text-slate-100 hover:bg-white/10 transition">홈으로 이동</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+      window.Kakao.init(window.__KAKAO_APP_KEY__);
+    }
+  </script>
+  <script src="/brainTest/scripts/kakao-share.js"></script>
+  <script>
+    const quiz = {
+      questions: [
+        {
+          text: "요즘 당신의 사랑은 어떤 리듬을 타고 있나요?",
+          options: [
+            { label: "사계절 내내 꾸준하고 안정적이에요", trait: "evergreen" },
+            { label: "새콤달콤한 설렘이 계속돼요", trait: "cherry" },
+            { label: "서로의 공간을 존중하는 편이에요", trait: "birch" },
+            { label: "때론 예측 불가, 하지만 진심은 뜨거워요", trait: "cactus" }
+          ]
+        },
+        {
+          text: "연인을 생각할 때 떠오르는 색은?",
+          options: [
+            { label: "짙은 초록색", trait: "evergreen" },
+            { label: "분홍빛과 주황빛", trait: "cherry" },
+            { label: "라일락과 은은한 은색", trait: "birch" },
+            { label: "형광 노랑과 강렬한 마젠타", trait: "cactus" }
+          ]
+        },
+        {
+          text: "소중한 사람과 갈등이 생기면?",
+          options: [
+            { label: "시간을 들여 천천히 풀어나간다", trait: "evergreen" },
+            { label: "감정을 솔직히 터놓고 안긴다", trait: "cherry" },
+            { label: "냉정하게 서로의 입장을 정리한다", trait: "birch" },
+            { label: "잠시 떨어져 힐링 후 다시 이야기한다", trait: "cactus" }
+          ]
+        },
+        {
+          text: "연애에서의 로망은?",
+          options: [
+            { label: "일상을 함께 쌓아가는 든든함", trait: "evergreen" },
+            { label: "기념일마다 이벤트와 편지", trait: "cherry" },
+            { label: "각자의 취미 여행을 공유", trait: "birch" },
+            { label: "사막 같은 곳에서 함께 모험", trait: "cactus" }
+          ]
+        },
+        {
+          text: "주말 데이트 플랜을 고르자면?",
+          options: [
+            { label: "도심 공원, 피크닉과 대화", trait: "evergreen" },
+            { label: "카페 투어와 소품샵", trait: "cherry" },
+            { label: "전시와 서점, 조용한 산책", trait: "birch" },
+            { label: "즉흥 드라이브와 액티비티", trait: "cactus" }
+          ]
+        },
+        {
+          text: "사랑을 표현하는 방식은?",
+          options: [
+            { label: "꾸준한 연락과 실천", trait: "evergreen" },
+            { label: "애정 표현과 스킨십", trait: "cherry" },
+            { label: "응원 메시지와 현실적인 조언", trait: "birch" },
+            { label: "문득 건네는 선물과 놀라운 서프라이즈", trait: "cactus" }
+          ]
+        }
+      ],
+      traits: {
+        evergreen: {
+          name: "늘푸른 전나무",
+          tagline: "안정형 · 헌신형",
+          desc: "계절이 바껴도 동일한 온도로 사랑을 지키는 타입. 약속을 중요하게 여기며 상대가 기대어 쉴 수 있는 쉼터가 되어줍니다.",
+          image: "/brainTest/images/tree-evergreen.jpg",
+          tips: [
+            "때로는 감정을 더 선명하게 표현해 주세요.",
+            "당신의 꾸준함은 최고의 매력입니다."
+          ],
+          compatibility: {
+            best: { trait: "cherry", reason: "벚꽃나무의 설렘이 전나무의 안정감을 화사하게 밝혀줘요." },
+            watch: { trait: "cactus", reason: "즉흥적인 선인장을 따라가기엔 휴식이 먼저 필요할 수 있어요." }
+          }
+        },
+        cherry: {
+          name: "벚꽃나무",
+          tagline: "로맨틱 · 감성형",
+          desc: "꽃잎이 흩날리는 듯 설렘을 선사하는 연애 방식을 좋아합니다. 사소한 디테일까지 기억하고 추억을 수집하죠.",
+          image: "/brainTest/images/tree-cherry.jpg",
+          tips: [
+            "감정 기복이 클 땐 충분한 휴식이 필요해요.",
+            "설렘과 현실의 균형을 맞추면 더욱 빛납니다."
+          ],
+          compatibility: {
+            best: { trait: "birch", reason: "자작나무의 담백함 덕분에 감성이 안정적으로 빛납니다." },
+            watch: { trait: "evergreen", reason: "꾸준함이 때로는 답답하게 느껴질 수 있어요." }
+          }
+        },
+        birch: {
+          name: "하얀 자작나무",
+          tagline: "자립 · 지성형",
+          desc: "자신만의 리듬을 지키면서도 상대의 성장을 응원하는 타입. 담백하지만 깊은 신뢰를 만들어냅니다.",
+          image: "/brainTest/images/tree-birch.jpg",
+          tips: [
+            "감정을 숨기지 말고 조금 더 보여주세요.",
+            "체크리스트보다 마음을 따라가는 날도 필요합니다."
+          ],
+          compatibility: {
+            best: { trait: "evergreen", reason: "두 나무 모두 근성과 믿음으로 관계를 단단히 지켜요." },
+            watch: { trait: "cherry", reason: "벚꽃의 감정 파동이 조용한 자작나무에겐 버거울 수 있어요." }
+          }
+        },
+        cactus: {
+          name: "사막의 선인장",
+          tagline: "열정 · 모험형",
+          desc: "낯선 환경도 두려워하지 않는 강인함. 평소엔 무덤덤해 보이지만 마음을 열면 누구보다 뜨겁고 헌신적입니다.",
+          image: "/brainTest/images/tree-cactus.jpg",
+          tips: [
+            "때로는 리듬을 늦추고 상대의 속도를 기다려 주세요.",
+            "감정을 쌓아두면 폭발할 수 있으니 조금씩 나눠요."
+          ],
+          compatibility: {
+            best: { trait: "birch", reason: "자작나무의 균형감이 선인장의 열정을 든든하게 지지해줘요." },
+            watch: { trait: "evergreen", reason: "꾸준함과 즉흥성의 간극을 좁히려면 대화가 필요해요." }
+          }
+        }
+      }
+    };
+
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const stepLabel = document.getElementById("stepLabel");
+    const progressEl = document.getElementById("progress");
+    const resultCard = document.getElementById("resultCard");
+    const quizCard = document.getElementById("quizCard");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultBadge = document.getElementById("resultBadge");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultImage = document.getElementById("resultImage");
+    const resultTips = document.getElementById("resultTips");
+    const bestLink = document.getElementById("bestLink");
+    const worstLink = document.getElementById("worstLink");
+    const restartBtn = document.getElementById("restartBtn");
+    const prevBtn = document.getElementById("prevBtn");
+    const shareContent = {
+      title: "나만의 트리 연애 테스트",
+      description: "6개의 질문으로 나만의 연애 나무 타입을 찾아보는 심리 테스트",
+      imageUrl: "https://partygame.pe.kr/brainTest/images/tree-love-og.jpg",
+      webUrl: `${window.location.origin}${window.location.pathname}`
+    };
+    const PARAM_KEY = "result";
+
+    let current = 0;
+    const answers = Array(quiz.questions.length).fill(null);
+
+    function renderQuestion() {
+      const q = quiz.questions[current];
+      questionEl.textContent = q.text;
+      stepLabel.textContent = `문항 ${current + 1} / ${quiz.questions.length}`;
+      progressEl.textContent = `${Math.round((current / quiz.questions.length) * 100)}% 완료`;
+
+      optionsEl.innerHTML = "";
+      q.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-white/20 hover:border-emerald-200 hover:bg-white/10 transition";
+        btn.textContent = opt.label;
+        btn.addEventListener("click", () => handleOption(opt.trait));
+        optionsEl.appendChild(btn);
+      });
+
+      prevBtn.disabled = current === 0;
+    }
+
+    function handleOption(trait) {
+      answers[current] = trait;
+      if (current === quiz.questions.length - 1) {
+        showResult();
+        return;
+      }
+      current += 1;
+      renderQuestion();
+    }
+
+    function determineWinner() {
+      const tally = answers.reduce((map, trait) => {
+        if (!trait) return map;
+        map[trait] = (map[trait] || 0) + 1;
+        return map;
+      }, {});
+      let winner = null;
+      Object.keys(tally).forEach(trait => {
+        if (!winner || tally[trait] > tally[winner]) winner = trait;
+      });
+      return winner;
+    }
+
+    function showResult(traitKey) {
+      const winner = traitKey || determineWinner();
+      if (!winner || !quiz.traits[winner]) {
+        resultTitle.textContent = "아직 선택이 부족해요";
+        resultDesc.textContent = "문항을 모두 선택하면 결과를 볼 수 있어요.";
+        return;
+      }
+      applyResult(winner);
+    }
+
+    function applyResult(trait) {
+      const meta = quiz.traits[trait];
+      const resolvedImage = meta.image.startsWith("http") ? meta.image : `${window.location.origin}${meta.image}`;
+      resultTitle.textContent = meta.name;
+      resultBadge.textContent = meta.tagline;
+      resultDesc.textContent = meta.desc;
+      resultImage.src = meta.image;
+      resultImage.alt = meta.name;
+      resultTips.innerHTML = "";
+      meta.tips.forEach(t => {
+        const item = document.createElement("div");
+        item.className = "border border-white/15 rounded-xl px-3 py-2 text-sm text-slate-100";
+        item.textContent = `• ${t}`;
+        resultTips.appendChild(item);
+      });
+      updateRelationLinks(trait);
+      updateResultParam(trait);
+      shareContent.title = `${meta.name} | 나만의 트리 연애 테스트`;
+      shareContent.description = meta.desc;
+      shareContent.imageUrl = resolvedImage;
+      shareContent.webUrl = `${window.location.origin}${window.location.pathname}?${PARAM_KEY}=${trait}#result`;
+
+      quizCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+      progressEl.textContent = "100% 완료";
+    }
+
+    function goPrev() {
+      if (current === 0) return;
+      current -= 1;
+      renderQuestion();
+    }
+
+    function restart() {
+      for (let i = 0; i < answers.length; i += 1) answers[i] = null;
+      current = 0;
+      quizCard.classList.remove("hidden");
+      resultCard.classList.add("hidden");
+      progressEl.textContent = "0% 완료";
+      updateResultParam(null);
+      renderQuestion();
+    }
+
+    function updateResultParam(trait) {
+      const url = new URL(window.location.href);
+      if (trait) {
+        url.searchParams.set(PARAM_KEY, trait);
+        url.hash = "result";
+      } else {
+        url.searchParams.delete(PARAM_KEY);
+        url.hash = "";
+      }
+      window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+    }
+
+    function updateRelationLinks(trait) {
+      const info = quiz.traits[trait]?.compatibility || {};
+      setRelationLink(bestLink, info.best, "최고 궁합", trait);
+      setRelationLink(worstLink, info.watch, "주의 궁합", trait);
+    }
+
+    function setRelationLink(element, detail, label, sourceTrait) {
+      if (!detail || !detail.trait || !quiz.traits[detail.trait]) {
+        element.classList.add("hidden");
+        element.removeAttribute("href");
+        element.removeAttribute("data-trait");
+        element.textContent = "";
+        return;
+      }
+      const target = quiz.traits[detail.trait];
+      const reason = detail.reason || relationFallbackReason(label, sourceTrait, detail.trait);
+      element.classList.remove("hidden");
+      element.dataset.trait = detail.trait;
+      element.textContent = `${label} · ${target.name} – ${reason}`;
+      element.href = `${window.location.pathname}?${PARAM_KEY}=${detail.trait}#result`;
+    }
+
+    function relationFallbackReason(type, sourceTrait, targetTrait) {
+      const source = quiz.traits[sourceTrait];
+      const target = quiz.traits[targetTrait];
+      if (!source || !target) {
+        return type === "최고 궁합" ? "서로의 분위기가 자연스럽게 어울려요." : "감정 속도가 달라 조율이 필요해요.";
+      }
+      if (type === "최고 궁합") {
+        return `${target.tagline} 감각이 ${source.tagline}과 시너지를 만듭니다.`;
+      }
+      return `${target.name}의 리듬과 ${source.name}이 엇갈릴 수 있어요.`;
+    }
+
+    function handleRelationClick(event) {
+      const trait = event.currentTarget.dataset.trait;
+      if (!trait || !quiz.traits[trait]) return;
+      event.preventDefault();
+      applyResult(trait);
+      window.scrollTo({ top: resultCard.offsetTop - 40, behavior: "smooth" });
+    }
+
+    prevBtn.addEventListener("click", goPrev);
+    restartBtn.addEventListener("click", restart);
+    bestLink.addEventListener("click", handleRelationClick);
+    worstLink.addEventListener("click", handleRelationClick);
+
+    renderQuestion();
+    const initialResult = new URLSearchParams(window.location.search).get(PARAM_KEY);
+    if (initialResult && quiz.traits[initialResult]) {
+      applyResult(initialResult);
+    }
+
+    setupKakaoShare("shareKakaoBtn", shareContent);
+  </script>
+</body>
+</html>
+
+
+

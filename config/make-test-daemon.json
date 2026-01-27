@@ -1,0 +1,8 @@
+{
+  "interval_minutes": 5,
+  "max_per_run": 1,
+  "model": "gpt-5-codex",
+  "openai_base_url": "https://api.openai.com/v1/responses",
+  "pixabay_api_key": "53761312-8e8e82ca5d56622afe4689c50",
+  "temperature": 0.7
+}

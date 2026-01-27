@@ -1,0 +1,27 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function checkUserAgent() {
+            const agent = window.navigator.userAgent;
+            if (agent.indexOf("NAVER") > -1) {
+                console.log("NAVER");
+            } else {
+                if (location.href.indexOf("/errorPage/pc") > -1 || location.href.indexOf("/bridge") > -1 || location.href.indexOf("/admin") > -1 || location.href.indexOf("/events") > -1 || location.href.indexOf("/naver")
+                    > -1) {
+                    console.log("admin");
+                } else {
+                    console.log("else");
+                }
+            }
+        }
+        checkUserAgent();
+    </script>
+</body>
+</html>

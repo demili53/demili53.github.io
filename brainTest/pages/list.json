@@ -1,0 +1,128 @@
+[
+    {
+        "id": "tree-test",
+        "title": "나만의 트리 연애 테스트",
+        "path": "/brainTest/pages/brainTest/tree-test.html",
+        "description": "연애 나무 타입을 알려주는 6문항 연애 심리 테스트",
+        "keywords": ["연애", "나무", "감성", "테스트"]
+    },
+    {
+        "id": "yakuza-vibe-test",
+        "title": "야쿠자 무드 테스트",
+        "path": "/brainTest/pages/brainTest/yakuza-vibe-test.html",
+        "description": "밤거리 감성으로 나의 리더십과 팀 케미를 확인하는 6문항 테스트",
+        "keywords": ["야쿠자", "무드", "리더십", "테스트"]
+    },
+    {
+        "id": "love-count-test",
+        "title": "내 생에 남은 연애 횟수 테스트",
+        "path": "/brainTest/pages/brainTest/love-count-test.html",
+        "description": "연애 루틴을 통해 남은 연애 횟수와 스타일을 예측하는 6문항 테스트",
+        "keywords": ["연애", "횟수", "전망", "테스트"]
+    },
+    {
+        "id": "new-year-fortune-test",
+        "title": "2026 신년 종합 운세 뽑기",
+        "path": "/brainTest/pages/brainTest/new-year-fortune-test.html",
+        "description": "붉은 말의 해 에너지와 궁합 전략을 알려주는 6문항 운세 테스트",
+        "keywords": ["운세", "신년", "행운", "테스트"]
+    },
+    {
+        "id": "cosmic-alien-test",
+        "title": "코스믹 외계 본능 테스트",
+        "path": "/brainTest/pages/brainTest/cosmic-alien-test.html",
+        "description": "지구에 불시착한 외계 본능을 6문항으로 확인하는 테스트",
+        "keywords": ["외계인", "우주", "감성", "테스트"]
+    },
+    {
+        "id": "all-season-tree-test",
+        "title": "올인원 트리 꾸미기 테스트",
+        "path": "/brainTest/pages/brainTest/all-season-tree-test.html",
+        "description": "나만의 트리 감성과 장식 스타일을 6문항으로 알아보는 테스트",
+        "keywords": ["트리", "크리스마스", "장식", "테스트"]
+    },
+    {
+        "id": "dinner-spin-test",
+        "title": "오늘의 저메추 스핀 테스트",
+        "path": "/brainTest/pages/brainTest/dinner-spin-test.html",
+        "description": "입맛 시그널로 오늘 먹으면 행복한 저녁 메뉴를 골라주는 6문항 테스트",
+        "keywords": ["저메추", "음식", "저녁", "테스트"]
+    },
+    {
+        "id": "menhera-test",
+        "title": "멘헤라 감정 스펙트럼 테스트",
+        "path": "/brainTest/pages/brainTest/menhera-test.html",
+        "description": "연애와 일상에서 표출되는 멘헤라 에너지 레벨을 6문항으로 알아보는 테스트",
+        "keywords": ["멘헤라", "감정", "연애", "테스트"]
+    },
+    {
+        "id": "lucky-type-test",
+        "title": "행운 유형 테스트",
+        "path": "/brainTest/pages/brainTest/lucky-type-test.html",
+        "description": "사랑·돈·여행·힐링 네 가지 결로 행운 에너지 루트를 짚어보는 6문항 테스트",
+        "keywords": ["행운", "클로버", "재물", "테스트"]
+    },
+    {
+        "id": "charm-guardian-test",
+        "title": "나만의 액막이 찾기",
+        "path": "/brainTest/pages/brainTest/charm-guardian-test.html",
+        "description": "불운을 삼켜 줄 액막이 캐릭터와 정화 루틴을 6문항으로 알아보는 테스트",
+        "keywords": ["액막이", "부적", "정화", "테스트"]
+    },
+    {
+        "id": "meme-ability-test",
+        "title": "2025년 밈 능력고사",
+        "path": "/brainTest/pages/brainTest/meme-ability-test.html",
+        "description": "짤 해석/리믹스/보관/정찰 실력을 점검하는 6문항 밈 능력 시험",
+        "keywords": ["밈", "짤", "인터넷", "테스트"]
+    },
+    {
+        "id": "year-end-summary-test",
+        "title": "2025년 연말 성격 결산 테스트",
+        "path": "/brainTest/pages/brainTest/year-end-summary-test.html",
+        "description": "2025년 하이라이트와 루틴을 압축해 내년 전략을 추천하는 6문항 연말 결산 테스트",
+        "keywords": ["연말", "결산", "성격", "테스트"]
+    },
+    {
+        "id": "fishbread-test",
+        "title": "따끈따끈 붕어빵 테스트",
+        "path": "/brainTest/pages/brainTest/fishbread-test.html",
+        "description": "붕어빵 취향으로 겨울 페르소나와 궁합을 알아보는 6문항 테스트",
+        "keywords": ["붕어빵", "겨울간식", "음식", "테스트"]
+    },
+    {
+        "id": "hamster-test",
+        "title": "나만의 햄스터 테스트",
+        "path": "/brainTest/pages/brainTest/hamster-test.html",
+        "description": "집콕 루틴과 간식 취향으로 햄스터 페르소나를 찾아보는 6문항 테스트",
+        "keywords": ["햄스터", "동물", "집콕", "테스트"]
+    },
+    {
+        "id": "understanding-test",
+        "title": "나의 이해력 테스트",
+        "path": "/brainTest/pages/brainTest/understanding-test.html",
+        "description": "다름을 이해하는 감수성을 10문항으로 점검하는 테스트",
+        "keywords": ["이해력", "문화", "공감", "테스트"]
+    },
+    {
+        "id": "hippo-type-test",
+        "title": "하마 유형 테스트",
+        "path": "/brainTest/pages/brainTest/hippo-type-test.html",
+        "description": "느긋함과 파워를 가진 하마 에너지로 성향을 알아보는 6문항 테스트",
+        "keywords": ["하마", "동물", "에너지", "테스트"]
+    },
+    {
+        "id": "puppy-kitty-test",
+        "title": "댕댕미 냥냥미 테스트",
+        "path": "/brainTest/pages/brainTest/puppy-kitty-test.html",
+        "description": "강아지·고양이 매력 밸런스로 나의 댕댕미와 냥냥미를 확인하는 8문항 테스트",
+        "keywords": ["동물", "강아지", "고양이", "테스트"]
+    },
+    {
+        "id": "smooth-texture-test",
+        "title": "매끈매끈한 테스트",
+        "path": "/brainTest/pages/brainTest/smooth-texture-test.html",
+        "description": "촉감 취향으로 내 리듬을 알아보는 8문항 성향 테스트",
+        "keywords": ["동물", "촉감", "성향", "테스트"]
+    }
+]

@@ -1,0 +1,10 @@
+client_id: ca-pub-1087435977438565
+auto_ads: true
+head_snippet: |
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+     crossorigin="anonymous"></script>
+  
+note: >
+  Include the head_snippet once per page (in the <head>) to enable Google AdSense
+  auto-ads across the site.
