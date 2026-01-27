@@ -194,5 +194,26 @@
         "path": "/brainTest/pages/brainTest/soul-potato-test.html",
         "description": "감자 같은 본능으로 나의 영혼 감자 타입을 알아보는 6문항 테스트",
         "keywords": ["감자", "본능", "힐링", "테스트"]
+    },
+    {
+        "id": "dumpling-test",
+        "title": "나만의 만두 테스트",
+        "path": "/brainTest/pages/brainTest/dumpling-test.html",
+        "description": "만두 취향으로 나만의 만두 성향을 알아보는 6문항 테스트",
+        "keywords": ["만두", "음식", "취향", "테스트"]
+    },
+    {
+        "id": "inner-persona-test",
+        "title": "내 마음 속 페르소나 테스트",
+        "path": "/brainTest/pages/brainTest/inner-persona-test.html",
+        "description": "선택한 행동 패턴으로 내 마음 속 페르소나를 찾는 6문항 테스트",
+        "keywords": ["페르소나", "성향", "감정", "테스트"]
+    },
+    {
+        "id": "second-half-vibe-test",
+        "title": "하반기 추구미 테스트",
+        "path": "/brainTest/pages/brainTest/second-half-vibe-test.html",
+        "description": "하반기 분위기를 만드는 추구미 타입을 알아보는 6문항 테스트",
+        "keywords": ["하반기", "추구미", "무드", "테스트"]
     }
 ]

@@ -1,0 +1,402 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="선택한 행동 패턴으로 내 마음 속 페르소나를 찾는 6문항 테스트">
+  <meta name="keywords" content="페르소나 테스트, 성향, 심리 테스트">
+  <meta name="author" content="partygame.pe.kr">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/inner-persona-test.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="내 마음 속 페르소나 테스트">
+  <meta property="og:description" content="선택한 행동 패턴으로 내 마음 속 페르소나를 찾는 6문항 테스트">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/persona-og.jpg">
+  <meta property="og:url" content="https://partygame.pe.kr/brainTest/pages/brainTest/inner-persona-test.html">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+          crossorigin="anonymous"></script>
+  <title>내 마음 속 페르소나 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-950 via-amber-950 to-rose-950 text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.35em] text-amber-200">Inner Persona Lab</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">내 마음 속 페르소나 테스트</h1>
+      <p class="text-slate-200">
+        6개의 질문으로 내 안의 페르소나 에너지를 확인해 보세요.
+        <a href="/" class="underline text-amber-200 hover:text-amber-100 transition">홈으로 이동</a>
+      </p>
+    </header>
+
+    <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section class="space-y-3">
+        <div class="text-xs font-semibold text-amber-200 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+          <div id="progressBar" class="h-2 bg-gradient-to-r from-amber-400 via-rose-400 to-indigo-400 w-0 transition-all duration-300"></div>
+        </div>
+        <div class="text-sm text-slate-300 flex justify-between">
+          <span>내면 페르소나 분석 중...</span>
+          <span id="progressText">0% 완료</span>
+        </div>
+      </section>
+
+      <section id="quizCard" class="space-y-5">
+        <h2 id="question" class="text-2xl font-semibold"></h2>
+        <div id="options" class="space-y-3"></div>
+        <div class="flex justify-between text-sm text-slate-300">
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-amber-200 hover:bg-white/10 transition disabled:opacity-40">이전</button>
+          <span class="text-amber-200">가장 닮은 답을 골라주세요</span>
+        </div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-amber-200 uppercase tracking-[0.3em]">결과</div>
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="md:w-48 w-full">
+            <img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-48 object-cover" alt="result visual">
+          </div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm"></div>
+            <p id="resultDesc" class="text-slate-100 leading-relaxed"></p>
+          </div>
+        </div>
+        <div id="resultTips" class="grid gap-3"></div>
+        <div class="space-y-2 bg-white/5 border border-white/10 rounded-2xl p-4">
+          <h3 class="text-lg font-semibold text-amber-200">테스트 내 궁합</h3>
+          <div class="flex flex-col gap-2 text-sm">
+            <a id="bestLink" class="inline-flex items-center gap-2 text-slate-100 underline underline-offset-4 hover:text-amber-200" href="#">최고 궁합 결과 보기</a>
+            <a id="worstLink" class="inline-flex items-center gap-2 text-slate-300 underline underline-offset-4 hover:text-rose-200" href="#">주의 궁합 결과 보기</a>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-amber-300 text-amber-100 hover:bg-amber-400/10 transition">카카오톡 공유</button>
+          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500 text-white font-semibold shadow-lg hover:bg-amber-400 transition">다시 시작하기</button>
+          <a href="/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 text-slate-100 hover:bg-white/10 transition">홈으로 이동</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+      window.Kakao.init(window.__KAKAO_APP_KEY__);
+    }
+  </script>
+  <script src="/brainTest/scripts/kakao-share.js"></script>
+  <script>
+    const quiz = {
+      questions: [
+        {
+          text: "새로운 환경에 들어가면 나는?",
+          options: [
+            { label: "분위기에 맞게 역할을 빠르게 바꾼다", trait: "mask" },
+            { label: "조용히 흐름을 관찰하며 적응한다", trait: "shadow" },
+            { label: "밝은 에너지로 분위기를 끌어올린다", trait: "light" },
+            { label: "내 감정을 솔직하게 정리한다", trait: "mirror" }
+          ]
+        },
+        {
+          text: "누군가 내게 고민을 털어놓으면?",
+          options: [
+            { label: "상대에 맞춘 조언을 빠르게 해준다", trait: "mask" },
+            { label: "조용히 들어주며 포인트를 잡는다", trait: "shadow" },
+            { label: "따뜻하게 에너지를 보탠다", trait: "light" },
+            { label: "나도 솔직한 이야기로 공감한다", trait: "mirror" }
+          ]
+        },
+        {
+          text: "내가 사람들에게 보여주는 모습은?",
+          options: [
+            { label: "상황에 따라 다른 얼굴", trait: "mask" },
+            { label: "차분하고 신중한 모습", trait: "shadow" },
+            { label: "밝고 낙관적인 분위기", trait: "light" },
+            { label: "있는 그대로의 나", trait: "mirror" }
+          ]
+        },
+        {
+          text: "감정이 흔들릴 때 나는?",
+          options: [
+            { label: "겉으론 괜찮은 척하지만 정리한다", trait: "mask" },
+            { label: "혼자 생각하면서 조용히 가라앉힌다", trait: "shadow" },
+            { label: "기분 전환으로 다시 밝히려 한다", trait: "light" },
+            { label: "일기나 기록으로 털어낸다", trait: "mirror" }
+          ]
+        },
+        {
+          text: "내가 가장 중요하게 여기는 관계 태도는?",
+          options: [
+            { label: "상대에게 맞춰주는 유연함", trait: "mask" },
+            { label: "묵묵히 지키는 신뢰", trait: "shadow" },
+            { label: "밝은 분위기를 유지하는 힘", trait: "light" },
+            { label: "솔직함과 진정성", trait: "mirror" }
+          ]
+        },
+        {
+          text: "내가 느끼는 내면의 모습은?",
+          options: [
+            { label: "여러 개의 얼굴이 공존한다", trait: "mask" },
+            { label: "깊고 조용한 호수 같다", trait: "shadow" },
+            { label: "햇살 같은 온기", trait: "light" },
+            { label: "거울처럼 투명한 감정", trait: "mirror" }
+          ]
+        }
+      ],
+      traits: {
+        mask: {
+          name: "멀티 페르소나",
+          tagline: "유연 · 적응형",
+          desc: "상황에 맞춰 얼굴을 바꾸는 타입. 빠른 적응력으로 어디서든 역할을 만들어냅니다.",
+          image: "/brainTest/images/persona-mask.jpg",
+          tips: [
+            "가끔은 나 자신에게 솔직해지는 시간이 필요해요.",
+            "유연함이 당신의 가장 큰 무기입니다."
+          ],
+          compatibility: {
+            best: { trait: "light", reason: "밝은 페르소나가 멀티 페르소나의 변화에 온기를 더해줘요." },
+            watch: { trait: "mirror", reason: "거울 페르소나의 솔직함이 부담될 수 있어요." }
+          }
+        },
+        shadow: {
+          name: "그림자 페르소나",
+          tagline: "관찰 · 안정형",
+          desc: "조용히 흐름을 파악하고 필요한 순간에 움직이는 타입. 깊은 신뢰를 쌓아요.",
+          image: "/brainTest/images/persona-shadow.jpg",
+          tips: [
+            "감정을 조금만 드러내면 관계가 부드러워집니다.",
+            "당신의 침착함은 큰 힘이에요."
+          ],
+          compatibility: {
+            best: { trait: "mirror", reason: "거울 페르소나의 솔직함이 그림자의 안정감을 밝혀줘요." },
+            watch: { trait: "light", reason: "밝은 페르소나의 속도가 버겁게 느껴질 수 있어요." }
+          }
+        },
+        light: {
+          name: "햇살 페르소나",
+          tagline: "밝음 · 에너지형",
+          desc: "주변을 밝히는 긍정 에너지가 강한 타입. 분위기를 살리는 재능이 있습니다.",
+          image: "/brainTest/images/persona-light.jpg",
+          tips: [
+            "에너지가 소진되기 전에 휴식을 챙겨주세요.",
+            "밝은 마음이 주변에 큰 힘이 됩니다."
+          ],
+          compatibility: {
+            best: { trait: "mask", reason: "멀티 페르소나의 유연함이 햇살 페르소나를 더 빛나게 해줘요." },
+            watch: { trait: "shadow", reason: "그림자 페르소나의 조용함이 답답할 수 있어요." }
+          }
+        },
+        mirror: {
+          name: "거울 페르소나",
+          tagline: "솔직 · 진정형",
+          desc: "감정을 숨기지 않고 투명하게 드러내는 타입. 진정성 있는 관계를 선호합니다.",
+          image: "/brainTest/images/persona-mirror.jpg",
+          tips: [
+            "솔직함 뒤에 따뜻한 표현을 더하면 좋아요.",
+            "감정 기록이 당신의 나침반이 됩니다."
+          ],
+          compatibility: {
+            best: { trait: "shadow", reason: "그림자 페르소나의 침착함이 거울의 솔직함을 안정시켜요." },
+            watch: { trait: "mask", reason: "멀티 페르소나의 변화가 불안하게 느껴질 수 있어요." }
+          }
+        }
+      }
+    };
+
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const stepLabel = document.getElementById("stepLabel");
+    const progressBar = document.getElementById("progressBar");
+    const progressText = document.getElementById("progressText");
+    const resultCard = document.getElementById("resultCard");
+    const quizCard = document.getElementById("quizCard");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultBadge = document.getElementById("resultBadge");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultImage = document.getElementById("resultImage");
+    const resultTips = document.getElementById("resultTips");
+    const bestLink = document.getElementById("bestLink");
+    const worstLink = document.getElementById("worstLink");
+    const restartBtn = document.getElementById("restartBtn");
+    const prevBtn = document.getElementById("prevBtn");
+    const shareContent = {
+      title: "내 마음 속 페르소나 테스트",
+      description: "선택한 행동 패턴으로 내 마음 속 페르소나를 찾는 6문항 테스트",
+      imageUrl: "https://partygame.pe.kr/brainTest/images/persona-og.jpg",
+      webUrl: `${window.location.origin}${window.location.pathname}`
+    };
+    const PARAM_KEY = "result";
+
+    let current = 0;
+    const answers = Array(quiz.questions.length).fill(null);
+
+    function renderQuestion() {
+      const q = quiz.questions[current];
+      questionEl.textContent = q.text;
+      stepLabel.textContent = `문항 ${current + 1} / ${quiz.questions.length}`;
+      const progress = Math.round((current / quiz.questions.length) * 100);
+      progressText.textContent = `${progress}% 완료`;
+      progressBar.style.width = `${progress}%`;
+
+      optionsEl.innerHTML = "";
+      q.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-white/20 hover:border-amber-200 hover:bg-white/10 transition";
+        btn.textContent = opt.label;
+        btn.addEventListener("click", () => handleOption(opt.trait));
+        optionsEl.appendChild(btn);
+      });
+
+      prevBtn.disabled = current === 0;
+    }
+
+    function handleOption(trait) {
+      answers[current] = trait;
+      if (current === quiz.questions.length - 1) {
+        showResult();
+        return;
+      }
+      current += 1;
+      renderQuestion();
+    }
+
+    function determineWinner() {
+      const tally = answers.reduce((map, trait) => {
+        if (!trait) return map;
+        map[trait] = (map[trait] || 0) + 1;
+        return map;
+      }, {});
+      let winner = null;
+      Object.keys(tally).forEach(trait => {
+        if (!winner || tally[trait] > tally[winner]) winner = trait;
+      });
+      return winner;
+    }
+
+    function showResult(traitKey) {
+      const winner = traitKey || determineWinner();
+      if (!winner || !quiz.traits[winner]) {
+        resultTitle.textContent = "아직 선택이 부족해요";
+        resultDesc.textContent = "문항을 모두 선택하면 결과를 볼 수 있어요.";
+        return;
+      }
+      applyResult(winner);
+    }
+
+    function applyResult(trait) {
+      const meta = quiz.traits[trait];
+      const resolvedImage = meta.image.startsWith("http") ? meta.image : `${window.location.origin}${meta.image}`;
+      resultTitle.textContent = meta.name;
+      resultBadge.textContent = meta.tagline;
+      resultDesc.textContent = meta.desc;
+      resultImage.src = meta.image;
+      resultImage.alt = meta.name;
+      resultTips.innerHTML = "";
+      meta.tips.forEach(t => {
+        const item = document.createElement("div");
+        item.className = "border border-white/15 rounded-xl px-3 py-2 text-sm text-slate-100";
+        item.textContent = `• ${t}`;
+        resultTips.appendChild(item);
+      });
+      updateRelationLinks(trait);
+      updateResultParam(trait);
+      shareContent.title = `${meta.name} | 내 마음 속 페르소나 테스트`;
+      shareContent.description = meta.desc;
+      shareContent.imageUrl = resolvedImage;
+      shareContent.webUrl = `${window.location.origin}${window.location.pathname}?${PARAM_KEY}=${trait}#result`;
+
+      quizCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+      progressText.textContent = "100% 완료";
+      progressBar.style.width = "100%";
+    }
+
+    function goPrev() {
+      if (current === 0) return;
+      current -= 1;
+      renderQuestion();
+    }
+
+    function restart() {
+      for (let i = 0; i < answers.length; i += 1) answers[i] = null;
+      current = 0;
+      quizCard.classList.remove("hidden");
+      resultCard.classList.add("hidden");
+      progressText.textContent = "0% 완료";
+      progressBar.style.width = "0%";
+      updateResultParam(null);
+      renderQuestion();
+    }
+
+    function updateResultParam(trait) {
+      const url = new URL(window.location.href);
+      if (trait) {
+        url.searchParams.set(PARAM_KEY, trait);
+        url.hash = "result";
+      } else {
+        url.searchParams.delete(PARAM_KEY);
+        url.hash = "";
+      }
+      window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+    }
+
+    function updateRelationLinks(trait) {
+      const info = quiz.traits[trait]?.compatibility || {};
+      setRelationLink(bestLink, info.best, "최고 궁합", trait);
+      setRelationLink(worstLink, info.watch, "주의 궁합", trait);
+    }
+
+    function setRelationLink(element, detail, label, sourceTrait) {
+      if (!detail || !detail.trait || !quiz.traits[detail.trait]) {
+        element.classList.add("hidden");
+        element.removeAttribute("href");
+        element.removeAttribute("data-trait");
+        element.textContent = "";
+        return;
+      }
+      const target = quiz.traits[detail.trait];
+      const reason = detail.reason || relationFallbackReason(label, sourceTrait, detail.trait);
+      element.classList.remove("hidden");
+      element.dataset.trait = detail.trait;
+      element.textContent = `${label} · ${target.name} - ${reason}`;
+      element.href = `${window.location.pathname}?${PARAM_KEY}=${detail.trait}#result`;
+    }
+
+    function relationFallbackReason(type, sourceTrait, targetTrait) {
+      const source = quiz.traits[sourceTrait];
+      const target = quiz.traits[targetTrait];
+      if (!source || !target) {
+        return type === "최고 궁합" ? "서로의 페르소나가 자연스럽게 어울려요." : "감정 리듬이 달라 조율이 필요해요.";
+      }
+      if (type === "최고 궁합") {
+        return `${target.tagline} 감각이 ${source.tagline}과 시너지를 만듭니다.`;
+      }
+      return `${target.name}의 톤이 ${source.name}에게는 부담일 수 있어요.`;
+    }
+
+    function handleRelationClick(event) {
+      const trait = event.currentTarget.dataset.trait;
+      if (!trait || !quiz.traits[trait]) return;
+      event.preventDefault();
+      applyResult(trait);
+      window.scrollTo({ top: resultCard.offsetTop - 40, behavior: "smooth" });
+    }
+
+    prevBtn.addEventListener("click", goPrev);
+    restartBtn.addEventListener("click", restart);
+    bestLink.addEventListener("click", handleRelationClick);
+    worstLink.addEventListener("click", handleRelationClick);
+
+    renderQuestion();
+    const initialResult = new URLSearchParams(window.location.search).get(PARAM_KEY);
+    if (initialResult && quiz.traits[initialResult]) {
+      applyResult(initialResult);
+    }
+
+    setupKakaoShare("shareKakaoBtn", shareContent);
+  </script>
+</body>
+</html>
