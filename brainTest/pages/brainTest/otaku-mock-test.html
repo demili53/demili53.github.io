@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="나는 갓반인? 찐타쿠? 나의 오타쿠력을 측정할 수 있는 오타쿠 모의고사 테스트 지금 바로 오타쿠력 측정하러 가기!!">
+  <meta name="keywords" content="오타쿠, 모의고사, 애니, 갓반인, 찐타쿠, 레벨테스트, 테스트">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <meta name="author" content="partygame.pe.kr">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/otaku-mock-test.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="오타쿠 모의고사">
+  <meta property="og:description" content="나는 갓반인? 찐타쿠? 나의 오타쿠력을 측정할 수 있는 오타쿠 모의고사 테스트">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/otaku-mock-og.jpg">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+         crossorigin="anonymous"></script>
+  <title>오타쿠 모의고사</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-purple-900 via-pink-900 to-rose-900 text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.3em] text-purple-200">Otaku Mock Test</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">오타쿠 모의고사</h1>
+      <p class="text-slate-200">나는 갓반인? 찐타쿠? 나의 오타쿠력을 측정할 수 있는 오타쿠 모의고사 테스트 지금 바로 오타쿠력 측정하러 가기!! <a href="/" class="underline text-purple-200 hover:text-purple-100 transition">홈으로 돌아가기</a></p>
+    </header>
+
+    <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section id="quizCard" class="space-y-5">
+        <div class="text-xs font-semibold text-purple-100 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <h2 id="question" class="text-2xl font-semibold"></h2>
+        <div class="space-y-3" id="options"></div>
+        <div class="flex justify-between text-sm text-slate-300">
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-white/40 hover:bg-white/10 transition disabled:opacity-40">이전</button>
+          <span id="progress" class="text-purple-200">0% 완료</span>
+        </div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-purple-100 uppercase tracking-[0.3em">결과</div>
+        <div class="flex flex-col gap-4 md:flex-row">
+          <div class="md:w-48 w-full">
+            <img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-48 object-cover" alt="otaku mock result" src="">
+          </div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm"></div>
+            <p id="resultDesc" class="text-slate-100 leading-relaxed"></p>
+            <div id="resultMatch" class="text-sm text-slate-300"></div>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-3 pt-4">
+          <button id="restartBtn" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition font-medium">다시 하기</button>
+          <button id="shareBtn" class="px-4 py-2 bg-pink-600 hover:bg-pink-700 rounded-lg transition font-medium">카카오톡 공유</button>
+          <a href="/" class="px-4 py-2 border border-white/20 hover:border-white/40 hover:bg-white/10 rounded-lg transition font-medium">홈으로</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="text-center text-sm text-slate-400">
+      <p>© 2024 partygame.pe.kr. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+  </script>
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    const quizData = [
+      {
+        question: "새로운 애니메이션 시즌이 시작되면 나의 반응은?",
+        options: [
+          { text: "첫 화부터 바로 정주행한다", type: "hardcore" },
+          { text: "리뷰를 보고 재미있어 보이면 본다", type: "casual" },
+          { text: "주말에 시간 날 때 몰아서 본다", type: "normal" },
+          { text: "친구 추천받으면 한번 본다", type: "beginner" }
+        ]
+      },
+      {
+        question: "애니메이션 굿즈 구매 습관은?",
+        options: [
+          { text: "한정판은 무조건 수집한다", type: "collector" },
+          { text: "마음에 드는 캐릭터만 산다", type: "selective" },
+          { text: "가끔 필요한 것만 산다", type: "minimal" },
+          { text: "굿즈는 거의 사지 않는다", type: "observer" }
+        ]
+      },
+      {
+        question: "코스프레 이벤트에 참여한다면?",
+        options: [
+          { text: "직접 코스프레하고 참여한다", type: "cosplayer" },
+          { text: "사진 찍고 구경만 한다", type: "photographer" },
+          { text: "친구랑 같이 가서 즐긴다", type: "social" },
+          { text: "관심은 있지만 잘 안 간다", type: "curious" }
+        ]
+      },
+      {
+        question: "애니메이션 관련 용어 이해도는?",
+        options: [
+          { text: "모든 용어를 완벽히 안다", type: "expert" },
+          { text: "대부분의 용어를 안다", type: "advanced" },
+          { text: "기본적인 용어만 안다", type: "basic" },
+          { text: "거의 모르겠다", type: "newbie" }
+        ]
+      },
+      {
+        question: "주간 애니메이션 시청 시간은?",
+        options: [
+          { text: "10시간 이상 본다", type: "addict" },
+          { text: "5-10시간 정도 본다", type: "enthusiast" },
+          { text: "2-5시간 정도 본다", type: "regular" },
+          { text: "1-2시간 미만으로 본다", type: "light" }
+        ]
+      },
+      {
+        question: "오타쿠 커뮤니티 활동은?",
+        options: [
+          { text: "여러 커뮤니티에서 활발히 활동한다", type: "community" },
+          { text: "가끔 정보를 얻으려고 들어간다", type: "information" },
+          { text: "재미있는 글만 가끔 본다", type: "lurker" },
+          { text: "커뮤니티는 거의 이용하지 않는다", type: "solo" }
+        ]
+      }
+    ];
+
+    const results = [
+      {
+        type: "god_fan",
+        title: "갓반인",
+        badge: "👑 최상급 오타쿠",
+        description: "당신은 이미 오타쿠의 신입니다. 모든 애니메이션을 섭렵하고, 굿즈 수집은 기본, 코스프레까지 완벽하게 소화합니다. 다른 사람들에게 오타쿠 지식을 가르쳐줄 정도의 실력자입니다.",
+        image: "/brainTest/images/lucky-travel.jpg",
+        match: "가장 잘 맞는 타입: 👑 찐타쿠, 🎨 코스플레이어"
+      },
+      {
+        type: "real_otaku",
+        title: "찐타쿠",
+        badge: "🔥 진짜 오타쿠",
+        description: "당신은 진정한 오타쿠입니다. 애니메이션에 대한 깊은 이해와 열정을 가지고 있으며, 커뮤니티에서도 활발히 활동합니다. 주변 사람들에게 '애니 전문가'로 불립니다.",
+        image: "/brainTest/images/meme-oracle.jpg",
+        match: "가장 잘 맞는 타입: 👑 갓반인, 🎮 게이머"
+      },
+      {
+        type: "enthusiast",
+        title: "애니매니아",
+        badge: "⭐ 애니메이션 매니아",
+        description: "당신은 애니메이션을 정말 좋아하는 매니아입니다. 새로운 작품은 놓치지 않고 보며, 관련 정보도 꾸준히 챙깁니다. 오타쿠 문화에 깊이 빠져들고 있습니다.",
+        image: "/brainTest/images/wiki-archivist.jpg",
+        match: "가장 잘 맞는 타입: 🔥 찐타쿠, 📚 정보 수집가"
+      },
+      {
+        type: "normal_fan",
+        title: "평범한 팬",
+        badge: "👍 일반 팬",
+        description: "당신은 애니메이션을 즐겨보는 평범한 팬입니다. 인기 있는 작품 중심으로 시청하며, 가끔 관련 활동도 즐깁니다. 건강한 오타쿠 생활을 하고 있습니다.",
+        image: "/brainTest/images/understanding-companion.jpg",
+        match: "가장 잘 맞는 타입: ⭐ 애니매니아, 🎬 영화 팬"
+      },
+      {
+        type: "beginner",
+        title: "오타쿠 지망생",
+        badge: "🌱 초보 오타쿠",
+        description: "당신은 이제 막 오타쿠의 세계에 발을 들인 초보입니다. 애니메이션의 매력에 빠져들고 있으며, 앞으로 더 깊이 탐색하고 싶어합니다. 성장 가능성이 무한합니다!",
+        image: "/brainTest/images/magic-starlight.jpg",
+        match: "가장 잘 맞는 타입: 👍 평범한 팬, 🎮 취미 생활자"
+      },
+      {
+        type: "outsider",
+        title: "일반인",
+        badge: "👤 비오타쿠",
+        description: "당신은 아직 오타쿠 문화와 거리가 있는 일반인입니다. 애니메이션에 대한 관심은 적지만, 언제든 새로운 취미를 시작할 수 있습니다. 오타쿠의 세계에 발을 들여보세요!",
+        image: "/brainTest/images/ghost-quiet.jpg",
+        match: "가장 잘 맞는 타입: 🌱 오타쿠 지망생, 🎬 일반 시청자"
+      }
+    ];
+
+    let currentQuestion = 0;
+    let answers = [];
+    let resultType = '';
+
+    function initQuiz() {
+      showQuestion();
+      updateProgress();
+    }
+
+    function showQuestion() {
+      const question = quizData[currentQuestion];
+      document.getElementById('question').textContent = question.question;
+      document.getElementById('stepLabel').textContent = `문항 ${currentQuestion + 1} / ${quizData.length}`;
+      
+      const optionsContainer = document.getElementById('options');
+      optionsContainer.innerHTML = '';
+      
+      question.options.forEach((option, index) => {
+        const button = document.createElement('button');
+        button.className = 'w-full text-left p-4 rounded-lg border border-white/20 hover:border-white/40 hover:bg-white/10 transition text-slate-100';
+        button.textContent = option.text;
+        button.onclick = () => selectAnswer(option.type);
+        optionsContainer.appendChild(button);
+      });
+
+      document.getElementById('prevBtn').disabled = currentQuestion === 0;
+    }
+
+    function selectAnswer(type) {
+      answers[currentQuestion] = type;
+      
+      if (currentQuestion < quizData.length - 1) {
+        currentQuestion++;
+        showQuestion();
+        updateProgress();
+      } else {
+        showResult();
+      }
+    }
+
+    function updateProgress() {
+      const progress = Math.round((currentQuestion / quizData.length) * 100);
+      document.getElementById('progress').textContent = `${progress}% 완료`;
+    }
+
+    function calculateResult() {
+      const typeCount = {};
+      answers.forEach(type => {
+        typeCount[type] = (typeCount[type] || 0) + 1;
+      });
+
+      const maxCount = Math.max(...Object.values(typeCount));
+      const dominantTypes = Object.keys(typeCount).filter(type => typeCount[type] === maxCount);
+      
+      const typeMap = {
+        'hardcore': 'god_fan',
+        'casual': 'normal_fan',
+        'normal': 'enthusiast',
+        'beginner': 'beginner',
+        'collector': 'real_otaku',
+        'selective': 'enthusiast',
+        'minimal': 'normal_fan',
+        'observer': 'outsider',
+        'cosplayer': 'real_otaku',
+        'photographer': 'enthusiast',
+        'social': 'normal_fan',
+        'curious': 'beginner',
+        'expert': 'god_fan',
+        'advanced': 'real_otaku',
+        'basic': 'normal_fan',
+        'newbie': 'outsider',
+        'addict': 'god_fan',
+        'enthusiast': 'real_otaku',
+        'regular': 'enthusiast',
+        'light': 'normal_fan',
+        'community': 'real_otaku',
+        'information': 'enthusiast',
+        'lurker': 'normal_fan',
+        'solo': 'outsider'
+      };
+
+      const resultTypes = dominantTypes.map(type => typeMap[type] || 'normal_fan');
+      resultType = resultTypes[0];
+      
+      return results.find(r => r.type === resultType) || results[3];
+    }
+
+    function showResult() {
+      const result = calculateResult();
+      
+      document.getElementById('quizCard').classList.add('hidden');
+      document.getElementById('resultCard').classList.remove('hidden');
+      
+      document.getElementById('resultTitle').textContent = result.title;
+      document.getElementById('resultBadge').textContent = result.badge;
+      document.getElementById('resultDesc').textContent = result.description;
+      document.getElementById('resultMatch').textContent = result.match;
+      document.getElementById('resultImage').src = result.image;
+    }
+
+    function restartQuiz() {
+      currentQuestion = 0;
+      answers = [];
+      resultType = '';
+      
+      document.getElementById('resultCard').classList.add('hidden');
+      document.getElementById('quizCard').classList.remove('hidden');
+      
+      initQuiz();
+    }
+
+    function shareToKakao() {
+      Kakao.init('af0f520240f2c824b721bbd002c45178');
+      
+      Kakao.Share.sendDefault({
+        objectType: 'feed',
+        content: {
+          title: '오타쿠 모의고사',
+          description: '나는 갓반인? 찐타쿠? 나의 오타쿠력을 측정해보자!',
+          imageUrl: 'https://partygame.pe.kr/brainTest/images/lucky-travel.jpg',
+          link: {
+            mobileWebUrl: window.location.href,
+            webUrl: window.location.href
+          }
+        },
+        buttons: [
+          {
+            title: '테스트 하기',
+            link: {
+              mobileWebUrl: window.location.href,
+              webUrl: window.location.href
+            }
+          }
+        ]
+      });
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', () => {
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        showQuestion();
+        updateProgress();
+      }
+    });
+
+    document.getElementById('restartBtn').addEventListener('click', restartQuiz);
+    document.getElementById('shareBtn').addEventListener('click', shareToKakao);
+
+    initQuiz();
+  </script>
+</body>
+</html>
