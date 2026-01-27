@@ -215,5 +215,40 @@
         "path": "/brainTest/pages/brainTest/second-half-vibe-test.html",
         "description": "하반기 분위기를 만드는 추구미 타입을 알아보는 6문항 테스트",
         "keywords": ["하반기", "추구미", "무드", "테스트"]
+    },
+    {
+        "id": "spelling-sense-test",
+        "title": "맞춤법 능력 시험",
+        "path": "/brainTest/pages/brainTest/spelling-sense-test.html",
+        "description": "맞춤법 센스로 나의 문장 감각을 확인하는 6문항 테스트",
+        "keywords": ["맞춤법", "한글날", "문장", "테스트"]
+    },
+    {
+        "id": "fashion-fairy-test",
+        "title": "패션 요정 테스트",
+        "path": "/brainTest/pages/brainTest/fashion-fairy-test.html",
+        "description": "스타일 취향으로 나만의 패션 요정 타입을 알아보는 6문항 테스트",
+        "keywords": ["패션", "요정", "스타일", "테스트"]
+    },
+    {
+        "id": "laugh-button-test",
+        "title": "개웃겨서 도티낳음 테스트",
+        "path": "/brainTest/pages/brainTest/laugh-button-test.html",
+        "description": "웃음 버튼 취향으로 개웃겨서 도티낳음 타입을 알아보는 6문항 테스트",
+        "keywords": ["웃음", "밈", "유머", "테스트"]
+    },
+    {
+        "id": "monkey-test",
+        "title": "원숭이 테스트",
+        "path": "/brainTest/pages/brainTest/monkey-test.html",
+        "description": "행동 패턴으로 나의 원숭이 타입을 알아보는 6문항 테스트",
+        "keywords": ["원숭이", "동물", "에너지", "테스트"]
+    },
+    {
+        "id": "personality-sticker-test",
+        "title": "성격 스티커 테스트",
+        "path": "/brainTest/pages/brainTest/personality-sticker-test.html",
+        "description": "감정 반응으로 나의 성격 스티커 타입을 알아보는 6문항 테스트",
+        "keywords": ["스티커", "성향", "감정", "테스트"]
     }
 ]
