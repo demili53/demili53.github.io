@@ -3,41 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="덕질 루틴과 취향으로 오타쿠 모의고사 레벨을 확인하는 6문항 테스트">
-  <meta name="keywords" content="오타쿠 모의고사, 덕질, 취향, 성향 테스트">
+  <meta name="description" content="창업 스타일과 강점을 알아보는 6문항 창업 유형 테스트">
+  <meta name="keywords" content="창업 유형 테스트, 스타트업, 사업, 성향 테스트">
   <meta name="author" content="partygame.pe.kr">
   <meta name="google-adsense-account" content="ca-pub-1087435977438565">
-  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/otaku-mock-test.html">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/startup-type-test.html">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="오타쿠 모의고사">
-  <meta property="og:description" content="덕질 루틴과 취향으로 오타쿠 모의고사 레벨을 확인하는 6문항 테스트">
-  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/otaku-og.jpg">
-  <meta property="og:url" content="https://partygame.pe.kr/brainTest/pages/brainTest/otaku-mock-test.html">
+  <meta property="og:title" content="창업 유형 테스트">
+  <meta property="og:description" content="창업 스타일과 강점을 알아보는 6문항 창업 유형 테스트">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/startup-og.jpg">
+  <meta property="og:url" content="https://partygame.pe.kr/brainTest/pages/brainTest/startup-type-test.html">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
           crossorigin="anonymous"></script>
-  <title>오타쿠 모의고사</title>
+  <title>창업 유형 테스트</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-indigo-950 via-slate-950 to-fuchsia-950 text-slate-50">
+<body class="min-h-screen bg-gradient-to-br from-slate-950 via-emerald-950 to-sky-950 text-slate-50">
   <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
     <header class="text-center space-y-3">
-      <p class="uppercase text-xs tracking-[0.35em] text-fuchsia-200">Otaku Mock Exam</p>
-      <h1 class="text-3xl md:text-4xl font-extrabold">오타쿠 모의고사</h1>
+      <p class="uppercase text-xs tracking-[0.35em] text-emerald-200">Startup Type Lab</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">창업 유형 테스트</h1>
       <p class="text-slate-200">
-        6개의 질문으로 나의 덕질 레벨과 취향을 점검해 보세요.
-        <a href="/" class="underline text-fuchsia-200 hover:text-fuchsia-100 transition">홈으로 이동</a>
+        6개의 질문으로 나의 창업 스타일과 강점을 확인해 보세요.
+        <a href="/" class="underline text-emerald-200 hover:text-emerald-100 transition">홈으로 이동</a>
       </p>
     </header>
 
     <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
       <section class="space-y-3">
-        <div class="text-xs font-semibold text-fuchsia-200 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <div class="text-xs font-semibold text-emerald-200 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
         <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden">
-          <div id="progressBar" class="h-2 bg-gradient-to-r from-fuchsia-400 via-indigo-400 to-sky-400 w-0 transition-all duration-300"></div>
+          <div id="progressBar" class="h-2 bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-400 w-0 transition-all duration-300"></div>
         </div>
         <div class="text-sm text-slate-300 flex justify-between">
-          <span>덕질 레벨 채점 중...</span>
+          <span>창업 스타일 분석 중...</span>
           <span id="progressText">0% 완료</span>
         </div>
       </section>
@@ -46,13 +46,13 @@
         <h2 id="question" class="text-2xl font-semibold"></h2>
         <div id="options" class="space-y-3"></div>
         <div class="flex justify-between text-sm text-slate-300">
-          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-fuchsia-200 hover:bg-white/10 transition disabled:opacity-40">이전</button>
-          <span class="text-fuchsia-200">가장 가까운 답을 골라주세요</span>
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-emerald-200 hover:bg-white/10 transition disabled:opacity-40">이전</button>
+          <span class="text-emerald-200">가장 가까운 선택지를 골라주세요</span>
         </div>
       </section>
 
       <section id="resultCard" class="hidden space-y-4">
-        <div class="text-xs font-semibold text-fuchsia-200 uppercase tracking-[0.3em]">결과</div>
+        <div class="text-xs font-semibold text-emerald-200 uppercase tracking-[0.3em]">결과</div>
         <div class="flex flex-col md:flex-row gap-4">
           <div class="md:w-48 w-full">
             <img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-48 object-cover" alt="result visual">
@@ -65,15 +65,15 @@
         </div>
         <div id="resultTips" class="grid gap-3"></div>
         <div class="space-y-2 bg-white/5 border border-white/10 rounded-2xl p-4">
-          <h3 class="text-lg font-semibold text-fuchsia-200">테스트 내 궁합</h3>
+          <h3 class="text-lg font-semibold text-emerald-200">테스트 내 궁합</h3>
           <div class="flex flex-col gap-2 text-sm">
-            <a id="bestLink" class="inline-flex items-center gap-2 text-slate-100 underline underline-offset-4 hover:text-fuchsia-200" href="#">최고 궁합 결과 보기</a>
+            <a id="bestLink" class="inline-flex items-center gap-2 text-slate-100 underline underline-offset-4 hover:text-emerald-200" href="#">최고 궁합 결과 보기</a>
             <a id="worstLink" class="inline-flex items-center gap-2 text-slate-300 underline underline-offset-4 hover:text-sky-200" href="#">주의 궁합 결과 보기</a>
           </div>
         </div>
         <div class="flex flex-wrap gap-3">
-          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-fuchsia-300 text-fuchsia-100 hover:bg-fuchsia-400/10 transition">카카오톡 공유</button>
-          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-fuchsia-500 text-white font-semibold shadow-lg hover:bg-fuchsia-400 transition">다시 시작하기</button>
+          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-emerald-300 text-emerald-100 hover:bg-emerald-400/10 transition">카카오톡 공유</button>
+          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 text-white font-semibold shadow-lg hover:bg-emerald-400 transition">다시 시작하기</button>
           <a href="/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 text-slate-100 hover:bg-white/10 transition">홈으로 이동</a>
         </div>
       </section>
@@ -92,115 +92,115 @@
     const quiz = {
       questions: [
         {
-          text: "새 작품을 고를 때 가장 먼저 보는 것은?",
+          text: "새 사업 아이디어가 떠오르면?",
           options: [
-            { label: "세계관과 설정의 깊이", trait: "collector" },
-            { label: "비주얼과 분위기", trait: "vibes" },
-            { label: "스토리 몰입도", trait: "focus" },
-            { label: "추억의 감성과 레트로 감성", trait: "retro" }
+            { label: "먼저 비전을 크게 그려본다", trait: "vision" },
+            { label: "팀과 고객 관점을 먼저 본다", trait: "leader" },
+            { label: "바로 실행 가능한 MVP를 만든다", trait: "maker" },
+            { label: "시장 데이터부터 체크한다", trait: "growth" }
           ]
         },
         {
-          text: "굿즈를 사는 이유는?",
+          text: "창업에서 내가 가장 중요하게 여기는 것은?",
           options: [
-            { label: "컬렉션을 완성하는 쾌감", trait: "collector" },
-            { label: "무드 보관용 인테리어", trait: "vibes" },
-            { label: "작품 감정 몰입 유지", trait: "focus" },
-            { label: "오래 남는 추억 기록", trait: "retro" }
+            { label: "세상을 바꾸는 방향성", trait: "vision" },
+            { label: "사람과 팀워크", trait: "leader" },
+            { label: "제품 완성도", trait: "maker" },
+            { label: "지표와 성장", trait: "growth" }
           ]
         },
         {
-          text: "덕질 루틴 중 가장 중요한 것은?",
+          text: "위기가 왔을 때 나의 반응은?",
           options: [
-            { label: "작품별 정리 노트", trait: "collector" },
-            { label: "플레이리스트와 감성 채널", trait: "vibes" },
-            { label: "작품 정주행 집중 시간", trait: "focus" },
-            { label: "옛날 작품 다시보기", trait: "retro" }
+            { label: "큰 그림을 다시 점검", trait: "vision" },
+            { label: "팀을 모아 빠르게 소통", trait: "leader" },
+            { label: "해결할 기능을 즉시 만든다", trait: "maker" },
+            { label: "데이터로 원인을 파악", trait: "growth" }
           ]
         },
         {
-          text: "친구에게 추천할 때 강조하는 포인트는?",
+          text: "내가 가장 자신 있는 업무는?",
           options: [
-            { label: "설정의 촘촘함", trait: "collector" },
-            { label: "비주얼과 분위기", trait: "vibes" },
-            { label: "스토리의 힘", trait: "focus" },
-            { label: "향수와 감성", trait: "retro" }
+            { label: "전략과 장기 로드맵", trait: "vision" },
+            { label: "팀 케어와 커뮤니케이션", trait: "leader" },
+            { label: "직접 만드는 실행력", trait: "maker" },
+            { label: "지표 설계와 개선", trait: "growth" }
           ]
         },
         {
-          text: "내 덕질 노트는 어떤 형태?",
+          text: "내가 끌리는 스타트업 문화는?",
           options: [
-            { label: "체계적으로 분류된 자료", trait: "collector" },
-            { label: "감성 사진/짤 모음", trait: "vibes" },
-            { label: "감상과 분석 기록", trait: "focus" },
-            { label: "추억 타임라인", trait: "retro" }
+            { label: "큰 꿈과 도전", trait: "vision" },
+            { label: "사람 중심의 문화", trait: "leader" },
+            { label: "실험과 빠른 제작", trait: "maker" },
+            { label: "성과와 성장", trait: "growth" }
           ]
         },
         {
-          text: "덕질할 때 가장 행복한 순간은?",
+          text: "사업이 성장할 때 가장 중요한 것은?",
           options: [
-            { label: "컬렉션을 정리할 때", trait: "collector" },
-            { label: "분위기 좋은 장면을 캡처할 때", trait: "vibes" },
-            { label: "몰입해서 밤새 정주행할 때", trait: "focus" },
-            { label: "옛날 작품을 다시 만날 때", trait: "retro" }
+            { label: "비전 공유", trait: "vision" },
+            { label: "조직의 안정감", trait: "leader" },
+            { label: "제품 스케일업", trait: "maker" },
+            { label: "지표 최적화", trait: "growth" }
           ]
         }
       ],
       traits: {
-        collector: {
-          name: "컬렉터 덕질러",
-          tagline: "정리 · 수집형",
-          desc: "자료와 굿즈를 체계적으로 모으는 타입. 덕질의 정리가 곧 행복입니다.",
-          image: "/brainTest/images/otaku-collector.jpg",
+        vision: {
+          name: "비전 창업가",
+          tagline: "방향 · 리더형",
+          desc: "큰 그림과 방향성을 그리는 타입. 비전과 스토리로 팀과 시장을 이끕니다.",
+          image: "/brainTest/images/startup-vision.jpg",
           tips: [
-            "가끔은 느슨하게 즐기는 시간도 필요해요.",
-            "정리력은 덕질의 자산입니다."
+            "비전을 작게 나눠 실행 계획으로 옮기면 더 빨라요.",
+            "강한 방향성이 팀을 움직입니다."
           ],
           compatibility: {
-            best: { trait: "focus", reason: "몰입형의 집중력이 컬렉터의 체계를 더 깊게 만들어줘요." },
-            watch: { trait: "vibes", reason: "무드형의 즉흥성이 정리 리듬을 깨트릴 수 있어요." }
+            best: { trait: "maker", reason: "메이커형의 실행력이 비전형의 꿈을 현실로 만들어줘요." },
+            watch: { trait: "growth", reason: "성장형의 숫자 기준이 답답하게 느껴질 수 있어요." }
           }
         },
-        vibes: {
-          name: "무드 감성러",
-          tagline: "감성 · 분위기형",
-          desc: "비주얼과 분위기에 강한 타입. 장면의 감정을 오래 유지합니다.",
-          image: "/brainTest/images/otaku-vibes.jpg",
+        leader: {
+          name: "조직 리더형",
+          tagline: "사람 · 팀워크형",
+          desc: "사람과 팀 문화를 중심에 두는 타입. 안정적인 협업과 소통이 강점입니다.",
+          image: "/brainTest/images/startup-leader.jpg",
           tips: [
-            "좋은 장면을 기록하면 감성이 오래 남아요.",
-            "당신의 감각이 작품을 빛나게 합니다."
+            "팀의 목표를 자주 공유하면 더 큰 힘이 됩니다.",
+            "사람 중심의 문화가 성장의 기반이에요."
           ],
           compatibility: {
-            best: { trait: "retro", reason: "레트로형의 향수가 무드형의 감성을 더 풍성하게 해줘요." },
-            watch: { trait: "collector", reason: "컬렉터형의 규칙성이 답답할 수 있어요." }
+            best: { trait: "vision", reason: "비전형의 방향성이 리더형의 팀을 한 방향으로 모아줘요." },
+            watch: { trait: "maker", reason: "메이커형의 속도가 부담이 될 수 있어요." }
           }
         },
-        focus: {
-          name: "몰입 집중러",
-          tagline: "집중 · 분석형",
-          desc: "스토리 몰입과 분석에 강한 타입. 작품을 깊이 파고듭니다.",
-          image: "/brainTest/images/otaku-focus.jpg",
+        maker: {
+          name: "메이커 창업가",
+          tagline: "실행 · 제작형",
+          desc: "직접 만들고 실행하는 타입. 빠른 실행력과 실험이 강점입니다.",
+          image: "/brainTest/images/startup-maker.jpg",
           tips: [
-            "가끔은 쉬어가는 회차도 필요해요.",
-            "당신의 몰입력이 덕질의 깊이를 만듭니다."
+            "큰 방향도 함께 점검하면 성장이 더 빨라요.",
+            "실행력이 창업의 핵심입니다."
           ],
           compatibility: {
-            best: { trait: "collector", reason: "컬렉터형의 정리력이 몰입형의 분석을 탄탄하게 해줘요." },
-            watch: { trait: "retro", reason: "레트로형의 감성 흐름이 다를 수 있어요." }
+            best: { trait: "growth", reason: "성장형의 지표 관리가 메이커형의 실행을 정리해줘요." },
+            watch: { trait: "leader", reason: "리더형의 속도가 느리게 느껴질 수 있어요." }
           }
         },
-        retro: {
-          name: "레트로 추억러",
-          tagline: "향수 · 기록형",
-          desc: "옛날 작품과 추억을 소중히 하는 타입. 감성의 시간이 중요합니다.",
-          image: "/brainTest/images/otaku-retro.jpg",
+        growth: {
+          name: "성장 전략가",
+          tagline: "지표 · 분석형",
+          desc: "데이터로 방향을 잡는 타입. 성장 지표와 전략이 핵심입니다.",
+          image: "/brainTest/images/startup-growth.jpg",
           tips: [
-            "새로운 작품도 조금씩 시도해보세요.",
-            "추억 기록이 당신의 자산입니다."
+            "숫자만큼 사람과 이야기도 챙겨보세요.",
+            "데이터가 당신의 가장 큰 무기입니다."
           ],
           compatibility: {
-            best: { trait: "vibes", reason: "무드형의 감성이 레트로형의 향수를 더 깊게 만들어줘요." },
-            watch: { trait: "focus", reason: "몰입형의 속도가 부담이 될 수 있어요." }
+            best: { trait: "maker", reason: "메이커형의 실행력이 성장형의 전략을 현실화해줘요." },
+            watch: { trait: "vision", reason: "비전형의 방향성이 느슨하게 느껴질 수 있어요." }
           }
         }
       }
@@ -223,9 +223,9 @@
     const restartBtn = document.getElementById("restartBtn");
     const prevBtn = document.getElementById("prevBtn");
     const shareContent = {
-      title: "오타쿠 모의고사",
-      description: "덕질 루틴과 취향으로 오타쿠 모의고사 레벨을 확인하는 6문항 테스트",
-      imageUrl: "https://partygame.pe.kr/brainTest/images/otaku-og.jpg",
+      title: "창업 유형 테스트",
+      description: "창업 스타일과 강점을 알아보는 6문항 창업 유형 테스트",
+      imageUrl: "https://partygame.pe.kr/brainTest/images/startup-og.jpg",
       webUrl: `${window.location.origin}${window.location.pathname}`
     };
     const PARAM_KEY = "result";
@@ -244,7 +244,7 @@
       optionsEl.innerHTML = "";
       q.options.forEach(opt => {
         const btn = document.createElement("button");
-        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-white/20 hover:border-fuchsia-200 hover:bg-white/10 transition";
+        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-white/20 hover:border-emerald-200 hover:bg-white/10 transition";
         btn.textContent = opt.label;
         btn.addEventListener("click", () => handleOption(opt.trait));
         optionsEl.appendChild(btn);
@@ -303,7 +303,7 @@
       });
       updateRelationLinks(trait);
       updateResultParam(trait);
-      shareContent.title = `${meta.name} | 오타쿠 모의고사`;
+      shareContent.title = `${meta.name} | 창업 유형 테스트`;
       shareContent.description = meta.desc;
       shareContent.imageUrl = resolvedImage;
       shareContent.webUrl = `${window.location.origin}${window.location.pathname}?${PARAM_KEY}=${trait}#result`;
@@ -369,12 +369,12 @@
       const source = quiz.traits[sourceTrait];
       const target = quiz.traits[targetTrait];
       if (!source || !target) {
-        return type === "최고 궁합" ? "서로의 취향이 자연스럽게 어울려요." : "덕질 리듬이 달라 조율이 필요해요.";
+        return type === "최고 궁합" ? "서로의 리듬이 자연스럽게 어울려요." : "속도가 달라 조율이 필요해요.";
       }
       if (type === "최고 궁합") {
         return `${target.tagline} 감각이 ${source.tagline}과 시너지를 만듭니다.`;
       }
-      return `${target.name}의 속도가 ${source.name}에게는 부담일 수 있어요.`;
+      return `${target.name}의 텐션이 ${source.name}에게는 부담일 수 있어요.`;
     }
 
     function handleRelationClick(event) {

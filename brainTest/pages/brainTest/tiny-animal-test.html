@@ -3,41 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="덕질 루틴과 취향으로 오타쿠 모의고사 레벨을 확인하는 6문항 테스트">
-  <meta name="keywords" content="오타쿠 모의고사, 덕질, 취향, 성향 테스트">
+  <meta name="description" content="귀엽고 하찮은 매력으로 나의 하찮은 동물 타입을 알아보는 6문항 테스트">
+  <meta name="keywords" content="하찮은 동물 테스트, 귀여움, 성향, 심리 테스트">
   <meta name="author" content="partygame.pe.kr">
   <meta name="google-adsense-account" content="ca-pub-1087435977438565">
-  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/otaku-mock-test.html">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/tiny-animal-test.html">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="오타쿠 모의고사">
-  <meta property="og:description" content="덕질 루틴과 취향으로 오타쿠 모의고사 레벨을 확인하는 6문항 테스트">
-  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/otaku-og.jpg">
-  <meta property="og:url" content="https://partygame.pe.kr/brainTest/pages/brainTest/otaku-mock-test.html">
+  <meta property="og:title" content="하찮은 동물 테스트">
+  <meta property="og:description" content="귀엽고 하찮은 매력으로 나의 하찮은 동물 타입을 알아보는 6문항 테스트">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/tiny-og.jpg">
+  <meta property="og:url" content="https://partygame.pe.kr/brainTest/pages/brainTest/tiny-animal-test.html">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
           crossorigin="anonymous"></script>
-  <title>오타쿠 모의고사</title>
+  <title>하찮은 동물 테스트</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-indigo-950 via-slate-950 to-fuchsia-950 text-slate-50">
+<body class="min-h-screen bg-gradient-to-br from-rose-950 via-slate-950 to-amber-950 text-slate-50">
   <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
     <header class="text-center space-y-3">
-      <p class="uppercase text-xs tracking-[0.35em] text-fuchsia-200">Otaku Mock Exam</p>
-      <h1 class="text-3xl md:text-4xl font-extrabold">오타쿠 모의고사</h1>
+      <p class="uppercase text-xs tracking-[0.35em] text-rose-200">Tiny Animal Lab</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">하찮은 동물 테스트</h1>
       <p class="text-slate-200">
-        6개의 질문으로 나의 덕질 레벨과 취향을 점검해 보세요.
-        <a href="/" class="underline text-fuchsia-200 hover:text-fuchsia-100 transition">홈으로 이동</a>
+        6개의 질문으로 나의 하찮은 동물 에너지를 확인해 보세요.
+        <a href="/" class="underline text-rose-200 hover:text-rose-100 transition">홈으로 이동</a>
       </p>
     </header>
 
     <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
       <section class="space-y-3">
-        <div class="text-xs font-semibold text-fuchsia-200 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <div class="text-xs font-semibold text-rose-200 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
         <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden">
-          <div id="progressBar" class="h-2 bg-gradient-to-r from-fuchsia-400 via-indigo-400 to-sky-400 w-0 transition-all duration-300"></div>
+          <div id="progressBar" class="h-2 bg-gradient-to-r from-rose-400 via-amber-400 to-yellow-400 w-0 transition-all duration-300"></div>
         </div>
         <div class="text-sm text-slate-300 flex justify-between">
-          <span>덕질 레벨 채점 중...</span>
+          <span>하찮은 에너지 측정 중...</span>
           <span id="progressText">0% 완료</span>
         </div>
       </section>
@@ -46,13 +46,13 @@
         <h2 id="question" class="text-2xl font-semibold"></h2>
         <div id="options" class="space-y-3"></div>
         <div class="flex justify-between text-sm text-slate-300">
-          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-fuchsia-200 hover:bg-white/10 transition disabled:opacity-40">이전</button>
-          <span class="text-fuchsia-200">가장 가까운 답을 골라주세요</span>
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-rose-200 hover:bg-white/10 transition disabled:opacity-40">이전</button>
+          <span class="text-rose-200">가장 닮은 반응을 골라주세요</span>
         </div>
       </section>
 
       <section id="resultCard" class="hidden space-y-4">
-        <div class="text-xs font-semibold text-fuchsia-200 uppercase tracking-[0.3em]">결과</div>
+        <div class="text-xs font-semibold text-rose-200 uppercase tracking-[0.3em]">결과</div>
         <div class="flex flex-col md:flex-row gap-4">
           <div class="md:w-48 w-full">
             <img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-48 object-cover" alt="result visual">
@@ -65,15 +65,15 @@
         </div>
         <div id="resultTips" class="grid gap-3"></div>
         <div class="space-y-2 bg-white/5 border border-white/10 rounded-2xl p-4">
-          <h3 class="text-lg font-semibold text-fuchsia-200">테스트 내 궁합</h3>
+          <h3 class="text-lg font-semibold text-rose-200">테스트 내 궁합</h3>
           <div class="flex flex-col gap-2 text-sm">
-            <a id="bestLink" class="inline-flex items-center gap-2 text-slate-100 underline underline-offset-4 hover:text-fuchsia-200" href="#">최고 궁합 결과 보기</a>
-            <a id="worstLink" class="inline-flex items-center gap-2 text-slate-300 underline underline-offset-4 hover:text-sky-200" href="#">주의 궁합 결과 보기</a>
+            <a id="bestLink" class="inline-flex items-center gap-2 text-slate-100 underline underline-offset-4 hover:text-rose-200" href="#">최고 궁합 결과 보기</a>
+            <a id="worstLink" class="inline-flex items-center gap-2 text-slate-300 underline underline-offset-4 hover:text-amber-200" href="#">주의 궁합 결과 보기</a>
           </div>
         </div>
         <div class="flex flex-wrap gap-3">
-          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-fuchsia-300 text-fuchsia-100 hover:bg-fuchsia-400/10 transition">카카오톡 공유</button>
-          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-fuchsia-500 text-white font-semibold shadow-lg hover:bg-fuchsia-400 transition">다시 시작하기</button>
+          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-rose-300 text-rose-100 hover:bg-rose-400/10 transition">카카오톡 공유</button>
+          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-rose-500 text-white font-semibold shadow-lg hover:bg-rose-400 transition">다시 시작하기</button>
           <a href="/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 text-slate-100 hover:bg-white/10 transition">홈으로 이동</a>
         </div>
       </section>
@@ -92,115 +92,115 @@
     const quiz = {
       questions: [
         {
-          text: "새 작품을 고를 때 가장 먼저 보는 것은?",
+          text: "일이 많아지면 나는?",
           options: [
-            { label: "세계관과 설정의 깊이", trait: "collector" },
-            { label: "비주얼과 분위기", trait: "vibes" },
-            { label: "스토리 몰입도", trait: "focus" },
-            { label: "추억의 감성과 레트로 감성", trait: "retro" }
+            { label: "급하게 손을 놀리다가 어딘가 허둥지둥", trait: "hamster" },
+            { label: "그냥 그대로 멈춰서 멍때린다", trait: "cat" },
+            { label: "살짝 숨어서 상황을 지켜본다", trait: "bunny" },
+            { label: "뒤뚱뒤뚱하지만 결국 따라간다", trait: "duck" }
           ]
         },
         {
-          text: "굿즈를 사는 이유는?",
+          text: "친구들이 나에게서 느끼는 기운은?",
           options: [
-            { label: "컬렉션을 완성하는 쾌감", trait: "collector" },
-            { label: "무드 보관용 인테리어", trait: "vibes" },
-            { label: "작품 감정 몰입 유지", trait: "focus" },
-            { label: "오래 남는 추억 기록", trait: "retro" }
+            { label: "작고 분주한 귀여움", trait: "hamster" },
+            { label: "무심한 듯 편한 매력", trait: "cat" },
+            { label: "조용하지만 순한 느낌", trait: "bunny" },
+            { label: "엉성하지만 따뜻한 분위기", trait: "duck" }
           ]
         },
         {
-          text: "덕질 루틴 중 가장 중요한 것은?",
+          text: "내가 가장 자주 하는 말버릇은?",
           options: [
-            { label: "작품별 정리 노트", trait: "collector" },
-            { label: "플레이리스트와 감성 채널", trait: "vibes" },
-            { label: "작품 정주행 집중 시간", trait: "focus" },
-            { label: "옛날 작품 다시보기", trait: "retro" }
+            { label: "어? 어? 잠깐만!", trait: "hamster" },
+            { label: "음... 그냥 그럴래", trait: "cat" },
+            { label: "혹시 몰라서...", trait: "bunny" },
+            { label: "괜찮겠지... 아마도", trait: "duck" }
           ]
         },
         {
-          text: "친구에게 추천할 때 강조하는 포인트는?",
+          text: "피곤할 때 나의 행동은?",
           options: [
-            { label: "설정의 촘촘함", trait: "collector" },
-            { label: "비주얼과 분위기", trait: "vibes" },
-            { label: "스토리의 힘", trait: "focus" },
-            { label: "향수와 감성", trait: "retro" }
+            { label: "작은 일에도 바쁘게 움직임", trait: "hamster" },
+            { label: "그대로 눕거나 늘어진다", trait: "cat" },
+            { label: "조용히 몸을 숨긴다", trait: "bunny" },
+            { label: "느리게 움직이며 결국 쉬기", trait: "duck" }
           ]
         },
         {
-          text: "내 덕질 노트는 어떤 형태?",
+          text: "내가 좋아하는 휴식 루틴은?",
           options: [
-            { label: "체계적으로 분류된 자료", trait: "collector" },
-            { label: "감성 사진/짤 모음", trait: "vibes" },
-            { label: "감상과 분석 기록", trait: "focus" },
-            { label: "추억 타임라인", trait: "retro" }
+            { label: "간식과 함께 방에서 휴식", trait: "hamster" },
+            { label: "소파에 누워 무한 스크롤", trait: "cat" },
+            { label: "이불 속에 숨어 힐링", trait: "bunny" },
+            { label: "산책하며 느긋하게 걷기", trait: "duck" }
           ]
         },
         {
-          text: "덕질할 때 가장 행복한 순간은?",
+          text: "내가 가장 하찮게 느끼는 순간은?",
           options: [
-            { label: "컬렉션을 정리할 때", trait: "collector" },
-            { label: "분위기 좋은 장면을 캡처할 때", trait: "vibes" },
-            { label: "몰입해서 밤새 정주행할 때", trait: "focus" },
-            { label: "옛날 작품을 다시 만날 때", trait: "retro" }
+            { label: "열심히 했는데 결과가 애매할 때", trait: "hamster" },
+            { label: "일어나야 하는데 몸이 안 움직일 때", trait: "cat" },
+            { label: "말하려다 머뭇거릴 때", trait: "bunny" },
+            { label: "실수했는데 아무도 몰랐을 때", trait: "duck" }
           ]
         }
       ],
       traits: {
-        collector: {
-          name: "컬렉터 덕질러",
-          tagline: "정리 · 수집형",
-          desc: "자료와 굿즈를 체계적으로 모으는 타입. 덕질의 정리가 곧 행복입니다.",
-          image: "/brainTest/images/otaku-collector.jpg",
+        hamster: {
+          name: "허둥 햄스터",
+          tagline: "분주 · 귀여움",
+          desc: "작은 몸으로 열심히 움직이는 타입. 분주하지만 사랑스러운 매력이 있습니다.",
+          image: "/brainTest/images/tiny-hamster.jpg",
           tips: [
-            "가끔은 느슨하게 즐기는 시간도 필요해요.",
-            "정리력은 덕질의 자산입니다."
+            "호흡을 고르면 훨씬 더 안정돼요.",
+            "당신의 부지런함은 큰 힘이 됩니다."
           ],
           compatibility: {
-            best: { trait: "focus", reason: "몰입형의 집중력이 컬렉터의 체계를 더 깊게 만들어줘요." },
-            watch: { trait: "vibes", reason: "무드형의 즉흥성이 정리 리듬을 깨트릴 수 있어요." }
+            best: { trait: "bunny", reason: "소심 토끼의 조용한 배려가 허둥 햄스터의 마음을 안정시켜줘요." },
+            watch: { trait: "cat", reason: "무심 고양이의 느긋함이 답답하게 느껴질 수 있어요." }
           }
         },
-        vibes: {
-          name: "무드 감성러",
-          tagline: "감성 · 분위기형",
-          desc: "비주얼과 분위기에 강한 타입. 장면의 감정을 오래 유지합니다.",
-          image: "/brainTest/images/otaku-vibes.jpg",
+        cat: {
+          name: "느긋 고양이",
+          tagline: "느긋 · 무심",
+          desc: "피곤하면 그냥 쉬어버리는 타입. 느긋함과 여유가 가장 큰 매력입니다.",
+          image: "/brainTest/images/tiny-cat.jpg",
           tips: [
-            "좋은 장면을 기록하면 감성이 오래 남아요.",
-            "당신의 감각이 작품을 빛나게 합니다."
+            "가끔은 작은 움직임이 활력을 줍니다.",
+            "느긋한 분위기가 주변을 편하게 해요."
           ],
           compatibility: {
-            best: { trait: "retro", reason: "레트로형의 향수가 무드형의 감성을 더 풍성하게 해줘요." },
-            watch: { trait: "collector", reason: "컬렉터형의 규칙성이 답답할 수 있어요." }
+            best: { trait: "duck", reason: "뒤뚱 오리가 느긋 고양이의 리듬을 따뜻하게 유지해줘요." },
+            watch: { trait: "hamster", reason: "허둥 햄스터의 속도가 부담일 수 있어요." }
           }
         },
-        focus: {
-          name: "몰입 집중러",
-          tagline: "집중 · 분석형",
-          desc: "스토리 몰입과 분석에 강한 타입. 작품을 깊이 파고듭니다.",
-          image: "/brainTest/images/otaku-focus.jpg",
+        bunny: {
+          name: "소심 토끼",
+          tagline: "조용 · 순함",
+          desc: "조용히 숨고 싶은 타입. 순하고 섬세한 감정이 특징입니다.",
+          image: "/brainTest/images/tiny-bunny.jpg",
           tips: [
-            "가끔은 쉬어가는 회차도 필요해요.",
-            "당신의 몰입력이 덕질의 깊이를 만듭니다."
+            "작은 용기가 큰 변화를 만들어줘요.",
+            "조용함이 당신의 매력입니다."
           ],
           compatibility: {
-            best: { trait: "collector", reason: "컬렉터형의 정리력이 몰입형의 분석을 탄탄하게 해줘요." },
-            watch: { trait: "retro", reason: "레트로형의 감성 흐름이 다를 수 있어요." }
+            best: { trait: "hamster", reason: "허둥 햄스터의 활기가 소심 토끼의 분위기를 환기시켜줘요." },
+            watch: { trait: "duck", reason: "뒤뚱 오리의 속도가 부담일 수 있어요." }
           }
         },
-        retro: {
-          name: "레트로 추억러",
-          tagline: "향수 · 기록형",
-          desc: "옛날 작품과 추억을 소중히 하는 타입. 감성의 시간이 중요합니다.",
-          image: "/brainTest/images/otaku-retro.jpg",
+        duck: {
+          name: "뒤뚱 오리",
+          tagline: "따뜻 · 둥실",
+          desc: "엉성하지만 따뜻한 타입. 느리지만 꾸준하게 움직이는 힘이 있습니다.",
+          image: "/brainTest/images/tiny-duck.jpg",
           tips: [
-            "새로운 작품도 조금씩 시도해보세요.",
-            "추억 기록이 당신의 자산입니다."
+            "느리게라도 꾸준히 가면 충분합니다.",
+            "당신의 따뜻함이 모두를 편하게 합니다."
           ],
           compatibility: {
-            best: { trait: "vibes", reason: "무드형의 감성이 레트로형의 향수를 더 깊게 만들어줘요." },
-            watch: { trait: "focus", reason: "몰입형의 속도가 부담이 될 수 있어요." }
+            best: { trait: "cat", reason: "느긋 고양이의 여유가 뒤뚱 오리의 따뜻함을 살려줘요." },
+            watch: { trait: "bunny", reason: "소심 토끼의 조용함이 답답할 수 있어요." }
           }
         }
       }
@@ -223,9 +223,9 @@
     const restartBtn = document.getElementById("restartBtn");
     const prevBtn = document.getElementById("prevBtn");
     const shareContent = {
-      title: "오타쿠 모의고사",
-      description: "덕질 루틴과 취향으로 오타쿠 모의고사 레벨을 확인하는 6문항 테스트",
-      imageUrl: "https://partygame.pe.kr/brainTest/images/otaku-og.jpg",
+      title: "하찮은 동물 테스트",
+      description: "귀엽고 하찮은 매력으로 나의 하찮은 동물 타입을 알아보는 6문항 테스트",
+      imageUrl: "https://partygame.pe.kr/brainTest/images/tiny-og.jpg",
       webUrl: `${window.location.origin}${window.location.pathname}`
     };
     const PARAM_KEY = "result";
@@ -244,7 +244,7 @@
       optionsEl.innerHTML = "";
       q.options.forEach(opt => {
         const btn = document.createElement("button");
-        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-white/20 hover:border-fuchsia-200 hover:bg-white/10 transition";
+        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-white/20 hover:border-rose-200 hover:bg-white/10 transition";
         btn.textContent = opt.label;
         btn.addEventListener("click", () => handleOption(opt.trait));
         optionsEl.appendChild(btn);
@@ -303,7 +303,7 @@
       });
       updateRelationLinks(trait);
       updateResultParam(trait);
-      shareContent.title = `${meta.name} | 오타쿠 모의고사`;
+      shareContent.title = `${meta.name} | 하찮은 동물 테스트`;
       shareContent.description = meta.desc;
       shareContent.imageUrl = resolvedImage;
       shareContent.webUrl = `${window.location.origin}${window.location.pathname}?${PARAM_KEY}=${trait}#result`;
@@ -369,12 +369,12 @@
       const source = quiz.traits[sourceTrait];
       const target = quiz.traits[targetTrait];
       if (!source || !target) {
-        return type === "최고 궁합" ? "서로의 취향이 자연스럽게 어울려요." : "덕질 리듬이 달라 조율이 필요해요.";
+        return type === "최고 궁합" ? "서로의 에너지가 자연스럽게 어울려요." : "리듬이 달라 조율이 필요해요.";
       }
       if (type === "최고 궁합") {
         return `${target.tagline} 감각이 ${source.tagline}과 시너지를 만듭니다.`;
       }
-      return `${target.name}의 속도가 ${source.name}에게는 부담일 수 있어요.`;
+      return `${target.name}의 리듬이 ${source.name}에게는 부담일 수 있어요.`;
     }
 
     function handleRelationClick(event) {

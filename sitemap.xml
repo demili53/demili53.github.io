@@ -191,12 +191,27 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://partygame.pe.kr/brainTest/pages/brainTest/tiny-animal-test.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://partygame.pe.kr/brainTest/pages/brainTest/demon-slayer-test.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://partygame.pe.kr/brainTest/pages/brainTest/otaku-mock-test.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://partygame.pe.kr/brainTest/pages/brainTest/love-strategy-test.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://partygame.pe.kr/brainTest/pages/brainTest/startup-type-test.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
