@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="파티게임과 모임에서 즐길 수 있는 잼있는 심리 테스트 모음. 동물 성격 테스트 등 간단한 질문으로 성격 유형을 알아보세요.">
-  <meta name="keywords" content="심리 테스트, 동물 성격 테스트, 파티 게임, 성격 유형, 브레인 테스트">
+  <meta name="description" content="연애 심리 중심으로 감정 흐름과 관계 성향을 가볍게 확인하는 심리 테스트 모음. 짧은 질문으로 나의 분위기와 궁합 포인트를 알아보세요.">
+  <meta name="keywords" content="연애 심리 테스트, 관계 성향, 궁합, 감정, 브레인 테스트">
   <meta name="author" content="partygame.pe.kr">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://partygame.pe.kr/">
@@ -12,12 +12,12 @@
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <meta property="og:type" content="website">
   <meta property="og:title" content="잼있는 심리 테스트 모음 | Brain Test Hub">
-  <meta property="og:description" content="간단한 질문에 답하며 동물 성격 테스트 등 다양한 심리 테스트를 즐기세요.">
+  <meta property="og:description" content="연애 심리 중심 테스트로 감정 흐름과 관계 성향을 가볍게 확인해 보세요.">
   <meta property="og:url" content="https://partygame.pe.kr/">
   <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/fox.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="잼있는 심리 테스트 모음 | Brain Test Hub">
-  <meta name="twitter:description" content="모임에서 바로 즐길 수 있는 심리 테스트 컬렉션">
+  <meta name="twitter:description" content="연애 심리 중심으로 관계 성향과 궁합 포인트를 확인하는 테스트 컬렉션">
   <meta name="google-adsense-account" content="ca-pub-1087435977438565">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
           crossorigin="anonymous"></script>
@@ -27,7 +27,7 @@
       "@type": "WebSite",
       "name": "Brain Test Hub",
       "url": "https://partygame.pe.kr/",
-      "description": "파티게임과 모임에서 즐길 수 있는 잼있는 심리 테스트 모음.",
+      "description": "연애 심리 중심으로 감정 흐름과 관계 성향을 확인하는 심리 테스트 모음.",
       "inLanguage": "ko"
     }
   </script>
@@ -36,16 +36,114 @@
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 text-slate-50">
   <div class="max-w-4xl mx-auto px-6 py-14">
-    <header class="text-center mb-10 space-y-3">
+    <header class="text-center mb-10 space-y-3 relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-rose-950/60 via-slate-900/40 to-indigo-950/60 p-6 md:p-10">
+      <div class="pointer-events-none absolute -top-12 -right-16 h-56 w-56 rounded-full bg-rose-400/20 blur-3xl"></div>
+      <div class="pointer-events-none absolute -bottom-16 -left-20 h-56 w-56 rounded-full bg-indigo-400/20 blur-3xl"></div>
+      <div class="pointer-events-none absolute inset-0 opacity-30 [background-image:radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.08)_1px,transparent_0)] [background-size:24px_24px]"></div>
       <p class="text-sm uppercase tracking-[0.25em] text-indigo-200">Brain Test Hub</p>
-      <h1 class="text-3xl md:text-4xl font-bold">잼있는 심리 테스트</h1>
-      <p class="text-slate-200">아래 목록에서 테스트를 선택해 즐겨보세요.</p>
+      <h1 class="text-3xl md:text-4xl font-bold">연애 심리 테스트 허브</h1>
+      <p class="text-slate-200">짧은 질문으로 관계 성향과 감정 흐름을 확인해 보세요.</p>
+      <div class="flex flex-wrap justify-center gap-3 text-sm">
+        <a href="#recommended" class="px-4 py-2 rounded-full border border-indigo-200/60 text-indigo-100 hover:bg-white/10 transition">연애 추천 보기</a>
+        <button id="startRomanceFilterBtn" class="px-4 py-2 rounded-full border border-rose-200/60 text-rose-100 hover:bg-white/10 transition">연애 키워드만 보기</button>
+        <button id="startMatchFilterBtn" class="px-4 py-2 rounded-full border border-amber-200/60 text-amber-100 hover:bg-white/10 transition">궁합 테스트 바로가기</button>
+        <button id="startNowBtn" class="px-4 py-2 rounded-full bg-rose-500/80 text-white hover:bg-rose-400 transition">테스트 랜덤 시작</button>
+        <button id="toggleThumbBtn" class="px-4 py-2 rounded-full border border-white/30 text-slate-100 hover:bg-white/10 transition">썸네일 숨기기</button>
+      </div>
     </header>
 
     <section class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
       <div class="space-y-1">
-        <div class="text-xs font-semibold text-indigo-100 uppercase tracking-widest">내부 제작 테스트</div>
-        <p class="text-sm text-slate-200">Brain Test Hub에서 직접 제작한 인터랙티브 테스트입니다.</p>
+        <div class="text-xs font-semibold text-indigo-100 uppercase tracking-widest">연애 심리 스토리</div>
+        <p class="text-sm text-slate-200">우리가 사랑을 표현하는 방식은 생각보다 다양해요. 이 테스트들은 작은 선택으로 감정의 결, 관계 속 역할, 궁합 포인트를 가볍게 확인하도록 설계했습니다.</p>
+        <p class="text-sm text-slate-300">정답을 맞히는 것이 아니라, 지금 내 마음의 온도와 리듬을 알아보는 과정에 가까워요.</p>
+      </div>
+
+      <div class="grid gap-4 md:grid-cols-2">
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-2">
+          <div class="text-xs font-semibold text-indigo-100 uppercase tracking-widest">제작 원칙</div>
+          <ul class="text-sm text-slate-200 space-y-1">
+            <li>연애/관계 심리를 중심으로 질문 흐름을 설계합니다.</li>
+            <li>결과는 4종 이상이며, 궁합 포인트를 함께 제공합니다.</li>
+            <li>테스트는 짧고 몰입감 있게, 모바일에서도 읽기 쉽게 만듭니다.</li>
+            <li>업데이트는 신규 테스트 출시 시 반영됩니다.</li>
+            <li>외부 참고가 있더라도 문구는 독자적으로 재구성합니다.</li>
+          </ul>
+        </div>
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-2">
+          <div class="text-xs font-semibold text-indigo-100 uppercase tracking-widest">활용 팁</div>
+          <ul class="text-sm text-slate-200 space-y-1">
+            <li>친구/연인과 결과를 비교하며 대화를 이어가 보세요.</li>
+            <li>궁합 결과 링크로 다른 타입도 함께 확인해 보세요.</li>
+            <li>기분이 달라질 때 다시 풀어보면 새로운 인사이트가 생겨요.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div id="recommended" class="space-y-3">
+        <div class="text-xs font-semibold text-indigo-100 uppercase tracking-widest">연애 감성 추천</div>
+        <div class="grid gap-3 md:grid-cols-2">
+          <a href="/brainTest/pages/brainTest/tree-test.html" class="block rounded-xl border border-white/15 bg-white/5 hover:border-indigo-200/60 hover:bg-white/10 transition p-4">
+            <div class="h-28 rounded-lg bg-cover bg-center border border-white/10" style="background-image:url('/brainTest/images/tree-love-og.jpg');"></div>
+            <h3 class="mt-3 text-lg font-semibold text-rose-100">나만의 트리 연애 테스트</h3>
+            <p class="mt-2 text-sm text-slate-200">연애 나무 타입과 궁합을 확인하는 감성 테스트</p>
+            <p class="mt-2 text-xs text-slate-400">연애 무드를 색으로 읽는 감정 지도</p>
+            <div class="mt-3 flex flex-wrap gap-2 text-xs text-slate-300">
+              <span class="px-2 py-1 rounded-full border border-rose-200/40 text-rose-100">연애</span>
+              <span class="px-2 py-1 rounded-full border border-amber-200/40 text-amber-100">궁합</span>
+            </div>
+          </a>
+          <a href="/brainTest/pages/brainTest/love-count-test.html" class="block rounded-xl border border-white/15 bg-white/5 hover:border-indigo-200/60 hover:bg-white/10 transition p-4">
+            <div class="h-28 rounded-lg bg-cover bg-center border border-white/10" style="background-image:url('/brainTest/images/strategy-og.jpg');"></div>
+            <h3 class="mt-3 text-lg font-semibold text-rose-100">내 생에 남은 연애 횟수 테스트</h3>
+            <p class="mt-2 text-sm text-slate-200">연애 루틴으로 남은 연애 카운트를 예측</p>
+            <p class="mt-2 text-xs text-slate-400">감정 리듬이 만드는 연애 타이밍</p>
+            <div class="mt-3 flex flex-wrap gap-2 text-xs text-slate-300">
+              <span class="px-2 py-1 rounded-full border border-rose-200/40 text-rose-100">연애</span>
+              <span class="px-2 py-1 rounded-full border border-indigo-200/40 text-indigo-100">감정</span>
+            </div>
+          </a>
+          <a href="/brainTest/pages/brainTest/love-strategy-test.html" class="block rounded-xl border border-white/15 bg-white/5 hover:border-indigo-200/60 hover:bg-white/10 transition p-4">
+            <div class="h-28 rounded-lg bg-cover bg-center border border-white/10" style="background-image:url('/brainTest/images/strategy-plan.jpg');"></div>
+            <h3 class="mt-3 text-lg font-semibold text-rose-100">나 공략법 테스트</h3>
+            <p class="mt-2 text-sm text-slate-200">나의 연애 공략 포인트를 찾아보는 테스트</p>
+            <p class="mt-2 text-xs text-slate-400">끌림을 높이는 나만의 힌트</p>
+            <div class="mt-3 flex flex-wrap gap-2 text-xs text-slate-300">
+              <span class="px-2 py-1 rounded-full border border-rose-200/40 text-rose-100">연애</span>
+              <span class="px-2 py-1 rounded-full border border-amber-200/40 text-amber-100">궁합</span>
+            </div>
+          </a>
+          <a href="/brainTest/pages/brainTest/marriage-ability-test.html" class="block rounded-xl border border-white/15 bg-white/5 hover:border-indigo-200/60 hover:bg-white/10 transition p-4">
+            <div class="h-28 rounded-lg bg-cover bg-center border border-white/10" style="background-image:url('/brainTest/images/strategy-heart.jpg');"></div>
+            <h3 class="mt-3 text-lg font-semibold text-rose-100">결혼 능력 테스트</h3>
+            <p class="mt-2 text-sm text-slate-200">배우자 성향과 궁합 포인트를 확인</p>
+            <p class="mt-2 text-xs text-slate-400">장기전 연애의 균형 체크</p>
+            <div class="mt-3 flex flex-wrap gap-2 text-xs text-slate-300">
+              <span class="px-2 py-1 rounded-full border border-rose-200/40 text-rose-100">관계</span>
+              <span class="px-2 py-1 rounded-full border border-amber-200/40 text-amber-100">궁합</span>
+            </div>
+          </a>
+          <a href="/brainTest/pages/brainTest/menhera-test.html" class="block rounded-xl border border-white/15 bg-white/5 hover:border-indigo-200/60 hover:bg-white/10 transition p-4">
+            <div class="h-28 rounded-lg bg-cover bg-center border border-white/10" style="background-image:url('/brainTest/images/menhera-og.jpg');"></div>
+            <h3 class="mt-3 text-lg font-semibold text-rose-100">멘헤라 감정 스펙트럼 테스트</h3>
+            <p class="mt-2 text-sm text-slate-200">연애와 일상 감정 리듬을 체크</p>
+            <p class="mt-2 text-xs text-slate-400">감정 스펙트럼을 부드럽게 읽기</p>
+            <div class="mt-3 flex flex-wrap gap-2 text-xs text-slate-300">
+              <span class="px-2 py-1 rounded-full border border-indigo-200/40 text-indigo-100">감정</span>
+              <span class="px-2 py-1 rounded-full border border-rose-200/40 text-rose-100">연애</span>
+            </div>
+          </a>
+          <a href="/brainTest/pages/brainTest/dere-test.html" class="block rounded-xl border border-white/15 bg-white/5 hover:border-indigo-200/60 hover:bg-white/10 transition p-4">
+            <div class="h-28 rounded-lg bg-cover bg-center border border-white/10" style="background-image:url('/brainTest/images/dere-og.jpg');"></div>
+            <h3 class="mt-3 text-lg font-semibold text-rose-100">데레 테스트</h3>
+            <p class="mt-2 text-sm text-slate-200">감정 표현 스타일로 데레 타입 확인</p>
+            <p class="mt-2 text-xs text-slate-400">표현 방식의 귀여운 결을 발견</p>
+            <div class="mt-3 flex flex-wrap gap-2 text-xs text-slate-300">
+              <span class="px-2 py-1 rounded-full border border-rose-200/40 text-rose-100">연애</span>
+              <span class="px-2 py-1 rounded-full border border-indigo-200/40 text-indigo-100">감정</span>
+            </div>
+          </a>
+        </div>
       </div>
 
       <div class="space-y-3">
@@ -56,12 +154,59 @@
           </label>
           <button id="clearSearchBtn" class="text-sm px-4 py-2 rounded-xl border border-white/20 text-slate-200 hover:bg-white/10 transition">검색 초기화</button>
         </div>
-        <div id="keywordFilters" class="flex flex-wrap gap-2 text-sm"></div>
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="text-xs text-slate-300">키워드 필터를 펼쳐 빠르게 찾을 수 있어요.</div>
+          <button id="toggleKeywordsBtn" class="px-3 py-1 rounded-full border border-white/20 text-xs text-slate-200 hover:bg-white/10 transition">키워드 펼치기</button>
+        </div>
+        <div id="keywordFilters" class="hidden flex flex-wrap gap-2 text-sm"></div>
+        <div class="flex flex-wrap gap-2 text-xs text-slate-300">
+          <span class="uppercase tracking-widest text-indigo-100">연애 필터</span>
+          <button class="px-3 py-1 rounded-full border border-rose-200/40 text-rose-100 hover:bg-white/10 transition" data-romance-tag="연애">연애</button>
+          <button class="px-3 py-1 rounded-full border border-rose-200/40 text-rose-100 hover:bg-white/10 transition" data-romance-tag="궁합">궁합</button>
+          <button class="px-3 py-1 rounded-full border border-rose-200/40 text-rose-100 hover:bg-white/10 transition" data-romance-tag="감정">감정</button>
+          <button class="px-3 py-1 rounded-full border border-rose-200/40 text-rose-100 hover:bg-white/10 transition" data-romance-tag="관계">관계</button>
+          <button class="px-3 py-1 rounded-full border border-rose-200/40 text-rose-100 hover:bg-white/10 transition" data-romance-tag="연애">#연애만</button>
+        </div>
       </div>
 
       <div id="testList" class="grid gap-3"></div>
       <div class="text-center">
         <button id="loadMoreBtn" class="hidden px-4 py-2 rounded-xl border border-white/20 text-sm text-slate-200 hover:bg-white/10 transition">더 보기</button>
+      </div>
+
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-2">
+        <div class="text-xs font-semibold text-indigo-100 uppercase tracking-widest">FAQ</div>
+        <div class="text-sm text-slate-200 space-y-2">
+          <div><strong class="text-indigo-100">Q. 결과는 정확한 심리 검사인가요?</strong> A. 마음을 가볍게 들여다보는 재미용 테스트입니다.</div>
+          <div><strong class="text-indigo-100">Q. 왜 연애 심리 중심인가요?</strong> A. 관계에서 드러나는 감정 패턴이 가장 선명하게 느껴지기 때문이에요.</div>
+          <div><strong class="text-indigo-100">Q. 결과가 마음에 안 들면?</strong> A. 오늘의 컨디션이 반영될 수 있어요. 다른 날 다시 풀어보세요.</div>
+          <div><strong class="text-indigo-100">Q. 데이터는 저장되나요?</strong> A. 별도의 회원 가입이나 결과 저장을 요구하지 않습니다.</div>
+          <div><strong class="text-indigo-100">Q. 테스트는 얼마나 자주 업데이트되나요?</strong> A. 새로운 테스트가 나오면 홈에 바로 반영됩니다.</div>
+          <div><strong class="text-indigo-100">Q. 콘텐츠는 직접 제작되나요?</strong> A. 네, 질문과 결과는 내부 기준에 맞춰 직접 구성합니다.</div>
+          <div><strong class="text-indigo-100">Q. 추천 테스트는 어떻게 고르나요?</strong> A. 연애 감성 테마와 반응이 좋은 테스트를 우선 배치합니다.</div>
+        </div>
+      </div>
+
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-3">
+        <div class="text-xs font-semibold text-indigo-100 uppercase tracking-widest">최근 업데이트</div>
+        <div id="recentUpdates" class="grid gap-3 md:grid-cols-2"></div>
+      </div>
+
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-3">
+        <div class="text-xs font-semibold text-indigo-100 uppercase tracking-widest">궁합 테스트 큐레이션</div>
+        <div id="matchCuration" class="grid gap-3 md:grid-cols-2"></div>
+      </div>
+
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-2">
+        <div class="text-xs font-semibold text-indigo-100 uppercase tracking-widest">About</div>
+        <p class="text-sm text-slate-200">Brain Test Hub는 연애 심리의 결을 가볍게 탐색할 수 있는 테스트 컬렉션입니다. 짧은 질문으로 감정의 리듬과 관계 성향을 확인하고, 결과를 통해 대화를 이어갈 수 있도록 설계했습니다.</p>
+        <p class="text-xs text-slate-400">주의: 본 테스트는 재미와 자기 탐색 목적이며, 전문 심리 진단이 아닙니다.</p>
+      </div>
+
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-2">
+        <div class="text-xs font-semibold text-indigo-100 uppercase tracking-widest">Contact</div>
+        <p class="text-sm text-slate-200">문의 및 제안은 이메일로 보내주세요.</p>
+        <p class="text-sm text-indigo-100">contact@partygame.pe.kr</p>
       </div>
     </section>
 
@@ -126,16 +271,19 @@
   {"id":"backroom-escape-game-test","title":"백룸 탈출 게임","path":"/brainTest/pages/brainTest/backroom-escape-game-test.html","description":"백룸에서의 선택 패턴으로 나의 탈출 엔딩을 확인하는 6문항 테스트","keywords":["백룸","탈출","공포","테스트"]},
   {"id":"inbti-balance-test","title":"inBTI 테스트","path":"/brainTest/pages/brainTest/inbti-balance-test.html","description":"성격 성분 비율로 나의 inBTI 타입을 측정하는 6문항 테스트","keywords":["inBTI","성격 성분","밸런스","테스트"]},
   {"id":"keyword-aura-test","title":"연관 키워드 테스트","path":"/brainTest/pages/brainTest/keyword-aura-test.html","description":"나를 설명하는 연관 키워드와 시그니처 컬러를 찾는 6문항 테스트","keywords":["연관 키워드","컬러","이미지","테스트"]},
-  {"id":"independence-hero-test","title":"내 영혼의 독립운동가 찾기","path":"/brainTest/pages/brainTest/independence-hero-test.html","description":"독립운동가들의 정신을 떠올리며 나와 닮은 역할을 찾아보는 6문항 테스트","keywords":["독립운동가","역사","역할","테스트"]}
+  {"id":"independence-hero-test","title":"내 영혼의 독립운동가 찾기","path":"/brainTest/pages/brainTest/independence-hero-test.html","description":"독립운동가들의 정신을 떠올리며 나와 닮은 역할을 찾아보는 6문항 테스트","keywords":["독립운동가","역사","역할","테스트"]},
+  {"id":"vacation-core-test","title":"직장인 휴가코어 테스트","path":"/brainTest/pages/brainTest/vacation-core-test.html","description":"이번 여름 나에게 맞는 휴가 코어를 찾아보는 6문항 테스트","keywords":["휴가","여름","여행","테스트"]}
 ]
 </script>
 <script>
   const listUrl = "/brainTest/pages/list.json";
   const listEl = document.getElementById("testList");
   const keywordWrap = document.getElementById("keywordFilters");
+  const toggleKeywordsBtn = document.getElementById("toggleKeywordsBtn");
   const searchInput = document.getElementById("searchInput");
   const clearSearchBtn = document.getElementById("clearSearchBtn");
   const loadMoreBtn = document.getElementById("loadMoreBtn");
+  const toggleThumbBtn = document.getElementById("toggleThumbBtn");
   const PAGE_SIZE = 10;
   const LOAD_MORE_COUNT = 5;
   const palette = [
@@ -148,6 +296,20 @@
     { text: "text-amber-100", badge: "bg-amber-500/20 border-amber-200/40 text-amber-50" },
     { text: "text-cyan-100", badge: "bg-cyan-500/20 border-cyan-200/40 text-cyan-50" }
   ];
+  const thumbnailMap = {
+    "tree-test": "/brainTest/images/tree-love-og.jpg",
+    "love-count-test": "/brainTest/images/strategy-og.jpg",
+    "love-strategy-test": "/brainTest/images/strategy-plan.jpg",
+    "marriage-ability-test": "/brainTest/images/strategy-heart.jpg",
+    "menhera-test": "/brainTest/images/menhera-og.jpg",
+    "dere-test": "/brainTest/images/dere-og.jpg",
+    "lucky-type-test": "/brainTest/images/lucky-og.jpg",
+    "inner-persona-test": "/brainTest/images/persona-og.jpg",
+    "personality-sticker-test": "/brainTest/images/sticker-og.jpg",
+    "little-ghost-test": "/brainTest/images/ghost-og.jpg",
+    "fishbread-test": "/brainTest/images/fishbread-og.jpg",
+    "vacation-core-test": "/brainTest/images/vacation-og.jpg"
+  };
 
   const inlineDataEl = document.getElementById("testListData");
   const inlineData = inlineDataEl ? JSON.parse(inlineDataEl.textContent) : [];
@@ -155,16 +317,24 @@
   let tests = [];
   let filtered = [];
   let visibleCount = PAGE_SIZE;
+  let showThumbnails = true;
+
+  function pickThumbnail(id) {
+    return thumbnailMap[id] || "";
+  }
 
   function prepareData(data) {
     tests = data.map((item, idx) => ({
       ...item,
       keywords: item.keywords || [],
-      palette: palette[idx % palette.length]
+      palette: palette[idx % palette.length],
+      thumbnail: pickThumbnail(item.id)
     }));
     filtered = tests;
     renderKeywordFilters();
     renderCards();
+    renderRecentUpdates();
+    renderMatchCuration();
   }
 
   async function initList() {
@@ -197,13 +367,23 @@
       });
       keywordWrap.appendChild(btn);
     });
+    if (toggleKeywordsBtn) {
+      toggleKeywordsBtn.textContent = keywordWrap.classList.contains("hidden") ? "키워드 펼치기" : "키워드 접기";
+    }
   }
 
   function createCard(test) {
     const card = document.createElement("a");
     card.href = test.path;
     card.className = "block rounded-xl border border-white/15 bg-white/5 hover:border-indigo-200/60 hover:bg-white/10 transition p-4";
+    const thumb = (test.thumbnail || "").trim();
+    const cover = showThumbnails && thumb ? `<div class="mb-3 h-24 rounded-lg bg-cover bg-center border border-white/10" style="background-image:url('${thumb}');"></div>` : "";
+    const tags = (test.keywords || []).slice(0, 3).map(k => {
+      const highlight = ["연애", "궁합", "감정", "관계"].some(tag => k.includes(tag));
+      return `<span class="text-xs px-2 py-1 rounded-full border ${highlight ? "border-rose-200/40 text-rose-100" : "border-white/15 text-slate-200"}">${k}</span>`;
+    }).join("");
     card.innerHTML = `
+      ${cover}
       <div class="flex items-center justify-between">
         <div>
           <h2 class="text-xl font-semibold ${test.palette.text}">${test.title}</h2>
@@ -211,6 +391,7 @@
         </div>
         <span class="text-xs px-3 py-1 rounded-full ${test.palette.badge}">열기</span>
       </div>
+      ${tags ? `<div class="mt-3 flex flex-wrap gap-2">${tags}</div>` : ""}
     `;
     if (test.keywords.length) {
       const keywordBox = document.createElement("div");
@@ -247,6 +428,56 @@
     }
   }
 
+  function renderRecentUpdates() {
+    const recentEl = document.getElementById("recentUpdates");
+    if (!recentEl || !tests.length) return;
+    const recent = tests.slice(-6).reverse();
+    recentEl.innerHTML = "";
+    const now = new Date();
+    const stamp = now.toLocaleDateString("ko-KR");
+    recent.forEach(test => {
+      const card = document.createElement("a");
+      card.href = test.path;
+      card.className = "block rounded-xl border border-white/15 bg-white/5 hover:border-indigo-200/60 hover:bg-white/10 transition p-4";
+      card.innerHTML = `
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-semibold ${test.palette.text}">${test.title}</h3>
+            <p class="mt-2 text-sm text-slate-200">${test.description}</p>
+            <p class="mt-2 text-xs text-slate-400">업데이트 · ${stamp}</p>
+          </div>
+          <span class="text-xs px-3 py-1 rounded-full ${test.palette.badge}">신규</span>
+        </div>
+      `;
+      recentEl.appendChild(card);
+    });
+  }
+
+  function renderMatchCuration() {
+    const matchEl = document.getElementById("matchCuration");
+    if (!matchEl || !tests.length) return;
+    const curated = tests.filter(test => (test.keywords || []).some(k => k.includes("궁합"))).slice(0, 6);
+    matchEl.innerHTML = "";
+    curated.forEach(test => {
+      const card = document.createElement("a");
+      card.href = test.path;
+      card.className = "block rounded-xl border border-white/15 bg-white/5 hover:border-indigo-200/60 hover:bg-white/10 transition p-4";
+      const thumb = (test.thumbnail || "").trim();
+      const cover = showThumbnails && thumb ? `<div class="h-24 rounded-lg bg-cover bg-center border border-white/10" style="background-image:url('${thumb}');"></div>` : "";
+      card.innerHTML = `
+        ${cover}
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-semibold ${test.palette.text}">${test.title}</h3>
+            <p class="mt-2 text-sm text-slate-200">${test.description}</p>
+          </div>
+          <span class="text-xs px-3 py-1 rounded-full ${test.palette.badge}">궁합</span>
+        </div>
+      `;
+      matchEl.appendChild(card);
+    });
+  }
+
   function applyFilter() {
     const query = searchInput.value.trim().toLowerCase();
     visibleCount = PAGE_SIZE;
@@ -260,6 +491,33 @@
       });
     }
     renderCards();
+    updateQueryState();
+  }
+
+  function applyRomanceFilter(tag) {
+    searchInput.value = tag;
+    applyFilter();
+    window.scrollTo({ top: keywordWrap.offsetTop - 80, behavior: "smooth" });
+  }
+
+  function updateQueryState() {
+    const url = new URL(window.location.href);
+    const q = searchInput.value.trim();
+    if (q) url.searchParams.set("q", q);
+    else url.searchParams.delete("q");
+    url.searchParams.set("thumb", showThumbnails ? "1" : "0");
+    url.searchParams.set("kw", keywordWrap.classList.contains("hidden") ? "0" : "1");
+    window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+  }
+
+  function initFromQuery() {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get("q") || "";
+    const thumb = params.get("thumb");
+    const kw = params.get("kw");
+    if (q) searchInput.value = q;
+    if (thumb === "0") showThumbnails = false;
+    if (kw === "1") keywordWrap.classList.remove("hidden");
   }
 
   searchInput.addEventListener("input", () => applyFilter());
@@ -272,6 +530,31 @@
     renderCards();
   });
 
+  document.querySelectorAll("[data-romance-tag]").forEach(btn => {
+    btn.addEventListener("click", () => applyRomanceFilter(btn.dataset.romanceTag));
+  });
+  document.getElementById("startRomanceFilterBtn")?.addEventListener("click", () => applyRomanceFilter("연애"));
+  document.getElementById("startMatchFilterBtn")?.addEventListener("click", () => applyRomanceFilter("궁합"));
+  document.getElementById("startNowBtn")?.addEventListener("click", () => {
+    if (!tests.length) return;
+    const idx = Math.floor(Math.random() * tests.length);
+    window.location.href = tests[idx]?.path || "#";
+  });
+  toggleThumbBtn?.addEventListener("click", () => {
+    showThumbnails = !showThumbnails;
+    toggleThumbBtn.textContent = showThumbnails ? "썸네일 숨기기" : "썸네일 보기";
+    renderCards();
+    renderMatchCuration();
+    updateQueryState();
+  });
+  toggleKeywordsBtn?.addEventListener("click", () => {
+    keywordWrap.classList.toggle("hidden");
+    const opened = !keywordWrap.classList.contains("hidden");
+    toggleKeywordsBtn.textContent = opened ? "키워드 접기" : "키워드 펼치기";
+    updateQueryState();
+  });
+
+  initFromQuery();
   initList();
 </script>
 </html>

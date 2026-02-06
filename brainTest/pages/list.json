@@ -327,5 +327,12 @@
         "path": "/brainTest/pages/brainTest/independence-hero-test.html",
         "description": "독립운동가들의 정신을 떠올리며 나와 닮은 역할을 찾아보는 6문항 테스트",
         "keywords": ["독립운동가", "역사", "역할", "테스트"]
+    },
+    {
+        "id": "vacation-core-test",
+        "title": "직장인 휴가코어 테스트",
+        "path": "/brainTest/pages/brainTest/vacation-core-test.html",
+        "description": "이번 여름 나에게 맞는 휴가 코어를 찾아보는 6문항 테스트",
+        "keywords": ["휴가", "여름", "여행", "테스트"]
     }
 ]
