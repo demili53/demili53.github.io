@@ -334,5 +334,40 @@
         "path": "/brainTest/pages/brainTest/vacation-core-test.html",
         "description": "이번 여름 나에게 맞는 휴가 코어를 찾아보는 6문항 테스트",
         "keywords": ["휴가", "여름", "여행", "테스트"]
+    },
+    {
+        "id": "exam-charm-draw-test",
+        "title": "수능 부적 뽑기",
+        "path": "/brainTest/pages/brainTest/exam-charm-draw-test.html",
+        "description": "나에게 어울리는 행운 부적을 찾아주는 6문항 수능 부적 뽑기 테스트",
+        "keywords": ["수능", "부적", "행운", "테스트"]
+    },
+    {
+        "id": "cat-butler-test",
+        "title": "냥집사 테스트",
+        "path": "/brainTest/pages/brainTest/cat-butler-test.html",
+        "description": "고양이와의 일상 선택으로 나의 집사력을 알아보는 6문항 냥집사 테스트",
+        "keywords": ["고양이", "집사", "반려묘", "테스트"]
+    },
+    {
+        "id": "summerbti-color-test",
+        "title": "여름BTI",
+        "path": "/brainTest/pages/brainTest/summerbti-color-test.html",
+        "description": "여름 감성 선택으로 나의 여름 컬러 타입을 찾는 6문항 여름BTI 테스트",
+        "keywords": ["여름", "컬러", "감성", "테스트"]
+    },
+    {
+        "id": "detective-logic-test",
+        "title": "명탐정 테스트",
+        "path": "/brainTest/pages/brainTest/detective-logic-test.html",
+        "description": "추리 선택으로 나의 명탐정 능력을 확인하는 6문항 명탐정 테스트",
+        "keywords": ["추리", "탐정", "미스터리", "테스트"]
+    },
+    {
+        "id": "ideal-egen-teto-test",
+        "title": "내 이상형은 에겐남? 테토남?",
+        "path": "/brainTest/pages/brainTest/ideal-egen-teto-test.html",
+        "description": "밸런스 질문으로 이상형의 에겐/테토 성향을 알아보는 6문항 테스트",
+        "keywords": ["이상형", "연애", "밸런스", "테스트"]
     }
 ]
