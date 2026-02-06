@@ -285,5 +285,47 @@
         "path": "/brainTest/pages/brainTest/startup-type-test.html",
         "description": "창업 스타일과 강점을 알아보는 6문항 창업 유형 테스트",
         "keywords": ["창업", "스타트업", "사업", "테스트"]
+    },
+    {
+        "id": "marriage-ability-test",
+        "title": "결혼 능력 테스트",
+        "path": "/brainTest/pages/brainTest/marriage-ability-test.html",
+        "description": "내가 결혼한다면 어떤 배우자일지 알아보는 6문항 결혼 능력 테스트",
+        "keywords": ["결혼", "배우자", "관계", "테스트"]
+    },
+    {
+        "id": "egen-teto-meter-test",
+        "title": "에겐테토 측정 테스트",
+        "path": "/brainTest/pages/brainTest/egen-teto-meter-test.html",
+        "description": "에겐 지수와 테토 지수를 확인하는 6문항 에겐테토 측정 테스트",
+        "keywords": ["에겐", "테토", "성향", "테스트"]
+    },
+    {
+        "id": "backroom-escape-game-test",
+        "title": "백룸 탈출 게임",
+        "path": "/brainTest/pages/brainTest/backroom-escape-game-test.html",
+        "description": "백룸에서의 선택 패턴으로 나의 탈출 엔딩을 확인하는 6문항 테스트",
+        "keywords": ["백룸", "탈출", "공포", "테스트"]
+    },
+    {
+        "id": "inbti-balance-test",
+        "title": "inBTI 테스트",
+        "path": "/brainTest/pages/brainTest/inbti-balance-test.html",
+        "description": "성격 성분 비율로 나의 inBTI 타입을 측정하는 6문항 테스트",
+        "keywords": ["inBTI", "성격 성분", "밸런스", "테스트"]
+    },
+    {
+        "id": "keyword-aura-test",
+        "title": "연관 키워드 테스트",
+        "path": "/brainTest/pages/brainTest/keyword-aura-test.html",
+        "description": "나를 설명하는 연관 키워드와 시그니처 컬러를 찾는 6문항 테스트",
+        "keywords": ["연관 키워드", "컬러", "이미지", "테스트"]
+    },
+    {
+        "id": "independence-hero-test",
+        "title": "내 영혼의 독립운동가 찾기",
+        "path": "/brainTest/pages/brainTest/independence-hero-test.html",
+        "description": "독립운동가들의 정신을 떠올리며 나와 닮은 역할을 찾아보는 6문항 테스트",
+        "keywords": ["독립운동가", "역사", "역할", "테스트"]
     }
 ]

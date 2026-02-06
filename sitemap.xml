@@ -215,4 +215,34 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://partygame.pe.kr/brainTest/pages/brainTest/marriage-ability-test.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://partygame.pe.kr/brainTest/pages/brainTest/egen-teto-meter-test.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://partygame.pe.kr/brainTest/pages/brainTest/backroom-escape-game-test.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://partygame.pe.kr/brainTest/pages/brainTest/inbti-balance-test.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://partygame.pe.kr/brainTest/pages/brainTest/keyword-aura-test.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://partygame.pe.kr/brainTest/pages/brainTest/independence-hero-test.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
