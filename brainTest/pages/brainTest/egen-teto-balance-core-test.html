@@ -1,0 +1,314 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="연애 상황에서 드러나는 에겐/테토 밸런스 코어를 알아보는 6문항 테스트">
+  <meta name="keywords" content="연애 심리 테스트, 에겐, 테토, 성향 밸런스">
+  <meta name="author" content="partygame.pe.kr">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/egen-teto-balance-core-test.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="에겐·테토 밸런스 코어 테스트">
+  <meta property="og:description" content="연애 상황에서 드러나는 에겐/테토 밸런스 코어를 알아보는 6문항 테스트">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/egen-teto-balance-og.jpg">
+  <meta property="og:url" content="https://partygame.pe.kr/brainTest/pages/brainTest/egen-teto-balance-core-test.html">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+          crossorigin="anonymous"></script>
+  <title>에겐·테토 밸런스 코어 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-rose-950 via-slate-900 to-indigo-950 text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.35em] text-rose-200">Egen Teto Balance Core</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">에겐·테토 밸런스 코어 테스트</h1>
+      <p class="text-slate-200">6개의 질문으로 내 에겐력/테토력의 균형 포인트를 확인해 보세요. <a href="/" class="underline text-rose-200 hover:text-rose-100 transition">홈으로 이동</a></p>
+    </header>
+
+    <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section class="space-y-3">
+        <div class="text-xs font-semibold text-rose-200 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden"><div id="progressBar" class="h-2 bg-gradient-to-r from-rose-400 via-pink-300 to-indigo-300 w-0 transition-all duration-300"></div></div>
+        <div class="text-sm text-slate-300 flex justify-between"><span>에겐·테토 밸런스 분석 중...</span><span id="progressText">0% 완료</span></div>
+      </section>
+
+      <section id="quizCard" class="space-y-5">
+        <h2 id="question" class="text-2xl font-semibold"></h2>
+        <div id="options" class="space-y-3"></div>
+        <div class="flex justify-between text-sm text-slate-300"><button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-rose-200 hover:bg-white/10 transition disabled:opacity-40">이전</button><span class="text-rose-200">연애 상황에서 더 자연스러운 반응을 골라주세요</span></div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-rose-200 uppercase tracking-[0.3em]">결과</div>
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="md:w-48 w-full"><img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-48 object-cover" alt="result visual"></div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm"></div>
+            <p id="resultDesc" class="text-slate-100 leading-relaxed"></p>
+          </div>
+        </div>
+        <div id="resultTips" class="grid gap-3"></div>
+        <div class="space-y-2 bg-white/5 border border-white/10 rounded-2xl p-4">
+          <h3 class="text-lg font-semibold text-rose-200">테스트 내 궁합</h3>
+          <div class="flex flex-col gap-2 text-sm">
+            <a id="bestLink" class="inline-flex items-center gap-2 text-slate-100 underline underline-offset-4 hover:text-rose-200" href="#">최고 궁합 결과 보기</a>
+            <a id="worstLink" class="inline-flex items-center gap-2 text-slate-300 underline underline-offset-4 hover:text-sky-200" href="#">주의 궁합 결과 보기</a>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-rose-300 text-rose-100 hover:bg-rose-400/10 transition">카카오톡 공유</button>
+          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-rose-500 text-white font-semibold shadow-lg hover:bg-rose-400 transition">다시 시작하기</button>
+          <a href="/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 text-slate-100 hover:bg-white/10 transition">홈으로 이동</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+    if (window.Kakao && !window.Kakao.isInitialized()) window.Kakao.init(window.__KAKAO_APP_KEY__);
+  </script>
+  <script src="/brainTest/scripts/kakao-share.js"></script>
+  <script>
+    const quiz = {
+      questions: [
+        { text: "호감 있는 사람 앞에서 내 기본 텐션은?", options: [
+          { label: "부드럽고 다정하게 맞춘다", trait: "egen" },
+          { label: "강한 눈빛으로 확실히 표현한다", trait: "teto" },
+          { label: "상황 따라 유연하게 바뀐다", trait: "hybrid" },
+          { label: "차분하게 선을 지키며 본다", trait: "calm" }
+        ]},
+        { text: "연락 스타일에서 더 가까운 건?", options: [
+          { label: "감정 표현을 자주 한다", trait: "egen" },
+          { label: "핵심만 짧게 빠르게", trait: "teto" },
+          { label: "상대 톤에 맞춰 조절한다", trait: "hybrid" },
+          { label: "리듬은 느려도 꾸준히", trait: "calm" }
+        ]},
+        { text: "갈등이 생기면 먼저 하는 행동은?", options: [
+          { label: "감정부터 확인하고 달랜다", trait: "egen" },
+          { label: "문제를 바로 정면 돌파한다", trait: "teto" },
+          { label: "감정과 해결을 동시에 잡는다", trait: "hybrid" },
+          { label: "시간을 두고 정리한 뒤 말한다", trait: "calm" }
+        ]},
+        { text: "썸에서 끌리는 상대 포인트는?", options: [
+          { label: "섬세한 공감과 배려", trait: "egen" },
+          { label: "결단력과 추진력", trait: "teto" },
+          { label: "센스 있는 균형감", trait: "hybrid" },
+          { label: "일관된 안정감", trait: "calm" }
+        ]},
+        { text: "데이트를 리드할 때 내 방식은?", options: [
+          { label: "분위기를 살리며 다정하게", trait: "egen" },
+          { label: "코스를 정해 강하게 이끈다", trait: "teto" },
+          { label: "즉흥과 계획을 반반 섞는다", trait: "hybrid" },
+          { label: "무리 없이 편안한 흐름", trait: "calm" }
+        ]},
+        { text: "지금 내 연애 코어에 가까운 타입은?", options: [
+          { label: "에겐 감성 코어", trait: "egen" },
+          { label: "테토 추진 코어", trait: "teto" },
+          { label: "에겐·테토 믹스 코어", trait: "hybrid" },
+          { label: "저자극 안정 코어", trait: "calm" }
+        ]}
+      ],
+      traits: {
+        egen: {
+          name: "에겐 감성 코어형",
+          tagline: "공감 · 다정형",
+          desc: "감정선을 세심하게 읽고 따뜻하게 반응하는 타입입니다. 관계 만족도를 높이는 감성 리드가 강점입니다.",
+          image: "/brainTest/images/egen-teto-soft.jpg",
+          tips: ["다정함에 기준을 더하면 관계가 더 선명해집니다.", "상대 배려만큼 내 원하는 것도 같이 말해보세요."],
+          compatibility: { best: { trait: "teto", reason: "테토형의 추진력이 에겐형의 감성을 현실로 연결해줘요." }, watch: { trait: "egen", reason: "서로 배려만 하다 속도가 늦어질 수 있어요." } }
+        },
+        teto: {
+          name: "테토 추진 코어형",
+          tagline: "결단 · 직진형",
+          desc: "호감이 생기면 주도적으로 움직이는 타입입니다. 관계를 빠르게 전진시키는 힘이 커서 흐름 장악력이 좋습니다.",
+          image: "/brainTest/images/egen-teto-bold.jpg",
+          tips: ["속도를 낼수록 감정 확인 질문을 함께 넣어보세요.", "강한 표현 뒤에 부드러운 한마디가 효과적입니다."],
+          compatibility: { best: { trait: "egen", reason: "에겐형의 섬세함이 테토형의 추진력과 균형을 만듭니다." }, watch: { trait: "teto", reason: "주도권 충돌이 생기기 쉬워요." } }
+        },
+        hybrid: {
+          name: "에겐·테토 하이브리드형",
+          tagline: "유연 · 밸런스형",
+          desc: "상황에 따라 감성과 추진을 조절하는 타입입니다. 적응력이 높아 다양한 상대와 리듬을 맞추는 데 강합니다.",
+          image: "/brainTest/images/egen-teto-hybrid.jpg",
+          tips: ["유연함 속에서 내 핵심 기준을 하나 정해두세요.", "너무 맞추기만 하면 피로가 올 수 있어요."],
+          compatibility: { best: { trait: "calm", reason: "캄형의 안정감이 하이브리드형의 유연함을 오래 유지시켜요." }, watch: { trait: "hybrid", reason: "서로 조절하다 결정이 늦어질 수 있어요." } }
+        },
+        calm: {
+          name: "캄 스테디 코어형",
+          tagline: "안정 · 신뢰형",
+          desc: "자극보다 지속성을 중시하는 타입입니다. 천천히 신뢰를 쌓아 오래 가는 관계를 만드는 데 강합니다.",
+          image: "/brainTest/images/egen-teto-calm.jpg",
+          tips: ["안정감에 감정 표현을 조금 더해보세요.", "거리감이 필요할 땐 이유를 짧게 공유하면 좋습니다."],
+          compatibility: { best: { trait: "hybrid", reason: "하이브리드형의 유연함이 캄형의 안정감을 자연스럽게 확장해줘요." }, watch: { trait: "teto", reason: "전개 속도 차이가 부담으로 느껴질 수 있어요." } }
+        }
+      }
+    };
+
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const stepLabel = document.getElementById("stepLabel");
+    const progressBar = document.getElementById("progressBar");
+    const progressText = document.getElementById("progressText");
+    const resultCard = document.getElementById("resultCard");
+    const quizCard = document.getElementById("quizCard");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultBadge = document.getElementById("resultBadge");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultImage = document.getElementById("resultImage");
+    const resultTips = document.getElementById("resultTips");
+    const bestLink = document.getElementById("bestLink");
+    const worstLink = document.getElementById("worstLink");
+    const restartBtn = document.getElementById("restartBtn");
+    const prevBtn = document.getElementById("prevBtn");
+    const shareContent = {
+      title: "에겐·테토 밸런스 코어 테스트",
+      description: "연애 상황에서 드러나는 에겐/테토 밸런스 코어를 알아보는 6문항 테스트",
+      imageUrl: "https://partygame.pe.kr/brainTest/images/egen-teto-balance-og.jpg",
+      webUrl: `${window.location.origin}${window.location.pathname}`
+    };
+    const PARAM_KEY = "result";
+
+    let current = 0;
+    const answers = Array(quiz.questions.length).fill(null);
+
+    function renderQuestion() {
+      const q = quiz.questions[current];
+      questionEl.textContent = q.text;
+      stepLabel.textContent = `문항 ${current + 1} / ${quiz.questions.length}`;
+      const progress = Math.round((current / quiz.questions.length) * 100);
+      progressText.textContent = `${progress}% 완료`;
+      progressBar.style.width = `${progress}%`;
+      optionsEl.innerHTML = "";
+      q.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-white/20 hover:border-rose-200 hover:bg-white/10 transition";
+        btn.textContent = opt.label;
+        btn.addEventListener("click", () => handleOption(opt.trait));
+        optionsEl.appendChild(btn);
+      });
+      prevBtn.disabled = current === 0;
+    }
+
+    function handleOption(trait) {
+      answers[current] = trait;
+      if (current === quiz.questions.length - 1) return showResult();
+      current += 1;
+      renderQuestion();
+    }
+
+    function determineWinner() {
+      const tally = answers.reduce((m, t) => { if (!t) return m; m[t] = (m[t] || 0) + 1; return m; }, {});
+      let winner = null;
+      Object.keys(tally).forEach(t => { if (!winner || tally[t] > tally[winner]) winner = t; });
+      return winner;
+    }
+
+    function showResult(traitKey) {
+      const winner = traitKey || determineWinner();
+      if (!winner || !quiz.traits[winner]) return;
+      applyResult(winner);
+    }
+
+    function applyResult(trait) {
+      const meta = quiz.traits[trait];
+      const resolvedImage = meta.image.startsWith("http") ? meta.image : `${window.location.origin}${meta.image}`;
+      resultTitle.textContent = meta.name;
+      resultBadge.textContent = meta.tagline;
+      resultDesc.textContent = meta.desc;
+      resultImage.src = meta.image;
+      resultImage.alt = meta.name;
+      resultTips.innerHTML = "";
+      meta.tips.forEach(t => {
+        const item = document.createElement("div");
+        item.className = "border border-white/15 rounded-xl px-3 py-2 text-sm text-slate-100";
+        item.textContent = `• ${t}`;
+        resultTips.appendChild(item);
+      });
+      updateRelationLinks(trait);
+      updateResultParam(trait);
+      shareContent.title = `${meta.name} | 에겐·테토 밸런스 코어 테스트`;
+      shareContent.description = meta.desc;
+      shareContent.imageUrl = resolvedImage;
+      shareContent.webUrl = `${window.location.origin}${window.location.pathname}?${PARAM_KEY}=${trait}#result`;
+      quizCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+      progressText.textContent = "100% 완료";
+      progressBar.style.width = "100%";
+    }
+
+    function goPrev() { if (current === 0) return; current -= 1; renderQuestion(); }
+    function restart() {
+      for (let i = 0; i < answers.length; i += 1) answers[i] = null;
+      current = 0;
+      quizCard.classList.remove("hidden");
+      resultCard.classList.add("hidden");
+      progressText.textContent = "0% 완료";
+      progressBar.style.width = "0%";
+      updateResultParam(null);
+      renderQuestion();
+    }
+
+    function updateResultParam(trait) {
+      const url = new URL(window.location.href);
+      if (trait) { url.searchParams.set(PARAM_KEY, trait); url.hash = "result"; }
+      else { url.searchParams.delete(PARAM_KEY); url.hash = ""; }
+      window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+    }
+
+    function updateRelationLinks(trait) {
+      const info = quiz.traits[trait] && quiz.traits[trait].compatibility ? quiz.traits[trait].compatibility : {};
+      setRelationLink(bestLink, info.best, "최고 궁합", trait);
+      setRelationLink(worstLink, info.watch, "주의 궁합", trait);
+    }
+
+    function setRelationLink(element, detail, label, sourceTrait) {
+      if (!detail || !detail.trait || !quiz.traits[detail.trait]) {
+        element.classList.add("hidden"); element.removeAttribute("href"); element.removeAttribute("data-trait"); element.textContent = ""; return;
+      }
+      const target = quiz.traits[detail.trait];
+      const reason = detail.reason || relationFallbackReason(label, sourceTrait, detail.trait);
+      element.classList.remove("hidden");
+      element.dataset.trait = detail.trait;
+      element.textContent = `${label} · ${target.name} - ${reason}`;
+      element.href = `${window.location.pathname}?${PARAM_KEY}=${detail.trait}#result`;
+    }
+
+    function relationFallbackReason(type, sourceTrait, targetTrait) {
+      const source = quiz.traits[sourceTrait];
+      const target = quiz.traits[targetTrait];
+      if (!source || !target) return type === "최고 궁합" ? "서로의 리듬이 자연스럽게 어울려요." : "속도가 달라 조율이 필요해요.";
+      if (type === "최고 궁합") return `${target.tagline} 감각이 ${source.tagline}과 시너지를 만듭니다.`;
+      return `${target.name}의 텐션이 ${source.name}에게는 부담이 될 수 있어요.`;
+    }
+
+    function handleRelationClick(event) {
+      const trait = event.currentTarget.dataset.trait;
+      if (!trait || !quiz.traits[trait]) return;
+      event.preventDefault();
+      applyResult(trait);
+      window.scrollTo({ top: resultCard.offsetTop - 40, behavior: "smooth" });
+    }
+
+    prevBtn.addEventListener("click", goPrev);
+    restartBtn.addEventListener("click", restart);
+    bestLink.addEventListener("click", handleRelationClick);
+    worstLink.addEventListener("click", handleRelationClick);
+
+    renderQuestion();
+    const initialResult = new URLSearchParams(window.location.search).get(PARAM_KEY);
+    if (initialResult && quiz.traits[initialResult]) applyResult(initialResult);
+    setupKakaoShare("shareKakaoBtn", shareContent);
+  </script>
+</body>
+</html>
+
+
+
+
+
+

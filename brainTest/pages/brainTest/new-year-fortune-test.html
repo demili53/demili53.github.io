@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="2026년 붉은 말의 해를 기념한 6문항 신년 운세 체크. 올해의 에너지와 어울리는 행동 전략을 알아보세요.">
+  <meta name="keywords" content="신년 운세 테스트, 2026 운세, 심리 테스트, 브레인 테스트">
+  <meta name="author" content="partygame.pe.kr">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/new-year-fortune-test.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="2026 신년 종합 운세 뽑기">
+  <meta property="og:description" content="6개의 질문으로 새해에 깃드는 에너지 타입과 어울리는 행동 전략을 확인해 보세요.">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/newyear-og.jpg">
+  <meta property="og:url" content="https://partygame.pe.kr/brainTest/pages/brainTest/new-year-fortune-test.html">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+          crossorigin="anonymous"></script>
+  <title>2026 신년 종합 운세 뽑기</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-indigo-950 via-purple-900 to-black text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.35em] text-amber-200">New Year Fortune</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">2026 신년 종합 운세 뽑기</h1>
+      <p class="text-slate-200">붉은 말의 해에 깃드는 에너지를 6개의 선택으로 확인하세요. <a href="/" class="underline text-amber-200 hover:text-amber-100 transition">홈으로 이동</a></p>
+    </header>
+
+    <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <div class="space-y-3">
+        <div class="text-xs font-semibold text-amber-100 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+          <div id="progressBar" class="h-2 bg-gradient-to-r from-amber-400 via-orange-400 to-rose-400 w-0 transition-all duration-300"></div>
+        </div>
+        <div class="text-sm text-slate-200 flex justify-between">
+          <span>운세 카드 선택</span>
+          <span id="progressText">0% 완료</span>
+        </div>
+      </div>
+
+      <section id="quiz" class="space-y-5">
+        <h2 id="question" class="text-2xl font-semibold"></h2>
+        <div id="options" class="space-y-3"></div>
+        <div class="flex justify-between text-sm text-slate-300">
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-white/40 hover:bg-white/10 transition disabled:opacity-40 disabled:cursor-not-allowed">이전</button>
+          <span class="text-amber-200">올해 운세를 감각으로 골라보세요</span>
+        </div>
+      </section>
+
+      <section id="result" class="hidden space-y-5">
+        <div class="text-xs font-semibold text-amber-100 uppercase tracking-[0.3em]">결과</div>
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="md:w-48 w-full">
+            <img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-48 object-cover bg-white/10" alt="result type">
+          </div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/30 text-sm text-amber-100"></div>
+            <p id="resultDesc" class="text-slate-100 leading-relaxed"></p>
+          </div>
+        </div>
+        <div id="resultTips" class="grid gap-3"></div>
+        <div id="resultCompatibility"></div>
+        <div class="flex flex-wrap gap-3">
+          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-amber-300 text-amber-100 hover:bg-amber-400/10 transition">카카오톡 공유</button>
+          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500 text-white font-semibold shadow-lg hover:bg-amber-400 transition">다시 시작하기</button>
+          <a href="/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 text-slate-100 hover:bg-white/10 transition">홈으로 이동</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+      window.Kakao.init(window.__KAKAO_APP_KEY__);
+    }
+  </script>
+  <script src="/brainTest/scripts/kakao-share.js"></script>
+  <script>
+    const quiz = {
+      questions: [
+        {
+          text: "카운트다운 마지막 10초, 나는?",
+          options: [
+            { label: "모두와 하이파이브하며 기운을 끌어올린다", trait: "sun" },
+            { label: "내년 계획을 머릿속에서 다시 한번 정리한다", trait: "strategy" },
+            { label: "즉흥적으로 다음 행선지를 정한다", trait: "wanderer" },
+            { label: "조용히 소원을 적어 마음속에 새긴다", trait: "healer" }
+          ]
+        },
+        {
+          text: "2026년에 갖고 싶은 키워드는?",
+          options: [
+            { label: "타오르는 열정과 인정", trait: "sun" },
+            { label: "분명한 설계와 목표 달성", trait: "strategy" },
+            { label: "새로운 여행과 확장", trait: "wanderer" },
+            { label: "회복과 관계의 따뜻함", trait: "healer" }
+          ]
+        },
+        {
+          text: "새해 첫날 아침 루틴은?",
+          options: [
+            { label: "운동이나 스트레칭으로 몸에 불을 붙인다", trait: "sun" },
+            { label: "노트/가계부를 펼쳐 연간 플랜을 그린다", trait: "strategy" },
+            { label: "지도를 펼쳐 올해 갈 곳을 고른다", trait: "wanderer" },
+            { label: "감사 일기를 쓰며 감정을 정돈한다", trait: "healer" }
+          ]
+        },
+        {
+          text: "뜻대로 풀리지 않을 때, 나는?",
+          options: [
+            { label: "속도를 올려 돌파할 아이디어를 찾는다", trait: "sun" },
+            { label: "원인을 분석하고 체계를 재정비한다", trait: "strategy" },
+            { label: "움직이며 다른 길을 탐색한다", trait: "wanderer" },
+            { label: "호흡을 가다듬고 주변을 살피며 회복한다", trait: "healer" }
+          ]
+        },
+        {
+          text: "새해 선물로 받고 싶은 것은?",
+          options: [
+            { label: "라운드 테이블과 토론 기회", trait: "sun" },
+            { label: "스마트 플래너/재테크 솔루션", trait: "strategy" },
+            { label: "트래블 패스나 크레딧", trait: "wanderer" },
+            { label: "힐링 리트릿 이용권", trait: "healer" }
+          ]
+        },
+        {
+          text: "2026년 말 나에게 보내고 싶은 메시지는?",
+          options: [
+            { label: "과감했던 선택 덕분에 길이 열렸어!", trait: "sun" },
+            { label: "디테일 체크 덕분에 안전하게 성장했어", trait: "strategy" },
+            { label: "모험을 멈추지 않아 새로운 인연을 얻었어", trait: "wanderer" },
+            { label: "마음 돌봄을 잘해서 사람과 에너지가 모였어", trait: "healer" }
+          ]
+        }
+      ],
+      results: {
+        sun: {
+          title: "붉은 태양 기수",
+          badge: "열정 · 추진형",
+          desc: "불꽃처럼 기세가 치솟는 운세입니다. 리더십과 존재감이 자연스럽게 부각되고, 올해는 빠른 결정과 드라이브가 길을 여는 핵심이 됩니다. 에너지가 집중되는 만큼 분명한 목적지를 정하고, 당신이 만든 열기를 주변과 나눌수록 신뢰가 쌓입니다.",
+          image: "/brainTest/images/newyear-sun.jpg",
+          tips: [
+            "열정이 치솟을수록 체력 관리 루틴을 더 단단하게 잡아두세요.",
+            "중요한 발표나 이벤트를 2분기, 4분기 피크로 배치하면 상승 곡선을 탈 수 있습니다."
+          ],
+          compatibility: {
+            best: [
+              { trait: "healer", reason: "달빛 치유사의 안정감이 태양 기수의 불꽃을 부드럽게 조율합니다." },
+              { trait: "wanderer", reason: "행운 여정가의 모험심이 당신의 추진력을 신선하게 자극합니다." }
+            ],
+            watch: [
+              { trait: "strategy", reason: "운명 설계자와는 속도 차이가 있어, 계획 공유 미팅을 자주 잡아 조율하세요." }
+            ]
+          }
+        },
+        strategy: {
+          title: "운명 설계자",
+          badge: "계획 · 구조형",
+          desc: "치밀한 설계가 곧 행운인 타입입니다. 올해는 데이터, 재무, 커리어 타임라인을 정교하게 조립할수록 주변이 당신을 의지합니다. 서류, 계약, 자격증 등 tangible 한 산출물을 남기면 운세가 더 단단해집니다.",
+          image: "/brainTest/images/newyear-strategy.jpg",
+          tips: [
+            "분기 초마다 검토 회의를 잡고 지표/재정 상태를 확인해 두세요.",
+            "완벽주의 대신 우선순위를 3개로 압축하면 실제 추진력이 올라갑니다."
+          ],
+          compatibility: {
+            best: [
+              { trait: "sun", reason: "태양 기수의 추진력을 설계도가 받쳐주면 대형 프로젝트가 안정적으로 굴러갑니다." },
+              { trait: "healer", reason: "감정 케어를 맡아주는 달빛 치유사 덕분에 긴 호흡을 유지할 수 있습니다." }
+            ],
+            watch: [
+              { trait: "wanderer", reason: "행운 여정가의 즉흥성이 계획을 흔들 수 있으니 명확한 역할을 정해주세요." }
+            ]
+          }
+        },
+        wanderer: {
+          title: "행운 여정가",
+          badge: "확장 · 유연형",
+          desc: "새로운 길과 사람을 통해 행운을 발견하는 타입입니다. 이동, 여행, 프로젝트 스위칭이 많을수록 기회가 따라붙습니다. 올해는 경험에서 바로 배우고, 연결된 네트워크를 기록해 두면 후반부에 큰 결실이 찾아옵니다.",
+          image: "/brainTest/images/newyear-wanderer.jpg",
+          tips: [
+            "즉흥 여행/행동 전에도 안전망(보험, 예비 자금)을 확보해 두세요.",
+            "새로 만난 사람을 48시간 안에 한 번 더 연락하면 좋은 인연으로 굳어집니다."
+          ],
+          compatibility: {
+            best: [
+              { trait: "sun", reason: "태양 기수와 함께하면 도전 속도가 배가되고, 서로의 열정이 시너지를 만듭니다." },
+              { trait: "healer", reason: "달빛 치유사의 온기가 잦은 이동 속에서도 중심을 잡게 해줍니다." }
+            ],
+            watch: [
+              { trait: "strategy", reason: "운명 설계자의 촘촘한 계획과 엇박이 날 수 있으니 정기 체크포인트를 만들세요." }
+            ]
+          }
+        },
+        healer: {
+          title: "달빛 치유사",
+          badge: "회복 · 감성형",
+          desc: "감정의 리듬이 그대로 길운으로 이어지는 타입입니다. 돌봄, 상담, 예술, 힐링 관련 활동에 몰입할수록 주변이 당신을 중심으로 모입니다. 사람들을 위해 쓰는 에너지를 기록하고, 자신을 돌보는 시간을 스케줄에 넣을수록 내공이 축적됩니다.",
+          image: "/brainTest/images/newyear-healer.jpg",
+          tips: [
+            "감정 로그나 호흡 명상을 주 3회 이상 꾸준히 실행해 보세요.",
+            "에너지 드레인 시그널을 느끼면 24시간 안에 휴식 예약을 넣어두는 것이 좋습니다."
+          ],
+          compatibility: {
+            best: [
+              { trait: "strategy", reason: "운명 설계자의 구조가 마음의 짐을 덜어주고, 함께하면 장기 목표가 탄탄해집니다." },
+              { trait: "wanderer", reason: "행운 여정가와의 만남이 영감과 창의력으로 이어집니다." }
+            ],
+            watch: [
+              { trait: "sun", reason: "태양 기수의 강한 기세에 지칠 수 있으니 감정 경계를 명확히 표현하세요." }
+            ]
+          }
+        }
+      }
+    };
+
+    const totalQuestions = quiz.questions.length;
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const quizSection = document.getElementById("quiz");
+    const resultSection = document.getElementById("result");
+    const stepLabel = document.getElementById("stepLabel");
+    const progressText = document.getElementById("progressText");
+    const progressBar = document.getElementById("progressBar");
+    const prevBtn = document.getElementById("prevBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultBadge = document.getElementById("resultBadge");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultImage = document.getElementById("resultImage");
+    const resultTips = document.getElementById("resultTips");
+    const resultCompatibility = document.getElementById("resultCompatibility");
+
+    const baseShareUrl = `${window.location.origin}${window.location.pathname}`;
+    const shareContent = {
+      title: "2026 신년 종합 운세 뽑기",
+      description: "붉은 말의 해 에너지와 어울리는 나의 운세 타입을 6문항으로 확인하세요!",
+      imageUrl: `${window.location.origin}/brainTest/images/newyear-og.jpg`,
+      webUrl: baseShareUrl
+    };
+    const PARAM_KEY = "trait";
+
+    let current = 0;
+    const answers = Array(totalQuestions).fill(null);
+
+    function renderQuestion() {
+      const q = quiz.questions[current];
+      stepLabel.textContent = `문항 ${current + 1} / ${totalQuestions}`;
+      const percent = Math.round((current / totalQuestions) * 100);
+      progressText.textContent = `${percent}% 완료`;
+      progressBar.style.width = `${percent}%`;
+      questionEl.textContent = q.text;
+      optionsEl.innerHTML = "";
+      q.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-white/20 hover:border-amber-300 hover:bg-white/10 transition";
+        btn.textContent = option.label;
+        btn.addEventListener("click", () => handleOption(option.trait));
+        optionsEl.appendChild(btn);
+      });
+      prevBtn.disabled = current === 0;
+    }
+
+    function handleOption(trait) {
+      answers[current] = trait;
+      if (current === totalQuestions - 1) {
+        showResult();
+        return;
+      }
+      current += 1;
+      renderQuestion();
+    }
+
+    function goPrev() {
+      if (current === 0) return;
+      current -= 1;
+      renderQuestion();
+    }
+
+    function restartQuiz() {
+      for (let i = 0; i < answers.length; i += 1) answers[i] = null;
+      current = 0;
+      quizSection.classList.remove("hidden");
+      resultSection.classList.add("hidden");
+      updateTraitQuery(null);
+      renderQuestion();
+      window.scrollTo({ top: 0 });
+    }
+
+    function showResult() {
+      const counts = {};
+      const tieBreak = {};
+      answers.forEach((trait, idx) => {
+        if (!trait) return;
+        counts[trait] = (counts[trait] || 0) + 1;
+        tieBreak[trait] = (tieBreak[trait] || 0) + (totalQuestions - idx);
+      });
+
+      const ranked = Object.keys(counts).sort((a, b) => {
+        if (counts[b] !== counts[a]) return counts[b] - counts[a];
+        return (tieBreak[b] || 0) - (tieBreak[a] || 0);
+      });
+
+      const bestTrait = ranked[0] || Object.keys(quiz.results)[0];
+      progressText.textContent = "100% 완료";
+      progressBar.style.width = "100%";
+      presentResult(bestTrait);
+    }
+
+    function presentResult(traitKey) {
+      const trait = quiz.results[traitKey];
+      if (!trait) return;
+      quizSection.classList.add("hidden");
+      resultSection.classList.remove("hidden");
+      progressText.textContent = "100% 완료";
+      progressBar.style.width = "100%";
+      resultTitle.textContent = trait.title;
+      resultBadge.textContent = trait.badge;
+      resultDesc.textContent = trait.desc;
+      resultImage.src = trait.image;
+      resultImage.alt = trait.title;
+
+      resultTips.innerHTML = "";
+      trait.tips.forEach(tip => {
+        const card = document.createElement("div");
+        card.className = "rounded-2xl border border-white/15 bg-white/5 p-4 text-sm text-slate-100";
+        card.textContent = tip;
+        resultTips.appendChild(card);
+      });
+
+      renderCompatibility(traitKey);
+      updateTraitQuery(traitKey);
+      updateShareMeta(traitKey, trait);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderCompatibility(traitKey) {
+      const trait = quiz.results[traitKey];
+      if (!trait || !trait.compatibility) {
+        resultCompatibility.innerHTML = "";
+        return;
+      }
+      const section = document.createElement("div");
+      section.className = "rounded-2xl border border-white/15 bg-white/5 p-4 space-y-3";
+      const title = document.createElement("div");
+      title.className = "text-sm font-semibold text-amber-200 tracking-[0.2em] uppercase";
+      title.textContent = "궁합 안내";
+      section.appendChild(title);
+
+      if (trait.compatibility.best?.length) {
+        const bestBlock = document.createElement("div");
+        bestBlock.innerHTML = `<p class="text-xs text-amber-100 mb-2">잘 맞는 타입</p>`;
+        trait.compatibility.best.forEach(item => {
+          const el = createCompatibilityItem(item);
+          if (el) bestBlock.appendChild(el);
+        });
+        section.appendChild(bestBlock);
+      }
+
+      if (trait.compatibility.watch?.length) {
+        const watchBlock = document.createElement("div");
+        watchBlock.innerHTML = `<p class="text-xs text-rose-200 mb-2">주의할 타입</p>`;
+        trait.compatibility.watch.forEach(item => {
+          const el = createCompatibilityItem(item);
+          if (el) watchBlock.appendChild(el);
+        });
+        section.appendChild(watchBlock);
+      }
+
+      resultCompatibility.innerHTML = "";
+      resultCompatibility.appendChild(section);
+    }
+
+    function updateShareMeta(traitKey, trait) {
+      if (!trait) return;
+      const resolvedImage = trait.image && !trait.image.startsWith("http")
+        ? `${window.location.origin}${trait.image}`
+        : trait.image;
+      shareContent.title = `${trait.title} | 2026 신년 종합 운세 뽑기`;
+      shareContent.description = trait.desc;
+      shareContent.imageUrl = resolvedImage || shareContent.imageUrl;
+      shareContent.webUrl = traitKey
+        ? `${baseShareUrl}?${PARAM_KEY}=${traitKey}#result`
+        : baseShareUrl;
+    }
+
+    function createCompatibilityItem(info) {
+      const trait = quiz.results[info.trait];
+      if (!trait) return null;
+      const link = document.createElement("a");
+      link.href = `?${PARAM_KEY}=${info.trait}#result`;
+      link.className = "block rounded-xl border border-white/15 bg-white/5 px-3 py-2 mb-2 text-left text-sm hover:border-amber-200 hover:bg-white/10 transition";
+      link.innerHTML = `<span class="font-semibold text-slate-50">${trait.title}</span><br><span class="text-xs text-slate-300">${info.reason}</span>`;
+      link.addEventListener("click", event => {
+        event.preventDefault();
+        presentResult(info.trait);
+      });
+      return link;
+    }
+
+    function updateTraitQuery(traitKey) {
+      if (!window.history?.replaceState) return;
+      const url = new URL(window.location.href);
+      if (traitKey) {
+        url.searchParams.set(PARAM_KEY, traitKey);
+        url.hash = "result";
+      } else {
+        url.searchParams.delete(PARAM_KEY);
+        url.hash = "";
+      }
+      window.history.replaceState({}, "", url.toString());
+    }
+
+    prevBtn.addEventListener("click", goPrev);
+    restartBtn.addEventListener("click", restartQuiz);
+    renderQuestion();
+
+    const initialTrait = new URLSearchParams(window.location.search).get(PARAM_KEY);
+    if (initialTrait && quiz.results[initialTrait]) {
+      presentResult(initialTrait);
+    }
+
+    setupKakaoShare("shareKakaoBtn", shareContent);
+  </script>
+</body>
+</html>

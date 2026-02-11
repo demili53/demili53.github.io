@@ -1,0 +1,402 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="맞춤법 센스로 나의 문장 감각을 확인하는 6문항 테스트">
+  <meta name="keywords" content="맞춤법 테스트, 한글날, 문장력, 성향 테스트">
+  <meta name="author" content="partygame.pe.kr">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/spelling-sense-test.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="맞춤법 능력 시험">
+  <meta property="og:description" content="맞춤법 센스로 나의 문장 감각을 확인하는 6문항 테스트">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/spelling-og.jpg">
+  <meta property="og:url" content="https://partygame.pe.kr/brainTest/pages/brainTest/spelling-sense-test.html">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+          crossorigin="anonymous"></script>
+  <title>맞춤법 능력 시험</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-950 via-emerald-950 to-sky-950 text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.35em] text-emerald-200">Hangul Day Lab</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">맞춤법 능력 시험</h1>
+      <p class="text-slate-200">
+        6개의 질문으로 나의 문장 감각과 맞춤법 습관을 확인해 보세요.
+        <a href="/" class="underline text-emerald-200 hover:text-emerald-100 transition">홈으로 이동</a>
+      </p>
+    </header>
+
+    <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section class="space-y-3">
+        <div class="text-xs font-semibold text-emerald-200 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+          <div id="progressBar" class="h-2 bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-400 w-0 transition-all duration-300"></div>
+        </div>
+        <div class="text-sm text-slate-300 flex justify-between">
+          <span>문장 감각 점검 중...</span>
+          <span id="progressText">0% 완료</span>
+        </div>
+      </section>
+
+      <section id="quizCard" class="space-y-5">
+        <h2 id="question" class="text-2xl font-semibold"></h2>
+        <div id="options" class="space-y-3"></div>
+        <div class="flex justify-between text-sm text-slate-300">
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-emerald-200 hover:bg-white/10 transition disabled:opacity-40">이전</button>
+          <span class="text-emerald-200">가장 자연스러운 표현을 골라주세요</span>
+        </div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-emerald-200 uppercase tracking-[0.3em]">결과</div>
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="md:w-48 w-full">
+            <img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-48 object-cover" alt="result visual">
+          </div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm"></div>
+            <p id="resultDesc" class="text-slate-100 leading-relaxed"></p>
+          </div>
+        </div>
+        <div id="resultTips" class="grid gap-3"></div>
+        <div class="space-y-2 bg-white/5 border border-white/10 rounded-2xl p-4">
+          <h3 class="text-lg font-semibold text-emerald-200">테스트 내 궁합</h3>
+          <div class="flex flex-col gap-2 text-sm">
+            <a id="bestLink" class="inline-flex items-center gap-2 text-slate-100 underline underline-offset-4 hover:text-emerald-200" href="#">최고 궁합 결과 보기</a>
+            <a id="worstLink" class="inline-flex items-center gap-2 text-slate-300 underline underline-offset-4 hover:text-sky-200" href="#">주의 궁합 결과 보기</a>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-emerald-300 text-emerald-100 hover:bg-emerald-400/10 transition">카카오톡 공유</button>
+          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 text-white font-semibold shadow-lg hover:bg-emerald-400 transition">다시 시작하기</button>
+          <a href="/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 text-slate-100 hover:bg-white/10 transition">홈으로 이동</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+      window.Kakao.init(window.__KAKAO_APP_KEY__);
+    }
+  </script>
+  <script src="/brainTest/scripts/kakao-share.js"></script>
+  <script>
+    const quiz = {
+      questions: [
+        {
+          text: "회의 안내 문장으로 더 자연스러운 것은?",
+          options: [
+            { label: "회의가 3시에 시작됩니다.", trait: "scholar" },
+            { label: "회의가 3시에 시작됩니다요.", trait: "speed" },
+            { label: "회의가 3시에 시작되요.", trait: "careful" },
+            { label: "회의가 3시에 시작 된대요.", trait: "mentor" }
+          ]
+        },
+        {
+          text: "친구에게 메시지를 보낼 때 더 자연스러운 표현은?",
+          options: [
+            { label: "내일 시간 되면 알려줘.", trait: "speed" },
+            { label: "내일 시간 되면 알려 줘.", trait: "mentor" },
+            { label: "내일 시간 되면 알려줘요.", trait: "scholar" },
+            { label: "내일 시간 되면 알려쥬.", trait: "careful" }
+          ]
+        },
+        {
+          text: "공식 공지 문구로 더 적절한 것은?",
+          options: [
+            { label: "참석 여부를 회신해 주세요.", trait: "mentor" },
+            { label: "참석 여부를 회신해 주세용.", trait: "speed" },
+            { label: "참석 여부를 회신해 주새요.", trait: "careful" },
+            { label: "참석 여부를 회신해 주세요요.", trait: "scholar" }
+          ]
+        },
+        {
+          text: "업무 메모로 더 자연스러운 표현은?",
+          options: [
+            { label: "자료는 내일까지 제출 부탁드립니다.", trait: "scholar" },
+            { label: "자료는 내일까지 제출 부탁 드립니다.", trait: "mentor" },
+            { label: "자료는 내일까지 제출 부탁드림.", trait: "speed" },
+            { label: "자료는 내일까지 제출 부탁드려요.", trait: "careful" }
+          ]
+        },
+        {
+          text: "공유 메모에 더 자연스러운 표현은?",
+          options: [
+            { label: "공유해주셔서 감사합니다.", trait: "speed" },
+            { label: "공유해 주셔서 감사합니다.", trait: "mentor" },
+            { label: "공유해주셔서 감사 합니다.", trait: "careful" },
+            { label: "공유해 주셔서 감사해요.", trait: "scholar" }
+          ]
+        },
+        {
+          text: "일정 안내 문장으로 더 자연스러운 것은?",
+          options: [
+            { label: "다음 주에 일정이 확정될 예정입니다.", trait: "scholar" },
+            { label: "다음 주에 일정이 확정될 예정 입니다.", trait: "mentor" },
+            { label: "다음 주에 일정이 확정될 예정이예요.", trait: "careful" },
+            { label: "다음 주에 일정이 확정될 예정임.", trait: "speed" }
+          ]
+        }
+      ],
+      traits: {
+        scholar: {
+          name: "정밀 교열가",
+          tagline: "정확 · 안정형",
+          desc: "문장 속 작은 어색함도 놓치지 않는 타입. 맞춤법과 문장 흐름에 민감합니다.",
+          image: "/brainTest/images/spelling-scholar.jpg",
+          tips: [
+            "속도를 조금만 줄이면 완성도가 더 올라가요.",
+            "당신의 디테일이 모두의 신뢰를 만듭니다."
+          ],
+          compatibility: {
+            best: { trait: "mentor", reason: "멘토 타입의 차분함이 교열가의 정확함을 지켜줘요." },
+            watch: { trait: "speed", reason: "속도형의 빠른 리듬이 거슬릴 수 있어요." }
+          }
+        },
+        speed: {
+          name: "스피드 타이핑형",
+          tagline: "속도 · 직관형",
+          desc: "빠르게 입력하고 바로 공유하는 타입. 완벽함보다 속도를 중시합니다.",
+          image: "/brainTest/images/spelling-speed.jpg",
+          tips: [
+            "보내기 전에 한 번만 더 확인해 보세요.",
+            "속도도 좋지만 정확함이 신뢰를 높여줍니다."
+          ],
+          compatibility: {
+            best: { trait: "careful", reason: "신중형이 스피드의 빠른 리듬을 보완해줘요." },
+            watch: { trait: "scholar", reason: "교열가의 디테일이 압박으로 느껴질 수 있어요." }
+          }
+        },
+        careful: {
+          name: "신중 확인형",
+          tagline: "검수 · 안정형",
+          desc: "한 번 더 확인하고 보내는 타입. 자연스러움과 배려를 동시에 챙깁니다.",
+          image: "/brainTest/images/spelling-careful.jpg",
+          tips: [
+            "과도한 걱정보다 자신감을 가져보세요.",
+            "당신의 꼼꼼함이 분위기를 안정시켜요."
+          ],
+          compatibility: {
+            best: { trait: "speed", reason: "스피드 타입의 속도가 신중형의 균형을 잡아줘요." },
+            watch: { trait: "mentor", reason: "멘토 타입의 기준이 부담이 될 수 있어요." }
+          }
+        },
+        mentor: {
+          name: "문장 멘토형",
+          tagline: "정돈 · 배려형",
+          desc: "정중하고 명확한 문장을 선호하는 타입. 모두가 이해하기 쉬운 흐름을 만듭니다.",
+          image: "/brainTest/images/spelling-mentor.jpg",
+          tips: [
+            "가끔은 부드러운 표현으로 분위기를 풀어보세요.",
+            "정돈된 문장이 신뢰감을 높여줍니다."
+          ],
+          compatibility: {
+            best: { trait: "scholar", reason: "교열가의 정확함이 멘토형의 정돈을 강화해요." },
+            watch: { trait: "speed", reason: "속도형의 즉흥성이 기준을 흐릴 수 있어요." }
+          }
+        }
+      }
+    };
+
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const stepLabel = document.getElementById("stepLabel");
+    const progressBar = document.getElementById("progressBar");
+    const progressText = document.getElementById("progressText");
+    const resultCard = document.getElementById("resultCard");
+    const quizCard = document.getElementById("quizCard");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultBadge = document.getElementById("resultBadge");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultImage = document.getElementById("resultImage");
+    const resultTips = document.getElementById("resultTips");
+    const bestLink = document.getElementById("bestLink");
+    const worstLink = document.getElementById("worstLink");
+    const restartBtn = document.getElementById("restartBtn");
+    const prevBtn = document.getElementById("prevBtn");
+    const shareContent = {
+      title: "맞춤법 능력 시험",
+      description: "맞춤법 센스로 나의 문장 감각을 확인하는 6문항 테스트",
+      imageUrl: "https://partygame.pe.kr/brainTest/images/spelling-og.jpg",
+      webUrl: `${window.location.origin}${window.location.pathname}`
+    };
+    const PARAM_KEY = "result";
+
+    let current = 0;
+    const answers = Array(quiz.questions.length).fill(null);
+
+    function renderQuestion() {
+      const q = quiz.questions[current];
+      questionEl.textContent = q.text;
+      stepLabel.textContent = `문항 ${current + 1} / ${quiz.questions.length}`;
+      const progress = Math.round((current / quiz.questions.length) * 100);
+      progressText.textContent = `${progress}% 완료`;
+      progressBar.style.width = `${progress}%`;
+
+      optionsEl.innerHTML = "";
+      q.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-white/20 hover:border-emerald-200 hover:bg-white/10 transition";
+        btn.textContent = opt.label;
+        btn.addEventListener("click", () => handleOption(opt.trait));
+        optionsEl.appendChild(btn);
+      });
+
+      prevBtn.disabled = current === 0;
+    }
+
+    function handleOption(trait) {
+      answers[current] = trait;
+      if (current === quiz.questions.length - 1) {
+        showResult();
+        return;
+      }
+      current += 1;
+      renderQuestion();
+    }
+
+    function determineWinner() {
+      const tally = answers.reduce((map, trait) => {
+        if (!trait) return map;
+        map[trait] = (map[trait] || 0) + 1;
+        return map;
+      }, {});
+      let winner = null;
+      Object.keys(tally).forEach(trait => {
+        if (!winner || tally[trait] > tally[winner]) winner = trait;
+      });
+      return winner;
+    }
+
+    function showResult(traitKey) {
+      const winner = traitKey || determineWinner();
+      if (!winner || !quiz.traits[winner]) {
+        resultTitle.textContent = "아직 선택이 부족해요";
+        resultDesc.textContent = "문항을 모두 선택하면 결과를 볼 수 있어요.";
+        return;
+      }
+      applyResult(winner);
+    }
+
+    function applyResult(trait) {
+      const meta = quiz.traits[trait];
+      const resolvedImage = meta.image.startsWith("http") ? meta.image : `${window.location.origin}${meta.image}`;
+      resultTitle.textContent = meta.name;
+      resultBadge.textContent = meta.tagline;
+      resultDesc.textContent = meta.desc;
+      resultImage.src = meta.image;
+      resultImage.alt = meta.name;
+      resultTips.innerHTML = "";
+      meta.tips.forEach(t => {
+        const item = document.createElement("div");
+        item.className = "border border-white/15 rounded-xl px-3 py-2 text-sm text-slate-100";
+        item.textContent = `• ${t}`;
+        resultTips.appendChild(item);
+      });
+      updateRelationLinks(trait);
+      updateResultParam(trait);
+      shareContent.title = `${meta.name} | 맞춤법 능력 시험`;
+      shareContent.description = meta.desc;
+      shareContent.imageUrl = resolvedImage;
+      shareContent.webUrl = `${window.location.origin}${window.location.pathname}?${PARAM_KEY}=${trait}#result`;
+
+      quizCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+      progressText.textContent = "100% 완료";
+      progressBar.style.width = "100%";
+    }
+
+    function goPrev() {
+      if (current === 0) return;
+      current -= 1;
+      renderQuestion();
+    }
+
+    function restart() {
+      for (let i = 0; i < answers.length; i += 1) answers[i] = null;
+      current = 0;
+      quizCard.classList.remove("hidden");
+      resultCard.classList.add("hidden");
+      progressText.textContent = "0% 완료";
+      progressBar.style.width = "0%";
+      updateResultParam(null);
+      renderQuestion();
+    }
+
+    function updateResultParam(trait) {
+      const url = new URL(window.location.href);
+      if (trait) {
+        url.searchParams.set(PARAM_KEY, trait);
+        url.hash = "result";
+      } else {
+        url.searchParams.delete(PARAM_KEY);
+        url.hash = "";
+      }
+      window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+    }
+
+    function updateRelationLinks(trait) {
+      const info = quiz.traits[trait]?.compatibility || {};
+      setRelationLink(bestLink, info.best, "최고 궁합", trait);
+      setRelationLink(worstLink, info.watch, "주의 궁합", trait);
+    }
+
+    function setRelationLink(element, detail, label, sourceTrait) {
+      if (!detail || !detail.trait || !quiz.traits[detail.trait]) {
+        element.classList.add("hidden");
+        element.removeAttribute("href");
+        element.removeAttribute("data-trait");
+        element.textContent = "";
+        return;
+      }
+      const target = quiz.traits[detail.trait];
+      const reason = detail.reason || relationFallbackReason(label, sourceTrait, detail.trait);
+      element.classList.remove("hidden");
+      element.dataset.trait = detail.trait;
+      element.textContent = `${label} · ${target.name} - ${reason}`;
+      element.href = `${window.location.pathname}?${PARAM_KEY}=${detail.trait}#result`;
+    }
+
+    function relationFallbackReason(type, sourceTrait, targetTrait) {
+      const source = quiz.traits[sourceTrait];
+      const target = quiz.traits[targetTrait];
+      if (!source || !target) {
+        return type === "최고 궁합" ? "서로의 문장 감각이 자연스럽게 어울려요." : "리듬이 달라 조율이 필요해요.";
+      }
+      if (type === "최고 궁합") {
+        return `${target.tagline} 감각이 ${source.tagline}과 시너지를 만듭니다.`;
+      }
+      return `${target.name}의 속도가 ${source.name}에게는 부담일 수 있어요.`;
+    }
+
+    function handleRelationClick(event) {
+      const trait = event.currentTarget.dataset.trait;
+      if (!trait || !quiz.traits[trait]) return;
+      event.preventDefault();
+      applyResult(trait);
+      window.scrollTo({ top: resultCard.offsetTop - 40, behavior: "smooth" });
+    }
+
+    prevBtn.addEventListener("click", goPrev);
+    restartBtn.addEventListener("click", restart);
+    bestLink.addEventListener("click", handleRelationClick);
+    worstLink.addEventListener("click", handleRelationClick);
+
+    renderQuestion();
+    const initialResult = new URLSearchParams(window.location.search).get(PARAM_KEY);
+    if (initialResult && quiz.traits[initialResult]) {
+      applyResult(initialResult);
+    }
+
+    setupKakaoShare("shareKakaoBtn", shareContent);
+  </script>
+</body>
+</html>

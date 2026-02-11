@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="나만의 연말 트리 에너지를 6문항으로 알아보는 종합 심리 테스트">
+  <meta name="keywords" content="트리 테스트, 크리스마스 심리, holiday test, tree personality, 연말 테스트">
+  <meta name="author" content="partygame.pe.kr">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/all-season-tree-test.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="올인원 트리 꾸미기 테스트">
+  <meta property="og:description" content="빛, 향, 온기 중 무엇이 내 트리를 완성할까? 6개의 질문으로 확인해 보세요.">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/tree-aurora.jpg">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+          crossorigin="anonymous"></script>
+  <title>올인원 트리 꾸미기 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-emerald-950 via-slate-950 to-rose-950 text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.35em] text-emerald-200">All-Season Tree Lab</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">올인원 트리 꾸미기 테스트</h1>
+      <p class="text-slate-200">
+        6개의 질문에 답하며 올해 나를 닮은 트리 감성을 찾아보세요. 빛, 향, 온기 중 무엇이 내 마음을 채울까요?
+        <a href="/" class="underline text-emerald-200 hover:text-emerald-100 transition">홈으로 이동</a>
+      </p>
+    </header>
+
+    <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section class="space-y-3">
+        <div class="text-xs font-semibold text-emerald-100 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+          <div id="progressBar" class="h-2 bg-gradient-to-r from-emerald-300 via-amber-300 to-rose-300 w-0 transition-all duration-300"></div>
+        </div>
+        <div class="text-sm text-slate-200 flex justify-between">
+          <span>장식 아이디어 로딩 중...</span>
+          <span id="progressText">0% 완료</span>
+        </div>
+      </section>
+
+      <section id="quizCard" class="space-y-5">
+        <h2 id="question" class="text-2xl font-semibold"></h2>
+        <div id="options" class="space-y-3"></div>
+        <div class="flex justify-between text-sm text-slate-300">
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-white/40 hover:bg-white/10 transition disabled:opacity-40 disabled:cursor-not-allowed">이전</button>
+          <span class="text-emerald-200">느낌 오는 답을 골라보세요</span>
+        </div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-emerald-100 uppercase tracking-[0.3em]">결과</div>
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="md:w-48 w-full">
+            <img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-48 object-cover bg-white/5" alt="result tree vibe">
+          </div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm"></div>
+            <p id="resultDesc" class="text-slate-100 leading-relaxed"></p>
+          </div>
+        </div>
+        <div id="resultTips" class="grid gap-3"></div>
+        <div id="resultCompatibility"></div>
+        <div class="flex flex-wrap gap-3">
+          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-emerald-300 text-emerald-100 hover:bg-emerald-400/10 transition">카카오톡 공유</button>
+          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 text-white font-semibold shadow-lg hover:bg-emerald-400 transition">다시 시작하기</button>
+          <a href="/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 text-slate-100 hover:bg-white/10 transition">홈으로 이동</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+      window.Kakao.init(window.__KAKAO_APP_KEY__);
+    }
+  </script>
+  <script src="/brainTest/scripts/kakao-share.js"></script>
+  <script>
+    const quiz = {
+      questions: [
+        {
+          text: "나만의 트리를 세우기 전, 가장 먼저 떠오르는 장면은?",
+          options: [
+            { label: "겨울 밤하늘과 오로라를 닮은 빛을 켜는 순간", trait: "aurora" },
+            { label: "사탕과 리본이 한가득 묶여 달리는 소리", trait: "candy" },
+            { label: "솔잎 향이 방을 채우고, 손수 모은 장식을 다는 시간", trait: "pinecone" },
+            { label: "따뜻한 벽난로 옆에서 조용히 불빛을 고르는 장면", trait: "emberTree" }
+          ]
+        },
+        {
+          text: "트리 위 꼭대기에 올리고 싶은 것은?",
+          options: [
+            { label: "빛을 굴절시키는 투명한 별", trait: "aurora" },
+            { label: "캔디 케인과 리본이 얽힌 하트", trait: "candy" },
+            { label: "가만히 빛나는 솔방울 장식", trait: "pinecone" },
+            { label: "손으로 깎은 나무 조각 별", trait: "emberTree" }
+          ]
+        },
+        {
+          text: "연말 파티에서 내가 맡고 싶은 역할은?",
+          options: [
+            { label: "조명 감독! 빛 온도를 맞추는 사람", trait: "aurora" },
+            { label: "디저트 큐레이터! 달콤한 테이블을 책임지는 사람", trait: "candy" },
+            { label: "기념품 수집가! 추억을 남길 소품을 챙기는 사람", trait: "pinecone" },
+            { label: "호스트! 따뜻한 자리와 담요를 챙기는 사람", trait: "emberTree" }
+          ]
+        },
+        {
+          text: "작년 트리를 떠올리면 가장 아쉬웠던 점은?",
+          options: [
+            { label: "빛의 층을 더 섬세하게 쌓지 못한 것", trait: "aurora" },
+            { label: "재미 요소가 조금 부족했던 것", trait: "candy" },
+            { label: "내가 직접 만든 장식이 적었던 것", trait: "pinecone" },
+            { label: "사람들이 편히 쉴 공간을 못 만든 것", trait: "emberTree" }
+          ]
+        },
+        {
+          text: "트리를 다 꾸민 뒤 나누고 싶은 말은?",
+          options: [
+            { label: "\"빛 경로가 완벽해! 어디에 놔도 주인공이야.\"", trait: "aurora" },
+            { label: "\"간식과 장식까지 풀코스로 즐겨!\"", trait: "candy" },
+            { label: "\"손길이 닿은 자리에 추억이 자라날 거야.\"", trait: "pinecone" },
+            { label: "\"여기 앉아서 천천히 쉬어 가도 돼.\"", trait: "emberTree" }
+          ]
+        },
+        {
+          text: "올해 트리를 더 근사하게 만들 마법은?",
+          options: [
+            { label: "조명 스펙트럼을 세 단계로 나누는 설계력", trait: "aurora" },
+            { label: "새로운 간식/이벤트를 기획하는 상상력", trait: "candy" },
+            { label: "소재를 섬세하게 고르고 조합하는 손길", trait: "pinecone" },
+            { label: "사람들이 머무는 시간을 길게 만드는 온기", trait: "emberTree" }
+          ]
+        }
+      ],
+      traits: {
+        aurora: {
+          name: "오로라 루트 트리",
+          tagline: "빛·조율형",
+          desc: "빛의 각도를 계산하고, 공간 전체를 갤러리로 만드는 스타일입니다. 무드 조절을 잘해서 친구들이 트리 앞에서 자연스럽게 서고 사진을 남기게 만들죠.",
+          image: "/brainTest/images/tree-aurora.jpg",
+          tips: [
+            "조명 밸런스를 잡을 때 휴식을 위한 어두운 구간도 남겨 보세요.",
+            "빛 계획을 문서나 메모로 남기면 내년에도 더 빨리 셋업할 수 있어요."
+          ],
+          compatibility: {
+            best: [
+              { trait: "candy", reason: "캔디 트리와 함께하면 빛과 재미가 균형을 이룹니다." },
+              { trait: "pinecone", reason: "솔방울 트리의 디테일이 루트 트리를 더욱 깊게 만들어 줍니다." }
+            ],
+            watch: [
+              { trait: "emberTree", reason: "엠버 트리는 속도가 느려 조명 교체 타이밍을 맞춰야 해요." }
+            ]
+          }
+        },
+        candy: {
+          name: "캔디 리본 트리",
+          tagline: "축제·츄잉형",
+          desc: "트리를 파티 무대로 바꾸는 사람입니다. 사탕, 리본, 귀여운 인형까지 마음껏 매달며 보는 이들에게 웃음을 줍니다. 당신이 꾸미는 트리는 항상 이벤트가 가득합니다.",
+          image: "/brainTest/images/tree-candy.jpg",
+          tips: [
+            "장식을 달기 전 색상 팔레트를 3색 이내로 정하면 더 통일감이 생겨요.",
+            "간식 코너를 만드는 만큼 휴식존도 함께 배치하면 고급스러워집니다."
+          ],
+          compatibility: {
+            best: [
+              { trait: "aurora", reason: "루트 트리의 빛 설계가 캔디 트리의 에너지를 돋보이게 합니다." },
+              { trait: "emberTree", reason: "엠버 트리와 협업하면 사람들이 오래 머물고 싶어 해요." }
+            ],
+            watch: [
+              { trait: "pinecone", reason: "솔방울 트리는 미니멀을 선호하므로 장식 비율을 맞춰야 해요." }
+            ]
+          }
+        },
+        pinecone: {
+          name: "솔방울 내추럴 트리",
+          tagline: "차분·수집형",
+          desc: "자연 그대로의 질감과 향을 사랑하는 타입입니다. 직접 주운 솔방울, 말린 오렌지, 천 조각을 활용해 조용하지만 깊은 트리를 완성합니다.",
+          image: "/brainTest/images/tree-pinecone.jpg",
+          tips: [
+            "자연 소재를 사용할수록 방부 처리나 향을 유지할 작은 팁을 기록해 두세요.",
+            "연말 기록 노트를 만들어 소재 스토리를 적어두면 선물로도 활용할 수 있어요."
+          ],
+          compatibility: {
+            best: [
+              { trait: "aurora", reason: "빛 전문과 손잡으면 내추럴 트리에 포인트가 생깁니다." },
+              { trait: "emberTree", reason: "엠버 트리의 온기가 수집형 트리에 생동감을 줍니다." }
+            ],
+            watch: [
+              { trait: "candy", reason: "캔디 트리의 화려함과 균형을 맞추려면 사전 조율이 필요해요." }
+            ]
+          }
+        },
+        emberTree: {
+          name: "엠버 하스 스펠 트리",
+          tagline: "따뜻·돌봄형",
+          desc: "사람들이 편히 기댈 수 있는 자리를 만들고, 트리 아래에 담요와 수첩을 두는 타입입니다. 장식 하나하나에 위로와 이야기 요소를 담아 오래 머무는 공간을 연출합니다.",
+          image: "/brainTest/images/tree-cathedral.jpg",
+          tips: [
+            "좌석이나 쿠션을 트리와 같은 색감으로 맞추면 공간몰입이 높아져요.",
+            "트리 옆에 작은 카드 박스를 두고 손님이 메시지를 남기게 해보세요."
+          ],
+          compatibility: {
+            best: [
+              { trait: "candy", reason: "캔디 트리의 활기와 엠버의 온기가 합쳐져 파티가 오래 유지됩니다." },
+              { trait: "pinecone", reason: "내추럴함과 온기가 만나 안정된 힐링존이 됩니다." }
+            ],
+            watch: [
+              { trait: "aurora", reason: "루트 트리의 빠른 셋업 속도에 맞추려면 체크리스트가 필요합니다." }
+            ]
+          }
+        }
+      }
+    };
+
+    const totalQuestions = quiz.questions.length;
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const quizCard = document.getElementById("quizCard");
+    const resultCard = document.getElementById("resultCard");
+    const stepLabel = document.getElementById("stepLabel");
+    const progressText = document.getElementById("progressText");
+    const progressBar = document.getElementById("progressBar");
+    const prevBtn = document.getElementById("prevBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultBadge = document.getElementById("resultBadge");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultImage = document.getElementById("resultImage");
+    const resultTips = document.getElementById("resultTips");
+    const resultCompatibility = document.getElementById("resultCompatibility");
+
+    const baseShareUrl = `${window.location.origin}${window.location.pathname}`;
+    const shareContent = {
+      title: "올인원 트리 꾸미기 테스트",
+      description: "나만의 트리 감성을 6문항으로 알아보는 연말 심리 테스트",
+      imageUrl: "https://partygame.pe.kr/brainTest/images/tree-aurora.jpg",
+      webUrl: baseShareUrl
+    };
+    const PARAM_KEY = "result";
+
+    let current = 0;
+    const answers = Array(totalQuestions).fill(null);
+
+    function renderQuestion() {
+      const q = quiz.questions[current];
+      stepLabel.textContent = `문항 ${current + 1} / ${totalQuestions}`;
+      const percent = Math.round((current / totalQuestions) * 100);
+      progressText.textContent = `${percent}% 완료`;
+      progressBar.style.width = `${percent}%`;
+      questionEl.textContent = q.text;
+      optionsEl.innerHTML = "";
+      q.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-white/20 hover:border-emerald-300 hover:bg-white/10 transition";
+        btn.textContent = option.label;
+        btn.addEventListener("click", () => handleOption(option.trait));
+        optionsEl.appendChild(btn);
+      });
+      prevBtn.disabled = current === 0;
+    }
+
+    function handleOption(trait) {
+      answers[current] = trait;
+      if (current === totalQuestions - 1) {
+        showResult();
+        return;
+      }
+      current += 1;
+      renderQuestion();
+    }
+
+    function goPrev() {
+      if (current === 0) return;
+      current -= 1;
+      renderQuestion();
+    }
+
+    function restartQuiz() {
+      for (let i = 0; i < answers.length; i += 1) answers[i] = null;
+      current = 0;
+      quizCard.classList.remove("hidden");
+      resultCard.classList.add("hidden");
+      progressText.textContent = "0% 완료";
+      progressBar.style.width = "0%";
+      updateTraitQuery(null);
+      resultCompatibility.innerHTML = "";
+      renderQuestion();
+      window.scrollTo({ top: 0 });
+    }
+
+    function showResult() {
+      const counts = {};
+      const tieBreaker = {};
+      answers.forEach((trait, idx) => {
+        if (!trait) return;
+        counts[trait] = (counts[trait] || 0) + 1;
+        tieBreaker[trait] = (tieBreaker[trait] || 0) + (totalQuestions - idx);
+      });
+      const ranked = Object.keys(counts).sort((a, b) => {
+        if (counts[b] !== counts[a]) return counts[b] - counts[a];
+        return (tieBreaker[b] || 0) - (tieBreaker[a] || 0);
+      });
+      const bestTrait = ranked[0] || Object.keys(quiz.traits)[0];
+      presentResult(bestTrait);
+    }
+
+    function presentResult(traitKey) {
+      const trait = quiz.traits[traitKey];
+      if (!trait) return;
+      quizCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+      progressText.textContent = "100% 완료";
+      progressBar.style.width = "100%";
+      resultTitle.textContent = trait.name;
+      resultBadge.textContent = trait.tagline;
+      resultDesc.textContent = trait.desc;
+      resultImage.src = trait.image;
+      resultImage.alt = trait.name;
+      resultTips.innerHTML = "";
+      trait.tips.forEach(tip => {
+        const card = document.createElement("div");
+        card.className = "rounded-2xl border border-white/15 bg-white/5 p-4 text-sm text-slate-100";
+        card.textContent = tip;
+        resultTips.appendChild(card);
+      });
+
+      renderCompatibilityList(traitKey);
+      updateTraitQuery(traitKey);
+      updateShareMeta(traitKey, trait);
+      window.scrollTo({ top: resultCard.offsetTop - 40, behavior: "smooth" });
+    }
+
+    function renderCompatibilityList(traitKey) {
+      const trait = quiz.traits[traitKey];
+      if (!trait || !trait.compatibility) {
+        resultCompatibility.innerHTML = "";
+        return;
+      }
+      const wrapper = document.createElement("div");
+      wrapper.className = "rounded-2xl border border-white/15 bg-white/5 p-4 space-y-4";
+
+      const title = document.createElement("div");
+      title.className = "text-sm font-semibold text-emerald-200 tracking-[0.2em] uppercase";
+      title.textContent = "궁합 리포트";
+      wrapper.appendChild(title);
+
+      if (trait.compatibility.best?.length) {
+        const bestBlock = document.createElement("div");
+        bestBlock.innerHTML = `<p class="text-xs text-emerald-200 mb-2">잘 맞는 타입</p>`;
+        trait.compatibility.best.forEach(item => {
+          const el = createCompatibilityItem(item);
+          if (el) bestBlock.appendChild(el);
+        });
+        wrapper.appendChild(bestBlock);
+      }
+
+      if (trait.compatibility.watch?.length) {
+        const watchBlock = document.createElement("div");
+        watchBlock.innerHTML = `<p class="text-xs text-rose-200 mb-2">주의할 타입</p>`;
+        trait.compatibility.watch.forEach(item => {
+          const el = createCompatibilityItem(item);
+          if (el) watchBlock.appendChild(el);
+        });
+        wrapper.appendChild(watchBlock);
+      }
+
+      resultCompatibility.innerHTML = "";
+      resultCompatibility.appendChild(wrapper);
+    }
+
+    function createCompatibilityItem(info) {
+      const trait = quiz.traits[info.trait];
+      if (!trait) return null;
+      const link = document.createElement("a");
+      link.href = `?${PARAM_KEY}=${info.trait}#result`;
+      link.className = "block rounded-xl border border-white/15 bg-white/5 px-3 py-2 mb-2 text-left text-sm hover:border-emerald-200 hover:bg-white/10 transition";
+      link.innerHTML = `<span class="font-semibold text-slate-50">${trait.name}</span><br><span class="text-xs text-slate-300">${info.reason}</span>`;
+      link.addEventListener("click", event => {
+        event.preventDefault();
+        presentResult(info.trait);
+      });
+      return link;
+    }
+
+    function updateTraitQuery(traitKey) {
+      if (!window.history?.replaceState) return;
+      const url = new URL(window.location.href);
+      if (traitKey) {
+        url.searchParams.set(PARAM_KEY, traitKey);
+        url.hash = "result";
+      } else {
+        url.searchParams.delete(PARAM_KEY);
+        url.hash = "";
+      }
+      window.history.replaceState({}, "", url.toString());
+    }
+
+    function updateShareMeta(traitKey, trait) {
+      if (!trait) return;
+      const absoluteImage = new URL(trait.image, window.location.origin).toString();
+      shareContent.title = `${trait.name} | 올인원 트리 꾸미기 테스트`;
+      shareContent.description = trait.desc;
+      shareContent.imageUrl = absoluteImage;
+      shareContent.webUrl = traitKey ? `${baseShareUrl}?${PARAM_KEY}=${traitKey}#result` : baseShareUrl;
+    }
+
+    prevBtn.addEventListener("click", goPrev);
+    restartBtn.addEventListener("click", restartQuiz);
+
+    renderQuestion();
+
+    const initialTrait = new URLSearchParams(window.location.search).get(PARAM_KEY);
+    if (initialTrait && quiz.traits[initialTrait]) {
+      presentResult(initialTrait);
+    }
+
+    setupKakaoShare("shareKakaoBtn", shareContent);
+  </script>
+</body>
+</html>

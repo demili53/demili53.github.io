@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="내가 만약 귀멸의 칼날 세계관에 들어간다면… 오니를 잡는 귀살대? 십이귀월의 상현? 하현? 귀칼 테스트로 나랑 어울리는 인물을 알아보자 ㄱㄱ">
+  <meta name="keywords" content="귀멸의 칼날, 귀살대, 십이귀월, 상현, 하현, 애니메이션, 테스트">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <meta name="author" content="partygame.pe.kr">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/demon-slayer-test.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="귀멸의 칼날 테스트">
+  <meta property="og:description" content="내가 만약 귀멸의 칼날 세계관에 들어간다면? 나랑 어울리는 인물을 알아보자!">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/demon-slayer-og.jpg">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+         crossorigin="anonymous"></script>
+  <title>귀멸의 칼날 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-green-900 via-emerald-900 to-teal-900 text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.3em] text-green-200">Demon Slayer Test</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">귀멸의 칼날 테스트</h1>
+      <p class="text-slate-200">내가 만약 귀멸의 칼날 세계관에 들어간다면… 오니를 잡는 귀살대? 십이귀월의 상현? 하현? 귀칼 테스트로 나랑 어울리는 인물을 알아보자 ㄱㄱ <a href="/" class="underline text-green-200 hover:text-green-100 transition">홈으로 돌아가기</a></p>
+    </header>
+
+    <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section id="quizCard" class="space-y-5">
+        <div class="text-xs font-semibold text-green-100 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <h2 id="question" class="text-2xl font-semibold"></h2>
+        <div class="space-y-3" id="options"></div>
+        <div class="flex justify-between text-sm text-slate-300">
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-white/40 hover:bg-white/10 transition disabled:opacity-40">이전</button>
+          <span id="progress" class="text-green-200">0% 완료</span>
+        </div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-green-100 uppercase tracking-[0.3em]">결과</div>
+        <div class="flex flex-col gap-4 md:flex-row">
+          <div class="md:w-48 w-full">
+            <img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-48 object-cover" alt="demon slayer result" src="">
+          </div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm"></div>
+            <p id="resultDesc" class="text-slate-100 leading-relaxed"></p>
+            <div id="resultMatch" class="text-sm text-slate-300"></div>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-3 pt-4">
+          <button id="restartBtn" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition font-medium">다시 하기</button>
+          <button id="shareBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-lg transition font-medium">카카오톡 공유</button>
+          <a href="/" class="px-4 py-2 border border-white/20 hover:border-white/40 hover:bg-white/10 rounded-lg transition font-medium">홈으로</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="text-center text-sm text-slate-400">
+      <p>© 2024 partygame.pe.kr. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+  </script>
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    const quizData = [
+      {
+        question: "위기 상황에서 나의 첫 번째 생각은?",
+        options: [
+          { text: "일단 먼저 달려들어 본다", type: "brave" },
+          { text: "상황을冷静하게 분석한다", type: "calm" },
+          { text: "동료들을 먼저 보호한다", type: "protect" },
+          { text: "전략적으로 후퇴한다", type: "strategic" }
+        ]
+      },
+      {
+        question: "내가 가장 중요하게 생각하는 가치는?",
+        options: [
+          { text: "정의와 구원", type: "justice" },
+          { text: "힘과 강함", type: "power" },
+          { text: "가족과 동료", type: "family" },
+          { text: "자유와 해방", type: "freedom" }
+        ]
+      },
+      {
+        question: "싸움에서 나의 스타일은?",
+        options: [
+          { text: "정면 대결을 선호한다", type: "direct" },
+          { text: "속도와 민첨함으로 공격한다", type: "speed" },
+          { text: "방어와 반격을 중시한다", type: "defense" },
+          { text: "독특한 기술로 상대를 제압한다", type: "unique" }
+        ]
+      },
+      {
+        question: "동료가 위험에 처했다면?",
+        options: [
+          { text: "목숨을 걸고 구한다", type: "sacrifice" },
+          { text: "가장 효과적인 구출 방법을 찾는다", type: "rescue" },
+          { text: "분노로 적을 섬멸한다", type: "rage" },
+          { text: "침착하게 상황을 통제한다", type: "control" }
+        ]
+      },
+      {
+        question: "내가 추구하는 삶은?",
+        options: [
+          { text: "약자를 보호하는 힘", type: "protector" },
+          { text: "최강이 되는 길", type: "strongest" },
+          { text: "모두와 함께하는 평화", type: "peace" },
+          { text: "자유로운 방랑", type: "wanderer" }
+        ]
+      },
+      {
+        question: "적을 대할 때 나의 태도는?",
+        options: [
+          { text: "자비 없이 처단한다", type: "merciless" },
+          { text: "이유를 묻고 판단한다", type: "judge" },
+          { text: "감정적으로 대응한다", type: "emotional" },
+          { text: "이성적으로 대처한다", type: "rational" }
+        ]
+      }
+    ];
+
+    const results = [
+      {
+        type: "kamaboko_gonpachiro",
+        title: "가마보코 고파치로",
+        badge: "🔥 물의 호흡",
+        description: "당신은 선하고 따뜻한 마음을 가진 고파치로다. 동료를 위해서라면 목숨을 걸 수 있으며, 끈기와 인내심으로 어떤 어려움도 극복합니다. '튼튼'한 정신력으로 모두를 이끄는 리더입니다.",
+        image: "/brainTest/images/demon-water.jpg",
+        match: "가장 잘 맞는 타입: 🔥 네즈코, 🌸 카나오리"
+      },
+      {
+        type: "zenitsu_agatsuma",
+        title: "아가츠마 젠이츠",
+        badge: "⚡ 번개의 호흡",
+        description: "당신은 잠재된 능력을 가진 젠이츠로다. 평소에는 불안해하지만, 진정한 위기 앞에서는 놀라운 힘을 발휘합니다. 순수한 마음과 강한 책임감을 가지고 있습니다.",
+        image: "/brainTest/images/demon-thunder.jpg",
+        match: "가장 잘 맞는 타입: 🐷 이노스케, 🌸 카나오"
+      },
+      {
+        type: "inosuke_hashibira",
+        title: "하시비라 이노스케",
+        badge: "🐗 짐승의 호흡",
+        description: "당신은 야생의 감각을 가진 이노스케로다. 직관적이고 행동력이 넘치며, 자신만의 방식으로 세상을 대합니다. 순수한 호기심과 강한 승부욕을 가지고 있습니다.",
+        image: "/brainTest/images/demon-beast.jpg",
+        match: "가장 잘 맞는 타입: 🔥 고파치로, ⚡ 젠이츠"
+      },
+      {
+        type: "rengoku_kyojuro",
+        title: "렌고쿠 쿄주로",
+        badge: "🔥 염의 호흡",
+        description: "당신은 불꽃처럼 타오르는 쿄주로입니다. 강한 사명감과 긍정적인 에너지로 모두를 이끌며, 어떤 어둠도 두려워하지 않는 용기 있는 리더입니다.",
+        image: "/brainTest/images/demon-flame.jpg",
+        match: "가장 잘 맞는 타입: 🔥 고파치로, 🌟 토미오카"
+      },
+      {
+        type: "giyu_tomioka",
+        title: "토미오카 기유",
+        badge: "💧 물의 호흡",
+        description: "당신은 고요하고 깊은 호수 같은 기유입니다. 말이 없고 차분해 보이지만, 내면에는 강한 책임감과 따뜻한 마음을 품고 있습니다. 묵묵히 자신의 역할을 다하는 진정한 강자입니다.",
+        image: "/brainTest/images/demon-water.jpg",
+        match: "가장 잘 맞는 타입: 🌸 시노부, 🔥 쿄주로"
+      },
+      {
+        type: "muzan_kibutsuji",
+        title: "키부츠지 무잔",
+        badge: "🌙 최상위 악마",
+        description: "당신은 카리스마와 절대적인 힘을 가진 무잔입니다. 완벽을 추구하며 자신의 이상을 실현하려 하고, 주변 사람들을 강력하게 이끄는 리더십을 가지고 있습니다.",
+        image: "/brainTest/images/demon-moon.jpg",
+        match: "가장 잘 맞는 타입: 🌙 상현, ⚡ 독자"
+      }
+    ];
+
+    let currentQuestion = 0;
+    let answers = [];
+    let resultType = '';
+
+    function initQuiz() {
+      showQuestion();
+      updateProgress();
+    }
+
+    function showQuestion() {
+      const question = quizData[currentQuestion];
+      document.getElementById('question').textContent = question.question;
+      document.getElementById('stepLabel').textContent = `문항 ${currentQuestion + 1} / ${quizData.length}`;
+      
+      const optionsContainer = document.getElementById('options');
+      optionsContainer.innerHTML = '';
+      
+      question.options.forEach((option, index) => {
+        const button = document.createElement('button');
+        button.className = 'w-full text-left p-4 rounded-lg border border-white/20 hover:border-white/40 hover:bg-white/10 transition text-slate-100';
+        button.textContent = option.text;
+        button.onclick = () => selectAnswer(option.type);
+        optionsContainer.appendChild(button);
+      });
+
+      document.getElementById('prevBtn').disabled = currentQuestion === 0;
+    }
+
+    function selectAnswer(type) {
+      answers[currentQuestion] = type;
+      
+      if (currentQuestion < quizData.length - 1) {
+        currentQuestion++;
+        showQuestion();
+        updateProgress();
+      } else {
+        showResult();
+      }
+    }
+
+    function updateProgress() {
+      const progress = Math.round((currentQuestion / quizData.length) * 100);
+      document.getElementById('progress').textContent = `${progress}% 완료`;
+    }
+
+    function calculateResult() {
+      const typeCount = {};
+      answers.forEach(type => {
+        typeCount[type] = (typeCount[type] || 0) + 1;
+      });
+
+      const maxCount = Math.max(...Object.values(typeCount));
+      const dominantTypes = Object.keys(typeCount).filter(type => typeCount[type] === maxCount);
+      
+      const typeMap = {
+        'brave': 'kamaboko_gonpachiro',
+        'calm': 'giyu_tomioka',
+        'protect': 'rengoku_kyojuro',
+        'strategic': 'giyu_tomioka',
+        'justice': 'kamaboko_gonpachiro',
+        'power': 'muzan_kibutsuji',
+        'family': 'rengoku_kyojuro',
+        'freedom': 'zenitsu_agatsuma',
+        'direct': 'inosuke_hashibira',
+        'speed': 'zenitsu_agatsuma',
+        'defense': 'giyu_tomioka',
+        'unique': 'zenitsu_agatsuma',
+        'sacrifice': 'kamaboko_gonpachiro',
+        'rescue': 'rengoku_kyojuro',
+        'rage': 'inosuke_hashibira',
+        'control': 'giyu_tomioka',
+        'protector': 'kamaboko_gonpachiro',
+        'strongest': 'muzan_kibutsuji',
+        'peace': 'rengoku_kyojuro',
+        'wanderer': 'zenitsu_agatsuma',
+        'merciless': 'muzan_kibutsuji',
+        'judge': 'giyu_tomioka',
+        'emotional': 'zenitsu_agatsuma',
+        'rational': 'giyu_tomioka'
+      };
+
+      const resultTypes = dominantTypes.map(type => typeMap[type] || 'kamaboko_gonpachiro');
+      resultType = resultTypes[0];
+      
+      return results.find(r => r.type === resultType) || results[0];
+    }
+
+    function showResult() {
+      const result = calculateResult();
+      
+      document.getElementById('quizCard').classList.add('hidden');
+      document.getElementById('resultCard').classList.remove('hidden');
+      
+      document.getElementById('resultTitle').textContent = result.title;
+      document.getElementById('resultBadge').textContent = result.badge;
+      document.getElementById('resultDesc').textContent = result.description;
+      document.getElementById('resultMatch').textContent = result.match;
+      document.getElementById('resultImage').src = result.image;
+    }
+
+    function restartQuiz() {
+      currentQuestion = 0;
+      answers = [];
+      resultType = '';
+      
+      document.getElementById('resultCard').classList.add('hidden');
+      document.getElementById('quizCard').classList.remove('hidden');
+      
+      initQuiz();
+    }
+
+    function shareToKakao() {
+      Kakao.init('af0f520240f2c824b721bbd002c45178');
+      
+      Kakao.Share.sendDefault({
+        objectType: 'feed',
+        content: {
+          title: '귀멸의 칼날 테스트',
+          description: '내가 만약 귀멸의 칼날 세계관에 들어간다면? 나랑 어울리는 인물을 알아보자!',
+          imageUrl: 'https://partygame.pe.kr/brainTest/images/demon-slayer-og.jpg',
+          link: {
+            mobileWebUrl: window.location.href,
+            webUrl: window.location.href
+          }
+        },
+        buttons: [
+          {
+            title: '테스트 하기',
+            link: {
+              mobileWebUrl: window.location.href,
+              webUrl: window.location.href
+            }
+          }
+        ]
+      });
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', () => {
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        showQuestion();
+        updateProgress();
+      }
+    });
+
+    document.getElementById('restartBtn').addEventListener('click', restartQuiz);
+    document.getElementById('shareBtn').addEventListener('click', shareToKakao);
+
+    initQuiz();
+  </script>
+</body>
+</html>

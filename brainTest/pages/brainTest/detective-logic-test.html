@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="추리 선택으로 나의 명탐정 능력을 확인하는 6문항 명탐정 테스트">
+  <meta name="keywords" content="명탐정 테스트, 추리력, 두뇌 게임, 미스터리">
+  <meta name="author" content="partygame.pe.kr">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/detective-logic-test.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="명탐정 테스트">
+  <meta property="og:description" content="추리 선택으로 나의 명탐정 능력을 확인하는 6문항 명탐정 테스트">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/detective-og.jpg">
+  <meta property="og:url" content="https://partygame.pe.kr/brainTest/pages/brainTest/detective-logic-test.html">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+          crossorigin="anonymous"></script>
+  <title>명탐정 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-950 via-stone-950 to-amber-950 text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.35em] text-amber-200">Detective Logic</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">명탐정 테스트</h1>
+      <p class="text-slate-200">
+        6개의 질문으로 나의 추리 패턴과 사건 해결 타입을 확인해 보세요.
+        <a href="/" class="underline text-amber-200 hover:text-amber-100 transition">홈으로 이동</a>
+      </p>
+    </header>
+
+    <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section class="space-y-3">
+        <div class="text-xs font-semibold text-amber-200 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+          <div id="progressBar" class="h-2 bg-gradient-to-r from-amber-500 via-rose-400 to-indigo-400 w-0 transition-all duration-300"></div>
+        </div>
+        <div class="text-sm text-slate-300 flex justify-between">
+          <span>추리력 분석 중...</span>
+          <span id="progressText">0% 완료</span>
+        </div>
+      </section>
+
+      <section id="quizCard" class="space-y-5">
+        <h2 id="question" class="text-2xl font-semibold"></h2>
+        <div id="options" class="space-y-3"></div>
+        <div class="flex justify-between text-sm text-slate-300">
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-amber-200 hover:bg-white/10 transition disabled:opacity-40">이전</button>
+          <span class="text-amber-200">가장 설득력 있는 선택을 골라주세요</span>
+        </div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-amber-200 uppercase tracking-[0.3em]">결과</div>
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="md:w-48 w-full">
+            <img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-48 object-cover" alt="result visual">
+          </div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm"></div>
+            <p id="resultDesc" class="text-slate-100 leading-relaxed"></p>
+          </div>
+        </div>
+        <div id="resultTips" class="grid gap-3"></div>
+        <div class="space-y-2 bg-white/5 border border-white/10 rounded-2xl p-4">
+          <h3 class="text-lg font-semibold text-amber-200">테스트 내 궁합</h3>
+          <div class="flex flex-col gap-2 text-sm">
+            <a id="bestLink" class="inline-flex items-center gap-2 text-slate-100 underline underline-offset-4 hover:text-amber-200" href="#">최고 궁합 결과 보기</a>
+            <a id="worstLink" class="inline-flex items-center gap-2 text-slate-300 underline underline-offset-4 hover:text-rose-200" href="#">주의 궁합 결과 보기</a>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-amber-300 text-amber-100 hover:bg-amber-400/10 transition">카카오톡 공유</button>
+          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500 text-white font-semibold shadow-lg hover:bg-amber-400 transition">다시 시작하기</button>
+          <a href="/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 text-slate-100 hover:bg-white/10 transition">홈으로 이동</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+    if (window.Kakao && !window.Kakao.isInitialized()) window.Kakao.init(window.__KAKAO_APP_KEY__);
+  </script>
+  <script src="/brainTest/scripts/kakao-share.js"></script>
+  <script>
+    const quiz = {
+      questions: [
+        { text: "사건 현장에 도착했을 때 가장 먼저 보는 것은?", options: [
+          { label: "눈에 띄는 물증과 흔적", trait: "trace" },
+          { label: "사람들의 동선과 위치", trait: "map" },
+          { label: "대화 속 모순과 진술", trait: "logic" },
+          { label: "전체 분위기와 흐름", trait: "sense" }
+        ]},
+        { text: "용의자의 알리바이를 확인할 때?", options: [
+          { label: "시간표와 증거를 대조한다", trait: "trace" },
+          { label: "이동 경로를 그림으로 그린다", trait: "map" },
+          { label: "말의 모순을 찾아낸다", trait: "logic" },
+          { label: "직감적으로 거슬리는 부분을 본다", trait: "sense" }
+        ]},
+        { text: "사건이 교착 상태일 때?", options: [
+          { label: "증거를 다시 정리한다", trait: "trace" },
+          { label: "현장을 다시 걸어본다", trait: "map" },
+          { label: "가설을 다시 세운다", trait: "logic" },
+          { label: "새로운 관점의 실마리를 찾는다", trait: "sense" }
+        ]},
+        { text: "단서가 여러 개일 때 우선순위는?", options: [
+          { label: "물증의 신뢰도", trait: "trace" },
+          { label: "동선의 일관성", trait: "map" },
+          { label: "논리적 연결성", trait: "logic" },
+          { label: "사건의 분위기", trait: "sense" }
+        ]},
+        { text: "팀 수사에서 내가 맡는 역할은?", options: [
+          { label: "증거 수집과 분석", trait: "trace" },
+          { label: "현장 조사와 재구성", trait: "map" },
+          { label: "추리와 논리 정리", trait: "logic" },
+          { label: "감각적인 패턴 포착", trait: "sense" }
+        ]},
+        { text: "마지막 결정의 기준은?", options: [
+          { label: "증거가 확실한가", trait: "trace" },
+          { label: "흐름이 자연스러운가", trait: "map" },
+          { label: "논리적으로 완결되는가", trait: "logic" },
+          { label: "전체 맥락이 맞는가", trait: "sense" }
+        ]}
+      ],
+      traits: {
+        trace: {
+          name: "증거 추적형",
+          tagline: "팩트 · 디테일형",
+          desc: "단서를 놓치지 않는 타입. 작은 물증에서 사건의 전체상을 찾아냅니다.",
+          image: "/brainTest/images/detective-notebook.jpg",
+          tips: ["증거 정리가 빠를수록 해결 속도가 빨라집니다.", "디테일이 강점이므로 기록 습관이 큰 무기입니다."],
+          compatibility: { best: { trait: "logic", reason: "논리형이 추적형의 단서를 완성된 추리로 엮어줍니다." }, watch: { trait: "sense", reason: "감각형의 직감이 불확실하게 느껴질 수 있어요." } }
+        },
+        map: {
+          name: "현장 재구성형",
+          tagline: "동선 · 구조형",
+          desc: "현장을 재구성하며 퍼즐을 맞추는 타입. 공간과 흐름을 읽는 능력이 뛰어납니다.",
+          image: "/brainTest/images/detective-board.jpg",
+          tips: ["동선 정리가 사건의 반을 해결합니다.", "현장을 되짚는 습관이 큰 힘이 됩니다."],
+          compatibility: { best: { trait: "trace", reason: "추적형의 증거가 재구성형의 구조를 완성해 줍니다." }, watch: { trait: "logic", reason: "논리형과 우선순위가 충돌할 수 있어요." } }
+        },
+        logic: {
+          name: "논리 정리형",
+          tagline: "추리 · 분석형",
+          desc: "논리적 연결로 사건을 푸는 타입. 모순을 꿰뚫는 추리력이 핵심입니다.",
+          image: "/brainTest/images/detective-lens.jpg",
+          tips: ["추리 구조도를 그리면 강점이 더 살아납니다.", "가설을 세울 때 핵심 가정을 하나로 좁혀보세요."],
+          compatibility: { best: { trait: "trace", reason: "추적형의 단서가 논리형의 추리를 단단하게 만듭니다." }, watch: { trait: "sense", reason: "감각형의 직관이 근거 부족으로 느껴질 수 있어요." } }
+        },
+        sense: {
+          name: "직감 패턴형",
+          tagline: "통찰 · 직관형",
+          desc: "전체 흐름을 감지하는 타입. 분위기 속 숨겨진 패턴을 읽어냅니다.",
+          image: "/brainTest/images/detective-key.jpg",
+          tips: ["직감을 증거와 연결하면 설득력이 올라갑니다.", "큰 그림을 보는 감각이 사건을 빠르게 풀어줘요."],
+          compatibility: { best: { trait: "map", reason: "재구성형의 동선 정리가 직감형의 통찰을 뒷받침해요." }, watch: { trait: "logic", reason: "논리형과 접근 방식이 달라 부딪힐 수 있어요." } }
+        }
+      }
+    };
+
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const stepLabel = document.getElementById("stepLabel");
+    const progressBar = document.getElementById("progressBar");
+    const progressText = document.getElementById("progressText");
+    const resultCard = document.getElementById("resultCard");
+    const quizCard = document.getElementById("quizCard");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultBadge = document.getElementById("resultBadge");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultImage = document.getElementById("resultImage");
+    const resultTips = document.getElementById("resultTips");
+    const bestLink = document.getElementById("bestLink");
+    const worstLink = document.getElementById("worstLink");
+    const restartBtn = document.getElementById("restartBtn");
+    const prevBtn = document.getElementById("prevBtn");
+    const shareContent = {
+      title: "명탐정 테스트",
+      description: "추리 선택으로 나의 명탐정 능력을 확인하는 6문항 명탐정 테스트",
+      imageUrl: "https://partygame.pe.kr/brainTest/images/detective-og.jpg",
+      webUrl: `${window.location.origin}${window.location.pathname}`
+    };
+    const PARAM_KEY = "result";
+
+    let current = 0;
+    const answers = Array(quiz.questions.length).fill(null);
+
+    function renderQuestion() {
+      const q = quiz.questions[current];
+      questionEl.textContent = q.text;
+      stepLabel.textContent = `문항 ${current + 1} / ${quiz.questions.length}`;
+      const progress = Math.round((current / quiz.questions.length) * 100);
+      progressText.textContent = `${progress}% 완료`;
+      progressBar.style.width = `${progress}%`;
+      optionsEl.innerHTML = "";
+      q.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-white/20 hover:border-amber-200 hover:bg-white/10 transition";
+        btn.textContent = opt.label;
+        btn.addEventListener("click", () => handleOption(opt.trait));
+        optionsEl.appendChild(btn);
+      });
+      prevBtn.disabled = current === 0;
+    }
+
+    function handleOption(trait) {
+      answers[current] = trait;
+      if (current === quiz.questions.length - 1) return showResult();
+      current += 1;
+      renderQuestion();
+    }
+
+    function determineWinner() {
+      const tally = answers.reduce((m, t) => { if (!t) return m; m[t] = (m[t] || 0) + 1; return m; }, {});
+      let winner = null;
+      Object.keys(tally).forEach(t => { if (!winner || tally[t] > tally[winner]) winner = t; });
+      return winner;
+    }
+
+    function showResult(traitKey) {
+      const winner = traitKey || determineWinner();
+      if (!winner || !quiz.traits[winner]) return;
+      applyResult(winner);
+    }
+
+    function applyResult(trait) {
+      const meta = quiz.traits[trait];
+      const resolvedImage = meta.image.startsWith("http") ? meta.image : `${window.location.origin}${meta.image}`;
+      resultTitle.textContent = meta.name;
+      resultBadge.textContent = meta.tagline;
+      resultDesc.textContent = meta.desc;
+      resultImage.src = meta.image;
+      resultImage.alt = meta.name;
+      resultTips.innerHTML = "";
+      meta.tips.forEach(t => {
+        const item = document.createElement("div");
+        item.className = "border border-white/15 rounded-xl px-3 py-2 text-sm text-slate-100";
+        item.textContent = `• ${t}`;
+        resultTips.appendChild(item);
+      });
+      updateRelationLinks(trait);
+      updateResultParam(trait);
+      shareContent.title = `${meta.name} | 명탐정 테스트`;
+      shareContent.description = meta.desc;
+      shareContent.imageUrl = resolvedImage;
+      shareContent.webUrl = `${window.location.origin}${window.location.pathname}?${PARAM_KEY}=${trait}#result`;
+      quizCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+      progressText.textContent = "100% 완료";
+      progressBar.style.width = "100%";
+    }
+
+    function goPrev() { if (current === 0) return; current -= 1; renderQuestion(); }
+    function restart() {
+      for (let i = 0; i < answers.length; i += 1) answers[i] = null;
+      current = 0;
+      quizCard.classList.remove("hidden");
+      resultCard.classList.add("hidden");
+      progressText.textContent = "0% 완료";
+      progressBar.style.width = "0%";
+      updateResultParam(null);
+      renderQuestion();
+    }
+
+    function updateResultParam(trait) {
+      const url = new URL(window.location.href);
+      if (trait) { url.searchParams.set(PARAM_KEY, trait); url.hash = "result"; }
+      else { url.searchParams.delete(PARAM_KEY); url.hash = ""; }
+      window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+    }
+
+    function updateRelationLinks(trait) {
+      const info = quiz.traits[trait] && quiz.traits[trait].compatibility ? quiz.traits[trait].compatibility : {};
+      setRelationLink(bestLink, info.best, "최고 궁합", trait);
+      setRelationLink(worstLink, info.watch, "주의 궁합", trait);
+    }
+
+    function setRelationLink(element, detail, label, sourceTrait) {
+      if (!detail || !detail.trait || !quiz.traits[detail.trait]) {
+        element.classList.add("hidden"); element.removeAttribute("href"); element.removeAttribute("data-trait"); element.textContent = ""; return;
+      }
+      const target = quiz.traits[detail.trait];
+      const reason = detail.reason || relationFallbackReason(label, sourceTrait, detail.trait);
+      element.classList.remove("hidden");
+      element.dataset.trait = detail.trait;
+      element.textContent = `${label} · ${target.name} - ${reason}`;
+      element.href = `${window.location.pathname}?${PARAM_KEY}=${detail.trait}#result`;
+    }
+
+    function relationFallbackReason(type, sourceTrait, targetTrait) {
+      const source = quiz.traits[sourceTrait];
+      const target = quiz.traits[targetTrait];
+      if (!source || !target) return type === "최고 궁합" ? "서로의 리듬이 자연스럽게 어울려요." : "속도가 달라 조율이 필요해요.";
+      if (type === "최고 궁합") return `${target.tagline} 감각이 ${source.tagline}과 시너지를 만듭니다.`;
+      return `${target.name}의 텐션이 ${source.name}에게는 부담이 될 수 있어요.`;
+    }
+
+    function handleRelationClick(event) {
+      const trait = event.currentTarget.dataset.trait;
+      if (!trait || !quiz.traits[trait]) return;
+      event.preventDefault();
+      applyResult(trait);
+      window.scrollTo({ top: resultCard.offsetTop - 40, behavior: "smooth" });
+    }
+
+    prevBtn.addEventListener("click", goPrev);
+    restartBtn.addEventListener("click", restart);
+    bestLink.addEventListener("click", handleRelationClick);
+    worstLink.addEventListener("click", handleRelationClick);
+
+    renderQuestion();
+    const initialResult = new URLSearchParams(window.location.search).get(PARAM_KEY);
+    if (initialResult && quiz.traits[initialResult]) applyResult(initialResult);
+    setupKakaoShare("shareKakaoBtn", shareContent);
+  </script>
+</body>
+</html>

@@ -1,0 +1,315 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="연애 상황에서 내가 보내는 감정 시그널 타입을 알아보는 6문항 테스트">
+  <meta name="keywords" content="연애 심리 테스트, 오징어 테스트, 시그널, 관계 성향">
+  <meta name="author" content="partygame.pe.kr">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/squid-love-signal-test.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="오징어 연애 시그널 테스트">
+  <meta property="og:description" content="연애 상황에서 내가 보내는 감정 시그널 타입을 알아보는 6문항 테스트">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/squid-love-og.jpg">
+  <meta property="og:url" content="https://partygame.pe.kr/brainTest/pages/brainTest/squid-love-signal-test.html">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+          crossorigin="anonymous"></script>
+  <title>오징어 연애 시그널 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-rose-950 via-slate-900 to-indigo-950 text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.35em] text-rose-200">Squid Love Signal</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">오징어 연애 시그널 테스트</h1>
+      <p class="text-slate-200">6개의 질문으로 내 연애 시그널 전달 방식과 관계 텐션을 확인해 보세요. <a href="/" class="underline text-rose-200 hover:text-rose-100 transition">홈으로 이동</a></p>
+    </header>
+
+    <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section class="space-y-3">
+        <div class="text-xs font-semibold text-rose-200 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden"><div id="progressBar" class="h-2 bg-gradient-to-r from-rose-400 via-pink-300 to-indigo-300 w-0 transition-all duration-300"></div></div>
+        <div class="text-sm text-slate-300 flex justify-between"><span>연애 시그널 분석 중...</span><span id="progressText">0% 완료</span></div>
+      </section>
+
+      <section id="quizCard" class="space-y-5">
+        <h2 id="question" class="text-2xl font-semibold"></h2>
+        <div id="options" class="space-y-3"></div>
+        <div class="flex justify-between text-sm text-slate-300"><button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-rose-200 hover:bg-white/10 transition disabled:opacity-40">이전</button><span class="text-rose-200">연애 상황에서 더 자연스러운 반응을 골라주세요</span></div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-rose-200 uppercase tracking-[0.3em]">결과</div>
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="md:w-48 w-full"><img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-48 object-cover" alt="result visual"></div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm"></div>
+            <p id="resultDesc" class="text-slate-100 leading-relaxed"></p>
+          </div>
+        </div>
+        <div id="resultTips" class="grid gap-3"></div>
+        <div class="space-y-2 bg-white/5 border border-white/10 rounded-2xl p-4">
+          <h3 class="text-lg font-semibold text-rose-200">테스트 내 궁합</h3>
+          <div class="flex flex-col gap-2 text-sm">
+            <a id="bestLink" class="inline-flex items-center gap-2 text-slate-100 underline underline-offset-4 hover:text-rose-200" href="#">최고 궁합 결과 보기</a>
+            <a id="worstLink" class="inline-flex items-center gap-2 text-slate-300 underline underline-offset-4 hover:text-sky-200" href="#">주의 궁합 결과 보기</a>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-rose-300 text-rose-100 hover:bg-rose-400/10 transition">카카오톡 공유</button>
+          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-rose-500 text-white font-semibold shadow-lg hover:bg-rose-400 transition">다시 시작하기</button>
+          <a href="/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 text-slate-100 hover:bg-white/10 transition">홈으로 이동</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+    if (window.Kakao && !window.Kakao.isInitialized()) window.Kakao.init(window.__KAKAO_APP_KEY__);
+  </script>
+  <script src="/brainTest/scripts/kakao-share.js"></script>
+  <script>
+    const quiz = {
+      questions: [
+        { text: "호감 있는 사람에게 먼저 보내는 신호는?", options: [
+          { label: "먼저 안부를 자주 보낸다", trait: "coral" },
+          { label: "짧고 강한 표현으로 찍는다", trait: "wave" },
+          { label: "감정이 확실할 때만 깊게 보낸다", trait: "deep" },
+          { label: "배려와 안정감을 천천히 쌓는다", trait: "pearl" }
+        ]},
+        { text: "상대 반응이 애매할 때 내 방식은?", options: [
+          { label: "한 번 더 따뜻하게 다가간다", trait: "coral" },
+          { label: "직접적으로 의도를 확인한다", trait: "wave" },
+          { label: "거리 두고 흐름을 본다", trait: "deep" },
+          { label: "리듬을 유지하며 기다린다", trait: "pearl" }
+        ]},
+        { text: "데이트 분위기를 만드는 내 강점은?", options: [
+          { label: "상대를 편하게 만드는 다정함", trait: "coral" },
+          { label: "지루할 틈 없는 추진력", trait: "wave" },
+          { label: "깊은 대화로 집중시키는 힘", trait: "deep" },
+          { label: "안심되는 안정적 템포", trait: "pearl" }
+        ]},
+        { text: "갈등 상황에서 먼저 하는 행동은?", options: [
+          { label: "감정을 풀어주는 대화", trait: "coral" },
+          { label: "문제 핵심을 즉시 정리", trait: "wave" },
+          { label: "원인을 분석하고 말함", trait: "deep" },
+          { label: "톤을 낮추고 합의점 찾기", trait: "pearl" }
+        ]},
+        { text: "연애 초반에 불안해지는 포인트는?", options: [
+          { label: "표현 빈도가 줄어들 때", trait: "coral" },
+          { label: "관계 전개가 답답할 때", trait: "wave" },
+          { label: "진심이 보이지 않을 때", trait: "deep" },
+          { label: "약속 리듬이 깨질 때", trait: "pearl" }
+        ]},
+        { text: "지금 내 연애 시그널 코어는?", options: [
+          { label: "따뜻하게 번지는 코랄형", trait: "coral" },
+          { label: "빠르게 치는 웨이브형", trait: "wave" },
+          { label: "깊게 스며드는 딥씨형", trait: "deep" },
+          { label: "단단히 지키는 펄형", trait: "pearl" }
+        ]}
+      ],
+      traits: {
+        coral: {
+          name: "코랄 시그널형",
+          tagline: "다정 · 확산형",
+          desc: "따뜻한 표현으로 상대의 긴장을 풀고 관계를 부드럽게 확장하는 타입입니다.",
+          image: "/brainTest/images/squid-love-coral.jpg",
+          tips: ["다정함에 내 기준도 함께 말해보세요.", "상대 리듬을 한 번 맞추면 안정감이 커집니다."],
+          compatibility: { best: { trait: "wave", reason: "웨이브형의 추진력이 코랄형의 감성을 빠르게 연결해줘요." }, watch: { trait: "deep", reason: "반응 속도 차이로 답답함이 생길 수 있어요." } }
+        },
+        wave: {
+          name: "웨이브 시그널형",
+          tagline: "추진 · 직진형",
+          desc: "호감이 생기면 빠르게 신호를 보내 관계를 전진시키는 타입입니다.",
+          image: "/brainTest/images/squid-love-wave.jpg",
+          tips: ["속도 뒤에 감정 확인 질문을 더해보세요.", "직진 표현을 부드럽게 마무리하면 효과가 큽니다."],
+          compatibility: { best: { trait: "pearl", reason: "펄형의 안정감이 웨이브형 에너지를 오래 유지시켜요." }, watch: { trait: "wave", reason: "서로 주도권이 강해 충돌할 수 있어요." } }
+        },
+        deep: {
+          name: "딥씨 시그널형",
+          tagline: "분석 · 몰입형",
+          desc: "관계의 결을 깊게 읽고 확신이 생기면 강하게 몰입하는 타입입니다.",
+          image: "/brainTest/images/squid-love-deep.jpg",
+          tips: ["해석보다 감정 표현을 먼저 한 줄 남겨보세요.", "완벽한 타이밍보다 진심 전달이 우선입니다."],
+          compatibility: { best: { trait: "coral", reason: "코랄형의 따뜻함이 딥씨형의 깊이를 편안하게 열어줘요." }, watch: { trait: "wave", reason: "전개 속도 차이가 부담이 될 수 있어요." } }
+        },
+        pearl: {
+          name: "펄 시그널형",
+          tagline: "안정 · 보호형",
+          desc: "신뢰와 일관성을 바탕으로 관계를 천천히 단단하게 만드는 타입입니다.",
+          image: "/brainTest/images/squid-love-pearl.jpg",
+          tips: ["안정감 속에 애정 표현 빈도를 조금 늘려보세요.", "거리감이 필요할 때 이유를 짧게 공유하세요."],
+          compatibility: { best: { trait: "deep", reason: "딥씨형의 진정성이 펄형의 신뢰와 깊게 맞닿아요." }, watch: { trait: "coral", reason: "표현 밀도 차이를 조율할 필요가 있어요." } }
+        }
+      }
+    };
+
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const stepLabel = document.getElementById("stepLabel");
+    const progressBar = document.getElementById("progressBar");
+    const progressText = document.getElementById("progressText");
+    const resultCard = document.getElementById("resultCard");
+    const quizCard = document.getElementById("quizCard");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultBadge = document.getElementById("resultBadge");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultImage = document.getElementById("resultImage");
+    const resultTips = document.getElementById("resultTips");
+    const bestLink = document.getElementById("bestLink");
+    const worstLink = document.getElementById("worstLink");
+    const restartBtn = document.getElementById("restartBtn");
+    const prevBtn = document.getElementById("prevBtn");
+    const shareContent = {
+      title: "오징어 연애 시그널 테스트",
+      description: "연애 상황에서 내가 보내는 감정 시그널 타입을 알아보는 6문항 테스트",
+      imageUrl: "https://partygame.pe.kr/brainTest/images/squid-love-og.jpg",
+      webUrl: `${window.location.origin}${window.location.pathname}`
+    };
+    const PARAM_KEY = "result";
+
+    let current = 0;
+    const answers = Array(quiz.questions.length).fill(null);
+
+    function renderQuestion() {
+      const q = quiz.questions[current];
+      questionEl.textContent = q.text;
+      stepLabel.textContent = `문항 ${current + 1} / ${quiz.questions.length}`;
+      const progress = Math.round((current / quiz.questions.length) * 100);
+      progressText.textContent = `${progress}% 완료`;
+      progressBar.style.width = `${progress}%`;
+      optionsEl.innerHTML = "";
+      q.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-white/20 hover:border-rose-200 hover:bg-white/10 transition";
+        btn.textContent = opt.label;
+        btn.addEventListener("click", () => handleOption(opt.trait));
+        optionsEl.appendChild(btn);
+      });
+      prevBtn.disabled = current === 0;
+    }
+
+    function handleOption(trait) {
+      answers[current] = trait;
+      if (current === quiz.questions.length - 1) return showResult();
+      current += 1;
+      renderQuestion();
+    }
+
+    function determineWinner() {
+      const tally = answers.reduce((m, t) => { if (!t) return m; m[t] = (m[t] || 0) + 1; return m; }, {});
+      let winner = null;
+      Object.keys(tally).forEach(t => { if (!winner || tally[t] > tally[winner]) winner = t; });
+      return winner;
+    }
+
+    function showResult(traitKey) {
+      const winner = traitKey || determineWinner();
+      if (!winner || !quiz.traits[winner]) return;
+      applyResult(winner);
+    }
+
+    function applyResult(trait) {
+      const meta = quiz.traits[trait];
+      const resolvedImage = meta.image.startsWith("http") ? meta.image : `${window.location.origin}${meta.image}`;
+      resultTitle.textContent = meta.name;
+      resultBadge.textContent = meta.tagline;
+      resultDesc.textContent = meta.desc;
+      resultImage.src = meta.image;
+      resultImage.alt = meta.name;
+      resultTips.innerHTML = "";
+      meta.tips.forEach(t => {
+        const item = document.createElement("div");
+        item.className = "border border-white/15 rounded-xl px-3 py-2 text-sm text-slate-100";
+        item.textContent = `• ${t}`;
+        resultTips.appendChild(item);
+      });
+      updateRelationLinks(trait);
+      updateResultParam(trait);
+      shareContent.title = `${meta.name} | 오징어 연애 시그널 테스트`;
+      shareContent.description = meta.desc;
+      shareContent.imageUrl = resolvedImage;
+      shareContent.webUrl = `${window.location.origin}${window.location.pathname}?${PARAM_KEY}=${trait}#result`;
+      quizCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+      progressText.textContent = "100% 완료";
+      progressBar.style.width = "100%";
+    }
+
+    function goPrev() { if (current === 0) return; current -= 1; renderQuestion(); }
+    function restart() {
+      for (let i = 0; i < answers.length; i += 1) answers[i] = null;
+      current = 0;
+      quizCard.classList.remove("hidden");
+      resultCard.classList.add("hidden");
+      progressText.textContent = "0% 완료";
+      progressBar.style.width = "0%";
+      updateResultParam(null);
+      renderQuestion();
+    }
+
+    function updateResultParam(trait) {
+      const url = new URL(window.location.href);
+      if (trait) { url.searchParams.set(PARAM_KEY, trait); url.hash = "result"; }
+      else { url.searchParams.delete(PARAM_KEY); url.hash = ""; }
+      window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+    }
+
+    function updateRelationLinks(trait) {
+      const info = quiz.traits[trait] && quiz.traits[trait].compatibility ? quiz.traits[trait].compatibility : {};
+      setRelationLink(bestLink, info.best, "최고 궁합", trait);
+      setRelationLink(worstLink, info.watch, "주의 궁합", trait);
+    }
+
+    function setRelationLink(element, detail, label, sourceTrait) {
+      if (!detail || !detail.trait || !quiz.traits[detail.trait]) {
+        element.classList.add("hidden"); element.removeAttribute("href"); element.removeAttribute("data-trait"); element.textContent = ""; return;
+      }
+      const target = quiz.traits[detail.trait];
+      const reason = detail.reason || relationFallbackReason(label, sourceTrait, detail.trait);
+      element.classList.remove("hidden");
+      element.dataset.trait = detail.trait;
+      element.textContent = `${label} · ${target.name} - ${reason}`;
+      element.href = `${window.location.pathname}?${PARAM_KEY}=${detail.trait}#result`;
+    }
+
+    function relationFallbackReason(type, sourceTrait, targetTrait) {
+      const source = quiz.traits[sourceTrait];
+      const target = quiz.traits[targetTrait];
+      if (!source || !target) return type === "최고 궁합" ? "서로의 리듬이 자연스럽게 어울려요." : "속도가 달라 조율이 필요해요.";
+      if (type === "최고 궁합") return `${target.tagline} 감각이 ${source.tagline}과 시너지를 만듭니다.`;
+      return `${target.name}의 텐션이 ${source.name}에게는 부담이 될 수 있어요.`;
+    }
+
+    function handleRelationClick(event) {
+      const trait = event.currentTarget.dataset.trait;
+      if (!trait || !quiz.traits[trait]) return;
+      event.preventDefault();
+      applyResult(trait);
+      window.scrollTo({ top: resultCard.offsetTop - 40, behavior: "smooth" });
+    }
+
+    prevBtn.addEventListener("click", goPrev);
+    restartBtn.addEventListener("click", restart);
+    bestLink.addEventListener("click", handleRelationClick);
+    worstLink.addEventListener("click", handleRelationClick);
+
+    renderQuestion();
+    const initialResult = new URLSearchParams(window.location.search).get(PARAM_KEY);
+    if (initialResult && quiz.traits[initialResult]) applyResult(initialResult);
+    setupKakaoShare("shareKakaoBtn", shareContent);
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+

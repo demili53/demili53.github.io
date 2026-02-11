@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="매끈함과 울퉁불퉁함 사이, 촉감 취향으로 나의 성향을 확인하는 8문항 테스트">
+  <meta name="keywords" content="매끈매끈 테스트, 촉감 심리, 동물 유형, 성향 테스트">
+  <meta name="author" content="partygame.pe.kr">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/smooth-texture-test.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="매끈매끈한 테스트">
+  <meta property="og:description" content="촉감 취향으로 내 리듬을 알아보는 8문항 테스트">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/smooth-og.jpg">
+  <meta property="og:url" content="https://partygame.pe.kr/brainTest/pages/brainTest/smooth-texture-test.html">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+          crossorigin="anonymous"></script>
+  <title>매끈매끈한 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-emerald-50 via-amber-50 to-slate-100 text-slate-900">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.35em] text-emerald-500">Smooth Texture Lab</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900">매끈매끈한 테스트</h1>
+      <p class="text-slate-700">
+        매끈함? 울퉁불퉁함? 촉감 취향으로 나의 성향을 알아보세요. 8문항으로 내 리듬을 확인해 볼 수 있어요.
+        <a href="/" class="underline text-emerald-500 hover:text-emerald-400 transition">홈으로 이동</a>
+      </p>
+    </header>
+
+    <main class="bg-white/80 border border-white/60 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section class="space-y-3">
+        <div class="text-xs font-semibold text-emerald-500 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 8</div>
+        <div class="w-full bg-emerald-100 rounded-full h-2 overflow-hidden">
+          <div id="progressBar" class="h-2 bg-gradient-to-r from-emerald-400 via-amber-300 to-slate-400 w-0 transition-all duration-300"></div>
+        </div>
+        <div class="text-sm text-slate-600 flex justify-between">
+          <span>촉감 레이더 가동 중...</span>
+          <span id="progressText">0% 완료</span>
+        </div>
+      </section>
+
+      <section id="quizCard" class="space-y-5">
+        <h2 id="question" class="text-2xl font-semibold text-slate-900"></h2>
+        <div id="options" class="space-y-3"></div>
+        <div class="flex justify-between text-sm text-slate-500">
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-slate-200 hover:border-emerald-200 hover:bg-emerald-50 transition disabled:opacity-40 disabled:cursor-not-allowed">이전</button>
+          <span class="text-emerald-500">가장 끌리는 쪽을 선택해 주세요</span>
+        </div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-emerald-500 uppercase tracking-[0.3em]">결과</div>
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="md:w-48 w-full">
+            <img id="resultImage" class="rounded-2xl border border-white shadow-lg w-full h-48 object-cover bg-white" alt="result visual">
+          </div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold text-slate-900"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-emerald-50 border border-emerald-200 text-sm text-emerald-600"></div>
+            <p id="resultDesc" class="text-slate-800 leading-relaxed"></p>
+          </div>
+        </div>
+        <div id="resultTips" class="grid gap-3"></div>
+        <div id="resultCompatibility"></div>
+        <div class="flex flex-wrap gap-3">
+          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-amber-400 text-amber-700 hover:bg-amber-100 transition">카카오톡 공유</button>
+          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 text-white font-semibold shadow-lg hover:bg-emerald-400 transition">다시 시작하기</button>
+          <a href="/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 text-slate-700 hover:bg-emerald-50 transition">홈으로 이동</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+      window.Kakao.init(window.__KAKAO_APP_KEY__);
+    }
+  </script>
+  <script src="/brainTest/scripts/kakao-share.js"></script>
+  <script>
+    const quiz = {
+      questions: [
+        {
+          text: "손끝에 닿는 감촉이 중요할 때, 더 끌리는 건?",
+          options: [
+            { label: "유리처럼 반짝이는 매끈함", trait: "gloss" },
+            { label: "포근한 담요 같은 말랑함", trait: "plush" },
+            { label: "물결이 스치는 부드러운 리듬", trait: "ripple" },
+            { label: "거칠지만 믿음직한 질감", trait: "granite" }
+          ]
+        },
+        {
+          text: "스트레스를 풀 때 내가 선택하는 방식은?",
+          options: [
+            { label: "활동적으로 움직이며 기분을 전환한다", trait: "gloss" },
+            { label: "따뜻한 차와 함께 휴식한다", trait: "plush" },
+            { label: "흐름을 타듯 조용히 산책한다", trait: "ripple" },
+            { label: "혼자만의 공간에서 정리한다", trait: "granite" }
+          ]
+        },
+        {
+          text: "메신저에서 내 톤은?",
+          options: [
+            { label: "짧고 빠르게 리액션을 보낸다", trait: "gloss" },
+            { label: "상대가 편한 속도로 맞춘다", trait: "plush" },
+            { label: "필요한 말만 센스 있게 전달한다", trait: "ripple" },
+            { label: "핵심만 간결하게 말한다", trait: "granite" }
+          ]
+        },
+        {
+          text: "주말 일정이 갑자기 비면?",
+          options: [
+            { label: "친구를 불러 가볍게 나간다", trait: "gloss" },
+            { label: "집에서 편하게 충전한다", trait: "plush" },
+            { label: "분위기 따라 즉흥적으로 움직인다", trait: "ripple" },
+            { label: "미뤄둔 일을 정리한다", trait: "granite" }
+          ]
+        },
+        {
+          text: "팀플에서 내가 맡는 역할은?",
+          options: [
+            { label: "아이디어를 쏟아내며 분위기를 올린다", trait: "gloss" },
+            { label: "모두가 편한 방향을 조율한다", trait: "plush" },
+            { label: "감각적인 디테일을 챙긴다", trait: "ripple" },
+            { label: "실행 계획을 세워 끝까지 밀고 간다", trait: "granite" }
+          ]
+        },
+        {
+          text: "친구가 속상하다고 말하면?",
+          options: [
+            { label: "웃길 포인트를 찾아 분위기를 환기한다", trait: "gloss" },
+            { label: "조용히 옆에 있어 주며 챙긴다", trait: "plush" },
+            { label: "감정을 읽고 타이밍을 맞춰 위로한다", trait: "ripple" },
+            { label: "해결책을 정리해 주는 편이다", trait: "granite" }
+          ]
+        },
+        {
+          text: "새로운 공간에 들어가면 가장 먼저 보는 건?",
+          options: [
+            { label: "빛과 반사가 만드는 분위기", trait: "gloss" },
+            { label: "앉아도 편한 포근한 구석", trait: "plush" },
+            { label: "공기 흐름과 움직임의 리듬", trait: "ripple" },
+            { label: "동선과 구조의 안정감", trait: "granite" }
+          ]
+        },
+        {
+          text: "칭찬을 받았을 때 내 반응은?",
+          options: [
+            { label: "즉시 기분 좋아져서 표현한다", trait: "gloss" },
+            { label: "고맙다고 말하고 상대도 챙긴다", trait: "plush" },
+            { label: "조용히 받아들이며 여운을 남긴다", trait: "ripple" },
+            { label: "웃으면서도 크게 티내진 않는다", trait: "granite" }
+          ]
+        }
+      ],
+      results: {
+        gloss: {
+          name: "유광 개구리",
+          tagline: "활기 · 빠른 전환형",
+          desc: "빛을 만나면 반짝이는 유광 타입이에요. 분위기 메이커가 되어 상황을 빠르게 전환하고, 필요한 순간에 에너지를 끌어올리는 감각이 뛰어납니다.",
+          image: "/brainTest/images/smooth-frog.jpg",
+          tips: [
+            "리듬이 빠를수록 짧은 휴식으로 균형을 맞춰 주세요.",
+            "즉흥적인 선택이 큰 재미가 되지만 속도 조절이 핵심이에요."
+          ],
+          compatibility: {
+            best: [
+              { trait: "plush", reason: "포근 수달이 유광의 속도를 안정적으로 감싸줘요." },
+              { trait: "ripple", reason: "리듬 가오리가 유광의 에너지를 부드럽게 이어 줍니다." }
+            ],
+            watch: [
+              { trait: "granite", reason: "단단 거북은 속도가 느려 조율이 필요할 수 있어요." }
+            ]
+          }
+        },
+        plush: {
+          name: "포근 수달",
+          tagline: "따뜻 · 배려형",
+          desc: "말랑하고 따뜻한 에너지가 강한 타입입니다. 상대의 속도를 잘 읽고, 부드럽게 리듬을 맞추며 안정감을 만들어 줍니다.",
+          image: "/brainTest/images/smooth-otter.jpg",
+          tips: [
+            "혼자만의 회복 시간을 확보하면 더 오래 따뜻함을 유지할 수 있어요.",
+            "가끔은 솔직한 요구도 필요합니다."
+          ],
+          compatibility: {
+            best: [
+              { trait: "granite", reason: "단단 거북의 안정감이 포근함을 지지해 줍니다." },
+              { trait: "gloss", reason: "유광 개구리의 활기가 포근함을 더 밝게 만들어요." }
+            ],
+            watch: [
+              { trait: "ripple", reason: "리듬 가오리는 변동성이 커서 피로할 수 있어요." }
+            ]
+          }
+        },
+        ripple: {
+          name: "리듬 가오리",
+          tagline: "감각 · 유연형",
+          desc: "흐름을 읽고 유연하게 움직이는 감각형입니다. 분위기의 결을 빠르게 파악하고, 상황에 맞는 온도를 만들어 냅니다.",
+          image: "/brainTest/images/smooth-ray.jpg",
+          tips: [
+            "감각이 예민할수록 내 기준을 선명하게 잡아 주세요.",
+            "새로운 경험이 에너지 회복에 도움 됩니다."
+          ],
+          compatibility: {
+            best: [
+              { trait: "gloss", reason: "유광 개구리와 함께하면 템포가 자연스럽게 살아나요." },
+              { trait: "plush", reason: "포근 수달의 온기가 리듬을 부드럽게 합니다." }
+            ],
+            watch: [
+              { trait: "granite", reason: "단단 거북은 변화가 적어 답답하게 느껴질 수 있어요." }
+            ]
+          }
+        },
+        granite: {
+          name: "단단 거북",
+          tagline: "안정 · 꾸준형",
+          desc: "느긋하지만 단단하게 중심을 지키는 타입이에요. 급한 상황에도 흔들리지 않고, 꾸준한 페이스로 신뢰를 쌓습니다.",
+          image: "/brainTest/images/smooth-turtle.jpg",
+          tips: [
+            "새로운 자극을 소량씩 넣으면 더 넓은 시야를 얻을 수 있어요.",
+            "감정 표현을 조금만 더해도 관계가 훨씬 부드러워집니다."
+          ],
+          compatibility: {
+            best: [
+              { trait: "plush", reason: "포근 수달의 배려가 거북의 안정감을 확장합니다." },
+              { trait: "ripple", reason: "리듬 가오리가 거북의 고정된 페이스에 변화를 줘요." }
+            ],
+            watch: [
+              { trait: "gloss", reason: "유광 개구리의 속도가 부담이 될 수 있어요." }
+            ]
+          }
+        }
+      }
+    };
+
+    const totalQuestions = quiz.questions.length;
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const quizCard = document.getElementById("quizCard");
+    const resultCard = document.getElementById("resultCard");
+    const stepLabel = document.getElementById("stepLabel");
+    const progressText = document.getElementById("progressText");
+    const progressBar = document.getElementById("progressBar");
+    const prevBtn = document.getElementById("prevBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultBadge = document.getElementById("resultBadge");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultImage = document.getElementById("resultImage");
+    const resultTips = document.getElementById("resultTips");
+    const resultCompatibility = document.getElementById("resultCompatibility");
+
+    const baseShareUrl = `${window.location.origin}${window.location.pathname}`;
+    const shareContent = {
+      title: "매끈매끈한 테스트",
+      description: "촉감 취향으로 내 리듬을 알아보는 8문항 테스트",
+      imageUrl: "https://partygame.pe.kr/brainTest/images/smooth-og.jpg",
+      webUrl: baseShareUrl
+    };
+    const PARAM_KEY = "result";
+
+    let current = 0;
+    const answers = Array(totalQuestions).fill(null);
+
+    function renderQuestion() {
+      const q = quiz.questions[current];
+      stepLabel.textContent = `문항 ${current + 1} / ${totalQuestions}`;
+      const percent = Math.round((current / totalQuestions) * 100);
+      progressText.textContent = `${percent}% 완료`;
+      progressBar.style.width = `${percent}%`;
+      questionEl.textContent = q.text;
+      optionsEl.innerHTML = "";
+      q.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50 transition";
+        btn.textContent = option.label;
+        btn.addEventListener("click", () => handleOption(option.trait));
+        optionsEl.appendChild(btn);
+      });
+      prevBtn.disabled = current === 0;
+    }
+
+    function handleOption(trait) {
+      answers[current] = trait;
+      if (current === totalQuestions - 1) {
+        showResult();
+        return;
+      }
+      current += 1;
+      renderQuestion();
+    }
+
+    function goPrev() {
+      if (current === 0) return;
+      current -= 1;
+      renderQuestion();
+    }
+
+    function restartQuiz() {
+      for (let i = 0; i < answers.length; i += 1) answers[i] = null;
+      current = 0;
+      quizCard.classList.remove("hidden");
+      resultCard.classList.add("hidden");
+      progressText.textContent = "0% 완료";
+      progressBar.style.width = "0%";
+      updateTraitQuery(null);
+      resultCompatibility.innerHTML = "";
+      renderQuestion();
+      window.scrollTo({ top: 0 });
+    }
+
+    function showResult() {
+      const counts = {};
+      const tieBreaker = {};
+      answers.forEach((trait, idx) => {
+        if (!trait) return;
+        counts[trait] = (counts[trait] || 0) + 1;
+        tieBreaker[trait] = (tieBreaker[trait] || 0) + (totalQuestions - idx);
+      });
+      const ranked = Object.keys(counts).sort((a, b) => {
+        if (counts[b] !== counts[a]) return counts[b] - counts[a];
+        return (tieBreaker[b] || 0) - (tieBreaker[a] || 0);
+      });
+      const bestTrait = ranked[0] || Object.keys(quiz.results)[0];
+      presentResult(bestTrait);
+    }
+
+    function presentResult(traitKey) {
+      const trait = quiz.results[traitKey];
+      if (!trait) return;
+      quizCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+      progressText.textContent = "100% 완료";
+      progressBar.style.width = "100%";
+      resultTitle.textContent = trait.name;
+      resultBadge.textContent = trait.tagline;
+      resultDesc.textContent = trait.desc;
+      resultImage.src = trait.image;
+      resultImage.alt = trait.name;
+      resultTips.innerHTML = "";
+      trait.tips.forEach(tip => {
+        const card = document.createElement("div");
+        card.className = "rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-700";
+        card.textContent = tip;
+        resultTips.appendChild(card);
+      });
+
+      renderCompatibilityList(traitKey);
+      updateTraitQuery(traitKey);
+      updateShareMeta(traitKey, trait);
+      window.scrollTo({ top: resultCard.offsetTop - 40, behavior: "smooth" });
+    }
+
+    function renderCompatibilityList(traitKey) {
+      const trait = quiz.results[traitKey];
+      if (!trait || !trait.compatibility) {
+        resultCompatibility.innerHTML = "";
+        return;
+      }
+      const wrapper = document.createElement("div");
+      wrapper.className = "rounded-2xl border border-slate-200 bg-white p-4 space-y-4";
+
+      const title = document.createElement("div");
+      title.className = "text-sm font-semibold text-emerald-500 tracking-[0.2em] uppercase";
+      title.textContent = "궁합 리포트";
+      wrapper.appendChild(title);
+
+      if (trait.compatibility.best?.length) {
+        const bestBlock = document.createElement("div");
+        bestBlock.innerHTML = `<p class="text-xs text-emerald-600 mb-2">잘 맞는 유형</p>`;
+        trait.compatibility.best.forEach(item => {
+          const el = createCompatibilityItem(item);
+          if (el) bestBlock.appendChild(el);
+        });
+        wrapper.appendChild(bestBlock);
+      }
+
+      if (trait.compatibility.watch?.length) {
+        const watchBlock = document.createElement("div");
+        watchBlock.innerHTML = `<p class="text-xs text-rose-500 mb-2">주의할 유형</p>`;
+        trait.compatibility.watch.forEach(item => {
+          const el = createCompatibilityItem(item);
+          if (el) watchBlock.appendChild(el);
+        });
+        wrapper.appendChild(watchBlock);
+      }
+
+      resultCompatibility.innerHTML = "";
+      resultCompatibility.appendChild(wrapper);
+    }
+
+    function createCompatibilityItem(info) {
+      const trait = quiz.results[info.trait];
+      if (!trait) return null;
+      const link = document.createElement("a");
+      link.href = `?${PARAM_KEY}=${info.trait}#result`;
+      link.className = "block rounded-xl border border-slate-200 bg-emerald-50 px-3 py-2 mb-2 text-left text-sm hover:border-emerald-300 hover:bg-white transition";
+      link.innerHTML = `<span class="font-semibold text-slate-900">${trait.name}</span><br><span class="text-xs text-slate-600">${info.reason}</span>`;
+      link.addEventListener("click", event => {
+        event.preventDefault();
+        presentResult(info.trait);
+      });
+      return link;
+    }
+
+    function updateTraitQuery(traitKey) {
+      if (!window.history?.replaceState) return;
+      const url = new URL(window.location.href);
+      if (traitKey) {
+        url.searchParams.set(PARAM_KEY, traitKey);
+        url.hash = "result";
+      } else {
+        url.searchParams.delete(PARAM_KEY);
+        url.hash = "";
+      }
+      window.history.replaceState({}, "", url.toString());
+    }
+
+    function updateShareMeta(traitKey, trait) {
+      if (!trait) return;
+      shareContent.title = `${trait.name} | 매끈매끈한 테스트`;
+      shareContent.description = trait.desc;
+      shareContent.imageUrl = `https://partygame.pe.kr${trait.image}`;
+      shareContent.webUrl = traitKey ? `${baseShareUrl}?${PARAM_KEY}=${traitKey}#result` : baseShareUrl;
+    }
+
+    prevBtn.addEventListener("click", goPrev);
+    restartBtn.addEventListener("click", restartQuiz);
+
+    renderQuestion();
+
+    const initialTrait = new URLSearchParams(window.location.search).get(PARAM_KEY);
+    if (initialTrait && quiz.results[initialTrait]) {
+      presentResult(initialTrait);
+    }
+
+    setupKakaoShare("shareKakaoBtn", shareContent);
+  </script>
+</body>
+</html>

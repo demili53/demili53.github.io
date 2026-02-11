@@ -1,0 +1,402 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="하반기 분위기를 만드는 추구미 타입을 알아보는 6문항 테스트">
+  <meta name="keywords" content="하반기 추구미 테스트, 분위기, 무드, 성향 테스트">
+  <meta name="author" content="partygame.pe.kr">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/second-half-vibe-test.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="하반기 추구미 테스트">
+  <meta property="og:description" content="하반기 분위기를 만드는 추구미 타입을 알아보는 6문항 테스트">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/h2-og.jpg">
+  <meta property="og:url" content="https://partygame.pe.kr/brainTest/pages/brainTest/second-half-vibe-test.html">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+          crossorigin="anonymous"></script>
+  <title>하반기 추구미 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-rose-950 via-slate-950 to-amber-950 text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.35em] text-amber-200">Second Half Vibe</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">하반기 추구미 테스트</h1>
+      <p class="text-slate-200">
+        6개의 질문으로 하반기 무드와 추구미 타입을 확인해 보세요.
+        <a href="/" class="underline text-amber-200 hover:text-amber-100 transition">홈으로 이동</a>
+      </p>
+    </header>
+
+    <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section class="space-y-3">
+        <div class="text-xs font-semibold text-amber-200 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+          <div id="progressBar" class="h-2 bg-gradient-to-r from-amber-400 via-rose-400 to-indigo-400 w-0 transition-all duration-300"></div>
+        </div>
+        <div class="text-sm text-slate-300 flex justify-between">
+          <span>하반기 무드 설정 중...</span>
+          <span id="progressText">0% 완료</span>
+        </div>
+      </section>
+
+      <section id="quizCard" class="space-y-5">
+        <h2 id="question" class="text-2xl font-semibold"></h2>
+        <div id="options" class="space-y-3"></div>
+        <div class="flex justify-between text-sm text-slate-300">
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-amber-200 hover:bg-white/10 transition disabled:opacity-40">이전</button>
+          <span class="text-amber-200">가장 끌리는 분위기를 골라주세요</span>
+        </div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-amber-200 uppercase tracking-[0.3em]">결과</div>
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="md:w-48 w-full">
+            <img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-48 object-cover" alt="result visual">
+          </div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm"></div>
+            <p id="resultDesc" class="text-slate-100 leading-relaxed"></p>
+          </div>
+        </div>
+        <div id="resultTips" class="grid gap-3"></div>
+        <div class="space-y-2 bg-white/5 border border-white/10 rounded-2xl p-4">
+          <h3 class="text-lg font-semibold text-amber-200">테스트 내 궁합</h3>
+          <div class="flex flex-col gap-2 text-sm">
+            <a id="bestLink" class="inline-flex items-center gap-2 text-slate-100 underline underline-offset-4 hover:text-amber-200" href="#">최고 궁합 결과 보기</a>
+            <a id="worstLink" class="inline-flex items-center gap-2 text-slate-300 underline underline-offset-4 hover:text-rose-200" href="#">주의 궁합 결과 보기</a>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-amber-300 text-amber-100 hover:bg-amber-400/10 transition">카카오톡 공유</button>
+          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500 text-white font-semibold shadow-lg hover:bg-amber-400 transition">다시 시작하기</button>
+          <a href="/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 text-slate-100 hover:bg-white/10 transition">홈으로 이동</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+      window.Kakao.init(window.__KAKAO_APP_KEY__);
+    }
+  </script>
+  <script src="/brainTest/scripts/kakao-share.js"></script>
+  <script>
+    const quiz = {
+      questions: [
+        {
+          text: "하반기에 가장 기대되는 순간은?",
+          options: [
+            { label: "새로운 프로젝트나 계획을 시작하는 순간", trait: "vision" },
+            { label: "따뜻한 사람들과 조용히 쉬는 시간", trait: "soft" },
+            { label: "새로운 장소에서 자유롭게 돌아다니기", trait: "bold" },
+            { label: "일상을 정리하며 리듬을 만드는 시간", trait: "ground" }
+          ]
+        },
+        {
+          text: "하반기 룩을 고른다면?",
+          options: [
+            { label: "미니멀하지만 포인트 있는 룩", trait: "vision" },
+            { label: "포근한 니트와 따뜻한 컬러", trait: "soft" },
+            { label: "강렬한 컬러와 스트릿 무드", trait: "bold" },
+            { label: "편안한 데님과 자연스러운 소재", trait: "ground" }
+          ]
+        },
+        {
+          text: "가장 끌리는 하반기 루틴은?",
+          options: [
+            { label: "계획표를 만들어 목표 달성", trait: "vision" },
+            { label: "힐링 루틴과 작은 취미 쌓기", trait: "soft" },
+            { label: "즉흥 여행과 새로운 경험", trait: "bold" },
+            { label: "체력 관리와 기본기 다지기", trait: "ground" }
+          ]
+        },
+        {
+          text: "사람들이 나에게 기대하는 하반기 에너지는?",
+          options: [
+            { label: "방향을 제시하는 리더십", trait: "vision" },
+            { label: "편안하게 감싸주는 위로", trait: "soft" },
+            { label: "분위기를 살리는 활기", trait: "bold" },
+            { label: "꾸준함과 안정감", trait: "ground" }
+          ]
+        },
+        {
+          text: "내가 가장 원하는 하반기 키워드는?",
+          options: [
+            { label: "성장과 업그레이드", trait: "vision" },
+            { label: "편안함과 따뜻함", trait: "soft" },
+            { label: "자유와 자극", trait: "bold" },
+            { label: "정리와 균형", trait: "ground" }
+          ]
+        },
+        {
+          text: "하반기 사진 한 장을 남긴다면?",
+          options: [
+            { label: "노트와 무드보드", trait: "vision" },
+            { label: "따뜻한 라이트와 커피", trait: "soft" },
+            { label: "네온과 도시 야경", trait: "bold" },
+            { label: "숲길과 자연광", trait: "ground" }
+          ]
+        }
+      ],
+      traits: {
+        vision: {
+          name: "비전 무드",
+          tagline: "목표 · 집중형",
+          desc: "하반기에 성장과 업그레이드를 추구하는 타입. 계획과 방향성이 분명한 편입니다.",
+          image: "/brainTest/images/h2-vision.jpg",
+          tips: [
+            "속도 조절로 번아웃을 예방하세요.",
+            "목표를 시각화하면 더 빨리 움직일 수 있어요."
+          ],
+          compatibility: {
+            best: { trait: "soft", reason: "소프트 무드의 온기가 비전 무드를 오래 유지시켜줘요." },
+            watch: { trait: "bold", reason: "볼드 무드의 즉흥성이 계획을 흔들 수 있어요." }
+          }
+        },
+        soft: {
+          name: "소프트 무드",
+          tagline: "온기 · 힐링형",
+          desc: "하반기에 따뜻함과 휴식을 중시하는 타입. 마음의 여유를 만들어 가는 중입니다.",
+          image: "/brainTest/images/h2-soft.jpg",
+          tips: [
+            "나를 위한 시간도 일정에 넣어보세요.",
+            "작은 루틴이 큰 안정감을 줍니다."
+          ],
+          compatibility: {
+            best: { trait: "ground", reason: "그라운드 무드의 안정감이 소프트 무드를 지켜줘요." },
+            watch: { trait: "vision", reason: "비전 무드의 속도가 부담일 수 있어요." }
+          }
+        },
+        bold: {
+          name: "볼드 무드",
+          tagline: "자유 · 활기형",
+          desc: "하반기에 새로움과 자유를 추구하는 타입. 활기찬 에너지가 주변을 움직입니다.",
+          image: "/brainTest/images/h2-bold.jpg",
+          tips: [
+            "무리하지 않도록 에너지 리듬을 조절하세요.",
+            "경험을 기록하면 더 많은 인사이트를 얻어요."
+          ],
+          compatibility: {
+            best: { trait: "vision", reason: "비전 무드의 방향성이 볼드 무드의 에너지를 정리해줘요." },
+            watch: { trait: "ground", reason: "그라운드 무드의 속도가 느리게 느껴질 수 있어요." }
+          }
+        },
+        ground: {
+          name: "그라운드 무드",
+          tagline: "안정 · 기본형",
+          desc: "하반기에 기본기를 다지고 균형을 맞추는 타입. 안정감이 가장 큰 강점입니다.",
+          image: "/brainTest/images/h2-ground.jpg",
+          tips: [
+            "작은 변화를 넣으면 리듬이 더 풍성해져요.",
+            "규칙적인 루틴이 큰 에너지를 줍니다."
+          ],
+          compatibility: {
+            best: { trait: "soft", reason: "소프트 무드의 온기가 그라운드 무드를 더 편하게 만들어줘요." },
+            watch: { trait: "bold", reason: "볼드 무드의 속도 차이가 부담이 될 수 있어요." }
+          }
+        }
+      }
+    };
+
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const stepLabel = document.getElementById("stepLabel");
+    const progressBar = document.getElementById("progressBar");
+    const progressText = document.getElementById("progressText");
+    const resultCard = document.getElementById("resultCard");
+    const quizCard = document.getElementById("quizCard");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultBadge = document.getElementById("resultBadge");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultImage = document.getElementById("resultImage");
+    const resultTips = document.getElementById("resultTips");
+    const bestLink = document.getElementById("bestLink");
+    const worstLink = document.getElementById("worstLink");
+    const restartBtn = document.getElementById("restartBtn");
+    const prevBtn = document.getElementById("prevBtn");
+    const shareContent = {
+      title: "하반기 추구미 테스트",
+      description: "하반기 분위기를 만드는 추구미 타입을 알아보는 6문항 테스트",
+      imageUrl: "https://partygame.pe.kr/brainTest/images/h2-og.jpg",
+      webUrl: `${window.location.origin}${window.location.pathname}`
+    };
+    const PARAM_KEY = "result";
+
+    let current = 0;
+    const answers = Array(quiz.questions.length).fill(null);
+
+    function renderQuestion() {
+      const q = quiz.questions[current];
+      questionEl.textContent = q.text;
+      stepLabel.textContent = `문항 ${current + 1} / ${quiz.questions.length}`;
+      const progress = Math.round((current / quiz.questions.length) * 100);
+      progressText.textContent = `${progress}% 완료`;
+      progressBar.style.width = `${progress}%`;
+
+      optionsEl.innerHTML = "";
+      q.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-white/20 hover:border-amber-200 hover:bg-white/10 transition";
+        btn.textContent = opt.label;
+        btn.addEventListener("click", () => handleOption(opt.trait));
+        optionsEl.appendChild(btn);
+      });
+
+      prevBtn.disabled = current === 0;
+    }
+
+    function handleOption(trait) {
+      answers[current] = trait;
+      if (current === quiz.questions.length - 1) {
+        showResult();
+        return;
+      }
+      current += 1;
+      renderQuestion();
+    }
+
+    function determineWinner() {
+      const tally = answers.reduce((map, trait) => {
+        if (!trait) return map;
+        map[trait] = (map[trait] || 0) + 1;
+        return map;
+      }, {});
+      let winner = null;
+      Object.keys(tally).forEach(trait => {
+        if (!winner || tally[trait] > tally[winner]) winner = trait;
+      });
+      return winner;
+    }
+
+    function showResult(traitKey) {
+      const winner = traitKey || determineWinner();
+      if (!winner || !quiz.traits[winner]) {
+        resultTitle.textContent = "아직 선택이 부족해요";
+        resultDesc.textContent = "문항을 모두 선택하면 결과를 볼 수 있어요.";
+        return;
+      }
+      applyResult(winner);
+    }
+
+    function applyResult(trait) {
+      const meta = quiz.traits[trait];
+      const resolvedImage = meta.image.startsWith("http") ? meta.image : `${window.location.origin}${meta.image}`;
+      resultTitle.textContent = meta.name;
+      resultBadge.textContent = meta.tagline;
+      resultDesc.textContent = meta.desc;
+      resultImage.src = meta.image;
+      resultImage.alt = meta.name;
+      resultTips.innerHTML = "";
+      meta.tips.forEach(t => {
+        const item = document.createElement("div");
+        item.className = "border border-white/15 rounded-xl px-3 py-2 text-sm text-slate-100";
+        item.textContent = `• ${t}`;
+        resultTips.appendChild(item);
+      });
+      updateRelationLinks(trait);
+      updateResultParam(trait);
+      shareContent.title = `${meta.name} | 하반기 추구미 테스트`;
+      shareContent.description = meta.desc;
+      shareContent.imageUrl = resolvedImage;
+      shareContent.webUrl = `${window.location.origin}${window.location.pathname}?${PARAM_KEY}=${trait}#result`;
+
+      quizCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+      progressText.textContent = "100% 완료";
+      progressBar.style.width = "100%";
+    }
+
+    function goPrev() {
+      if (current === 0) return;
+      current -= 1;
+      renderQuestion();
+    }
+
+    function restart() {
+      for (let i = 0; i < answers.length; i += 1) answers[i] = null;
+      current = 0;
+      quizCard.classList.remove("hidden");
+      resultCard.classList.add("hidden");
+      progressText.textContent = "0% 완료";
+      progressBar.style.width = "0%";
+      updateResultParam(null);
+      renderQuestion();
+    }
+
+    function updateResultParam(trait) {
+      const url = new URL(window.location.href);
+      if (trait) {
+        url.searchParams.set(PARAM_KEY, trait);
+        url.hash = "result";
+      } else {
+        url.searchParams.delete(PARAM_KEY);
+        url.hash = "";
+      }
+      window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+    }
+
+    function updateRelationLinks(trait) {
+      const info = quiz.traits[trait]?.compatibility || {};
+      setRelationLink(bestLink, info.best, "최고 궁합", trait);
+      setRelationLink(worstLink, info.watch, "주의 궁합", trait);
+    }
+
+    function setRelationLink(element, detail, label, sourceTrait) {
+      if (!detail || !detail.trait || !quiz.traits[detail.trait]) {
+        element.classList.add("hidden");
+        element.removeAttribute("href");
+        element.removeAttribute("data-trait");
+        element.textContent = "";
+        return;
+      }
+      const target = quiz.traits[detail.trait];
+      const reason = detail.reason || relationFallbackReason(label, sourceTrait, detail.trait);
+      element.classList.remove("hidden");
+      element.dataset.trait = detail.trait;
+      element.textContent = `${label} · ${target.name} - ${reason}`;
+      element.href = `${window.location.pathname}?${PARAM_KEY}=${detail.trait}#result`;
+    }
+
+    function relationFallbackReason(type, sourceTrait, targetTrait) {
+      const source = quiz.traits[sourceTrait];
+      const target = quiz.traits[targetTrait];
+      if (!source || !target) {
+        return type === "최고 궁합" ? "서로의 무드가 자연스럽게 어울려요." : "속도가 달라 조율이 필요해요.";
+      }
+      if (type === "최고 궁합") {
+        return `${target.tagline} 감각이 ${source.tagline}과 시너지를 만듭니다.`;
+      }
+      return `${target.name}의 텐션이 ${source.name}에게는 부담일 수 있어요.`;
+    }
+
+    function handleRelationClick(event) {
+      const trait = event.currentTarget.dataset.trait;
+      if (!trait || !quiz.traits[trait]) return;
+      event.preventDefault();
+      applyResult(trait);
+      window.scrollTo({ top: resultCard.offsetTop - 40, behavior: "smooth" });
+    }
+
+    prevBtn.addEventListener("click", goPrev);
+    restartBtn.addEventListener("click", restart);
+    bestLink.addEventListener("click", handleRelationClick);
+    worstLink.addEventListener("click", handleRelationClick);
+
+    renderQuestion();
+    const initialResult = new URLSearchParams(window.location.search).get(PARAM_KEY);
+    if (initialResult && quiz.traits[initialResult]) {
+      applyResult(initialResult);
+    }
+
+    setupKakaoShare("shareKakaoBtn", shareContent);
+  </script>
+</body>
+</html>

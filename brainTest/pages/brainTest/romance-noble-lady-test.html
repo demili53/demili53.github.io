@@ -1,0 +1,322 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="로맨스 판타지 감성 질문으로 내 연애 귀족력을 알아보는 6문항 테스트">
+  <meta name="keywords" content="연애 심리 테스트, 로판, 영애, 연애 성향">
+  <meta name="author" content="partygame.pe.kr">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/romance-noble-lady-test.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="로판 영애 연애력 테스트">
+  <meta property="og:description" content="로맨스 판타지 감성 질문으로 내 연애 귀족력을 알아보는 6문항 테스트">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/romance-noble-og.jpg">
+  <meta property="og:url" content="https://partygame.pe.kr/brainTest/pages/brainTest/romance-noble-lady-test.html">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+          crossorigin="anonymous"></script>
+  <title>로판 영애 연애력 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-rose-950 via-slate-900 to-indigo-950 text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.35em] text-rose-200">Romance Noble Lady</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">로판 영애 연애력 테스트</h1>
+      <p class="text-slate-200">6개의 질문으로 내 연애 품격, 감정 리드 방식, 관계 궁합 포인트를 확인해 보세요. <a href="/" class="underline text-rose-200 hover:text-rose-100 transition">홈으로 이동</a></p>
+    </header>
+
+    <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section class="space-y-3">
+        <div class="text-xs font-semibold text-rose-200 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden"><div id="progressBar" class="h-2 bg-gradient-to-r from-rose-400 via-pink-300 to-indigo-300 w-0 transition-all duration-300"></div></div>
+        <div class="text-sm text-slate-300 flex justify-between"><span>로판 연애력 분석 중...</span><span id="progressText">0% 완료</span></div>
+      </section>
+
+      <section id="quizCard" class="space-y-5">
+        <h2 id="question" class="text-2xl font-semibold"></h2>
+        <div id="options" class="space-y-3"></div>
+        <div class="flex justify-between text-sm text-slate-300"><button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-rose-200 hover:bg-white/10 transition disabled:opacity-40">이전</button><span class="text-rose-200">연애 상황에서 더 자연스러운 반응을 골라주세요</span></div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-rose-200 uppercase tracking-[0.3em]">결과</div>
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="md:w-48 w-full"><img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-48 object-cover" alt="result visual"></div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm"></div>
+            <p id="resultDesc" class="text-slate-100 leading-relaxed"></p>
+          </div>
+        </div>
+        <div id="resultTips" class="grid gap-3"></div>
+        <div class="space-y-2 bg-white/5 border border-white/10 rounded-2xl p-4">
+          <h3 class="text-lg font-semibold text-rose-200">테스트 내 궁합</h3>
+          <div class="flex flex-col gap-2 text-sm">
+            <a id="bestLink" class="inline-flex items-center gap-2 text-slate-100 underline underline-offset-4 hover:text-rose-200" href="#">최고 궁합 결과 보기</a>
+            <a id="worstLink" class="inline-flex items-center gap-2 text-slate-300 underline underline-offset-4 hover:text-sky-200" href="#">주의 궁합 결과 보기</a>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-rose-300 text-rose-100 hover:bg-rose-400/10 transition">카카오톡 공유</button>
+          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-rose-500 text-white font-semibold shadow-lg hover:bg-rose-400 transition">다시 시작하기</button>
+          <a href="/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 text-slate-100 hover:bg-white/10 transition">홈으로 이동</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+    if (window.Kakao && !window.Kakao.isInitialized()) window.Kakao.init(window.__KAKAO_APP_KEY__);
+  </script>
+  <script src="/brainTest/scripts/kakao-share.js"></script>
+  <script>
+    const quiz = {
+      questions: [
+        { text: "무도회에서 호감 상대를 마주쳤다. 첫 반응은?", options: [
+          { label: "우아한 미소로 먼저 인사한다", trait: "grace" },
+          { label: "눈빛으로 존재감을 각인시킨다", trait: "crown" },
+          { label: "직설적인 질문으로 분위기를 잡는다", trait: "sword" },
+          { label: "조용히 관찰하며 타이밍을 본다", trait: "moon" }
+        ]},
+        { text: "갈등이 생긴 밤, 내가 택하는 방식은?", options: [
+          { label: "상대 감정을 먼저 달랜다", trait: "grace" },
+          { label: "관계의 기준을 분명히 세운다", trait: "crown" },
+          { label: "문제 핵심을 단번에 정리한다", trait: "sword" },
+          { label: "한 템포 쉬고 깊게 대화한다", trait: "moon" }
+        ]},
+        { text: "내가 사랑에서 가장 지키고 싶은 가치는?", options: [
+          { label: "배려와 품위", trait: "grace" },
+          { label: "자존감과 주도권", trait: "crown" },
+          { label: "정직함과 결단", trait: "sword" },
+          { label: "신뢰와 진정성", trait: "moon" }
+        ]},
+        { text: "상대가 흔들릴 때 내 역할은?", options: [
+          { label: "정서적 안전지대가 된다", trait: "grace" },
+          { label: "방향을 제시하는 리더가 된다", trait: "crown" },
+          { label: "문제를 해결하는 실행가가 된다", trait: "sword" },
+          { label: "본심을 끌어내는 상담자가 된다", trait: "moon" }
+        ]},
+        { text: "데이트 코스에서 더 끌리는 것은?", options: [
+          { label: "정원 산책과 티타임", trait: "grace" },
+          { label: "드레스업한 파티 나이트", trait: "crown" },
+          { label: "새로운 장소 탐험", trait: "sword" },
+          { label: "야경 속 깊은 대화", trait: "moon" }
+        ]},
+        { text: "지금 내 로판 연애 캐릭터는?", options: [
+          { label: "품격의 영애형", trait: "grace" },
+          { label: "카리스마 왕관형", trait: "crown" },
+          { label: "직진 기사형", trait: "sword" },
+          { label: "심야 문라이트형", trait: "moon" }
+        ]}
+      ],
+      traits: {
+        grace: {
+          name: "품격 영애형",
+          tagline: "배려 · 우아형",
+          desc: "상대를 편안하게 만드는 다정함과 품위를 갖춘 타입입니다. 관계를 부드럽게 성장시킵니다.",
+          image: "/brainTest/images/romance-noble-grace.jpg",
+          tips: ["배려와 함께 내 기준도 분명히 전해보세요.", "우아함 속 솔직한 감정 표현이 관계를 더 깊게 만듭니다."],
+          compatibility: { best: { trait: "sword", reason: "기사형의 실행력이 영애형의 다정함을 든든히 지켜줘요." }, watch: { trait: "grace", reason: "서로 배려 중심이면 결정이 늦어질 수 있어요." } }
+        },
+        crown: {
+          name: "왕관 카리스마형",
+          tagline: "주도 · 기준형",
+          desc: "연애에서 흐름을 주도하고 관계 기준을 선명하게 잡는 타입입니다.",
+          image: "/brainTest/images/romance-noble-crown.jpg",
+          tips: ["강한 리드 뒤에 공감 문장을 더해보세요.", "기준을 말할 때 상대 페이스도 함께 확인하세요."],
+          compatibility: { best: { trait: "moon", reason: "문라이트형의 깊이가 왕관형의 리드를 안정시켜요." }, watch: { trait: "crown", reason: "주도권 충돌이 생기기 쉬워요." } }
+        },
+        sword: {
+          name: "직진 기사형",
+          tagline: "결단 · 실행형",
+          desc: "감정보다 행동으로 증명하는 타입입니다. 관계 전개 속도가 빠르고 해결력이 높습니다.",
+          image: "/brainTest/images/romance-noble-sword.jpg",
+          tips: ["속도를 낼수록 상대 감정 체크를 병행하세요.", "해결 중심 대화에 위로 한마디를 추가하면 좋아요."],
+          compatibility: { best: { trait: "grace", reason: "영애형의 부드러움이 기사형의 직진을 따뜻하게 완성해줘요." }, watch: { trait: "sword", reason: "강한 표현이 겹치면 마찰이 커질 수 있어요." } }
+        },
+        moon: {
+          name: "문라이트 심층형",
+          tagline: "통찰 · 진심형",
+          desc: "깊은 대화와 정서 교류로 관계 밀도를 높이는 타입입니다.",
+          image: "/brainTest/images/romance-noble-moon.jpg",
+          tips: ["생각이 많아질수록 짧은 감정 신호를 먼저 남겨보세요.", "진심 대화 전에 가벼운 아이스브레이크가 효과적입니다."],
+          compatibility: { best: { trait: "crown", reason: "왕관형의 방향성이 문라이트형의 깊이를 현실로 연결해줘요." }, watch: { trait: "moon", reason: "둘 다 신중해 전개가 느려질 수 있어요." } }
+        }
+      }
+    };
+
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const stepLabel = document.getElementById("stepLabel");
+    const progressBar = document.getElementById("progressBar");
+    const progressText = document.getElementById("progressText");
+    const resultCard = document.getElementById("resultCard");
+    const quizCard = document.getElementById("quizCard");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultBadge = document.getElementById("resultBadge");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultImage = document.getElementById("resultImage");
+    const resultTips = document.getElementById("resultTips");
+    const bestLink = document.getElementById("bestLink");
+    const worstLink = document.getElementById("worstLink");
+    const restartBtn = document.getElementById("restartBtn");
+    const prevBtn = document.getElementById("prevBtn");
+    const shareContent = {
+      title: "로판 영애 연애력 테스트",
+      description: "로맨스 판타지 감성 질문으로 내 연애 귀족력을 알아보는 6문항 테스트",
+      imageUrl: "https://partygame.pe.kr/brainTest/images/romance-noble-og.jpg",
+      webUrl: `${window.location.origin}${window.location.pathname}`
+    };
+    const PARAM_KEY = "result";
+
+    let current = 0;
+    const answers = Array(quiz.questions.length).fill(null);
+
+    function renderQuestion() {
+      const q = quiz.questions[current];
+      questionEl.textContent = q.text;
+      stepLabel.textContent = `문항 ${current + 1} / ${quiz.questions.length}`;
+      const progress = Math.round((current / quiz.questions.length) * 100);
+      progressText.textContent = `${progress}% 완료`;
+      progressBar.style.width = `${progress}%`;
+      optionsEl.innerHTML = "";
+      q.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-white/20 hover:border-rose-200 hover:bg-white/10 transition";
+        btn.textContent = opt.label;
+        btn.addEventListener("click", () => handleOption(opt.trait));
+        optionsEl.appendChild(btn);
+      });
+      prevBtn.disabled = current === 0;
+    }
+
+    function handleOption(trait) {
+      answers[current] = trait;
+      if (current === quiz.questions.length - 1) return showResult();
+      current += 1;
+      renderQuestion();
+    }
+
+    function determineWinner() {
+      const tally = answers.reduce((m, t) => { if (!t) return m; m[t] = (m[t] || 0) + 1; return m; }, {});
+      let winner = null;
+      Object.keys(tally).forEach(t => { if (!winner || tally[t] > tally[winner]) winner = t; });
+      return winner;
+    }
+
+    function showResult(traitKey) {
+      const winner = traitKey || determineWinner();
+      if (!winner || !quiz.traits[winner]) return;
+      applyResult(winner);
+    }
+
+    function applyResult(trait) {
+      const meta = quiz.traits[trait];
+      const resolvedImage = meta.image.startsWith("http") ? meta.image : `${window.location.origin}${meta.image}`;
+      resultTitle.textContent = meta.name;
+      resultBadge.textContent = meta.tagline;
+      resultDesc.textContent = meta.desc;
+      resultImage.src = meta.image;
+      resultImage.alt = meta.name;
+      resultTips.innerHTML = "";
+      meta.tips.forEach(t => {
+        const item = document.createElement("div");
+        item.className = "border border-white/15 rounded-xl px-3 py-2 text-sm text-slate-100";
+        item.textContent = `• ${t}`;
+        resultTips.appendChild(item);
+      });
+      updateRelationLinks(trait);
+      updateResultParam(trait);
+      shareContent.title = `${meta.name} | 로판 영애 연애력 테스트`;
+      shareContent.description = meta.desc;
+      shareContent.imageUrl = resolvedImage;
+      shareContent.webUrl = `${window.location.origin}${window.location.pathname}?${PARAM_KEY}=${trait}#result`;
+      quizCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+      progressText.textContent = "100% 완료";
+      progressBar.style.width = "100%";
+    }
+
+    function goPrev() { if (current === 0) return; current -= 1; renderQuestion(); }
+    function restart() {
+      for (let i = 0; i < answers.length; i += 1) answers[i] = null;
+      current = 0;
+      quizCard.classList.remove("hidden");
+      resultCard.classList.add("hidden");
+      progressText.textContent = "0% 완료";
+      progressBar.style.width = "0%";
+      updateResultParam(null);
+      renderQuestion();
+    }
+
+    function updateResultParam(trait) {
+      const url = new URL(window.location.href);
+      if (trait) { url.searchParams.set(PARAM_KEY, trait); url.hash = "result"; }
+      else { url.searchParams.delete(PARAM_KEY); url.hash = ""; }
+      window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+    }
+
+    function updateRelationLinks(trait) {
+      const info = quiz.traits[trait] && quiz.traits[trait].compatibility ? quiz.traits[trait].compatibility : {};
+      setRelationLink(bestLink, info.best, "최고 궁합", trait);
+      setRelationLink(worstLink, info.watch, "주의 궁합", trait);
+    }
+
+    function setRelationLink(element, detail, label, sourceTrait) {
+      if (!detail || !detail.trait || !quiz.traits[detail.trait]) {
+        element.classList.add("hidden"); element.removeAttribute("href"); element.removeAttribute("data-trait"); element.textContent = ""; return;
+      }
+      const target = quiz.traits[detail.trait];
+      const reason = detail.reason || relationFallbackReason(label, sourceTrait, detail.trait);
+      element.classList.remove("hidden");
+      element.dataset.trait = detail.trait;
+      element.textContent = `${label} · ${target.name} - ${reason}`;
+      element.href = `${window.location.pathname}?${PARAM_KEY}=${detail.trait}#result`;
+    }
+
+    function relationFallbackReason(type, sourceTrait, targetTrait) {
+      const source = quiz.traits[sourceTrait];
+      const target = quiz.traits[targetTrait];
+      if (!source || !target) return type === "최고 궁합" ? "서로의 리듬이 자연스럽게 어울려요." : "속도가 달라 조율이 필요해요.";
+      if (type === "최고 궁합") return `${target.tagline} 감각이 ${source.tagline}과 시너지를 만듭니다.`;
+      return `${target.name}의 텐션이 ${source.name}에게는 부담이 될 수 있어요.`;
+    }
+
+    function handleRelationClick(event) {
+      const trait = event.currentTarget.dataset.trait;
+      if (!trait || !quiz.traits[trait]) return;
+      event.preventDefault();
+      applyResult(trait);
+      window.scrollTo({ top: resultCard.offsetTop - 40, behavior: "smooth" });
+    }
+
+    prevBtn.addEventListener("click", goPrev);
+    restartBtn.addEventListener("click", restart);
+    bestLink.addEventListener("click", handleRelationClick);
+    worstLink.addEventListener("click", handleRelationClick);
+
+    renderQuestion();
+    const initialResult = new URLSearchParams(window.location.search).get(PARAM_KEY);
+    if (initialResult && quiz.traits[initialResult]) applyResult(initialResult);
+    setupKakaoShare("shareKakaoBtn", shareContent);
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

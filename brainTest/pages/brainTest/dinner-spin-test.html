@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="오늘 밤 먹어야 할 저녁 메뉴 감각을 6문항으로 골라주는 심리 테스트">
+  <meta name="keywords" content="저메추, 저녁 추천, 음식 테스트, dinner test, 메뉴 추천">
+  <meta name="author" content="partygame.pe.kr">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/dinner-spin-test.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="오늘의 저메추 스핀 테스트">
+  <meta property="og:description" content="출출한 지금 가장 어울리는 저녁 메뉴를 6문항으로 골라주는 테스트">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/dinner-ramen.jpg">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+          crossorigin="anonymous"></script>
+  <title>오늘의 저메추 스핀 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-950 via-amber-950 to-rose-950 text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.35em] text-amber-200">Dinner Spin Lab</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">오늘의 저메추 스핀 테스트</h1>
+      <p class="text-slate-200">
+        전지적 입맛 시점에서 오늘 먹으면 행복한 저녁을 6개의 질문으로 골라드립니다. 마음에 드는 메뉴가 나올 때까지 돌려보세요!
+        <a href="/" class="underline text-amber-200 hover:text-amber-100 transition">홈으로 이동</a>
+      </p>
+    </header>
+
+    <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section class="space-y-3">
+        <div class="text-xs font-semibold text-amber-100 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+          <div id="progressBar" class="h-2 bg-gradient-to-r from-amber-300 via-rose-300 to-lime-300 w-0 transition-all duration-300"></div>
+        </div>
+        <div class="text-sm text-slate-200 flex justify-between">
+          <span>입맛 레이더 측정 중...</span>
+          <span id="progressText">0% 완료</span>
+        </div>
+      </section>
+
+      <section id="quizCard" class="space-y-5">
+        <h2 id="question" class="text-2xl font-semibold"></h2>
+        <div id="options" class="space-y-3"></div>
+        <div class="flex justify-between text-sm text-slate-300">
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-white/40 hover:bg-white/10 transition disabled:opacity-40 disabled:cursor-not-allowed">이전</button>
+          <span class="text-amber-200">맛이 당기는 선택지를 골라주세요</span>
+        </div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-amber-100 uppercase tracking-[0.3em]">결과</div>
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="md:w-48 w-full">
+            <img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-48 object-cover bg-white/5" alt="dinner result">
+          </div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm"></div>
+            <p id="resultDesc" class="text-slate-100 leading-relaxed"></p>
+          </div>
+        </div>
+        <div id="resultTips" class="grid gap-3"></div>
+        <div id="resultCompatibility"></div>
+        <div class="flex flex-wrap gap-3">
+          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-amber-300 text-amber-100 hover:bg-amber-400/10 transition">카카오톡 공유</button>
+          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500 text-white font-semibold shadow-lg hover:bg-amber-400 transition">다시 시작하기</button>
+          <a href="/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 text-slate-100 hover:bg-white/10 transition">홈으로 이동</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+      window.Kakao.init(window.__KAKAO_APP_KEY__);
+    }
+  </script>
+  <script src="/brainTest/scripts/kakao-share.js"></script>
+  <script>
+    const quiz = {
+      questions: [
+        {
+          text: "퇴근/수업이 끝난 지금, 배에서 나는 신호는?",
+          options: [
+            { label: "모든 스트레스를 불맛으로 태워버리고 싶다", trait: "firegrill" },
+            { label: "따뜻한 국물로 속을 먼저 달래고 싶다", trait: "comfortramen" },
+            { label: "친구와 나눌 수 있는 메뉴가 필요하다", trait: "partycombo" },
+            { label: "몸이 가벼워지는 신선한 한 그릇이 끌린다", trait: "freshbowl" }
+          ]
+        },
+        {
+          text: "오늘 저녁 식탁 구성원은?",
+          options: [
+            { label: "같이 드라마 보는 가족/룸메와 함께", trait: "comfortramen" },
+            { label: "왁자지껄한 친구들과 파티 모드", trait: "partycombo" },
+            { label: "혼자만의 케어 타임, 나에게 집중", trait: "freshbowl" },
+            { label: "먹짱 크루와 야무진 고기 플랜", trait: "firegrill" }
+          ]
+        },
+        {
+          text: "냉장고를 열었더니 재료가 이것뿐이라면?",
+          options: [
+            { label: "양념, 고기, 채소가 잔뜩! 즉시 불판 세팅", trait: "firegrill" },
+            { label: "라멘 키트 + 파 + 계란 = 완벽", trait: "comfortramen" },
+            { label: "치즈와 도우, 소스만 있어도 충분", trait: "partycombo" },
+            { label: "채소와 곡물이 많다! 이건 샐러드 타이밍", trait: "freshbowl" }
+          ]
+        },
+        {
+          text: "시간이 40분밖에 없다면?",
+          options: [
+            { label: "불 빠르게 올리고 구이 스킬을 발휘한다", trait: "firegrill" },
+            { label: "라멘 국물 내고 토핑 올리기면 충분", trait: "comfortramen" },
+            { label: "오븐에 넣고 기다리는 사이 수다 떤다", trait: "partycombo" },
+            { label: "재료 손질만으로 멋진 보울 완성", trait: "freshbowl" }
+          ]
+        },
+        {
+          text: "요즘 필요한 저녁 메시지는?",
+          options: [
+            { label: "열정과 에너지를 불러오는 강렬함", trait: "firegrill" },
+            { label: "속을 덮어주는 위로와 휴식", trait: "comfortramen" },
+            { label: "사람들과 나누는 웃음과 이야기", trait: "partycombo" },
+            { label: "가뿐한 리셋과 균형감", trait: "freshbowl" }
+          ]
+        },
+        {
+          text: "깨끗하게 비운 다음 하고 싶은 일은?",
+          options: [
+            { label: "산책하며 달뜬 기분 정리", trait: "firegrill" },
+            { label: "이불 속에서 OTT 정주행", trait: "comfortramen" },
+            { label: "보드게임/플레이리스트 공유", trait: "partycombo" },
+            { label: "다음날 플랜을 가볍게 정리", trait: "freshbowl" }
+          ]
+        }
+      ],
+      traits: {
+        firegrill: {
+          name: "화르르 불판 파티",
+          tagline: "열정 · 단짠형",
+          desc: "육즙이 튀는 소리를 들을 때 에너지가 충전되는 타입입니다. 사람을 초대해 고기를 굽거나, 혼자라도 야무지게 구워 먹으며 스트레스를 태웁니다.",
+          image: "/brainTest/images/dinner-bbq.jpg",
+          tips: [
+            "굽기 전에 채소나 버섯을 사이사이 끼워 넣으면 부담이 줄어요.",
+            "밑간/소스 레시피를 기록해 두면 다음 번이 더 빨라집니다."
+          ],
+          compatibility: {
+            best: [
+              { trait: "partycombo", reason: "파티 피자와 함께하면 메인+사이드 구성이 완벽해요." },
+              { trait: "freshbowl", reason: "신선한 보울이 불판의 묵직함을 균형 있게 잡아줍니다." }
+            ],
+            watch: [
+              { trait: "comfortramen", reason: "라멘은 조용히 즐기고 싶어 하니 페이스를 맞춰야 해요." }
+            ]
+          }
+        },
+        comfortramen: {
+          name: "심야 라멘 스튜디오",
+          tagline: "위로 · 국물형",
+          desc: "따뜻한 국물이 주는 위로를 사랑하는 타입입니다. 기분 좋은 면발과 토핑을 더하며 자기만의 휴식 공간을 만듭니다.",
+          image: "/brainTest/images/dinner-ramen.jpg",
+          tips: [
+            "토핑 3가지만 정하고 집중하면 완성도가 올라갑니다.",
+            "국물과 어울리는 플레이리스트를 만들어 두면 매번 새롭습니다."
+          ],
+          compatibility: {
+            best: [
+              { trait: "freshbowl", reason: "싱그러운 보울과 번갈아 먹으면 부담이 줄어요." },
+              { trait: "partycombo", reason: "피자와 국물 조합은 야식 감성을 채워줍니다." }
+            ],
+            watch: [
+              { trait: "firegrill", reason: "불판의 강렬함이 라멘 타임을 방해할 수 있어요." }
+            ]
+          }
+        },
+        partycombo: {
+          name: "치즈 소셜 피자",
+          tagline: "공유 · 파티형",
+          desc: "사람들과 함께 먹는 것이 행복의 조건인 타입입니다. 치즈, 치킨윙, 사이더 등 사이드까지 챙겨 모두가 웃는 식탁을 만들죠.",
+          image: "/brainTest/images/dinner-pizza.jpg",
+          tips: [
+            "조각별 토핑을 다르게 하면 대화 소재가 풍부해집니다.",
+            "피자 기다리는 동안 미니 게임이나 질문 카드를 준비해 보세요."
+          ],
+          compatibility: {
+            best: [
+              { trait: "firegrill", reason: "불판 파티와 함께하면 메인·사이드 조합이 풍성해집니다." },
+              { trait: "comfortramen", reason: "라멘 국물과 피자의 조합은 밤 감성을 완성해 줍니다." }
+            ],
+            watch: [
+              { trait: "freshbowl", reason: "샐러드와는 목적이 다르니 번갈아 즐길 계획이 필요해요." }
+            ]
+          }
+        },
+        freshbowl: {
+          name: "싱그러운 그린 보울",
+          tagline: "밸런스 · 리셋형",
+          desc: "채소, 곡물, 단백질을 조화롭게 담아 마음과 속을 동시에 리셋하는 타입입니다. 가벼운 식사를 원하는 날에도 충분히 만족스러운 플레이트를 만듭니다.",
+          image: "/brainTest/images/dinner-salad.jpg",
+          tips: [
+            "베이스-토핑-드레싱을 각각 2가지씩 준비해 두면 조합이 쉬워요.",
+            "남은 재료를 다음 날 도시락이나 아침에 활용해 보세요."
+          ],
+          compatibility: {
+            best: [
+              { trait: "comfortramen", reason: "라멘의 따뜻함과 샐러드의 가뿐함이 서로를 보완합니다." },
+              { trait: "firegrill", reason: "불판 파티 사이드로 그린 보울을 세팅하면 균형이 좋아요." }
+            ],
+            watch: [
+              { trait: "partycombo", reason: "피자 파티와는 템포가 달라 대화가 필요합니다." }
+            ]
+          }
+        }
+      }
+    };
+
+    const totalQuestions = quiz.questions.length;
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const quizCard = document.getElementById("quizCard");
+    const resultCard = document.getElementById("resultCard");
+    const stepLabel = document.getElementById("stepLabel");
+    const progressText = document.getElementById("progressText");
+    const progressBar = document.getElementById("progressBar");
+    const prevBtn = document.getElementById("prevBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultBadge = document.getElementById("resultBadge");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultImage = document.getElementById("resultImage");
+    const resultTips = document.getElementById("resultTips");
+    const resultCompatibility = document.getElementById("resultCompatibility");
+
+    const baseShareUrl = `${window.location.origin}${window.location.pathname}`;
+    const shareContent = {
+      title: "오늘의 저메추 스핀 테스트",
+      description: "출출한 오늘, 어떤 저녁을 먹어야 행복해질까? 6문항으로 확인하세요!",
+      imageUrl: "https://partygame.pe.kr/brainTest/images/dinner-ramen.jpg",
+      webUrl: baseShareUrl
+    };
+    const PARAM_KEY = "result";
+
+    let current = 0;
+    const answers = Array(totalQuestions).fill(null);
+
+    function renderQuestion() {
+      const q = quiz.questions[current];
+      stepLabel.textContent = `문항 ${current + 1} / ${totalQuestions}`;
+      const percent = Math.round((current / totalQuestions) * 100);
+      progressText.textContent = `${percent}% 완료`;
+      progressBar.style.width = `${percent}%`;
+      questionEl.textContent = q.text;
+      optionsEl.innerHTML = "";
+      q.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-white/20 hover:border-amber-300 hover:bg-white/10 transition";
+        btn.textContent = option.label;
+        btn.addEventListener("click", () => handleOption(option.trait));
+        optionsEl.appendChild(btn);
+      });
+      prevBtn.disabled = current === 0;
+    }
+
+    function handleOption(trait) {
+      answers[current] = trait;
+      if (current === totalQuestions - 1) {
+        showResult();
+        return;
+      }
+      current += 1;
+      renderQuestion();
+    }
+
+    function goPrev() {
+      if (current === 0) return;
+      current -= 1;
+      renderQuestion();
+    }
+
+    function restartQuiz() {
+      for (let i = 0; i < answers.length; i += 1) answers[i] = null;
+      current = 0;
+      quizCard.classList.remove("hidden");
+      resultCard.classList.add("hidden");
+      progressText.textContent = "0% 완료";
+      progressBar.style.width = "0%";
+      updateTraitQuery(null);
+      resultCompatibility.innerHTML = "";
+      renderQuestion();
+      window.scrollTo({ top: 0 });
+    }
+
+    function showResult() {
+      const counts = {};
+      const tieBreaker = {};
+      answers.forEach((trait, idx) => {
+        if (!trait) return;
+        counts[trait] = (counts[trait] || 0) + 1;
+        tieBreaker[trait] = (tieBreaker[trait] || 0) + (totalQuestions - idx);
+      });
+      const ranked = Object.keys(counts).sort((a, b) => {
+        if (counts[b] !== counts[a]) return counts[b] - counts[a];
+        return (tieBreaker[b] || 0) - (tieBreaker[a] || 0);
+      });
+      const bestTrait = ranked[0] || Object.keys(quiz.traits)[0];
+      presentResult(bestTrait);
+    }
+
+    function presentResult(traitKey) {
+      const trait = quiz.traits[traitKey];
+      if (!trait) return;
+      quizCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+      progressText.textContent = "100% 완료";
+      progressBar.style.width = "100%";
+      resultTitle.textContent = trait.name;
+      resultBadge.textContent = trait.tagline;
+      resultDesc.textContent = trait.desc;
+      resultImage.src = trait.image;
+      resultImage.alt = trait.name;
+      resultTips.innerHTML = "";
+      trait.tips.forEach(tip => {
+        const card = document.createElement("div");
+        card.className = "rounded-2xl border border-white/15 bg-white/5 p-4 text-sm text-slate-100";
+        card.textContent = tip;
+        resultTips.appendChild(card);
+      });
+
+      renderCompatibilityList(traitKey);
+      updateTraitQuery(traitKey);
+      updateShareMeta(traitKey, trait);
+      window.scrollTo({ top: resultCard.offsetTop - 40, behavior: "smooth" });
+    }
+
+    function renderCompatibilityList(traitKey) {
+      const trait = quiz.traits[traitKey];
+      if (!trait || !trait.compatibility) {
+        resultCompatibility.innerHTML = "";
+        return;
+      }
+      const wrapper = document.createElement("div");
+      wrapper.className = "rounded-2xl border border-white/15 bg-white/5 p-4 space-y-4";
+
+      const title = document.createElement("div");
+      title.className = "text-sm font-semibold text-amber-200 tracking-[0.2em] uppercase";
+      title.textContent = "궁합 리포트";
+      wrapper.appendChild(title);
+
+      if (trait.compatibility.best?.length) {
+        const bestBlock = document.createElement("div");
+        bestBlock.innerHTML = `<p class="text-xs text-emerald-200 mb-2">잘 맞는 타입</p>`;
+        trait.compatibility.best.forEach(item => {
+          const el = createCompatibilityItem(item);
+          if (el) bestBlock.appendChild(el);
+        });
+        wrapper.appendChild(bestBlock);
+      }
+
+      if (trait.compatibility.watch?.length) {
+        const watchBlock = document.createElement("div");
+        watchBlock.innerHTML = `<p class="text-xs text-rose-200 mb-2">주의할 타입</p>`;
+        trait.compatibility.watch.forEach(item => {
+          const el = createCompatibilityItem(item);
+          if (el) watchBlock.appendChild(el);
+        });
+        wrapper.appendChild(watchBlock);
+      }
+
+      resultCompatibility.innerHTML = "";
+      resultCompatibility.appendChild(wrapper);
+    }
+
+    function createCompatibilityItem(info) {
+      const trait = quiz.traits[info.trait];
+      if (!trait) return null;
+      const link = document.createElement("a");
+      link.href = `?${PARAM_KEY}=${info.trait}#result`;
+      link.className = "block rounded-xl border border-white/15 bg-white/5 px-3 py-2 mb-2 text-left text-sm hover:border-amber-200 hover:bg-white/10 transition";
+      link.innerHTML = `<span class="font-semibold text-slate-50">${trait.name}</span><br><span class="text-xs text-slate-300">${info.reason}</span>`;
+      link.addEventListener("click", event => {
+        event.preventDefault();
+        presentResult(info.trait);
+      });
+      return link;
+    }
+
+    function updateTraitQuery(traitKey) {
+      if (!window.history?.replaceState) return;
+      const url = new URL(window.location.href);
+      if (traitKey) {
+        url.searchParams.set(PARAM_KEY, traitKey);
+        url.hash = "result";
+      } else {
+        url.searchParams.delete(PARAM_KEY);
+        url.hash = "";
+      }
+      window.history.replaceState({}, "", url.toString());
+    }
+
+    function updateShareMeta(traitKey, trait) {
+      if (!trait) return;
+      const absoluteImage = new URL(trait.image, window.location.origin).toString();
+      shareContent.title = `${trait.name} | 오늘의 저메추 스핀 테스트`;
+      shareContent.description = trait.desc;
+      shareContent.imageUrl = absoluteImage;
+      shareContent.webUrl = traitKey ? `${baseShareUrl}?${PARAM_KEY}=${traitKey}#result` : baseShareUrl;
+    }
+
+    prevBtn.addEventListener("click", goPrev);
+    restartBtn.addEventListener("click", restartQuiz);
+
+    renderQuestion();
+
+    const initialTrait = new URLSearchParams(window.location.search).get(PARAM_KEY);
+    if (initialTrait && quiz.traits[initialTrait]) {
+      presentResult(initialTrait);
+    }
+
+    setupKakaoShare("shareKakaoBtn", shareContent);
+  </script>
+</body>
+</html>

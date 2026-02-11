@@ -1,0 +1,402 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="창업 스타일과 강점을 알아보는 6문항 창업 유형 테스트">
+  <meta name="keywords" content="창업 유형 테스트, 스타트업, 사업, 성향 테스트">
+  <meta name="author" content="partygame.pe.kr">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/startup-type-test.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="창업 유형 테스트">
+  <meta property="og:description" content="창업 스타일과 강점을 알아보는 6문항 창업 유형 테스트">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/startup-og.jpg">
+  <meta property="og:url" content="https://partygame.pe.kr/brainTest/pages/brainTest/startup-type-test.html">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+          crossorigin="anonymous"></script>
+  <title>창업 유형 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-950 via-emerald-950 to-sky-950 text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.35em] text-emerald-200">Startup Type Lab</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">창업 유형 테스트</h1>
+      <p class="text-slate-200">
+        6개의 질문으로 나의 창업 스타일과 강점을 확인해 보세요.
+        <a href="/" class="underline text-emerald-200 hover:text-emerald-100 transition">홈으로 이동</a>
+      </p>
+    </header>
+
+    <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section class="space-y-3">
+        <div class="text-xs font-semibold text-emerald-200 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+          <div id="progressBar" class="h-2 bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-400 w-0 transition-all duration-300"></div>
+        </div>
+        <div class="text-sm text-slate-300 flex justify-between">
+          <span>창업 스타일 분석 중...</span>
+          <span id="progressText">0% 완료</span>
+        </div>
+      </section>
+
+      <section id="quizCard" class="space-y-5">
+        <h2 id="question" class="text-2xl font-semibold"></h2>
+        <div id="options" class="space-y-3"></div>
+        <div class="flex justify-between text-sm text-slate-300">
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-emerald-200 hover:bg-white/10 transition disabled:opacity-40">이전</button>
+          <span class="text-emerald-200">가장 가까운 선택지를 골라주세요</span>
+        </div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-emerald-200 uppercase tracking-[0.3em]">결과</div>
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="md:w-48 w-full">
+            <img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-48 object-cover" alt="result visual">
+          </div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm"></div>
+            <p id="resultDesc" class="text-slate-100 leading-relaxed"></p>
+          </div>
+        </div>
+        <div id="resultTips" class="grid gap-3"></div>
+        <div class="space-y-2 bg-white/5 border border-white/10 rounded-2xl p-4">
+          <h3 class="text-lg font-semibold text-emerald-200">테스트 내 궁합</h3>
+          <div class="flex flex-col gap-2 text-sm">
+            <a id="bestLink" class="inline-flex items-center gap-2 text-slate-100 underline underline-offset-4 hover:text-emerald-200" href="#">최고 궁합 결과 보기</a>
+            <a id="worstLink" class="inline-flex items-center gap-2 text-slate-300 underline underline-offset-4 hover:text-sky-200" href="#">주의 궁합 결과 보기</a>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-emerald-300 text-emerald-100 hover:bg-emerald-400/10 transition">카카오톡 공유</button>
+          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 text-white font-semibold shadow-lg hover:bg-emerald-400 transition">다시 시작하기</button>
+          <a href="/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 text-slate-100 hover:bg-white/10 transition">홈으로 이동</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+      window.Kakao.init(window.__KAKAO_APP_KEY__);
+    }
+  </script>
+  <script src="/brainTest/scripts/kakao-share.js"></script>
+  <script>
+    const quiz = {
+      questions: [
+        {
+          text: "새 사업 아이디어가 떠오르면?",
+          options: [
+            { label: "먼저 비전을 크게 그려본다", trait: "vision" },
+            { label: "팀과 고객 관점을 먼저 본다", trait: "leader" },
+            { label: "바로 실행 가능한 MVP를 만든다", trait: "maker" },
+            { label: "시장 데이터부터 체크한다", trait: "growth" }
+          ]
+        },
+        {
+          text: "창업에서 내가 가장 중요하게 여기는 것은?",
+          options: [
+            { label: "세상을 바꾸는 방향성", trait: "vision" },
+            { label: "사람과 팀워크", trait: "leader" },
+            { label: "제품 완성도", trait: "maker" },
+            { label: "지표와 성장", trait: "growth" }
+          ]
+        },
+        {
+          text: "위기가 왔을 때 나의 반응은?",
+          options: [
+            { label: "큰 그림을 다시 점검", trait: "vision" },
+            { label: "팀을 모아 빠르게 소통", trait: "leader" },
+            { label: "해결할 기능을 즉시 만든다", trait: "maker" },
+            { label: "데이터로 원인을 파악", trait: "growth" }
+          ]
+        },
+        {
+          text: "내가 가장 자신 있는 업무는?",
+          options: [
+            { label: "전략과 장기 로드맵", trait: "vision" },
+            { label: "팀 케어와 커뮤니케이션", trait: "leader" },
+            { label: "직접 만드는 실행력", trait: "maker" },
+            { label: "지표 설계와 개선", trait: "growth" }
+          ]
+        },
+        {
+          text: "내가 끌리는 스타트업 문화는?",
+          options: [
+            { label: "큰 꿈과 도전", trait: "vision" },
+            { label: "사람 중심의 문화", trait: "leader" },
+            { label: "실험과 빠른 제작", trait: "maker" },
+            { label: "성과와 성장", trait: "growth" }
+          ]
+        },
+        {
+          text: "사업이 성장할 때 가장 중요한 것은?",
+          options: [
+            { label: "비전 공유", trait: "vision" },
+            { label: "조직의 안정감", trait: "leader" },
+            { label: "제품 스케일업", trait: "maker" },
+            { label: "지표 최적화", trait: "growth" }
+          ]
+        }
+      ],
+      traits: {
+        vision: {
+          name: "비전 창업가",
+          tagline: "방향 · 리더형",
+          desc: "큰 그림과 방향성을 그리는 타입. 비전과 스토리로 팀과 시장을 이끕니다.",
+          image: "/brainTest/images/startup-vision.jpg",
+          tips: [
+            "비전을 작게 나눠 실행 계획으로 옮기면 더 빨라요.",
+            "강한 방향성이 팀을 움직입니다."
+          ],
+          compatibility: {
+            best: { trait: "maker", reason: "메이커형의 실행력이 비전형의 꿈을 현실로 만들어줘요." },
+            watch: { trait: "growth", reason: "성장형의 숫자 기준이 답답하게 느껴질 수 있어요." }
+          }
+        },
+        leader: {
+          name: "조직 리더형",
+          tagline: "사람 · 팀워크형",
+          desc: "사람과 팀 문화를 중심에 두는 타입. 안정적인 협업과 소통이 강점입니다.",
+          image: "/brainTest/images/startup-leader.jpg",
+          tips: [
+            "팀의 목표를 자주 공유하면 더 큰 힘이 됩니다.",
+            "사람 중심의 문화가 성장의 기반이에요."
+          ],
+          compatibility: {
+            best: { trait: "vision", reason: "비전형의 방향성이 리더형의 팀을 한 방향으로 모아줘요." },
+            watch: { trait: "maker", reason: "메이커형의 속도가 부담이 될 수 있어요." }
+          }
+        },
+        maker: {
+          name: "메이커 창업가",
+          tagline: "실행 · 제작형",
+          desc: "직접 만들고 실행하는 타입. 빠른 실행력과 실험이 강점입니다.",
+          image: "/brainTest/images/startup-maker.jpg",
+          tips: [
+            "큰 방향도 함께 점검하면 성장이 더 빨라요.",
+            "실행력이 창업의 핵심입니다."
+          ],
+          compatibility: {
+            best: { trait: "growth", reason: "성장형의 지표 관리가 메이커형의 실행을 정리해줘요." },
+            watch: { trait: "leader", reason: "리더형의 속도가 느리게 느껴질 수 있어요." }
+          }
+        },
+        growth: {
+          name: "성장 전략가",
+          tagline: "지표 · 분석형",
+          desc: "데이터로 방향을 잡는 타입. 성장 지표와 전략이 핵심입니다.",
+          image: "/brainTest/images/startup-growth.jpg",
+          tips: [
+            "숫자만큼 사람과 이야기도 챙겨보세요.",
+            "데이터가 당신의 가장 큰 무기입니다."
+          ],
+          compatibility: {
+            best: { trait: "maker", reason: "메이커형의 실행력이 성장형의 전략을 현실화해줘요." },
+            watch: { trait: "vision", reason: "비전형의 방향성이 느슨하게 느껴질 수 있어요." }
+          }
+        }
+      }
+    };
+
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const stepLabel = document.getElementById("stepLabel");
+    const progressBar = document.getElementById("progressBar");
+    const progressText = document.getElementById("progressText");
+    const resultCard = document.getElementById("resultCard");
+    const quizCard = document.getElementById("quizCard");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultBadge = document.getElementById("resultBadge");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultImage = document.getElementById("resultImage");
+    const resultTips = document.getElementById("resultTips");
+    const bestLink = document.getElementById("bestLink");
+    const worstLink = document.getElementById("worstLink");
+    const restartBtn = document.getElementById("restartBtn");
+    const prevBtn = document.getElementById("prevBtn");
+    const shareContent = {
+      title: "창업 유형 테스트",
+      description: "창업 스타일과 강점을 알아보는 6문항 창업 유형 테스트",
+      imageUrl: "https://partygame.pe.kr/brainTest/images/startup-og.jpg",
+      webUrl: `${window.location.origin}${window.location.pathname}`
+    };
+    const PARAM_KEY = "result";
+
+    let current = 0;
+    const answers = Array(quiz.questions.length).fill(null);
+
+    function renderQuestion() {
+      const q = quiz.questions[current];
+      questionEl.textContent = q.text;
+      stepLabel.textContent = `문항 ${current + 1} / ${quiz.questions.length}`;
+      const progress = Math.round((current / quiz.questions.length) * 100);
+      progressText.textContent = `${progress}% 완료`;
+      progressBar.style.width = `${progress}%`;
+
+      optionsEl.innerHTML = "";
+      q.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-white/20 hover:border-emerald-200 hover:bg-white/10 transition";
+        btn.textContent = opt.label;
+        btn.addEventListener("click", () => handleOption(opt.trait));
+        optionsEl.appendChild(btn);
+      });
+
+      prevBtn.disabled = current === 0;
+    }
+
+    function handleOption(trait) {
+      answers[current] = trait;
+      if (current === quiz.questions.length - 1) {
+        showResult();
+        return;
+      }
+      current += 1;
+      renderQuestion();
+    }
+
+    function determineWinner() {
+      const tally = answers.reduce((map, trait) => {
+        if (!trait) return map;
+        map[trait] = (map[trait] || 0) + 1;
+        return map;
+      }, {});
+      let winner = null;
+      Object.keys(tally).forEach(trait => {
+        if (!winner || tally[trait] > tally[winner]) winner = trait;
+      });
+      return winner;
+    }
+
+    function showResult(traitKey) {
+      const winner = traitKey || determineWinner();
+      if (!winner || !quiz.traits[winner]) {
+        resultTitle.textContent = "아직 선택이 부족해요";
+        resultDesc.textContent = "문항을 모두 선택하면 결과를 볼 수 있어요.";
+        return;
+      }
+      applyResult(winner);
+    }
+
+    function applyResult(trait) {
+      const meta = quiz.traits[trait];
+      const resolvedImage = meta.image.startsWith("http") ? meta.image : `${window.location.origin}${meta.image}`;
+      resultTitle.textContent = meta.name;
+      resultBadge.textContent = meta.tagline;
+      resultDesc.textContent = meta.desc;
+      resultImage.src = meta.image;
+      resultImage.alt = meta.name;
+      resultTips.innerHTML = "";
+      meta.tips.forEach(t => {
+        const item = document.createElement("div");
+        item.className = "border border-white/15 rounded-xl px-3 py-2 text-sm text-slate-100";
+        item.textContent = `• ${t}`;
+        resultTips.appendChild(item);
+      });
+      updateRelationLinks(trait);
+      updateResultParam(trait);
+      shareContent.title = `${meta.name} | 창업 유형 테스트`;
+      shareContent.description = meta.desc;
+      shareContent.imageUrl = resolvedImage;
+      shareContent.webUrl = `${window.location.origin}${window.location.pathname}?${PARAM_KEY}=${trait}#result`;
+
+      quizCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+      progressText.textContent = "100% 완료";
+      progressBar.style.width = "100%";
+    }
+
+    function goPrev() {
+      if (current === 0) return;
+      current -= 1;
+      renderQuestion();
+    }
+
+    function restart() {
+      for (let i = 0; i < answers.length; i += 1) answers[i] = null;
+      current = 0;
+      quizCard.classList.remove("hidden");
+      resultCard.classList.add("hidden");
+      progressText.textContent = "0% 완료";
+      progressBar.style.width = "0%";
+      updateResultParam(null);
+      renderQuestion();
+    }
+
+    function updateResultParam(trait) {
+      const url = new URL(window.location.href);
+      if (trait) {
+        url.searchParams.set(PARAM_KEY, trait);
+        url.hash = "result";
+      } else {
+        url.searchParams.delete(PARAM_KEY);
+        url.hash = "";
+      }
+      window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+    }
+
+    function updateRelationLinks(trait) {
+      const info = quiz.traits[trait]?.compatibility || {};
+      setRelationLink(bestLink, info.best, "최고 궁합", trait);
+      setRelationLink(worstLink, info.watch, "주의 궁합", trait);
+    }
+
+    function setRelationLink(element, detail, label, sourceTrait) {
+      if (!detail || !detail.trait || !quiz.traits[detail.trait]) {
+        element.classList.add("hidden");
+        element.removeAttribute("href");
+        element.removeAttribute("data-trait");
+        element.textContent = "";
+        return;
+      }
+      const target = quiz.traits[detail.trait];
+      const reason = detail.reason || relationFallbackReason(label, sourceTrait, detail.trait);
+      element.classList.remove("hidden");
+      element.dataset.trait = detail.trait;
+      element.textContent = `${label} · ${target.name} - ${reason}`;
+      element.href = `${window.location.pathname}?${PARAM_KEY}=${detail.trait}#result`;
+    }
+
+    function relationFallbackReason(type, sourceTrait, targetTrait) {
+      const source = quiz.traits[sourceTrait];
+      const target = quiz.traits[targetTrait];
+      if (!source || !target) {
+        return type === "최고 궁합" ? "서로의 리듬이 자연스럽게 어울려요." : "속도가 달라 조율이 필요해요.";
+      }
+      if (type === "최고 궁합") {
+        return `${target.tagline} 감각이 ${source.tagline}과 시너지를 만듭니다.`;
+      }
+      return `${target.name}의 텐션이 ${source.name}에게는 부담일 수 있어요.`;
+    }
+
+    function handleRelationClick(event) {
+      const trait = event.currentTarget.dataset.trait;
+      if (!trait || !quiz.traits[trait]) return;
+      event.preventDefault();
+      applyResult(trait);
+      window.scrollTo({ top: resultCard.offsetTop - 40, behavior: "smooth" });
+    }
+
+    prevBtn.addEventListener("click", goPrev);
+    restartBtn.addEventListener("click", restart);
+    bestLink.addEventListener("click", handleRelationClick);
+    worstLink.addEventListener("click", handleRelationClick);
+
+    renderQuestion();
+    const initialResult = new URLSearchParams(window.location.search).get(PARAM_KEY);
+    if (initialResult && quiz.traits[initialResult]) {
+      applyResult(initialResult);
+    }
+
+    setupKakaoShare("shareKakaoBtn", shareContent);
+  </script>
+</body>
+</html>

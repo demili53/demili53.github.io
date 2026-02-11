@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="최신 인터넷 밈 이해력과 공유 루틴을 6문항으로 확인하는 2025년 밈 능력고사">
+  <meta name="keywords" content="2025 밈 능력고사, 인터넷 밈 테스트, 짤 능력 시험, 트렌드 테스트">
+  <meta name="author" content="partygame.pe.kr">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/meme-ability-test.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="2025년 밈 능력고사">
+  <meta property="og:description" content="짤 생성/해석/보관/정찰 능력을 측정하는 6문항 밈 능력 고사. 당신의 인터넷 포지션은?">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/meme-og.jpg">
+  <meta property="og:url" content="https://partygame.pe.kr/brainTest/pages/brainTest/meme-ability-test.html">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+          crossorigin="anonymous"></script>
+  <title>2025년 밈 능력고사</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-950 via-purple-950 to-cyan-950 text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.35em] text-cyan-200">Meme Literacy Dept.</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">2025년 밈 능력고사</h1>
+      <p class="text-slate-200">
+        밈을 보고 빵 터지는 데서 끝나지 않는 사람들, 바로 당신을 위한 시험지! 6개의 질문으로 올해 당신의 밈 포지션을 확인해 보세요.
+        <a href="/" class="underline text-cyan-200 hover:text-cyan-100 transition">홈으로 이동</a>
+      </p>
+    </header>
+
+    <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section class="space-y-3">
+        <div class="text-xs font-semibold text-cyan-100 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+          <div id="progressBar" class="h-2 bg-gradient-to-r from-fuchsia-300 via-cyan-300 to-emerald-300 w-0 transition-all duration-300"></div>
+        </div>
+        <div class="text-sm text-slate-200 flex justify-between">
+          <span>짤 능력 측정 중...</span>
+          <span id="progressText">0% 완료</span>
+        </div>
+      </section>
+
+      <section id="quizCard" class="space-y-5">
+        <h2 id="question" class="text-2xl font-semibold"></h2>
+        <div id="options" class="space-y-3"></div>
+        <div class="flex justify-between text-sm text-slate-300">
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-white/40 hover:bg-white/10 transition disabled:opacity-40 disabled:cursor-not-allowed">이전</button>
+          <span class="text-cyan-200">촉 오는 선택지를 클릭!</span>
+        </div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-cyan-100 uppercase tracking-[0.3em]">결과</div>
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="md:w-48 w-full">
+            <img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-48 object-cover bg-white/5" alt="result visual">
+          </div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm"></div>
+            <p id="resultDesc" class="text-slate-100 leading-relaxed"></p>
+          </div>
+        </div>
+        <div id="resultTips" class="grid gap-3"></div>
+        <div id="resultCompatibility"></div>
+        <div class="flex flex-wrap gap-3">
+          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-cyan-200 text-cyan-100 hover:bg-cyan-400/10 transition">카카오톡 공유</button>
+          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500 text-white font-semibold shadow-lg hover:bg-cyan-400 transition">다시 시작하기</button>
+          <a href="/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 text-slate-100 hover:bg-white/10 transition">홈으로 이동</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+      window.Kakao.init(window.__KAKAO_APP_KEY__);
+    }
+  </script>
+  <script src="/brainTest/scripts/kakao-share.js"></script>
+  <script>
+    const quiz = {
+      questions: [
+        {
+          text: "새로운 밈이 떴다는 소식을 듣고 가장 먼저 하는 일은?",
+          options: [
+            { label: "원본 출처와 밈 족보를 파헤쳐 사람들에게 설명한다", trait: "oracle" },
+            { label: "내가 쓰던 템플릿과 합쳐 더 웃긴 버전을 만든다", trait: "remix" },
+            { label: "캡처부터 저장까지 완료하고 폴더에 정리한다", trait: "archivist" },
+            { label: "직접 써 보기 전에 해당 커뮤니티 반응을 체크한다", trait: "scout" }
+          ]
+        },
+        {
+          text: "단톡방에 짤을 던졌는데 반응이 없다. 당신의 대처는?",
+          options: [
+            { label: "\"이거 이번 주 레딧 1위 밈인데\"라고 맥락까지 붙여준다", trait: "oracle" },
+            { label: "바로 밈을 다른 주제와 합쳐 2차 시도를 해본다", trait: "remix" },
+            { label: "조용히 저장만 하고 더 적합한 채널에 올릴 때를 기다린다", trait: "archivist" },
+            { label: "이 방의 취향을 분석해 맞춤 짤을 다시 고른다", trait: "scout" }
+          ]
+        },
+        {
+          text: "가장 즐겨 보는 밈 채널/플랫폼은?",
+          options: [
+            { label: "디깅을 위해 해외 트위터, 레딧, 틱톡 FYP까지 총동원", trait: "oracle" },
+            { label: "템플릿 나눔이 활발한 디스코드나 캔바 커뮤니티", trait: "remix" },
+            { label: "정리형 계정, 뉴스레터, 짤 박물관 같은 큐레이션 채널", trait: "archivist" },
+            { label: "요즘 뜨는 커뮤, 숏폼, 스트리머 방송 클립", trait: "scout" }
+          ]
+        },
+        {
+          text: "당신의 밈 보관 방식은?",
+          options: [
+            { label: "밈별 역사, 변형 사례까지 노션에 정리", trait: "oracle" },
+            { label: "PSD, 캡션, 폰트까지 한 폴더에 세트로 저장", trait: "remix" },
+            { label: "연도-분기별 폴더와 태그 시스템을 갖춘다", trait: "archivist" },
+            { label: "재사용보단 그때그때 최신 짤을 스크랩", trait: "scout" }
+          ]
+        },
+        {
+          text: "밈으로 주변 사람을 웃겼을 때 가장 기분 좋은 순간은?",
+          options: [
+            { label: "\"이거 어디서 난 거야?\"라며 정보 요청이 들어올 때", trait: "oracle" },
+            { label: "\"나도 써도 돼?\"라며 템플릿 요청을 받을 때", trait: "remix" },
+            { label: "\"지난번에 보내준 짤 다시 보내줘\"라는 DM이 올 때", trait: "archivist" },
+            { label: "\"역시 너가 제일 빨라\"라는 말을 들을 때", trait: "scout" }
+          ]
+        },
+        {
+          text: "2025년 밈 능력고사 목표는?",
+          options: [
+            { label: "트렌드 근본주의자라는 칭호 얻기", trait: "oracle" },
+            { label: "짤 제작 툴·템플릿 달인이 되기", trait: "remix" },
+            { label: "언제든 꺼낼 수 있는 짤 데이터베이스 완성", trait: "archivist" },
+            { label: "어느 방이든 가장 빠른 밈 정찰자로 인정받기", trait: "scout" }
+          ]
+        }
+      ],
+      traits: {
+        oracle: {
+          name: "바이럴 오라클",
+          tagline: "출처와 문맥까지 꿰뚫는 밈 해석 전문가",
+          desc: "밈이 왜 웃긴지, 어떤 세대에게 먹히는지 분석하는 능력이 타고났습니다. 인터넷 역사를 품은 위키형 인간으로, 주변 사람들이 '짤 해설'이 필요할 때 가장 먼저 찾는 사람입니다.",
+          image: "/brainTest/images/meme-oracle.jpg",
+          tips: [
+            "주간 밈 다이어리를 만들어 요약본을 공유하면 영향력이 더 커집니다.",
+            "가끔은 해설 없이 웃음만 나누어 밈 공감 온도를 맞춰 보세요."
+          ],
+          compatibility: {
+            best: [
+              { trait: "remix", reason: "리믹스 컨덕터와 만나면 해석이 바로 실전 짤로 전환됩니다." },
+              { trait: "archivist", reason: "아카이브 파트너가 데이터를 맡아 주면 리서치 속도가 빨라져요." }
+            ],
+            watch: [
+              { trait: "scout", reason: "정찰 타입이 원하는 속도를 맞추려면 정보량을 줄여야 할 수 있습니다." }
+            ]
+          }
+        },
+        remix: {
+          name: "리믹스 컨덕터",
+          tagline: "템플릿을 갈아엎는 짤 공장장",
+          desc: "밈을 보면 바로 합성 툴을 열고, 캡션을 새로 짜서 세상에 없던 짤을 출시합니다. 팀이나 친구들이 원하는 분위기를 캐치해 제작까지 도맡는 크리에이터입니다.",
+          image: "/brainTest/images/meme-remix.jpg",
+          tips: [
+            "툴 프리셋과 폰트 키트를 만들어 두면 즉흥 작업이 훨씬 빨라집니다.",
+            "타임라인이 촉박할 땐 '1분 리믹스'처럼 제약을 줘서 효율을 챙겨 보세요."
+          ],
+          compatibility: {
+            best: [
+              { trait: "scout", reason: "정찰자에게서 받은 신선한 소재가 리믹스 엔진을 가동시킵니다." },
+              { trait: "oracle", reason: "오라클의 맥락 설명이 리믹스 설득력을 높여 줍니다." }
+            ],
+            watch: [
+              { trait: "archivist", reason: "완벽 정리에 시간이 오래 걸리면 즉흥성이 줄어들 수 있어요." }
+            ]
+          }
+        },
+        archivist: {
+          name: "리액션 아카이비스트",
+          tagline: "짤 데이터베이스를 구축하는 기록 보관가",
+          desc: "밈을 종류별로 태그하고, 상황별 추천 리스트까지 갖춰 두는 탄탄한 인벤토리형 인물입니다. 필요한 사람이 나타나면 즉시 맞춤 짤을 찾아 주는 해결사죠.",
+          image: "/brainTest/images/meme-archivist.jpg",
+          tips: [
+            "클라우드에서 바로 불러올 수 있는 폴더 링크를 만들어 공유해 보세요.",
+            "계절/이슈별 플레이리스트를 만들면 스스로도 재밌게 관리할 수 있습니다."
+          ],
+          compatibility: {
+            best: [
+              { trait: "oracle", reason: "오라클이 제공하는 인사이트로 아카이브에 맥락을 더할 수 있어요." },
+              { trait: "remix", reason: "리믹서에게 자료를 공급하면 새로운 짤이 역으로 아카이브를 강화합니다." }
+            ],
+            watch: [
+              { trait: "scout", reason: "정찰 타입의 빠른 순환 속도를 따라가려면 업데이트 주기를 조정해야 합니다." }
+            ]
+          }
+        },
+        scout: {
+          name: "트렌드 스카우트",
+          tagline: "밈이 터지기 직전에 들고 오는 정찰대",
+          desc: "커뮤니티와 숏폼을 종횡무진하며 아직 국내에 덜 알려진 밈을 챙겨 오는 TMI 제공자입니다. 빠른 눈치로 방 분위기를 읽고 맞춤 짤을 빠르게 배치하는 감각이 뛰어납니다.",
+          image: "/brainTest/images/meme-scout.jpg",
+          tips: [
+            "발견한 밈을 공유할 땐 간단한 '사용 매뉴얼'을 함께 적어두면 모두가 편해집니다.",
+            "가끔은 속도를 늦추고 오래 쓰는 밈의 가치를 되새겨 보세요."
+          ],
+          compatibility: {
+            best: [
+              { trait: "remix", reason: "리믹스 컨덕터에게 제공한 소재가 가장 빠르게 바이럴을 일으킵니다." },
+              { trait: "archivist", reason: "아카이브과 협업하면 스카우트가 가져온 밈이 오래 남아요." }
+            ],
+            watch: [
+              { trait: "oracle", reason: "세세한 해설을 기다리다 보면 속도가 줄어들 수 있으니 역할을 명확히 하세요." }
+            ]
+          }
+        }
+      }
+    };
+
+    const totalQuestions = quiz.questions.length;
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const quizCard = document.getElementById("quizCard");
+    const resultCard = document.getElementById("resultCard");
+    const stepLabel = document.getElementById("stepLabel");
+    const progressText = document.getElementById("progressText");
+    const progressBar = document.getElementById("progressBar");
+    const prevBtn = document.getElementById("prevBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultBadge = document.getElementById("resultBadge");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultImage = document.getElementById("resultImage");
+    const resultTips = document.getElementById("resultTips");
+    const resultCompatibility = document.getElementById("resultCompatibility");
+
+    const baseShareUrl = `${window.location.origin}${window.location.pathname}`;
+    const shareContent = {
+      title: "2025년 밈 능력고사",
+      description: "짤 해설, 리믹스, 리액션, 정찰 중 당신의 포지션을 확인해 보세요.",
+      imageUrl: "https://partygame.pe.kr/brainTest/images/meme-og.jpg",
+      webUrl: baseShareUrl
+    };
+    const PARAM_KEY = "result";
+
+    let current = 0;
+    const answers = Array(totalQuestions).fill(null);
+
+    function renderQuestion() {
+      const q = quiz.questions[current];
+      stepLabel.textContent = `문항 ${current + 1} / ${totalQuestions}`;
+      const percent = Math.round((current / totalQuestions) * 100);
+      progressText.textContent = `${percent}% 완료`;
+      progressBar.style.width = `${percent}%`;
+      questionEl.textContent = q.text;
+      optionsEl.innerHTML = "";
+      q.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-white/20 hover:border-cyan-300 hover:bg-white/10 transition";
+        btn.textContent = option.label;
+        btn.addEventListener("click", () => handleOption(option.trait));
+        optionsEl.appendChild(btn);
+      });
+      prevBtn.disabled = current === 0;
+    }
+
+    function handleOption(trait) {
+      answers[current] = trait;
+      if (current === totalQuestions - 1) {
+        showResult();
+        return;
+      }
+      current += 1;
+      renderQuestion();
+    }
+
+    function goPrev() {
+      if (current === 0) return;
+      current -= 1;
+      renderQuestion();
+    }
+
+    function restartQuiz() {
+      for (let i = 0; i < answers.length; i += 1) answers[i] = null;
+      current = 0;
+      quizCard.classList.remove("hidden");
+      resultCard.classList.add("hidden");
+      progressText.textContent = "0% 완료";
+      progressBar.style.width = "0%";
+      updateTraitQuery(null);
+      resultCompatibility.innerHTML = "";
+      renderQuestion();
+      window.scrollTo({ top: 0 });
+    }
+
+    function showResult() {
+      const counts = {};
+      const tieBreaker = {};
+      answers.forEach((trait, idx) => {
+        if (!trait) return;
+        counts[trait] = (counts[trait] || 0) + 1;
+        tieBreaker[trait] = (tieBreaker[trait] || 0) + (totalQuestions - idx);
+      });
+      const ranked = Object.keys(counts).sort((a, b) => {
+        if (counts[b] !== counts[a]) return counts[b] - counts[a];
+        return (tieBreaker[b] || 0) - (tieBreaker[a] || 0);
+      });
+      const bestTrait = ranked[0] || Object.keys(quiz.traits)[0];
+      presentResult(bestTrait);
+    }
+
+    function presentResult(traitKey) {
+      const trait = quiz.traits[traitKey];
+      if (!trait) return;
+      quizCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+      progressText.textContent = "100% 완료";
+      progressBar.style.width = "100%";
+      resultTitle.textContent = trait.name;
+      resultBadge.textContent = trait.tagline;
+      resultDesc.textContent = trait.desc;
+      resultImage.src = trait.image;
+      resultImage.alt = trait.name;
+      resultTips.innerHTML = "";
+      trait.tips.forEach(tip => {
+        const card = document.createElement("div");
+        card.className = "rounded-2xl border border-white/15 bg-white/5 p-4 text-sm text-slate-100";
+        card.textContent = tip;
+        resultTips.appendChild(card);
+      });
+
+      renderCompatibilityList(traitKey);
+      updateTraitQuery(traitKey);
+      updateShareMeta(traitKey, trait);
+      window.scrollTo({ top: resultCard.offsetTop - 40, behavior: "smooth" });
+    }
+
+    function renderCompatibilityList(traitKey) {
+      const trait = quiz.traits[traitKey];
+      if (!trait || !trait.compatibility) {
+        resultCompatibility.innerHTML = "";
+        return;
+      }
+      const wrapper = document.createElement("div");
+      wrapper.className = "rounded-2xl border border-white/15 bg-white/5 p-4 space-y-4";
+
+      const title = document.createElement("div");
+      title.className = "text-sm font-semibold text-cyan-200 tracking-[0.2em] uppercase";
+      title.textContent = "궁합 리포트";
+      wrapper.appendChild(title);
+
+      if (trait.compatibility.best?.length) {
+        const bestBlock = document.createElement("div");
+        bestBlock.innerHTML = `<p class="text-xs text-emerald-200 mb-2">잘 맞는 타입</p>`;
+        trait.compatibility.best.forEach(item => {
+          const el = createCompatibilityItem(item);
+          if (el) bestBlock.appendChild(el);
+        });
+        wrapper.appendChild(bestBlock);
+      }
+
+      if (trait.compatibility.watch?.length) {
+        const watchBlock = document.createElement("div");
+        watchBlock.innerHTML = `<p class="text-xs text-rose-200 mb-2">주의할 타입</p>`;
+        trait.compatibility.watch.forEach(item => {
+          const el = createCompatibilityItem(item);
+          if (el) watchBlock.appendChild(el);
+        });
+        wrapper.appendChild(watchBlock);
+      }
+
+      resultCompatibility.innerHTML = "";
+      resultCompatibility.appendChild(wrapper);
+    }
+
+    function createCompatibilityItem(info) {
+      const trait = quiz.traits[info.trait];
+      if (!trait) return null;
+      const link = document.createElement("a");
+      link.href = `?${PARAM_KEY}=${info.trait}#result`;
+      link.className = "block rounded-xl border border-white/15 bg-white/5 px-3 py-2 mb-2 text-left text-sm hover:border-cyan-200 hover:bg-white/10 transition";
+      link.innerHTML = `<span class="font-semibold text-slate-50">${trait.name}</span><br><span class="text-xs text-slate-300">${info.reason}</span>`;
+      link.addEventListener("click", event => {
+        event.preventDefault();
+        presentResult(info.trait);
+      });
+      return link;
+    }
+
+    function updateTraitQuery(traitKey) {
+      if (!window.history?.replaceState) return;
+      const url = new URL(window.location.href);
+      if (traitKey) {
+        url.searchParams.set(PARAM_KEY, traitKey);
+        url.hash = "result";
+      } else {
+        url.searchParams.delete(PARAM_KEY);
+        url.hash = "";
+      }
+      window.history.replaceState({}, "", url.toString());
+    }
+
+    function updateShareMeta(traitKey, trait) {
+      if (!trait) return;
+      shareContent.title = `${trait.name} | 2025년 밈 능력고사`;
+      shareContent.description = trait.desc;
+      shareContent.imageUrl = `https://partygame.pe.kr${trait.image}`;
+      shareContent.webUrl = traitKey ? `${baseShareUrl}?${PARAM_KEY}=${traitKey}#result` : baseShareUrl;
+    }
+
+    prevBtn.addEventListener("click", goPrev);
+    restartBtn.addEventListener("click", restartQuiz);
+
+    renderQuestion();
+
+    const initialTrait = new URLSearchParams(window.location.search).get(PARAM_KEY);
+    if (initialTrait && quiz.traits[initialTrait]) {
+      presentResult(initialTrait);
+    }
+
+    setupKakaoShare("shareKakaoBtn", shareContent);
+  </script>
+</body>
+</html>

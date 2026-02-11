@@ -1,0 +1,402 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="감정 표현 리듬으로 나만의 데레 타입을 알려주는 6문항 테스트">
+  <meta name="keywords" content="데레 테스트, 감정 표현, 성향 테스트, 관계">
+  <meta name="author" content="partygame.pe.kr">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/dere-test.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="데레 테스트">
+  <meta property="og:description" content="감정 표현 리듬으로 나만의 데레 타입을 확인하는 6문항 테스트">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/dere-og.jpg">
+  <meta property="og:url" content="https://partygame.pe.kr/brainTest/pages/brainTest/dere-test.html">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+          crossorigin="anonymous"></script>
+  <title>데레 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-amber-900 via-slate-900 to-indigo-950 text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.35em] text-amber-200">Dere Mood Lab</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">데레 테스트</h1>
+      <p class="text-slate-200">
+        6개의 질문으로 당신의 감정 표현 리듬을 확인해 나만의 데레 타입을 찾아보세요.
+        <a href="/" class="underline text-amber-200 hover:text-amber-100 transition">홈으로 이동</a>
+      </p>
+    </header>
+
+    <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section class="space-y-3">
+        <div class="text-xs font-semibold text-amber-200 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+          <div id="progressBar" class="h-2 bg-gradient-to-r from-amber-400 via-rose-400 to-sky-400 w-0 transition-all duration-300"></div>
+        </div>
+        <div class="text-sm text-slate-300 flex justify-between">
+          <span>감정 온도 체크 중...</span>
+          <span id="progressText">0% 완료</span>
+        </div>
+      </section>
+
+      <section id="quizCard" class="space-y-5">
+        <h2 id="question" class="text-2xl font-semibold"></h2>
+        <div id="options" class="space-y-3"></div>
+        <div class="flex justify-between text-sm text-slate-300">
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-amber-200 hover:bg-white/10 transition disabled:opacity-40">이전</button>
+          <span class="text-amber-200">가장 가까운 선택지를 골라주세요</span>
+        </div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-amber-200 uppercase tracking-[0.3em]">결과</div>
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="md:w-48 w-full">
+            <img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-48 object-cover" alt="result visual">
+          </div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm"></div>
+            <p id="resultDesc" class="text-slate-100 leading-relaxed"></p>
+          </div>
+        </div>
+        <div id="resultTips" class="grid gap-3"></div>
+        <div class="space-y-2 bg-white/5 border border-white/10 rounded-2xl p-4">
+          <h3 class="text-lg font-semibold text-amber-200">테스트 내 궁합</h3>
+          <div class="flex flex-col gap-2 text-sm">
+            <a id="bestLink" class="inline-flex items-center gap-2 text-slate-100 underline underline-offset-4 hover:text-amber-200" href="#">최고 궁합 결과 보기</a>
+            <a id="worstLink" class="inline-flex items-center gap-2 text-slate-300 underline underline-offset-4 hover:text-rose-200" href="#">주의 궁합 결과 보기</a>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-amber-300 text-amber-100 hover:bg-amber-400/10 transition">카카오톡 공유</button>
+          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500 text-white font-semibold shadow-lg hover:bg-amber-400 transition">다시 시작하기</button>
+          <a href="/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 text-slate-100 hover:bg-white/10 transition">홈으로 이동</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+      window.Kakao.init(window.__KAKAO_APP_KEY__);
+    }
+  </script>
+  <script src="/brainTest/scripts/kakao-share.js"></script>
+  <script>
+    const quiz = {
+      questions: [
+        {
+          text: "친구가 고민을 털어놓을 때 나는?",
+          options: [
+            { label: "따뜻하게 안심시키고 분위기를 밝힌다", trait: "sun" },
+            { label: "말보다 눈빛으로 의지를 전한다", trait: "cool" },
+            { label: "재치 있는 한마디로 긴장을 푼다", trait: "spark" },
+            { label: "차분하게 들어주며 마음을 다독인다", trait: "gentle" }
+          ]
+        },
+        {
+          text: "좋아하는 사람이 내 마음을 모를 때?",
+          options: [
+            { label: "티가 나도록 직진한다", trait: "sun" },
+            { label: "쿨하게 행동하지만 살짝 신경 쓴다", trait: "cool" },
+            { label: "장난 섞인 신호로 분위기를 만든다", trait: "spark" },
+            { label: "조용히 챙기며 시간을 기다린다", trait: "gentle" }
+          ]
+        },
+        {
+          text: "내가 가장 편한 감정 표현 방식은?",
+          options: [
+            { label: "밝은 말과 표정으로 바로 표현", trait: "sun" },
+            { label: "담백한 말 속에 진심을 숨긴다", trait: "cool" },
+            { label: "유쾌한 분위기로 눈치를 주기", trait: "spark" },
+            { label: "작은 행동으로 마음을 보여준다", trait: "gentle" }
+          ]
+        },
+        {
+          text: "약속이 틀어졌을 때 나는?",
+          options: [
+            { label: "바로 대안을 제시하며 기분을 살린다", trait: "sun" },
+            { label: "괜찮다고 말하지만 속으로는 아쉽다", trait: "cool" },
+            { label: "장난으로 넘기며 분위기를 전환한다", trait: "spark" },
+            { label: "상대의 상황을 먼저 이해한다", trait: "gentle" }
+          ]
+        },
+        {
+          text: "칭찬을 받을 때 내 반응은?",
+          options: [
+            { label: "웃으며 고맙다고 바로 표현", trait: "sun" },
+            { label: "무덤덤하게 받아들이지만 기분 좋다", trait: "cool" },
+            { label: "과장된 리액션으로 즐긴다", trait: "spark" },
+            { label: "수줍게 웃으며 마음속으로 고마워한다", trait: "gentle" }
+          ]
+        },
+        {
+          text: "관계에서 내가 가장 중요하게 여기는 것은?",
+          options: [
+            { label: "함께 밝아지는 긍정 에너지", trait: "sun" },
+            { label: "서로의 리듬을 존중하는 거리감", trait: "cool" },
+            { label: "웃음과 설렘을 만드는 장난기", trait: "spark" },
+            { label: "안정감 있는 배려와 따뜻함", trait: "gentle" }
+          ]
+        }
+      ],
+      traits: {
+        sun: {
+          name: "햇살 데레",
+          tagline: "직진 · 활기형",
+          desc: "감정을 숨기기보다 밝게 표현하는 타입. 주변을 환하게 만들고 빠르게 친밀감을 쌓아요.",
+          image: "/brainTest/images/dere-sun.jpg",
+          tips: [
+            "속도를 늦추면 상대가 더 편안해져요.",
+            "진심을 말로 정리하면 신뢰가 커집니다."
+          ],
+          compatibility: {
+            best: { trait: "gentle", reason: "젠틀 데레의 안정감이 햇살의 에너지를 오래 유지시켜요." },
+            watch: { trait: "cool", reason: "쿨 데레의 거리감이 답답하게 느껴질 수 있어요." }
+          }
+        },
+        cool: {
+          name: "쿨 데레",
+          tagline: "담백 · 신중형",
+          desc: "과한 표현보다 안정된 리듬을 선호하는 타입. 필요한 순간에만 진심을 보여줍니다.",
+          image: "/brainTest/images/dere-cool.jpg",
+          tips: [
+            "마음이 생길 때는 가볍게라도 표현해 보세요.",
+            "상대가 불안해지지 않도록 신호를 주세요."
+          ],
+          compatibility: {
+            best: { trait: "spark", reason: "스파크 데레의 유쾌함이 쿨 데레의 마음을 열어줘요." },
+            watch: { trait: "sun", reason: "직진 에너지가 부담으로 느껴질 수 있어요." }
+          }
+        },
+        spark: {
+          name: "스파크 데레",
+          tagline: "유쾌 · 장난형",
+          desc: "가볍고 재치 있는 분위기로 사랑을 표현하는 타입. 긴장을 풀고 분위기를 살립니다.",
+          image: "/brainTest/images/dere-spark.jpg",
+          tips: [
+            "장난 속에도 진심을 한 줄 남겨보세요.",
+            "상대의 컨디션을 확인하면 더 빛나요."
+          ],
+          compatibility: {
+            best: { trait: "cool", reason: "쿨 데레의 안정감이 스파크의 감성을 편하게 해줘요." },
+            watch: { trait: "gentle", reason: "잔잔한 리듬과 속도가 다를 수 있어요." }
+          }
+        },
+        gentle: {
+          name: "젠틀 데레",
+          tagline: "배려 · 온기형",
+          desc: "작은 배려와 따뜻한 시선으로 마음을 표현하는 타입. 안정감을 주며 오래 함께합니다.",
+          image: "/brainTest/images/dere-gentle.jpg",
+          tips: [
+            "가끔은 솔직한 표현이 관계를 선명하게 해요.",
+            "나의 감정도 챙길 시간을 확보하세요."
+          ],
+          compatibility: {
+            best: { trait: "sun", reason: "햇살 데레의 밝음이 젠틀 데레에게 활력을 줘요." },
+            watch: { trait: "spark", reason: "장난과 배려의 속도를 맞출 필요가 있어요." }
+          }
+        }
+      }
+    };
+
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const stepLabel = document.getElementById("stepLabel");
+    const progressBar = document.getElementById("progressBar");
+    const progressText = document.getElementById("progressText");
+    const resultCard = document.getElementById("resultCard");
+    const quizCard = document.getElementById("quizCard");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultBadge = document.getElementById("resultBadge");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultImage = document.getElementById("resultImage");
+    const resultTips = document.getElementById("resultTips");
+    const bestLink = document.getElementById("bestLink");
+    const worstLink = document.getElementById("worstLink");
+    const restartBtn = document.getElementById("restartBtn");
+    const prevBtn = document.getElementById("prevBtn");
+    const shareContent = {
+      title: "데레 테스트",
+      description: "감정 표현 리듬으로 나만의 데레 타입을 확인하는 6문항 테스트",
+      imageUrl: "https://partygame.pe.kr/brainTest/images/dere-og.jpg",
+      webUrl: `${window.location.origin}${window.location.pathname}`
+    };
+    const PARAM_KEY = "result";
+
+    let current = 0;
+    const answers = Array(quiz.questions.length).fill(null);
+
+    function renderQuestion() {
+      const q = quiz.questions[current];
+      questionEl.textContent = q.text;
+      stepLabel.textContent = `문항 ${current + 1} / ${quiz.questions.length}`;
+      const progress = Math.round((current / quiz.questions.length) * 100);
+      progressText.textContent = `${progress}% 완료`;
+      progressBar.style.width = `${progress}%`;
+
+      optionsEl.innerHTML = "";
+      q.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-white/20 hover:border-amber-200 hover:bg-white/10 transition";
+        btn.textContent = opt.label;
+        btn.addEventListener("click", () => handleOption(opt.trait));
+        optionsEl.appendChild(btn);
+      });
+
+      prevBtn.disabled = current === 0;
+    }
+
+    function handleOption(trait) {
+      answers[current] = trait;
+      if (current === quiz.questions.length - 1) {
+        showResult();
+        return;
+      }
+      current += 1;
+      renderQuestion();
+    }
+
+    function determineWinner() {
+      const tally = answers.reduce((map, trait) => {
+        if (!trait) return map;
+        map[trait] = (map[trait] || 0) + 1;
+        return map;
+      }, {});
+      let winner = null;
+      Object.keys(tally).forEach(trait => {
+        if (!winner || tally[trait] > tally[winner]) winner = trait;
+      });
+      return winner;
+    }
+
+    function showResult(traitKey) {
+      const winner = traitKey || determineWinner();
+      if (!winner || !quiz.traits[winner]) {
+        resultTitle.textContent = "아직 선택이 부족해요";
+        resultDesc.textContent = "문항을 모두 선택하면 결과를 볼 수 있어요.";
+        return;
+      }
+      applyResult(winner);
+    }
+
+    function applyResult(trait) {
+      const meta = quiz.traits[trait];
+      const resolvedImage = meta.image.startsWith("http") ? meta.image : `${window.location.origin}${meta.image}`;
+      resultTitle.textContent = meta.name;
+      resultBadge.textContent = meta.tagline;
+      resultDesc.textContent = meta.desc;
+      resultImage.src = meta.image;
+      resultImage.alt = meta.name;
+      resultTips.innerHTML = "";
+      meta.tips.forEach(t => {
+        const item = document.createElement("div");
+        item.className = "border border-white/15 rounded-xl px-3 py-2 text-sm text-slate-100";
+        item.textContent = `• ${t}`;
+        resultTips.appendChild(item);
+      });
+      updateRelationLinks(trait);
+      updateResultParam(trait);
+      shareContent.title = `${meta.name} | 데레 테스트`;
+      shareContent.description = meta.desc;
+      shareContent.imageUrl = resolvedImage;
+      shareContent.webUrl = `${window.location.origin}${window.location.pathname}?${PARAM_KEY}=${trait}#result`;
+
+      quizCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+      progressText.textContent = "100% 완료";
+      progressBar.style.width = "100%";
+    }
+
+    function goPrev() {
+      if (current === 0) return;
+      current -= 1;
+      renderQuestion();
+    }
+
+    function restart() {
+      for (let i = 0; i < answers.length; i += 1) answers[i] = null;
+      current = 0;
+      quizCard.classList.remove("hidden");
+      resultCard.classList.add("hidden");
+      progressText.textContent = "0% 완료";
+      progressBar.style.width = "0%";
+      updateResultParam(null);
+      renderQuestion();
+    }
+
+    function updateResultParam(trait) {
+      const url = new URL(window.location.href);
+      if (trait) {
+        url.searchParams.set(PARAM_KEY, trait);
+        url.hash = "result";
+      } else {
+        url.searchParams.delete(PARAM_KEY);
+        url.hash = "";
+      }
+      window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+    }
+
+    function updateRelationLinks(trait) {
+      const info = quiz.traits[trait]?.compatibility || {};
+      setRelationLink(bestLink, info.best, "최고 궁합", trait);
+      setRelationLink(worstLink, info.watch, "주의 궁합", trait);
+    }
+
+    function setRelationLink(element, detail, label, sourceTrait) {
+      if (!detail || !detail.trait || !quiz.traits[detail.trait]) {
+        element.classList.add("hidden");
+        element.removeAttribute("href");
+        element.removeAttribute("data-trait");
+        element.textContent = "";
+        return;
+      }
+      const target = quiz.traits[detail.trait];
+      const reason = detail.reason || relationFallbackReason(label, sourceTrait, detail.trait);
+      element.classList.remove("hidden");
+      element.dataset.trait = detail.trait;
+      element.textContent = `${label} · ${target.name} - ${reason}`;
+      element.href = `${window.location.pathname}?${PARAM_KEY}=${detail.trait}#result`;
+    }
+
+    function relationFallbackReason(type, sourceTrait, targetTrait) {
+      const source = quiz.traits[sourceTrait];
+      const target = quiz.traits[targetTrait];
+      if (!source || !target) {
+        return type === "최고 궁합" ? "서로의 리듬이 자연스럽게 어울려요." : "감정 속도가 달라 조율이 필요해요.";
+      }
+      if (type === "최고 궁합") {
+        return `${target.tagline} 감각이 ${source.tagline}과 시너지를 만듭니다.`;
+      }
+      return `${target.name}의 방식이 ${source.name}에게는 부담일 수 있어요.`;
+    }
+
+    function handleRelationClick(event) {
+      const trait = event.currentTarget.dataset.trait;
+      if (!trait || !quiz.traits[trait]) return;
+      event.preventDefault();
+      applyResult(trait);
+      window.scrollTo({ top: resultCard.offsetTop - 40, behavior: "smooth" });
+    }
+
+    prevBtn.addEventListener("click", goPrev);
+    restartBtn.addEventListener("click", restart);
+    bestLink.addEventListener("click", handleRelationClick);
+    worstLink.addEventListener("click", handleRelationClick);
+
+    renderQuestion();
+    const initialResult = new URLSearchParams(window.location.search).get(PARAM_KEY);
+    if (initialResult && quiz.traits[initialResult]) {
+      applyResult(initialResult);
+    }
+
+    setupKakaoShare("shareKakaoBtn", shareContent);
+  </script>
+</body>
+</html>

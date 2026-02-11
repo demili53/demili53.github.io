@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="에겐? 테토? 나는 어떤 타입일까? 6문항으로 에겐력과 테토력을 확인해 보세요.">
+  <meta name="keywords" content="에겐녀, 테토녀, 연애 성향, 밸런스, 심리 테스트">
+  <meta name="author" content="partygame.pe.kr">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/egen-girl-teto-girl-test.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="에겐녀 테토녀 테스트">
+  <meta property="og:description" content="거친 야생의 테토녀? 퍼컬이 미소녀인 에겐녀? 6문항으로 확인해 보세요.">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/egen-girl-teto-girl-og.jpg">
+  <meta property="og:url" content="https://partygame.pe.kr/brainTest/pages/brainTest/egen-girl-teto-girl-test.html">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+          crossorigin="anonymous"></script>
+  <title>에겐녀 테토녀 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-fuchsia-950 via-slate-900 to-sky-950 text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.35em] text-fuchsia-200">Egen Girl or Teto Girl</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">에겐녀 테토녀 테스트</h1>
+      <p class="text-slate-200">에겐력과 테토력을 동시에 체크하는 6문항 밸런스 테스트. <a href="/" class="underline text-fuchsia-200 hover:text-fuchsia-100 transition">홈으로 이동</a></p>
+    </header>
+
+    <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section class="space-y-3">
+        <div class="text-xs font-semibold text-fuchsia-200 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden"><div id="progressBar" class="h-2 bg-gradient-to-r from-fuchsia-400 via-pink-300 to-sky-300 w-0 transition-all duration-300"></div></div>
+        <div class="text-sm text-slate-300 flex justify-between"><span>에겐·테토 밸런스 계산 중...</span><span id="progressText">0% 완료</span></div>
+      </section>
+
+      <section id="quizCard" class="space-y-5">
+        <h2 id="question" class="text-2xl font-semibold"></h2>
+        <div id="options" class="space-y-3"></div>
+        <div class="flex justify-between text-sm text-slate-300"><button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-fuchsia-200 hover:bg-white/10 transition disabled:opacity-40">이전</button><span class="text-fuchsia-200">가장 자연스러운 반응을 골라주세요</span></div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-fuchsia-200 uppercase tracking-[0.3em]">결과</div>
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="md:w-48 w-full"><img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-48 object-cover" alt="result visual"></div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm"></div>
+            <p id="resultDesc" class="text-slate-100 leading-relaxed"></p>
+          </div>
+        </div>
+        <div id="resultTips" class="grid gap-3"></div>
+        <div class="space-y-2 bg-white/5 border border-white/10 rounded-2xl p-4">
+          <h3 class="text-lg font-semibold text-fuchsia-200">테스트 내 궁합</h3>
+          <div class="flex flex-col gap-2 text-sm">
+            <a id="bestLink" class="inline-flex items-center gap-2 text-slate-100 underline underline-offset-4 hover:text-fuchsia-200" href="#">최고 궁합 결과 보기</a>
+            <a id="worstLink" class="inline-flex items-center gap-2 text-slate-300 underline underline-offset-4 hover:text-sky-200" href="#">주의 궁합 결과 보기</a>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-fuchsia-300 text-fuchsia-100 hover:bg-fuchsia-400/10 transition">카카오톡 공유</button>
+          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-fuchsia-500 text-white font-semibold shadow-lg hover:bg-fuchsia-400 transition">다시 시작하기</button>
+          <a href="/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 text-slate-100 hover:bg-white/10 transition">홈으로 이동</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+    if (window.Kakao && !window.Kakao.isInitialized()) window.Kakao.init(window.__KAKAO_APP_KEY__);
+  </script>
+  <script src="/brainTest/scripts/kakao-share.js"></script>
+  <script>
+    const quiz = {
+      questions: [
+        { text: "썸이 시작되면 내 첫 반응은?", options: [
+          { label: "상대 기분을 먼저 살핀다", trait: "egen" },
+          { label: "바로 플랜을 잡아 움직인다", trait: "teto" },
+          { label: "상황 따라 온도와 속도를 조절한다", trait: "mix" },
+          { label: "무리 없이 천천히 친해진다", trait: "balance" }
+        ]},
+        { text: "연락 템포가 어긋났을 때 나는?", options: [
+          { label: "서운한 감정을 솔직히 말한다", trait: "egen" },
+          { label: "룰을 정하고 깔끔하게 맞춘다", trait: "teto" },
+          { label: "상대 사정을 듣고 중간점을 찾는다", trait: "mix" },
+          { label: "기다려 보며 흐름을 관찰한다", trait: "balance" }
+        ]},
+        { text: "데이트 코스는 보통 어떻게 정하나?", options: [
+          { label: "상대 취향을 우선 반영한다", trait: "egen" },
+          { label: "내가 자신 있는 코스로 리드한다", trait: "teto" },
+          { label: "둘의 취향을 섞어 테마를 만든다", trait: "mix" },
+          { label: "편안하고 실패 적은 코스를 선택한다", trait: "balance" }
+        ]},
+        { text: "갈등이 생기면 먼저 하는 일은?", options: [
+          { label: "감정부터 진정시키고 대화한다", trait: "egen" },
+          { label: "문제 원인과 해결안을 바로 제시한다", trait: "teto" },
+          { label: "공감과 해결을 동시에 챙긴다", trait: "mix" },
+          { label: "시간을 두고 신중하게 정리한다", trait: "balance" }
+        ]},
+        { text: "내가 가장 매력적으로 보이는 순간은?", options: [
+          { label: "다정한 공감 멘트를 할 때", trait: "egen" },
+          { label: "결단력 있게 추진할 때", trait: "teto" },
+          { label: "분위기를 유연하게 전환할 때", trait: "mix" },
+          { label: "상대를 편안하게 만들어 줄 때", trait: "balance" }
+        ]},
+        { text: "지금의 나는 어떤 무드에 가장 가까운가?", options: [
+          { label: "따뜻한 에겐녀", trait: "egen" },
+          { label: "당당한 테토녀", trait: "teto" },
+          { label: "상황 맞춤 믹스형", trait: "mix" },
+          { label: "신뢰형 밸런스", trait: "balance" }
+        ]}
+      ],
+      traits: {
+        egen: {
+          name: "에겐녀 공감형",
+          tagline: "다정 · 감성형",
+          desc: "상대의 감정 온도를 빠르게 읽고 부드럽게 맞춰 주는 타입입니다. 공감과 배려가 관계의 핵심 무기입니다.",
+          image: "/brainTest/images/egen-girl-empathetic.jpg",
+          best: "teto",
+          worst: "egen",
+          tips: ["배려와 함께 내 기준을 한 줄로 명확히 말해보세요.", "결정이 필요한 순간엔 선택지를 먼저 제시해 보세요.", "감정 소모가 큰 날은 템포를 낮추는 것도 전략입니다."]
+        },
+        teto: {
+          name: "테토녀 직진형",
+          tagline: "결단 · 추진형",
+          desc: "관계를 선명하게 이끌고 속도를 만드는 타입입니다. 주도적인 실행력이 강점이며 답답한 흐름을 끊어냅니다.",
+          image: "/brainTest/images/teto-girl-driver.jpg",
+          best: "balance",
+          worst: "teto",
+          tips: ["강한 추진 뒤엔 감정 확인 질문을 넣어보세요.", "상대의 속도 차이를 인정하면 갈등이 줄어듭니다.", "핵심만 말하되 따뜻한 마무리 멘트를 더해보세요."]
+        },
+        mix: {
+          name: "에겐·테토 믹스형",
+          tagline: "유연 · 조율형",
+          desc: "감성 공감과 현실 추진을 상황에 맞게 섞는 타입입니다. 분위기와 효율을 동시에 챙기는 밸런서입니다.",
+          image: "/brainTest/images/egen-teto-mix.jpg",
+          best: "egen",
+          worst: "mix",
+          tips: ["유연함 속에서도 고정 기준 하나를 정해 두세요.", "상대 맞춤이 과해지면 피로가 누적될 수 있습니다.", "중요한 결정은 마감 시간을 설정해 보세요."]
+        },
+        balance: {
+          name: "스테디 밸런스형",
+          tagline: "안정 · 신뢰형",
+          desc: "급하지 않지만 꾸준하게 관계를 지켜내는 타입입니다. 안정감과 일관성으로 신뢰를 쌓는 힘이 큽니다.",
+          image: "/brainTest/images/egen-teto-balance.jpg",
+          best: "mix",
+          worst: "egen",
+          tips: ["안정감에 감정 표현을 조금 더해 보세요.", "중요한 순간엔 빠른 피드백이 큰 신뢰를 만듭니다.", "결정이 길어지면 우선순위를 먼저 합의하세요."]
+        }
+      }
+    };
+
+    const answers = [];
+    let current = 0;
+
+    const stepLabel = document.getElementById("stepLabel");
+    const progressBar = document.getElementById("progressBar");
+    const progressText = document.getElementById("progressText");
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const prevBtn = document.getElementById("prevBtn");
+    const quizCard = document.getElementById("quizCard");
+    const resultCard = document.getElementById("resultCard");
+    const resultImage = document.getElementById("resultImage");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultBadge = document.getElementById("resultBadge");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultTips = document.getElementById("resultTips");
+    const bestLink = document.getElementById("bestLink");
+    const worstLink = document.getElementById("worstLink");
+    const restartBtn = document.getElementById("restartBtn");
+    const shareContent = {
+      title: "에겐녀 테토녀 테스트",
+      description: "에겐? 테토? 나는 어떤 타입일까? 6문항으로 에겐력과 테토력을 확인해 보세요.",
+      imageUrl: "https://partygame.pe.kr/brainTest/images/egen-girl-teto-girl-og.jpg",
+      webUrl: `${window.location.origin}${window.location.pathname}`
+    };
+
+    function renderQuestion() {
+      const q = quiz.questions[current];
+      const total = quiz.questions.length;
+      stepLabel.textContent = `문항 ${current + 1} / ${total}`;
+      const percent = Math.round((current / total) * 100);
+      progressBar.style.width = `${percent}%`;
+      progressText.textContent = `${percent}% 완료`;
+      questionEl.textContent = q.text;
+      optionsEl.innerHTML = "";
+
+      q.options.forEach((option, idx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-white/20 hover:border-fuchsia-300 hover:bg-white/10 transition";
+        btn.textContent = `${idx + 1}. ${option.label}`;
+        btn.addEventListener("click", () => {
+          answers[current] = option.trait;
+          if (current < total - 1) {
+            current += 1;
+            renderQuestion();
+          } else {
+            renderResult();
+          }
+        });
+        optionsEl.appendChild(btn);
+      });
+
+      prevBtn.disabled = current === 0;
+    }
+
+    function pickResult() {
+      const score = Object.keys(quiz.traits).reduce((acc, key) => {
+        acc[key] = 0;
+        return acc;
+      }, {});
+
+      answers.forEach((trait) => {
+        if (score[trait] !== undefined) score[trait] += 1;
+      });
+
+      const max = Math.max(...Object.values(score));
+      const top = Object.keys(score).filter((key) => score[key] === max);
+      return top[0];
+    }
+
+    function renderCompatibility(anchorId, key, label) {
+      const t = quiz.traits[key];
+      const encoded = encodeURIComponent(anchorId);
+      return {
+        text: `${label}: ${t.name} (${t.tagline})`,
+        href: `#result-${encoded}`,
+      };
+    }
+
+    function renderResult() {
+      const resultKey = pickResult();
+      const trait = quiz.traits[resultKey];
+      const total = quiz.questions.length;
+      progressBar.style.width = "100%";
+      progressText.textContent = "100% 완료";
+      stepLabel.textContent = `문항 ${total} / ${total}`;
+
+      quizCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+      resultCard.id = `result-${resultKey}`;
+
+      resultImage.src = trait.image;
+      resultImage.alt = trait.name;
+      resultTitle.textContent = trait.name;
+      resultBadge.textContent = trait.tagline;
+      resultDesc.textContent = trait.desc;
+
+      resultTips.innerHTML = "";
+      trait.tips.forEach((tip) => {
+        const card = document.createElement("div");
+        card.className = "bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-slate-100";
+        card.textContent = tip;
+        resultTips.appendChild(card);
+      });
+
+      const best = renderCompatibility(resultKey, trait.best, "최고 궁합");
+      const worst = renderCompatibility(resultKey, trait.worst, "주의 궁합");
+      bestLink.textContent = best.text;
+      bestLink.href = best.href;
+      worstLink.textContent = worst.text;
+      worstLink.href = worst.href;
+
+      shareContent.title = `${trait.name} | 에겐녀 테토녀 테스트`;
+      shareContent.description = trait.desc;
+      shareContent.imageUrl = `${window.location.origin}${trait.image}`;
+      shareContent.webUrl = `${window.location.origin}${window.location.pathname}${best.href}`;
+    }
+
+    prevBtn.addEventListener("click", () => {
+      if (current === 0) return;
+      current -= 1;
+      renderQuestion();
+    });
+
+    restartBtn.addEventListener("click", () => {
+      answers.length = 0;
+      current = 0;
+      quizCard.classList.remove("hidden");
+      resultCard.classList.add("hidden");
+      progressBar.style.width = "0%";
+      progressText.textContent = "0% 완료";
+      renderQuestion();
+    });
+
+    renderQuestion();
+    setupKakaoShare("shareKakaoBtn", shareContent);
+  </script>
+</body>
+</html>

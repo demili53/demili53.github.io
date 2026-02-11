@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="나의 생활 리듬과 집콕 루틴을 귀여운 햄스터 타입으로 알려주는 6문항 테스트">
+  <meta name="keywords" content="햄스터 테스트, 겨울 집콕 테스트, 라이프스타일 심리테스트, 반려 햄스터 성향">
+  <meta name="author" content="partygame.pe.kr">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/hamster-test.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="나만의 햄스터 테스트">
+  <meta property="og:description" content="겨울 집콕 루틴을 귀여운 햄스터 타입으로 압축해 드려요. 지금 바로 나만의 햄을 찾아보세요!">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/hamster-og.jpg">
+  <meta property="og:url" content="https://partygame.pe.kr/brainTest/pages/brainTest/hamster-test.html">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+          crossorigin="anonymous"></script>
+  <title>나만의 햄스터 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-amber-50 via-rose-100 to-violet-200 text-slate-900">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.35em] text-amber-700">Hammy Planet Lab</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold text-rose-900">나만의 햄스터 테스트</h1>
+      <p class="text-slate-700">
+        집콕 루틴, 간식 취향, 사회성까지! 6문항으로 나는 어떤 햄스터인지 알아보고, 궁합 햄까지 찾아 보세요.
+        <a href="/" class="underline text-amber-600 hover:text-amber-500 transition">홈으로 이동</a>
+      </p>
+    </header>
+
+    <main class="bg-white/70 border border-white/40 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section class="space-y-3">
+        <div class="text-xs font-semibold text-rose-600 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <div class="w-full bg-rose-100 rounded-full h-2 overflow-hidden">
+          <div id="progressBar" class="h-2 bg-gradient-to-r from-amber-400 via-rose-400 to-indigo-400 w-0 transition-all duration-300"></div>
+        </div>
+        <div class="text-sm text-slate-600 flex justify-between">
+          <span>햄 집들이 준비 중...</span>
+          <span id="progressText">0% 완료</span>
+        </div>
+      </section>
+
+      <section id="quizCard" class="space-y-5">
+        <h2 id="question" class="text-2xl font-semibold text-slate-900"></h2>
+        <div id="options" class="space-y-3"></div>
+        <div class="flex justify-between text-sm text-slate-500">
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-slate-200 hover:border-rose-200 hover:bg-rose-50 transition disabled:opacity-40 disabled:cursor-not-allowed">이전</button>
+          <span class="text-rose-600">촉 오는 간식을 골라주세요</span>
+        </div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-rose-600 uppercase tracking-[0.3em]">결과</div>
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="md:w-48 w-full">
+            <img id="resultImage" class="rounded-2xl border border-white shadow-lg w-full h-48 object-cover bg-white" alt="result visual">
+          </div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold text-rose-900"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-rose-50 border border-rose-200 text-sm text-rose-700"></div>
+            <p id="resultDesc" class="text-slate-800 leading-relaxed"></p>
+          </div>
+        </div>
+        <div id="resultTips" class="grid gap-3"></div>
+        <div id="resultCompatibility"></div>
+        <div class="flex flex-wrap gap-3">
+          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-amber-400 text-amber-700 hover:bg-amber-100 transition">카카오톡 공유</button>
+          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-rose-500 text-white font-semibold shadow-lg hover:bg-rose-400 transition">다시 시작하기</button>
+          <a href="/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 text-slate-700 hover:bg-rose-50 transition">홈으로 이동</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+      window.Kakao.init(window.__KAKAO_APP_KEY__);
+    }
+  </script>
+  <script src="/brainTest/scripts/kakao-share.js"></script>
+  <script>
+    const quiz = {
+      questions: [
+        {
+          text: "아침에 눈을 뜨자마자 가장 먼저 하는 것은?",
+          options: [
+            { label: "우리 집 환경 체크, 온도·물·먹이 상태 확인", trait: "strategist" },
+            { label: "바로 음악을 틀고 댄스 타임으로 몸풀기", trait: "dancer" },
+            { label: "이불 속에서 뒹굴며 간식 생각하기", trait: "nest" },
+            { label: "창밖 상황을 살피고 오늘의 모험지를 탐색", trait: "nomad" }
+          ]
+        },
+        {
+          text: "친구가 놀러 왔을 때 나는?",
+          options: [
+            { label: "정리정돈된 우리를 자랑하며 일정표를 보여준다", trait: "strategist" },
+            { label: "바로 썰매 타듯 바퀴를 돌리며 댄스 공연을 한다", trait: "dancer" },
+            { label: "따뜻한 쿠션과 간식 바구니를 내어 주며 잔잔히 수다", trait: "nest" },
+            { label: "친구를 데리고 새로운 터널/미로를 탐험한다", trait: "nomad" }
+          ]
+        },
+        {
+          text: "간식을 고를 때 기준은?",
+          options: [
+            { label: "영양소 밸런스! 견과+시리얼+야채 조합", trait: "strategist" },
+            { label: "인스타각! 컬러풀한 젤리/과일 칩", trait: "dancer" },
+            { label: "포근한 식감! 말랑한 치즈/고구마", trait: "nest" },
+            { label: "새로운 향! 허브나 이국적 재료", trait: "nomad" }
+          ]
+        },
+        {
+          text: "바쁜 날이 끝났을 때 가장 하고 싶은 건?",
+          options: [
+            { label: "다이어리 정리하며 내일 루틴 리셋", trait: "strategist" },
+            { label: "SNS에 오늘의 하이라이트 영상 올리기", trait: "dancer" },
+            { label: "포근한 담요와 함께 넷플릭스 몰아보기", trait: "nest" },
+            { label: "밤 산책이나 드라이브로 바람 맞기", trait: "nomad" }
+          ]
+        },
+        {
+          text: "나의 햄스터 집을 커스터마이징한다면?",
+          options: [
+            { label: "계획적으로 배치된 다층 구조 + 숨숨집 2개", trait: "strategist" },
+            { label: "LED 조명과 미러볼 바퀴", trait: "dancer" },
+            { label: "폭신한 톱밥, 쿠션, 워머로 채운 힐링 존", trait: "nest" },
+            { label: "터널, 해먹, 여행 배낭 모양 소품", trait: "nomad" }
+          ]
+        },
+        {
+          text: "2026년 나의 햄스터 목표?",
+          options: [
+            { label: "루틴을 유지하면서 효율적 휴식을 챙기기", trait: "strategist" },
+            { label: "새로운 커뮤니티에서 댄스/콘텐츠 공유", trait: "dancer" },
+            { label: "마음 챙김 루틴을 꾸준히 기록하기", trait: "nest" },
+            { label: "계절마다 새로운 거점을 체험하기", trait: "nomad" }
+          ]
+        }
+      ],
+      traits: {
+        strategist: {
+          name: "루틴 전략 햄",
+          tagline: "계획표로 우리를 지키는 시스템 전문가",
+          desc: "먹이 채우는 시간, 바퀴 돌리는 시간까지 치밀하게 계산하는 루틴의 왕입니다. 덕분에 집사는 물론 주변 햄친들도 당신을 믿고 따라와요.",
+          image: "/brainTest/images/hamster-strategist.jpg",
+          tips: [
+            "루틴 기록을 다이어그램으로 남겨 SNS에 공유하면 의외의 공감이 쏟아집니다.",
+            "계획에 여유 슬롯을 만들면 돌발 간식을 즐길 수 있어요."
+          ],
+          compatibility: {
+            best: [
+              { trait: "nest", reason: "둥지 힐러 햄이 전략 햄의 휴식을 책임집니다." },
+              { trait: "dancer", reason: "댄서 햄의 즉흥성이 루틴에 활력을 불어넣어요." }
+            ],
+            watch: [
+              { trait: "nomad", reason: "노매드 햄의 급작스런 이동 계획은 전략 햄을 어지럽힐 수 있어요." }
+            ]
+          }
+        },
+        dancer: {
+          name: "댄싱 스파클 햄",
+          tagline: "무대를 사랑하는 SNS 스타 햄스터",
+          desc: "바퀴만 돌려도 춤이 되고, 모든 물건을 소품으로 쓰는 창의적인 타입입니다. 시끌벅적한 에너지로 집안을 따뜻하게 합니다.",
+          image: "/brainTest/images/hamster-dancer.jpg",
+          tips: [
+            "미니 수트를 만들어 시즌마다 사진을 남겨 보세요.",
+            "하루 5분은 완전 무소음 시간을 가져야 에너지가 오래갑니다."
+          ],
+          compatibility: {
+            best: [
+              { trait: "strategist", reason: "전략 햄이 리듬을 맞춰 주면 공연 퀄리티가 상승!" },
+              { trait: "nomad", reason: "노매드 햄이 새로운 무대를 열어 줍니다." }
+            ],
+            watch: [
+              { trait: "nest", reason: "둥지 힐러에게는 과한 소음이 피곤할 수 있어요." }
+            ]
+          }
+        },
+        nest: {
+          name: "둥지 힐러 햄",
+          tagline: "포근한 감성으로 모두를 감싸는 힐링 담당",
+          desc: "따뜻한 톱밥, 허브향, 부드러운 간식을 즐기는 힐링 마스터입니다. 친구가 지치면 언제든 부드러운 어깨를 내어 줍니다.",
+          image: "/brainTest/images/hamster-nest.jpg",
+          tips: [
+            "나만의 향(캔들/디퓨저)을 정해두면 상태 리셋이 빨라집니다.",
+            "간식 바구니에 감사 카드 하나를 추가해 보세요."
+          ],
+          compatibility: {
+            best: [
+              { trait: "strategist", reason: "전략 햄이 힐러 햄의 공간을 효율적으로 보호합니다." },
+              { trait: "nomad", reason: "노매드 햄이 여행 에너지를 가져오면 힐러 햄의 이야기가 풍성해져요." }
+            ],
+            watch: [
+              { trait: "dancer", reason: "지속적인 소란이 이어지면 휴식 루틴이 깨질 수 있으니 경계가 필요합니다." }
+            ]
+          }
+        },
+        nomad: {
+          name: "모험 노매드 햄",
+          tagline: "터널과 새로운 거점을 탐험하는 자유 영혼",
+          desc: "터널, 해먹, 미로를 끝없이 확장하며 새로운 이야기를 만들어 내는 타입입니다. 집사는 당신 덕분에 새로운 장난감을 계속 찾게 되죠.",
+          image: "/brainTest/images/hamster-nomad.jpg",
+          tips: [
+            "여행의 흔적을 사진 또는 지도에 표시하면 이야기가 더 생생해집니다.",
+            "돌아온 뒤 루틴에 소프트랜딩 할 시간을 꼭 확보하세요."
+          ],
+          compatibility: {
+            best: [
+              { trait: "dancer", reason: "댄서 햄과 함께하면 모험이 공연으로 이어집니다." },
+              { trait: "nest", reason: "둥지 힐러가 노매드의 자리를 항상 따뜻하게 지켜줍니다." }
+            ],
+            watch: [
+              { trait: "strategist", reason: "전략 햄의 일정에 맞추다 보면 자유도가 낮아질 수 있어요." }
+            ]
+          }
+        }
+      }
+    };
+
+    const totalQuestions = quiz.questions.length;
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const quizCard = document.getElementById("quizCard");
+    const resultCard = document.getElementById("resultCard");
+    const stepLabel = document.getElementById("stepLabel");
+    const progressText = document.getElementById("progressText");
+    const progressBar = document.getElementById("progressBar");
+    const prevBtn = document.getElementById("prevBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultBadge = document.getElementById("resultBadge");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultImage = document.getElementById("resultImage");
+    const resultTips = document.getElementById("resultTips");
+    const resultCompatibility = document.getElementById("resultCompatibility");
+
+    const baseShareUrl = `${window.location.origin}${window.location.pathname}`;
+    const shareContent = {
+      title: "나만의 햄스터 테스트",
+      description: "집콕 루틴으로 알아보는 햄스터 타입! 나와 찰떡 햄을 찾아보세요.",
+      imageUrl: "https://partygame.pe.kr/brainTest/images/hamster-og.jpg",
+      webUrl: baseShareUrl
+    };
+    const PARAM_KEY = "result";
+
+    let current = 0;
+    const answers = Array(totalQuestions).fill(null);
+
+    function renderQuestion() {
+      const q = quiz.questions[current];
+      stepLabel.textContent = `문항 ${current + 1} / ${totalQuestions}`;
+      const percent = Math.round((current / totalQuestions) * 100);
+      progressText.textContent = `${percent}% 완료`;
+      progressBar.style.width = `${percent}%`;
+      questionEl.textContent = q.text;
+      optionsEl.innerHTML = "";
+      q.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-slate-200 hover:border-rose-300 hover:bg-rose-50 transition";
+        btn.textContent = option.label;
+        btn.addEventListener("click", () => handleOption(option.trait));
+        optionsEl.appendChild(btn);
+      });
+      prevBtn.disabled = current === 0;
+    }
+
+    function handleOption(trait) {
+      answers[current] = trait;
+      if (current === totalQuestions - 1) {
+        showResult();
+        return;
+      }
+      current += 1;
+      renderQuestion();
+    }
+
+    function goPrev() {
+      if (current === 0) return;
+      current -= 1;
+      renderQuestion();
+    }
+
+    function restartQuiz() {
+      for (let i = 0; i < answers.length; i += 1) answers[i] = null;
+      current = 0;
+      quizCard.classList.remove("hidden");
+      resultCard.classList.add("hidden");
+      progressText.textContent = "0% 완료";
+      progressBar.style.width = "0%";
+      updateTraitQuery(null);
+      resultCompatibility.innerHTML = "";
+      renderQuestion();
+      window.scrollTo({ top: 0 });
+    }
+
+    function showResult() {
+      const counts = {};
+      const tieBreaker = {};
+      answers.forEach((trait, idx) => {
+        if (!trait) return;
+        counts[trait] = (counts[trait] || 0) + 1;
+        tieBreaker[trait] = (tieBreaker[trait] || 0) + (totalQuestions - idx);
+      });
+      const ranked = Object.keys(counts).sort((a, b) => {
+        if (counts[b] !== counts[a]) return counts[b] - counts[a];
+        return (tieBreaker[b] || 0) - (tieBreaker[a] || 0);
+      });
+      const bestTrait = ranked[0] || Object.keys(quiz.traits)[0];
+      presentResult(bestTrait);
+    }
+
+    function presentResult(traitKey) {
+      const trait = quiz.traits[traitKey];
+      if (!trait) return;
+      quizCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+      progressText.textContent = "100% 완료";
+      progressBar.style.width = "100%";
+      resultTitle.textContent = trait.name;
+      resultBadge.textContent = trait.tagline;
+      resultDesc.textContent = trait.desc;
+      resultImage.src = trait.image;
+      resultImage.alt = trait.name;
+      resultTips.innerHTML = "";
+      trait.tips.forEach(tip => {
+        const card = document.createElement("div");
+        card.className = "rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-700";
+        card.textContent = tip;
+        resultTips.appendChild(card);
+      });
+
+      renderCompatibilityList(traitKey);
+      updateTraitQuery(traitKey);
+      updateShareMeta(traitKey, trait);
+      window.scrollTo({ top: resultCard.offsetTop - 40, behavior: "smooth" });
+    }
+
+    function renderCompatibilityList(traitKey) {
+      const trait = quiz.traits[traitKey];
+      if (!trait || !trait.compatibility) {
+        resultCompatibility.innerHTML = "";
+        return;
+      }
+      const wrapper = document.createElement("div");
+      wrapper.className = "rounded-2xl border border-slate-200 bg-white p-4 space-y-4";
+
+      const title = document.createElement("div");
+      title.className = "text-sm font-semibold text-rose-700 tracking-[0.2em] uppercase";
+      title.textContent = "궁합 리포트";
+      wrapper.appendChild(title);
+
+      if (trait.compatibility.best?.length) {
+        const bestBlock = document.createElement("div");
+        bestBlock.innerHTML = `<p class="text-xs text-emerald-600 mb-2">잘 맞는 햄</p>`;
+        trait.compatibility.best.forEach(item => {
+          const el = createCompatibilityItem(item);
+          if (el) bestBlock.appendChild(el);
+        });
+        wrapper.appendChild(bestBlock);
+      }
+
+      if (trait.compatibility.watch?.length) {
+        const watchBlock = document.createElement("div");
+        watchBlock.innerHTML = `<p class="text-xs text-rose-500 mb-2">주의할 햄</p>`;
+        trait.compatibility.watch.forEach(item => {
+          const el = createCompatibilityItem(item);
+          if (el) watchBlock.appendChild(el);
+        });
+        wrapper.appendChild(watchBlock);
+      }
+
+      resultCompatibility.innerHTML = "";
+      resultCompatibility.appendChild(wrapper);
+    }
+
+    function createCompatibilityItem(info) {
+      const trait = quiz.traits[info.trait];
+      if (!trait) return null;
+      const link = document.createElement("a");
+      link.href = `?${PARAM_KEY}=${info.trait}#result`;
+      link.className = "block rounded-xl border border-slate-200 bg-rose-50 px-3 py-2 mb-2 text-left text-sm hover:border-rose-300 hover:bg-white transition";
+      link.innerHTML = `<span class="font-semibold text-rose-900">${trait.name}</span><br><span class="text-xs text-slate-600">${info.reason}</span>`;
+      link.addEventListener("click", event => {
+        event.preventDefault();
+        presentResult(info.trait);
+      });
+      return link;
+    }
+
+    function updateTraitQuery(traitKey) {
+      if (!window.history?.replaceState) return;
+      const url = new URL(window.location.href);
+      if (traitKey) {
+        url.searchParams.set(PARAM_KEY, traitKey);
+        url.hash = "result";
+      } else {
+        url.searchParams.delete(PARAM_KEY);
+        url.hash = "";
+      }
+      window.history.replaceState({}, "", url.toString());
+    }
+
+    function updateShareMeta(traitKey, trait) {
+      if (!trait) return;
+      shareContent.title = `${trait.name} | 나만의 햄스터 테스트`;
+      shareContent.description = trait.desc;
+      shareContent.imageUrl = `https://partygame.pe.kr${trait.image}`;
+      shareContent.webUrl = traitKey ? `${baseShareUrl}?${PARAM_KEY}=${traitKey}#result` : baseShareUrl;
+    }
+
+    prevBtn.addEventListener("click", goPrev);
+    restartBtn.addEventListener("click", restartQuiz);
+
+    renderQuestion();
+
+    const initialTrait = new URLSearchParams(window.location.search).get(PARAM_KEY);
+    if (initialTrait && quiz.traits[initialTrait]) {
+      presentResult(initialTrait);
+    }
+
+    setupKakaoShare("shareKakaoBtn", shareContent);
+  </script>
+</body>
+</html>

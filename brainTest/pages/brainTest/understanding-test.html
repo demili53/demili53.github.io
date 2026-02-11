@@ -1,0 +1,440 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="다름을 이해하는 감수성과 열린 태도를 10문항으로 점검하는 이해력 테스트">
+  <meta name="keywords" content="이해력 테스트, 문화 감수성, 공감, 다양성">
+  <meta name="author" content="partygame.pe.kr">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/understanding-test.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="나의 이해력 테스트">
+  <meta property="og:description" content="다름을 대하는 나의 태도를 10문항으로 점검해 보세요.">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/understanding-og.jpg">
+  <meta property="og:url" content="https://partygame.pe.kr/brainTest/pages/brainTest/understanding-test.html">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+          crossorigin="anonymous"></script>
+  <title>나의 이해력 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-50 via-sky-100 to-amber-100 text-slate-900">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.35em] text-sky-700">Understanding Compass Lab</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900">나의 이해력 테스트</h1>
+      <p class="text-slate-700">
+        다름을 만나는 순간, 나는 어떤 태도를 선택할까요? 10문항으로 나의 이해력 스펙트럼을 확인해 보세요.
+        <a href="/" class="underline text-sky-600 hover:text-sky-500 transition">홈으로 이동</a>
+      </p>
+    </header>
+
+    <main class="bg-white/70 border border-white/50 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section class="space-y-3">
+        <div class="text-xs font-semibold text-sky-600 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 10</div>
+        <div class="w-full bg-sky-100 rounded-full h-2 overflow-hidden">
+          <div id="progressBar" class="h-2 bg-gradient-to-r from-sky-400 via-amber-300 to-emerald-300 w-0 transition-all duration-300"></div>
+        </div>
+        <div class="text-sm text-slate-600 flex justify-between">
+          <span>이해의 나침반을 맞추는 중...</span>
+          <span id="progressText">0% 완료</span>
+        </div>
+      </section>
+
+      <section id="quizCard" class="space-y-5">
+        <h2 id="question" class="text-2xl font-semibold text-slate-900"></h2>
+        <div id="options" class="space-y-3"></div>
+        <div class="flex justify-between text-sm text-slate-500">
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-slate-200 hover:border-sky-200 hover:bg-sky-50 transition disabled:opacity-40 disabled:cursor-not-allowed">이전</button>
+          <span class="text-sky-600">나에게 더 가까운 쪽을 선택해 주세요</span>
+        </div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-sky-600 uppercase tracking-[0.3em]">결과</div>
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="md:w-48 w-full">
+            <img id="resultImage" class="rounded-2xl border border-white shadow-lg w-full h-48 object-cover bg-white" alt="result visual">
+          </div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold text-slate-900"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-sky-50 border border-sky-200 text-sm text-sky-700"></div>
+            <p id="resultDesc" class="text-slate-800 leading-relaxed"></p>
+          </div>
+        </div>
+        <div id="resultTips" class="grid gap-3"></div>
+        <div id="resultCompatibility"></div>
+        <div class="flex flex-wrap gap-3">
+          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-amber-400 text-amber-700 hover:bg-amber-100 transition">카카오톡 공유</button>
+          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-sky-500 text-white font-semibold shadow-lg hover:bg-sky-400 transition">다시 시작하기</button>
+          <a href="/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 text-slate-700 hover:bg-sky-50 transition">홈으로 이동</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+      window.Kakao.init(window.__KAKAO_APP_KEY__);
+    }
+  </script>
+  <script src="/brainTest/scripts/kakao-share.js"></script>
+  <script>
+    const quiz = {
+      questions: [
+        {
+          text: "새로운 문화나 가치관을 접하면 먼저 그 배경을 이해하려 한다.",
+          options: [
+            { label: "그렇다", score: 1 },
+            { label: "아니다", score: 0 }
+          ]
+        },
+        {
+          text: "익숙하지 않은 억양이나 표현을 들으면 대화 자체가 부담스럽다.",
+          options: [
+            { label: "그렇다", score: 0 },
+            { label: "아니다", score: 1 }
+          ]
+        },
+        {
+          text: "소문이나 미디어의 인상보다 직접 확인하는 편이다.",
+          options: [
+            { label: "그렇다", score: 1 },
+            { label: "아니다", score: 0 }
+          ]
+        },
+        {
+          text: "다름을 존중하려면 서로를 배려하는 규칙이 필요하다고 느낀다.",
+          options: [
+            { label: "그렇다", score: 1 },
+            { label: "아니다", score: 0 }
+          ]
+        },
+        {
+          text: "낯선 배경의 사람과 팀이 되면 나도 모르게 거리를 둔다.",
+          options: [
+            { label: "그렇다", score: 0 },
+            { label: "아니다", score: 1 }
+          ]
+        },
+        {
+          text: "서로 다른 방식이 만나면 배울 점이 더 많다고 생각한다.",
+          options: [
+            { label: "그렇다", score: 1 },
+            { label: "아니다", score: 0 }
+          ]
+        },
+        {
+          text: "차별적인 표현을 들으면 부드럽게 바로잡는 편이다.",
+          options: [
+            { label: "그렇다", score: 1 },
+            { label: "아니다", score: 0 }
+          ]
+        },
+        {
+          text: "언어가 서툰 사람과도 대화를 이어가려 노력한다.",
+          options: [
+            { label: "그렇다", score: 1 },
+            { label: "아니다", score: 0 }
+          ]
+        },
+        {
+          text: "문화 차이를 이유로 거리를 두는 편이다.",
+          options: [
+            { label: "그렇다", score: 0 },
+            { label: "아니다", score: 1 }
+          ]
+        },
+        {
+          text: "다름을 이해하려면 작은 경험부터 늘려야 한다고 생각한다.",
+          options: [
+            { label: "그렇다", score: 1 },
+            { label: "아니다", score: 0 }
+          ]
+        }
+      ],
+      results: {
+        explorer: {
+          name: "열린 탐험가",
+          tagline: "다름을 에너지로 바꾸는 열린 마음",
+          desc: "새로운 문화와 경험을 만날 때 설렘이 먼저 켜집니다. 호기심을 바탕으로 배경을 이해하고, 대화를 통해 관점을 넓혀 가는 타입이에요.",
+          image: "/brainTest/images/understanding-explorer.jpg",
+          tips: [
+            "새로운 만남을 기록하는 작은 로그를 만들어 보세요.",
+            "경험을 공유하면 주변에도 열린 분위기가 전해집니다."
+          ],
+          compatibility: {
+            best: [
+              { trait: "companion", reason: "따뜻한 동행자가 탐험가의 에너지를 안정적으로 받쳐 줍니다." },
+              { trait: "observer", reason: "균형 관찰자의 시선이 탐험가의 시야를 더 넓혀 줍니다." }
+            ],
+            watch: [
+              { trait: "realist", reason: "조심스러운 현실주의자의 속도는 탐험가에게 답답하게 느껴질 수 있어요." }
+            ]
+          }
+        },
+        companion: {
+          name: "따뜻한 동행자",
+          tagline: "사람 사이의 다리를 놓는 공감형",
+          desc: "다름을 만났을 때 먼저 상대의 감정을 헤아립니다. 조율과 공감에 강해 팀 속에서 자연스럽게 분위기를 부드럽게 만드는 타입이에요.",
+          image: "/brainTest/images/understanding-companion.jpg",
+          tips: [
+            "대화에서 상대의 말을 요약해 주면 신뢰가 빠르게 쌓입니다.",
+            "감정 소모가 크다면 나만의 휴식 루틴을 확보하세요."
+          ],
+          compatibility: {
+            best: [
+              { trait: "explorer", reason: "열린 탐험가의 호기심을 따뜻하게 확장해 줍니다." },
+              { trait: "observer", reason: "균형 관찰자의 판단이 동행자의 공감을 더 선명하게 합니다." }
+            ],
+            watch: [
+              { trait: "realist", reason: "현실주의자의 경계심이 동행자에게 거리감으로 느껴질 수 있어요." }
+            ]
+          }
+        },
+        observer: {
+          name: "균형 관찰자",
+          tagline: "한 걸음 물러서서 보는 안정형",
+          desc: "감정에 휩쓸리기보다 상황을 차분히 살펴보는 타입입니다. 다름을 이해하려는 마음은 있지만, 속도를 조절하며 안전하게 접근합니다.",
+          image: "/brainTest/images/understanding-observer.jpg",
+          tips: [
+            "모르는 것을 질문으로 바꾸면 이해도가 빠르게 올라갑니다.",
+            "관찰한 내용을 공유하면 팀의 균형을 잡는 데 도움돼요."
+          ],
+          compatibility: {
+            best: [
+              { trait: "companion", reason: "동행자의 공감력과 관찰자의 판단이 좋은 조합입니다." },
+              { trait: "realist", reason: "현실주의자의 기준을 관찰자가 부드럽게 풀어줍니다." }
+            ],
+            watch: [
+              { trait: "explorer", reason: "탐험가의 빠른 전개가 관찰자에겐 부담일 수 있어요." }
+            ]
+          }
+        },
+        realist: {
+          name: "조심스러운 현실주의자",
+          tagline: "안전을 먼저 챙기는 신중형",
+          desc: "새로운 상황에서 먼저 위험 요소를 점검하는 편입니다. 익숙한 기준을 중시하지만, 차근차근 경험을 늘리면 이해의 폭이 넓어질 수 있어요.",
+          image: "/brainTest/images/understanding-realist.jpg",
+          tips: [
+            "작은 경험을 하나씩 쌓으면 불안이 줄어듭니다.",
+            "신뢰할 수 있는 사람과 함께 새로운 경험을 시도해 보세요."
+          ],
+          compatibility: {
+            best: [
+              { trait: "observer", reason: "관찰자의 차분함이 현실주의자에게 안정감을 줍니다." },
+              { trait: "companion", reason: "동행자의 배려가 현실주의자의 경계를 낮춰 줍니다." }
+            ],
+            watch: [
+              { trait: "explorer", reason: "탐험가의 속도가 현실주의자에게는 과하게 느껴질 수 있어요." }
+            ]
+          }
+        }
+      }
+    };
+
+    const totalQuestions = quiz.questions.length;
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const quizCard = document.getElementById("quizCard");
+    const resultCard = document.getElementById("resultCard");
+    const stepLabel = document.getElementById("stepLabel");
+    const progressText = document.getElementById("progressText");
+    const progressBar = document.getElementById("progressBar");
+    const prevBtn = document.getElementById("prevBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultBadge = document.getElementById("resultBadge");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultImage = document.getElementById("resultImage");
+    const resultTips = document.getElementById("resultTips");
+    const resultCompatibility = document.getElementById("resultCompatibility");
+
+    const baseShareUrl = `${window.location.origin}${window.location.pathname}`;
+    const shareContent = {
+      title: "나의 이해력 테스트",
+      description: "다름을 대하는 나의 태도를 10문항으로 점검해 보세요.",
+      imageUrl: "https://partygame.pe.kr/brainTest/images/understanding-og.jpg",
+      webUrl: baseShareUrl
+    };
+    const PARAM_KEY = "result";
+
+    let current = 0;
+    const answers = Array(totalQuestions).fill(null);
+
+    function renderQuestion() {
+      const q = quiz.questions[current];
+      stepLabel.textContent = `문항 ${current + 1} / ${totalQuestions}`;
+      const percent = Math.round((current / totalQuestions) * 100);
+      progressText.textContent = `${percent}% 완료`;
+      progressBar.style.width = `${percent}%`;
+      questionEl.textContent = q.text;
+      optionsEl.innerHTML = "";
+      q.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-slate-200 hover:border-sky-300 hover:bg-sky-50 transition";
+        btn.textContent = option.label;
+        btn.addEventListener("click", () => handleOption(option.score));
+        optionsEl.appendChild(btn);
+      });
+      prevBtn.disabled = current === 0;
+    }
+
+    function handleOption(score) {
+      answers[current] = score;
+      if (current === totalQuestions - 1) {
+        showResult();
+        return;
+      }
+      current += 1;
+      renderQuestion();
+    }
+
+    function goPrev() {
+      if (current === 0) return;
+      current -= 1;
+      renderQuestion();
+    }
+
+    function restartQuiz() {
+      for (let i = 0; i < answers.length; i += 1) answers[i] = null;
+      current = 0;
+      quizCard.classList.remove("hidden");
+      resultCard.classList.add("hidden");
+      progressText.textContent = "0% 완료";
+      progressBar.style.width = "0%";
+      updateTraitQuery(null);
+      resultCompatibility.innerHTML = "";
+      renderQuestion();
+      window.scrollTo({ top: 0 });
+    }
+
+    function getResultKey(score) {
+      if (score >= 9) return "explorer";
+      if (score >= 6) return "companion";
+      if (score >= 3) return "observer";
+      return "realist";
+    }
+
+    function showResult() {
+      const totalScore = answers.reduce((sum, val) => sum + (val || 0), 0);
+      const resultKey = getResultKey(totalScore);
+      presentResult(resultKey);
+    }
+
+    function presentResult(traitKey) {
+      const trait = quiz.results[traitKey];
+      if (!trait) return;
+      quizCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+      progressText.textContent = "100% 완료";
+      progressBar.style.width = "100%";
+      resultTitle.textContent = trait.name;
+      resultBadge.textContent = trait.tagline;
+      resultDesc.textContent = trait.desc;
+      resultImage.src = trait.image;
+      resultImage.alt = trait.name;
+      resultTips.innerHTML = "";
+      trait.tips.forEach(tip => {
+        const card = document.createElement("div");
+        card.className = "rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-700";
+        card.textContent = tip;
+        resultTips.appendChild(card);
+      });
+
+      renderCompatibilityList(traitKey);
+      updateTraitQuery(traitKey);
+      updateShareMeta(traitKey, trait);
+      window.scrollTo({ top: resultCard.offsetTop - 40, behavior: "smooth" });
+    }
+
+    function renderCompatibilityList(traitKey) {
+      const trait = quiz.results[traitKey];
+      if (!trait || !trait.compatibility) {
+        resultCompatibility.innerHTML = "";
+        return;
+      }
+      const wrapper = document.createElement("div");
+      wrapper.className = "rounded-2xl border border-slate-200 bg-white p-4 space-y-4";
+
+      const title = document.createElement("div");
+      title.className = "text-sm font-semibold text-sky-700 tracking-[0.2em] uppercase";
+      title.textContent = "궁합 리포트";
+      wrapper.appendChild(title);
+
+      if (trait.compatibility.best?.length) {
+        const bestBlock = document.createElement("div");
+        bestBlock.innerHTML = `<p class="text-xs text-emerald-600 mb-2">잘 맞는 유형</p>`;
+        trait.compatibility.best.forEach(item => {
+          const el = createCompatibilityItem(item);
+          if (el) bestBlock.appendChild(el);
+        });
+        wrapper.appendChild(bestBlock);
+      }
+
+      if (trait.compatibility.watch?.length) {
+        const watchBlock = document.createElement("div");
+        watchBlock.innerHTML = `<p class="text-xs text-rose-500 mb-2">주의할 유형</p>`;
+        trait.compatibility.watch.forEach(item => {
+          const el = createCompatibilityItem(item);
+          if (el) watchBlock.appendChild(el);
+        });
+        wrapper.appendChild(watchBlock);
+      }
+
+      resultCompatibility.innerHTML = "";
+      resultCompatibility.appendChild(wrapper);
+    }
+
+    function createCompatibilityItem(info) {
+      const trait = quiz.results[info.trait];
+      if (!trait) return null;
+      const link = document.createElement("a");
+      link.href = `?${PARAM_KEY}=${info.trait}#result`;
+      link.className = "block rounded-xl border border-slate-200 bg-sky-50 px-3 py-2 mb-2 text-left text-sm hover:border-sky-300 hover:bg-white transition";
+      link.innerHTML = `<span class="font-semibold text-slate-900">${trait.name}</span><br><span class="text-xs text-slate-600">${info.reason}</span>`;
+      link.addEventListener("click", event => {
+        event.preventDefault();
+        presentResult(info.trait);
+      });
+      return link;
+    }
+
+    function updateTraitQuery(traitKey) {
+      if (!window.history?.replaceState) return;
+      const url = new URL(window.location.href);
+      if (traitKey) {
+        url.searchParams.set(PARAM_KEY, traitKey);
+        url.hash = "result";
+      } else {
+        url.searchParams.delete(PARAM_KEY);
+        url.hash = "";
+      }
+      window.history.replaceState({}, "", url.toString());
+    }
+
+    function updateShareMeta(traitKey, trait) {
+      if (!trait) return;
+      shareContent.title = `${trait.name} | 나의 이해력 테스트`;
+      shareContent.description = trait.desc;
+      shareContent.imageUrl = `https://partygame.pe.kr${trait.image}`;
+      shareContent.webUrl = traitKey ? `${baseShareUrl}?${PARAM_KEY}=${traitKey}#result` : baseShareUrl;
+    }
+
+    prevBtn.addEventListener("click", goPrev);
+    restartBtn.addEventListener("click", restartQuiz);
+
+    renderQuestion();
+
+    const initialTrait = new URLSearchParams(window.location.search).get(PARAM_KEY);
+    if (initialTrait && quiz.results[initialTrait]) {
+      presentResult(initialTrait);
+    }
+
+    setupKakaoShare("shareKakaoBtn", shareContent);
+  </script>
+</body>
+</html>

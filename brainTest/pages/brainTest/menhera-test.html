@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="연애와 일상에서 표출되는 멘헤라 시그널을 6문항으로 알아보는 테스트">
+  <meta name="keywords" content="멘헤라 테스트, 감정 테스트, 연애 심리, menhera, 감정 시그널">
+  <meta name="author" content="partygame.pe.kr">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/menhera-test.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="멘헤라 감정 스펙트럼 테스트">
+  <meta property="og:description" content="내 감정의 농도와 연애 시그널을 체크해 주는 6문항 감정 테스트">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/menhera-og.jpg">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+          crossorigin="anonymous"></script>
+  <title>멘헤라 감정 스펙트럼 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-purple-950 via-rose-950 to-black text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.35em] text-rose-200">Menhera Signal Lab</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">멘헤라 감정 스펙트럼 테스트</h1>
+      <p class="text-slate-200">
+        누구나 마음이 살짝 기울어질 순간이 있죠. 6개의 질문으로 내 멘헤라 에너지 레벨을 가볍게 점검해 보세요.
+        <a href="/" class="underline text-rose-200 hover:text-rose-100 transition">홈으로 이동</a>
+      </p>
+    </header>
+
+    <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section class="space-y-3">
+        <div class="text-xs font-semibold text-rose-100 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+          <div id="progressBar" class="h-2 bg-gradient-to-r from-rose-300 via-violet-300 to-sky-300 w-0 transition-all duration-300"></div>
+        </div>
+        <div class="text-sm text-slate-200 flex justify-between">
+          <span>감정 스캐너 가동 중...</span>
+          <span id="progressText">0% 완료</span>
+        </div>
+      </section>
+
+      <section id="quizCard" class="space-y-5">
+        <h2 id="question" class="text-2xl font-semibold"></h2>
+        <div id="options" class="space-y-3"></div>
+        <div class="flex justify-between text-sm text-slate-300">
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-white/40 hover:bg-white/10 transition disabled:opacity-40 disabled:cursor-not-allowed">이전</button>
+          <span class="text-rose-200">느낌 오는 선택지를 고르세요</span>
+        </div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-rose-100 uppercase tracking-[0.3em]">결과</div>
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="md:w-48 w-full">
+            <img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-48 object-cover bg-white/5" alt="result visual">
+          </div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm"></div>
+            <p id="resultDesc" class="text-slate-100 leading-relaxed"></p>
+          </div>
+        </div>
+        <div id="resultTips" class="grid gap-3"></div>
+        <div id="resultCompatibility"></div>
+        <div class="flex flex-wrap gap-3">
+          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-rose-300 text-rose-100 hover:bg-rose-400/10 transition">카카오톡 공유</button>
+          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-rose-500 text-white font-semibold shadow-lg hover:bg-rose-400 transition">다시 시작하기</button>
+          <a href="/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 text-slate-100 hover:bg-white/10 transition">홈으로 이동</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+    if (window.Kakao && !window.Kakao.isInitialized()) {
+      window.Kakao.init(window.__KAKAO_APP_KEY__);
+    }
+  </script>
+  <script src="/brainTest/scripts/kakao-share.js"></script>
+  <script>
+    const quiz = {
+      questions: [
+        {
+          text: "약속이 취소된 밤, 당신의 상태는?",
+          options: [
+            { label: "바로 톡방에 감정 스티커를 흩뿌린다", trait: "lover" },
+            { label: "조용히 감정 노트를 열고 분석한다", trait: "strategist" },
+            { label: "터지는 생각을 낙서/노래로 쏟아낸다", trait: "storm" },
+            { label: "샤워 후 좋은 향 오일로 마음을 다독인다", trait: "healer" }
+          ]
+        },
+        {
+          text: "좋아하는 사람이 답장을 늦게 보내면?",
+          options: [
+            { label: "폭풍 같은 장문의 마음을 쓴다", trait: "lover" },
+            { label: "상대 상황을 추리하며 근거를 정리한다", trait: "strategist" },
+            { label: "급히 SNS를 뒤지며 마음의 증거를 찾는다", trait: "storm" },
+            { label: "알림을 꺼두고 내 루틴을 먼저 챙긴다", trait: "healer" }
+          ]
+        },
+        {
+          text: "감정이 폭주할 때 당신의 보정 방식은?",
+          options: [
+            { label: "셀카/일기로 마음을 증명한다", trait: "lover" },
+            { label: "상황을 구조화한 메모를 작성한다", trait: "strategist" },
+            { label: "친구를 붙잡아 한바탕 토로한다", trait: "storm" },
+            { label: "호흡 명상이나 산책으로 페이스를 낮춘다", trait: "healer" }
+          ]
+        },
+        {
+          text: "새로운 관계가 시작될 때 당신의 첫 행동은?",
+          options: [
+            { label: "감정 수치를 바로 공유해보자고 한다", trait: "lover" },
+            { label: "만남/대화 빈도 계획을 세운다", trait: "strategist" },
+            { label: "서로의 과몰입 포인트를 질문하며 플레이풀하게 접근", trait: "storm" },
+            { label: "경계와 휴식 시간을 먼저 합의한다", trait: "healer" }
+          ]
+        },
+        {
+          text: "멘헤라 모드가 발동했을 때 듣고 싶은 말은?",
+          options: [
+            { label: "\"나는 끝까지 네 편이야.\"", trait: "lover" },
+            { label: "\"우리 상황을 같이 정리해볼까?\"", trait: "strategist" },
+            { label: "\"오늘은 마음껏 울어도 괜찮아.\"", trait: "storm" },
+            { label: "\"지금 휴식 예약 넣었어, 걱정 마.\"", trait: "healer" }
+          ]
+        },
+        {
+          text: "가끔 떠오르는 다짐은?",
+          options: [
+            { label: "\"사랑 표현을 솔직하게 할 거야\"", trait: "lover" },
+            { label: "\"감정 체크리스트를 꾸준히 쓰자\"", trait: "strategist" },
+            { label: "\"폭발 전에 미리 신호를 알리자\"", trait: "storm" },
+            { label: "\"내 마음을 지키는 의식을 만들어야지\"", trait: "healer" }
+          ]
+        }
+      ],
+      traits: {
+        lover: {
+          title: "핑크 하트 러버",
+          badge: "애정 폭주형",
+          desc: "감정을 숨기지 않는 멘헤라 에너지. 뜨거운 마음 덕분에 관계가 빠르게 깊어지지만, 폭주할 때는 나와 상대 모두 휴식 타이밍이 필요합니다.",
+          image: "/brainTest/images/menhera-lover.jpg",
+          tips: [
+            "감정이 샘솟을 때 '나의 마음 기록법'을 만들어 두면 후회가 줄어요.",
+            "폭주 신호를 느끼면 30분 타이머를 두고 천천히 메시지를 작성하세요."
+          ],
+          compatibility: {
+            best: [
+              { trait: "healer", reason: "힐러 타입이 핑크 하트를 부드럽게 감싸줍니다." },
+              { trait: "strategist", reason: "전략형과 함께하면 감정 표현에 구조가 생겨요." }
+            ],
+            watch: [
+              { trait: "storm", reason: "폭풍형과 만나면 감정이 과열될 수 있어요." }
+            ]
+          }
+        },
+        strategist: {
+          title: "보랏빛 전략가",
+          badge: "계획 수호형",
+          desc: "감정도 데이터를 분석하듯 다루는 타입. 관계를 유지하기 위한 루틴을 잘 만들지만, 계산이 지나치면 차갑게 보일 수 있습니다.",
+          image: "/brainTest/images/menhera-melancholy.jpg",
+          tips: [
+            "분석 노트에 감정 레이블을 적어두면 표현이 쉬워집니다.",
+            "대화 전에 '내가 원하는 감정 상태'를 먼저 공유해 보세요."
+          ],
+          compatibility: {
+            best: [
+              { trait: "lover", reason: "핑크 하트의 직진 감정을 전략가가 균형 있게 받아줍니다." },
+              { trait: "healer", reason: "힐러의 휴식 제안이 전략가의 과부하를 막아줍니다." }
+            ],
+            watch: [
+              { trait: "storm", reason: "폭풍형의 즉흥 감정이 계획을 흔들 수 있어요." }
+            ]
+          }
+        },
+        storm: {
+          title: "보라 번개 스톰",
+          badge: "폭풍 해방형",
+          desc: "감정이 올라오면 숨기지 않는 표현가입니다. 예술, 낙서, 메시지 등으로 마음을 터뜨리며 주변 공기를 바꾸지만, 회복 시간도 중요합니다.",
+          image: "/brainTest/images/menhera-obsessive.jpg",
+          tips: [
+            "폭풍 모먼트 후 사용할 '감정 쿨다운 플레이리스트'를 준비하세요.",
+            "감정을 나누기 전, 듣는 사람에게 안전 단어를 만들어 두면 좋아요."
+          ],
+          compatibility: {
+            best: [
+              { trait: "lover", reason: "러버의 따뜻함이 폭풍형의 거친 감정을 인정해 줍니다." },
+              { trait: "healer", reason: "힐러가 폭풍형의 감정 폭을 안전하게 지켜줍니다." }
+            ],
+            watch: [
+              { trait: "strategist", reason: "계획형의 냉정함이 폭풍에게 벽처럼 느껴질 수 있어요." }
+            ]
+          }
+        },
+        healer: {
+          title: "민트 셀프 힐러",
+          badge: "충전 안정형",
+          desc: "관계를 지키기 위해 자신을 먼저 돌보는 타입. 감정의 파도를 천천히 눕혀 주지만, 가끔은 솔직한 감정을 표현해야 오해가 줄어듭니다.",
+          image: "/brainTest/images/menhera-healer.jpg",
+          tips: [
+            "휴식 루틴을 주변과 공유하면 관계도 한결 편안해집니다.",
+            "마음속 단어들을 작은 메모로 남겨 두면 감정 표현이 쉬워져요."
+          ],
+          compatibility: {
+            best: [
+              { trait: "lover", reason: "러버의 직진 사랑이 힐러에게 따뜻한 에너지를 줍니다." },
+              { trait: "strategist", reason: "전략가의 구조 속에서 힐러가 안정감을 느낍니다." }
+            ],
+            watch: [
+              { trait: "storm", reason: "폭풍형의 강렬함이 힐러의 페이스를 깨뜨릴 수 있어요." }
+            ]
+          }
+        }
+      }
+    };
+
+    const totalQuestions = quiz.questions.length;
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const quizCard = document.getElementById("quizCard");
+    const resultCard = document.getElementById("resultCard");
+    const stepLabel = document.getElementById("stepLabel");
+    const progressText = document.getElementById("progressText");
+    const progressBar = document.getElementById("progressBar");
+    const prevBtn = document.getElementById("prevBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultBadge = document.getElementById("resultBadge");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultImage = document.getElementById("resultImage");
+    const resultTips = document.getElementById("resultTips");
+    const resultCompatibility = document.getElementById("resultCompatibility");
+
+    const baseShareUrl = `${window.location.origin}${window.location.pathname}`;
+    const shareContent = {
+      title: "멘헤라 감정 스펙트럼 테스트",
+      description: "내 멘헤라 에너지 레벨을 6문항으로 가볍게 확인해 보세요.",
+      imageUrl: `${window.location.origin}/brainTest/images/menhera-og.jpg`,
+      webUrl: baseShareUrl
+    };
+    const PARAM_KEY = "result";
+
+    let current = 0;
+    const answers = Array(totalQuestions).fill(null);
+
+    function renderQuestion() {
+      const q = quiz.questions[current];
+      stepLabel.textContent = `문항 ${current + 1} / ${totalQuestions}`;
+      const percent = Math.round((current / totalQuestions) * 100);
+      progressText.textContent = `${percent}% 완료`;
+      progressBar.style.width = `${percent}%`;
+      questionEl.textContent = q.text;
+      optionsEl.innerHTML = "";
+      q.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-white/20 hover:border-rose-300 hover:bg-white/10 transition";
+        btn.textContent = option.label;
+        btn.addEventListener("click", () => handleOption(option.trait));
+        optionsEl.appendChild(btn);
+      });
+      prevBtn.disabled = current === 0;
+    }
+
+    function handleOption(trait) {
+      answers[current] = trait;
+      if (current === totalQuestions - 1) {
+        showResult();
+        return;
+      }
+      current += 1;
+      renderQuestion();
+    }
+
+    function goPrev() {
+      if (current === 0) return;
+      current -= 1;
+      renderQuestion();
+    }
+
+    function restartQuiz() {
+      for (let i = 0; i < answers.length; i += 1) answers[i] = null;
+      current = 0;
+      quizCard.classList.remove("hidden");
+      resultCard.classList.add("hidden");
+      progressText.textContent = "0% 완료";
+      progressBar.style.width = "0%";
+      updateTraitQuery(null);
+      resultCompatibility.innerHTML = "";
+      renderQuestion();
+      window.scrollTo({ top: 0 });
+    }
+
+    function showResult() {
+      const counts = {};
+      const tieBreaker = {};
+      answers.forEach((trait, idx) => {
+        if (!trait) return;
+        counts[trait] = (counts[trait] || 0) + 1;
+        tieBreaker[trait] = (tieBreaker[trait] || 0) + (totalQuestions - idx);
+      });
+      const ranked = Object.keys(counts).sort((a, b) => {
+        if (counts[b] !== counts[a]) return counts[b] - counts[a];
+        return (tieBreaker[b] || 0) - (tieBreaker[a] || 0);
+      });
+      const bestTrait = ranked[0] || Object.keys(quiz.traits)[0];
+      presentResult(bestTrait);
+    }
+
+    function presentResult(traitKey) {
+      const trait = quiz.traits[traitKey];
+      if (!trait) return;
+      quizCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+      progressText.textContent = "100% 완료";
+      progressBar.style.width = "100%";
+      resultTitle.textContent = trait.title;
+      resultBadge.textContent = trait.badge;
+      resultDesc.textContent = trait.desc;
+      resultImage.src = trait.image;
+      resultImage.alt = trait.title;
+
+      resultTips.innerHTML = "";
+      trait.tips.forEach(tip => {
+        const card = document.createElement("div");
+        card.className = "rounded-2xl border border-white/15 bg-white/5 p-4 text-sm text-slate-100";
+        card.textContent = tip;
+        resultTips.appendChild(card);
+      });
+
+      renderCompatibility(traitKey);
+      updateTraitQuery(traitKey);
+      updateShareMeta(traitKey, trait);
+      window.scrollTo({ top: resultCard.offsetTop - 40, behavior: "smooth" });
+    }
+
+    function renderCompatibility(traitKey) {
+      const trait = quiz.traits[traitKey];
+      if (!trait || !trait.compatibility) {
+        resultCompatibility.innerHTML = "";
+        return;
+      }
+      const wrapper = document.createElement("div");
+      wrapper.className = "rounded-2xl border border-white/15 bg-white/5 p-4 space-y-3";
+      const title = document.createElement("div");
+      title.className = "text-sm font-semibold text-rose-200 tracking-[0.2em] uppercase";
+      title.textContent = "궁합 리포트";
+      wrapper.appendChild(title);
+
+      if (trait.compatibility.best?.length) {
+        const bestBlock = document.createElement("div");
+        bestBlock.innerHTML = `<p class="text-xs text-emerald-200 mb-2">잘 맞는 타입</p>`;
+        trait.compatibility.best.forEach(item => {
+          const el = createCompatibilityItem(item);
+          if (el) bestBlock.appendChild(el);
+        });
+        wrapper.appendChild(bestBlock);
+      }
+
+      if (trait.compatibility.watch?.length) {
+        const watchBlock = document.createElement("div");
+        watchBlock.innerHTML = `<p class="text-xs text-rose-200 mb-2">주의할 타입</p>`;
+        trait.compatibility.watch.forEach(item => {
+          const el = createCompatibilityItem(item);
+          if (el) watchBlock.appendChild(el);
+        });
+        wrapper.appendChild(watchBlock);
+      }
+
+      resultCompatibility.innerHTML = "";
+      resultCompatibility.appendChild(wrapper);
+    }
+
+    function createCompatibilityItem(info) {
+      const trait = quiz.traits[info.trait];
+      if (!trait) return null;
+      const link = document.createElement("a");
+      link.href = `?${PARAM_KEY}=${info.trait}#result`;
+      link.className = "block rounded-xl border border-white/15 bg-white/5 px-3 py-2 mb-2 text-left text-sm hover:border-rose-200 hover:bg-white/10 transition";
+      link.innerHTML = `<span class="font-semibold text-slate-50">${trait.title}</span><br><span class="text-xs text-slate-300">${info.reason}</span>`;
+      link.addEventListener("click", event => {
+        event.preventDefault();
+        presentResult(info.trait);
+      });
+      return link;
+    }
+
+    function updateTraitQuery(traitKey) {
+      if (!window.history?.replaceState) return;
+      const url = new URL(window.location.href);
+      if (traitKey) {
+        url.searchParams.set(PARAM_KEY, traitKey);
+        url.hash = "result";
+      } else {
+        url.searchParams.delete(PARAM_KEY);
+        url.hash = "";
+      }
+      window.history.replaceState({}, "", url.toString());
+    }
+
+    function updateShareMeta(traitKey, trait) {
+      if (!trait) return;
+      const resolvedImage = trait.image && !trait.image.startsWith("http")
+        ? `${window.location.origin}${trait.image}`
+        : trait.image;
+      shareContent.title = `${trait.title} | 멘헤라 감정 스펙트럼 테스트`;
+      shareContent.description = trait.desc;
+      shareContent.imageUrl = resolvedImage || shareContent.imageUrl;
+      shareContent.webUrl = traitKey
+        ? `${baseShareUrl}?${PARAM_KEY}=${traitKey}#result`
+        : baseShareUrl;
+    }
+
+    prevBtn.addEventListener("click", goPrev);
+    restartBtn.addEventListener("click", restartQuiz);
+
+    renderQuestion();
+
+    const initialTrait = new URLSearchParams(window.location.search).get(PARAM_KEY);
+    if (initialTrait && quiz.traits[initialTrait]) {
+      presentResult(initialTrait);
+    }
+
+    setupKakaoShare("shareKakaoBtn", shareContent);
+  </script>
+</body>
+</html>

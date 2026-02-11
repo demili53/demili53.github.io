@@ -1,0 +1,8 @@
+firebaseConfig:
+  apiKey: "AIzaSyABFDde5KF6p8bBMlcUh2dKvjtqsjHaOds"
+  authDomain: "roompropertie.firebaseapp.com"
+  projectId: "roompropertie"
+  storageBucket: "roompropertie.firebasestorage.app"
+  messagingSenderId: "5729161864"
+  appId: "1:5729161864:web:ba0715442653408cb0053d"
+  measurementId: "G-L04Q3RGTHE"

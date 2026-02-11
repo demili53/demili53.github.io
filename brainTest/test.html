@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Brain Test Hub에서 다양한 심리 테스트를 실행하고 결과를 바로 확인하세요.">
+  <meta name="keywords" content="심리 테스트 실행, 동물 성격 테스트, 성격 유형, 파티 게임">
+  <meta name="author" content="partygame.pe.kr">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/test.html">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="테스트 실행 | 잼있는 심리 테스트">
+  <meta property="og:description" content="원하는 심리 테스트를 선택하고 질문을 풀어보세요. 결과를 바로 제공합니다.">
+  <meta property="og:url" content="https://partygame.pe.kr/brainTest/test.html">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/owl.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="테스트 실행 | 잼있는 심리 테스트">
+  <meta name="twitter:description" content="모든 심리 테스트를 한 곳에서 실행하고 결과를 확인하세요.">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+          crossorigin="anonymous"></script>
+  <title>테스트 실행 | 잼있는 심리 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12">
+    <header class="text-center mb-10 space-y-3">
+      <p class="text-sm uppercase tracking-[0.25em] text-indigo-200">Brain Test</p>
+      <h1 class="text-3xl md:text-4xl font-bold" id="pageTitle">테스트 실행</h1>
+      <p class="text-slate-200">질문에 답하면 결과를 바로 보여드려요.</p>
+    </header>
+
+    <div class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section class="space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="space-y-1">
+            <div class="text-xs font-semibold text-indigo-100 uppercase tracking-widest">테스트 선택</div>
+            <p class="text-sm text-slate-200">brainTest/source/brainTest 폴더의 MD를 불러옵니다.</p>
+          </div>
+          <span id="loadedTest" class="text-xs px-3 py-1 rounded-full bg-white/10 border border-white/15 text-indigo-100">미선택</span>
+        </div>
+        <div id="testList" class="flex flex-wrap gap-2"></div>
+      </section>
+
+      <div id="progress" class="space-y-3">
+        <div class="flex justify-between text-sm text-indigo-100">
+          <span id="progressLabel">1 / 10</span>
+          <span id="progressPercent">0%</span>
+        </div>
+        <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+          <div id="progressBar" class="h-2 bg-gradient-to-r from-indigo-400 to-cyan-300 w-0"></div>
+        </div>
+      </div>
+
+      <section id="questionCard" class="space-y-4">
+        <div class="text-xs font-semibold text-indigo-100 uppercase tracking-widest" id="stepLabel">문항 1</div>
+        <h2 id="questionText" class="text-xl md:text-2xl font-semibold"></h2>
+        <div class="grid gap-3">
+          <button class="option-btn" data-key="A"></button>
+          <button class="option-btn" data-key="B"></button>
+          <button class="option-btn" data-key="C"></button>
+        </div>
+        <div class="flex justify-between pt-2 text-sm text-slate-200">
+          <button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-white/40 hover:bg-white/10 transition disabled:opacity-40 disabled:cursor-not-allowed">이전</button>
+          <button id="skipBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-white/40 hover:bg-white/10 transition">나중에 선택</button>
+        </div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-indigo-100 uppercase tracking-widest">결과</div>
+        <h2 class="text-2xl md:text-3xl font-bold" id="resultTitle"></h2>
+        <div id="resultBadges" class="flex flex-wrap gap-2"></div>
+        <p id="resultDesc" class="text-lg text-slate-100 leading-relaxed"></p>
+        <button id="restartBtn" class="mt-2 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-500 text-white font-semibold shadow-lg hover:bg-indigo-400 transition">
+          다시 하기
+        </button>
+        <a href="/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 text-slate-100 hover:bg-white/10 transition">
+          홈으로 이동
+        </a>
+      </section>
+    </div>
+
+    <footer class="mt-10 text-center text-sm text-indigo-100">
+    </footer>
+  </div>
+
+  <script>
+    const questionText = document.getElementById("questionText");
+    const stepLabel = document.getElementById("stepLabel");
+    const progressLabel = document.getElementById("progressLabel");
+    const progressPercent = document.getElementById("progressPercent");
+    const progressBar = document.getElementById("progressBar");
+    const optionButtons = Array.from(document.querySelectorAll(".option-btn"));
+    const prevBtn = document.getElementById("prevBtn");
+    const skipBtn = document.getElementById("skipBtn");
+    const questionCard = document.getElementById("questionCard");
+    const resultCard = document.getElementById("resultCard");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultBadges = document.getElementById("resultBadges");
+    const restartBtn = document.getElementById("restartBtn");
+    const testList = document.getElementById("testList");
+    const loadedTest = document.getElementById("loadedTest");
+    const pageTitle = document.getElementById("pageTitle");
+
+    const params = new URLSearchParams(window.location.search);
+    const requestedFile = params.get("file");
+    const dataBase = new URL("./source/brainTest/", window.location.href);
+
+    const fallbackData = {
+      files: [{ file: "animal-test.md", title: "동물 성격 심리 테스트" }],
+      tests: {
+        "animal-test.md": {
+          title: "동물 성격 심리 테스트",
+          questions: [
+            { text: "중요한 약속이 있는 날, 시간이 조금 남았다면?", options: [
+              { key: "A", text: "일찍 가서 주변을 살핀다", trait: "owl" },
+              { key: "B", text: "딱 맞춰 도착한다", trait: "fox" },
+              { key: "C", text: "다른 일부터 처리한다", trait: "fox" },
+            ]},
+            { text: "팀 프로젝트에서 갈등이 생기면?", options: [
+              { key: "A", text: "중재하며 모두의 의견을 듣는다", trait: "dolphin" },
+              { key: "B", text: "결정권자에게 방향을 맡긴다", trait: "fennec" },
+              { key: "C", text: "내 주장을 밀어붙인다", trait: "tiger" },
+            ]},
+            { text: "새 취미를 시작할 때?", options: [
+              { key: "A", text: "자료를 충분히 조사하고 시작한다", trait: "owl" },
+              { key: "B", text: "일단 해보며 배우는 편이다", trait: "tiger" },
+              { key: "C", text: "주변 사람을 끌어들여 함께 한다", trait: "dolphin" },
+            ]},
+            { text: "예상치 못한 일정 변경이 생기면?", options: [
+              { key: "A", text: "빠르게 플랜 B를 세운다", trait: "owl" },
+              { key: "B", text: "큰 그림만 맞으면 괜찮다", trait: "fox" },
+              { key: "C", text: "당황하지만 금방 적응한다", trait: "fox" },
+            ]},
+            { text: "스트레스 해소법은?", options: [
+              { key: "A", text: "혼자 집중할 수 있는 활동", trait: "owl" },
+              { key: "B", text: "운동/액션", trait: "tiger" },
+              { key: "C", text: "사람들과 수다/모임", trait: "dolphin" },
+            ]},
+            { text: "목표를 세울 때?", options: [
+              { key: "A", text: "세부 계획과 체크리스트", trait: "owl" },
+              { key: "B", text: "큰 목표 하나로 밀어붙이기", trait: "tiger" },
+              { key: "C", text: "상황을 보며 유연하게 조정", trait: "fox" },
+            ]},
+            { text: "새로운 사람을 만날 때?", options: [
+              { key: "A", text: "먼저 질문하며 알아간다", trait: "dolphin" },
+              { key: "B", text: "관찰 후 천천히 가까워진다", trait: "fennec" },
+              { key: "C", text: "분위기를 주도하며 친해진다", trait: "tiger" },
+            ]},
+            { text: "실수를 했을 때?", options: [
+              { key: "A", text: "원인 분석부터 한다", trait: "fennec" },
+              { key: "B", text: "일단 수습하고 나중에 정리", trait: "tiger" },
+              { key: "C", text: "주변 도움을 받아 공유하며 해결", trait: "dolphin" },
+            ]},
+            { text: "복잡한 문제를 풀 때?", options: [
+              { key: "A", text: "구조를 그리며 분해한다", trait: "owl" },
+              { key: "B", text: "직관적으로 핵심부터 건드린다", trait: "tiger" },
+              { key: "C", text: "여러 사람 의견을 모아본다", trait: "fox" },
+            ]},
+            { text: "여행을 갈 때?", options: [
+              { key: "A", text: "상세 일정표를 만든다", trait: "owl" },
+              { key: "B", text: "주요 스폿만 정해두고 즉흥적으로", trait: "fox" },
+              { key: "C", text: "동행자와 즉석에서 정한다", trait: "dolphin" },
+            ]},
+          ],
+          traits: {
+            owl: { name: "부엉이", tagline: "계획형·분석형", desc: "넓게 보고 조용히 계산하는 전략가입니다. 정보를 정리하고 플랜을 세운 뒤 움직이며, 안정적 결과를 추구합니다." },
+            tiger: { name: "호랑이", tagline: "주도형·직진형", desc: "목표에 집중하고 추진력이 강한 리더 타입입니다. 빠른 결단과 행동으로 팀을 이끌며, 속도와 성과를 중시합니다." },
+            dolphin: { name: "돌고래", tagline: "사교형·협력형", desc: "팀워크와 소통을 통해 문제를 풀어가는 타입입니다. 분위기를 부드럽게 만들고 협업을 즐깁니다." },
+            fox: { name: "여우", tagline: "적응형·유연형", desc: "환경에 따라 빠르게 전술을 바꾸는 유연한 해결사입니다. 즉흥적 변화에도 잘 적응하며, 상황을 살피는 감각이 뛰어납니다." },
+            fennec: { name: "사막여우", tagline: "관찰형·신중형", desc: "조용히 살피고 안전을 확보한 뒤 움직이는 안정 추구자입니다. 리스크를 최소화하며 세심한 관찰로 해법을 찾습니다." },
+          }
+        }
+      }
+    };
+
+    let current = 0;
+    let currentQuestions = [];
+    let traitMeta = {};
+    let answers = [];
+    let manifestEntries = [];
+
+    function normalizeEntries(raw) {
+      return raw
+        .map(item => {
+          if (typeof item === "string") {
+            return { file: item, title: item.replace(/\.md$/i, "") };
+          }
+          if (item && typeof item === "object" && item.file) {
+            return {
+              file: item.file,
+              title: item.title || item.file.replace(/\.md$/i, "")
+            };
+          }
+          return null;
+        })
+        .filter(Boolean);
+    }
+
+    async function loadManifest() {
+      const fallback = fallbackData.files;
+      try {
+        const res = await fetch(new URL("index.json", dataBase));
+        if (!res.ok) throw new Error("manifest missing");
+        const data = await res.json();
+        if (Array.isArray(data) && data.length) return normalizeEntries(data);
+        if (Array.isArray(data.files) && data.files.length) return normalizeEntries(data.files);
+        return fallback;
+      } catch (e) {
+        return normalizeEntries(fallback);
+      }
+    }
+
+    async function fetchTest(fileName) {
+      try {
+        const res = await fetch(new URL(fileName, dataBase));
+        if (!res.ok) throw new Error("파일을 불러올 수 없습니다.");
+        const text = await res.text();
+        const parsed = parseTestMarkdown(text);
+        if (!parsed.questions.length) throw new Error("문항을 찾을 수 없습니다.");
+        return parsed;
+      } catch (e) {
+        console.error("불러오기/파싱 실패, fallback 사용", e);
+        const fallback = fallbackData.tests["animal-test.md"];
+        return {
+          title: fallback.title,
+          questions: fallback.questions,
+          traits: fallback.traits
+        };
+      }
+    }
+
+    function parseSection(md, header) {
+      const pattern = new RegExp(`##\\s*${header}[^\\n]*\\n([\\s\\S]*?)(\\n##\\s|$)`, "i");
+      const match = md.match(pattern);
+      return match ? match[1].trim() : "";
+    }
+
+    function parseQuestions(section) {
+      const lines = section.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      const questions = [];
+      let current = null;
+      for (const line of lines) {
+        if (line.startsWith("- id:")) {
+          if (current) questions.push(current);
+          const id = Number(line.split(":")[1].trim());
+          current = { id, text: "", options: {} };
+        } else if (line.startsWith("text:")) {
+          const m = line.match(/^text:\s*"(.+)"$/);
+          if (m && current) current.text = m[1];
+        } else if (/^[A-Z]:/.test(line)) {
+          const m = line.match(/^([A-Z]):\s*{\s*text:\s*"(.+?)",\s*trait:\s*"(.+?)"\s*}/);
+          if (m && current) {
+            current.options[m[1]] = { key: m[1], text: m[2], trait: m[3] };
+          }
+        }
+      }
+      if (current) questions.push(current);
+      return questions;
+    }
+
+    function parseTraits(section) {
+      const lines = section.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      const traits = {};
+      let current = null;
+      for (const line of lines) {
+        if (line.startsWith("- key:")) {
+          if (current) traits[current.key] = current;
+          current = { key: line.split(":")[1].trim(), name: "", tags: "", desc: "" };
+        } else if (line.startsWith("name:")) {
+          const m = line.match(/^name:\s*"(.+)"$/);
+          if (m && current) current.name = m[1];
+        } else if (line.startsWith("tags:")) {
+          const m = line.match(/^tags:\s*"(.+)"$/);
+          if (m && current) current.tagline = m[1];
+        } else if (line.startsWith("desc:")) {
+          const m = line.match(/^desc:\s*"(.+)"$/);
+          if (m && current) current.desc = m[1];
+        }
+      }
+      if (current) traits[current.key] = current;
+      return traits;
+    }
+
+    function parseTestMarkdown(md) {
+      const titleLine = md.match(/^title:\s*"(.+)"$/m);
+      const heading = md.match(/^#\s*(.+)$/m);
+      const title = (titleLine && titleLine[1].trim()) || (heading && heading[1].trim()) || "심리 테스트";
+      const questionSec = parseSection(md, "문항");
+      const traitSec = parseSection(md, "trait-meta");
+      return {
+        title,
+        questions: parseQuestions(questionSec),
+        traits: parseTraits(traitSec)
+      };
+    }
+
+    function renderQuestion() {
+      if (!currentQuestions.length) return;
+      const q = currentQuestions[current];
+      questionText.textContent = q.text;
+      stepLabel.textContent = `문항 ${current + 1}`;
+      progressLabel.textContent = `${current + 1} / ${currentQuestions.length}`;
+      const percent = Math.round(((current) / currentQuestions.length) * 100);
+      progressPercent.textContent = `${percent}%`;
+      progressBar.style.width = `${percent}%`;
+
+      optionButtons.forEach((btn, idx) => {
+        const opt = q.options[idx];
+        btn.textContent = `${opt.key}. ${opt.text}`;
+        btn.dataset.trait = opt.trait;
+        const isSelected = answers[current]?.key === opt.key;
+        btn.className = `option-btn w-full text-left px-4 py-3 rounded-xl border transition ${
+          isSelected
+            ? "border-indigo-300 bg-white/15 shadow-md"
+            : "border-white/15 hover:border-indigo-200 hover:bg-white/10"
+        }`;
+      });
+
+      prevBtn.disabled = current === 0;
+    }
+
+    function showResult() {
+      const counts = Object.create(null);
+      answers.forEach(ans => {
+        if (!ans) return;
+        counts[ans.trait] = (counts[ans.trait] || 0) + 1;
+      });
+      const values = Object.values(counts);
+      if (values.length === 0) {
+        resultTitle.textContent = "아직 선택이 없어요";
+        resultDesc.textContent = "문항을 선택해 결과를 확인해 주세요.";
+        resultBadges.innerHTML = "";
+        return;
+      }
+
+      const max = Math.max(...values);
+      const topTraits = Object.keys(counts).filter(k => counts[k] === max);
+
+      resultBadges.innerHTML = "";
+      topTraits.forEach(trait => {
+        const meta = traitMeta[trait];
+        const badge = document.createElement("span");
+        badge.className = "inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm";
+        badge.textContent = `${meta.name} · ${meta.tagline}`;
+        resultBadges.appendChild(badge);
+      });
+
+      const primary = traitMeta[topTraits[0]];
+      resultTitle.textContent = topTraits.length > 1
+        ? `당신을 닮은 동물은 ${topTraits.length}가지!`
+        : `당신을 닮은 동물: ${primary.name}`;
+
+      const desc = topTraits
+        .map(trait => {
+          const meta = traitMeta[trait];
+          return `• ${meta.name} (${meta.tagline}) — ${meta.desc}`;
+        })
+        .join("\n");
+
+      resultDesc.textContent = desc;
+      progressLabel.textContent = `${currentQuestions.length} / ${currentQuestions.length}`;
+      progressPercent.textContent = "100%";
+      progressBar.style.width = "100%";
+
+      questionCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+    }
+
+    function handleOption(key) {
+      const q = currentQuestions[current];
+      const selected = q.options.find(o => o.key === key);
+      answers[current] = selected;
+
+      if (current === currentQuestions.length - 1) {
+        showResult();
+        return;
+      }
+      current += 1;
+      renderQuestion();
+    }
+
+    function goPrev() {
+      if (current === 0) return;
+      current -= 1;
+      renderQuestion();
+    }
+
+    function skipQuestion() {
+      if (current === currentQuestions.length - 1) {
+        showResult();
+        return;
+      }
+      current += 1;
+      renderQuestion();
+    }
+
+    function restart() {
+      for (let i = 0; i < answers.length; i += 1) answers[i] = null;
+      current = 0;
+      resultCard.classList.add("hidden");
+      questionCard.classList.remove("hidden");
+      renderQuestion();
+    }
+
+    function selectTestButton(entry) {
+      const { file: fileName, title: displayName } = entry;
+      const btn = document.createElement("button");
+      btn.className = "px-4 py-2 rounded-lg border border-white/20 text-sm text-slate-100 hover:border-indigo-200 hover:bg-white/10 transition";
+      btn.textContent = displayName;
+      btn.addEventListener("click", async () => {
+        btn.disabled = true;
+        btn.textContent = "불러오는 중...";
+        try {
+          const data = await fetchTest(fileName);
+          currentQuestions = data.questions.map(q => ({
+            ...q,
+            options: Object.values(q.options)
+          }));
+          traitMeta = data.traits;
+          answers = new Array(currentQuestions.length).fill(null);
+          current = 0;
+          loadedTest.textContent = displayName;
+          pageTitle.textContent = data.title || "테스트 실행";
+          resultCard.classList.add("hidden");
+          questionCard.classList.remove("hidden");
+          renderQuestion();
+        } catch (e) {
+          alert(e.message || "불러오기 실패");
+        } finally {
+          btn.disabled = false;
+          btn.textContent = displayName;
+        }
+      });
+      return btn;
+    }
+
+    async function init() {
+      manifestEntries = await loadManifest();
+      testList.innerHTML = "";
+      manifestEntries.forEach(entry => {
+        testList.appendChild(selectTestButton(entry));
+      });
+      const firstBtn = testList.querySelector("button");
+      if (manifestEntries.length) {
+        const targetFile = manifestEntries.find(e => e.file === requestedFile) || manifestEntries[0];
+        const btnToClick = Array.from(testList.children).find(b => b.textContent === targetFile.title) || firstBtn;
+        btnToClick?.click();
+      }
+    }
+
+    optionButtons.forEach(btn => {
+      btn.addEventListener("click", () => handleOption(btn.dataset.key || btn.textContent[0]));
+    });
+    prevBtn.addEventListener("click", goPrev);
+    skipBtn.addEventListener("click", skipQuestion);
+    restartBtn.addEventListener("click", restart);
+
+    init();
+  </script>
+</body>
+</html>
+
