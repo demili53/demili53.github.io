@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="관계 선택 질문으로 나의 퍼즐조각 역할과 궁합 포인트를 찾는 6문항 테스트">
+  <meta name="keywords" content="퍼즐조각 테스트, 관계 궁합, 연애 성향, 소통 스타일, 심리 테스트">
+  <meta name="author" content="partygame.pe.kr">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/puzzle-piece-test.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="퍼즐조각 테스트">
+  <meta property="og:description" content="내가 관계에서 어떤 조각으로 맞춰지는지 가볍게 확인해 보세요.">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/bff-og.jpg">
+  <meta property="og:url" content="https://partygame.pe.kr/brainTest/pages/brainTest/puzzle-piece-test.html">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+          crossorigin="anonymous"></script>
+  <title>퍼즐조각 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-950 via-emerald-950 to-teal-950 text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.35em] text-emerald-200">Puzzle Piece Test</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">퍼즐조각 테스트</h1>
+      <p class="text-slate-200">6개의 질문으로 관계 속 내 역할을 알아보세요. <a href="/" class="underline text-emerald-200 hover:text-emerald-100 transition">홈으로 이동</a></p>
+    </header>
+
+    <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section class="space-y-3">
+        <div class="text-xs font-semibold text-emerald-200 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden"><div id="progressBar" class="h-2 bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-300 w-0 transition-all duration-300"></div></div>
+        <div class="text-sm text-slate-300 flex justify-between"><span>관계 퍼즐 매칭 중...</span><span id="progressText">0% 완료</span></div>
+      </section>
+
+      <section id="quizCard" class="space-y-5">
+        <h2 id="question" class="text-2xl font-semibold"></h2>
+        <div id="options" class="space-y-3"></div>
+        <div class="flex justify-between text-sm text-slate-300"><button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-emerald-200 hover:bg-white/10 transition disabled:opacity-40">이전</button><span class="text-emerald-200">가장 가까운 반응을 선택해 주세요</span></div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-emerald-200 uppercase tracking-[0.3em]">결과</div>
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="md:w-48 w-full"><img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-48 object-cover" alt="result visual"></div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm"></div>
+            <p id="resultDesc" class="text-slate-100 leading-relaxed"></p>
+          </div>
+        </div>
+        <div id="resultTips" class="grid gap-3"></div>
+        <div class="space-y-2 bg-white/5 border border-white/10 rounded-2xl p-4">
+          <h3 class="text-lg font-semibold text-emerald-200">테스트 내 궁합</h3>
+          <div class="flex flex-col gap-2 text-sm">
+            <a id="bestLink" class="inline-flex items-center gap-2 text-slate-100 underline underline-offset-4 hover:text-emerald-200" href="#">최고 궁합 결과 보기</a>
+            <a id="worstLink" class="inline-flex items-center gap-2 text-slate-300 underline underline-offset-4 hover:text-rose-200" href="#">주의 궁합 결과 보기</a>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-emerald-300 text-emerald-100 hover:bg-emerald-400/10 transition">카카오톡 공유</button>
+          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 text-slate-950 font-semibold shadow-lg hover:bg-emerald-400 transition">다시 시작하기</button>
+          <a href="/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 text-slate-100 hover:bg-white/10 transition">홈으로 이동</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+    if (window.Kakao && !window.Kakao.isInitialized()) window.Kakao.init(window.__KAKAO_APP_KEY__);
+  </script>
+  <script src="/brainTest/scripts/kakao-share.js"></script>
+  <script>
+    const quiz = {
+      questions: [
+        { text: "새로운 사람을 만났을 때 나는 보통?", options: [
+          { label: "대화 흐름을 정리하며 전체 분위기를 잡는다", trait: "frame" },
+          { label: "상대 감정을 먼저 살피며 리액션을 맞춘다", trait: "bridge" },
+          { label: "핵심 관심사를 바로 찾아 깊게 파고든다", trait: "core" },
+          { label: "어색함을 깨는 장난으로 텐션을 올린다", trait: "spark" }
+        ]},
+        { text: "갈등이 생겼을 때 가장 먼저 하는 행동은?", options: [
+          { label: "쟁점을 분리해 순서대로 정리한다", trait: "frame" },
+          { label: "서운함을 듣고 감정을 안정시킨다", trait: "bridge" },
+          { label: "왜 문제가 생겼는지 원인을 깊게 본다", trait: "core" },
+          { label: "분위기를 환기시켜 대화 재시작 타이밍을 만든다", trait: "spark" }
+        ]},
+        { text: "데이트 계획을 세울 때 내 강점은?", options: [
+          { label: "일정과 동선을 깔끔하게 맞춘다", trait: "frame" },
+          { label: "둘의 취향 접점을 부드럽게 찾는다", trait: "bridge" },
+          { label: "한 번에 기억에 남을 포인트를 만든다", trait: "core" },
+          { label: "예상 밖 재미 요소를 추가한다", trait: "spark" }
+        ]},
+        { text: "상대가 힘들어할 때 나는?", options: [
+          { label: "구체적인 해결 순서를 제안한다", trait: "frame" },
+          { label: "충분히 들어주고 감정 언어를 건넨다", trait: "bridge" },
+          { label: "근본 원인을 함께 짚어본다", trait: "core" },
+          { label: "기분 전환할 활동을 바로 제안한다", trait: "spark" }
+        ]},
+        { text: "관계가 오래가려면 가장 중요한 건?", options: [
+          { label: "합의된 규칙과 루틴", trait: "frame" },
+          { label: "지속적인 공감과 배려", trait: "bridge" },
+          { label: "신뢰할 수 있는 진심", trait: "core" },
+          { label: "새로운 자극과 설렘", trait: "spark" }
+        ]},
+        { text: "내가 가장 지치기 쉬운 상황은?", options: [
+          { label: "약속이 자주 바뀌고 기준이 없을 때", trait: "frame" },
+          { label: "감정 교류 없이 일 처리만 할 때", trait: "bridge" },
+          { label: "깊은 대화 없이 겉도는 반복일 때", trait: "core" },
+          { label: "관계가 지나치게 단조로워질 때", trait: "spark" }
+        ]}
+      ],
+      traits: {
+        frame: {
+          name: "프레임 조각",
+          tagline: "정리 · 안정형",
+          desc: "당신은 관계의 틀을 세우는 조각입니다. 기준, 일정, 약속의 경계를 명확히 잡아 관계가 흔들리지 않도록 지지해 주며, 혼란스러운 상황에서 특히 강합니다. 다만 감정 교류가 부족한 상대와 붙으면 차갑다는 오해를 받기 쉽습니다. 감정 확인 한 줄만 더해도 신뢰와 친밀이 동시에 올라갑니다.",
+          image: "/brainTest/images/bff-campfire.jpg",
+          best: "bridge",
+          worst: "spark",
+          tips: ["기준 설명 전 감정 공감 한 줄 추가", "룰은 2~3개만 핵심으로 유지", "주간 리셋 대화로 누적 오해 차단"]
+        },
+        bridge: {
+          name: "브리지 조각",
+          tagline: "공감 · 연결형",
+          desc: "당신은 서로 다른 성향을 이어주는 연결 조각입니다. 감정 톤을 빠르게 읽고 대화를 부드럽게 이어가며, 갈등이 커지기 전에 완충하는 힘이 큽니다. 그러나 결정 지점에서 지나치게 맞추다 보면 본인 의사가 뒤로 밀릴 수 있습니다. 공감 후에 원하는 바를 문장으로 명확히 말하면 균형이 좋아집니다.",
+          image: "/brainTest/images/bff-laugh.jpg",
+          best: "frame",
+          worst: "core",
+          tips: ["공감 후 요구사항을 한 문장으로 정리", "맞춤보다 합의 우선순위 정하기", "피로 누적 전 휴식 신호 합의"]
+        },
+        core: {
+          name: "코어 조각",
+          tagline: "진심 · 심층형",
+          desc: "당신은 관계의 본질을 붙드는 중심 조각입니다. 얕은 교류보다 의미 있는 대화와 진심을 중시하고, 표면적 평화보다 근본적인 신뢰를 우선합니다. 그래서 가볍게 넘기려는 상대와는 마찰이 생길 수 있습니다. 질문 강도를 조절하고 타이밍을 나누면 깊이와 편안함을 함께 지킬 수 있습니다.",
+          image: "/brainTest/images/bff-bracelet.jpg",
+          best: "spark",
+          worst: "bridge",
+          tips: ["깊은 대화는 타이밍을 예약해 진행", "질문 강도는 단계적으로 올리기", "결론보다 과정 칭찬을 먼저 전하기"]
+        },
+        spark: {
+          name: "스파크 조각",
+          tagline: "활력 · 무드형",
+          desc: "당신은 관계에 에너지를 넣는 점화 조각입니다. 분위기가 처질 때 리듬을 바꾸고, 새로운 경험으로 관계의 신선도를 높입니다. 단, 계획이 중요한 상대에게는 즉흥성이 불안으로 보일 수 있습니다. 작은 실행이라도 공유하고 사전 예고를 더하면 자유로움과 안정감을 동시에 만들 수 있습니다.",
+          image: "/brainTest/images/bff-travel.jpg",
+          best: "core",
+          worst: "frame",
+          tips: ["즉흥 제안 전 기본 일정 먼저 공유", "재미 요소와 안정 요소를 1:1로 배치", "돌발 변경 시 이유를 짧게 설명"]
+        }
+      }
+    };
+
+    const answers = [];
+    let current = 0;
+
+    const stepLabel = document.getElementById("stepLabel");
+    const progressBar = document.getElementById("progressBar");
+    const progressText = document.getElementById("progressText");
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const prevBtn = document.getElementById("prevBtn");
+    const quizCard = document.getElementById("quizCard");
+    const resultCard = document.getElementById("resultCard");
+    const resultImage = document.getElementById("resultImage");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultBadge = document.getElementById("resultBadge");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultTips = document.getElementById("resultTips");
+    const bestLink = document.getElementById("bestLink");
+    const worstLink = document.getElementById("worstLink");
+    const restartBtn = document.getElementById("restartBtn");
+    const shareKakaoBtn = document.getElementById("shareKakaoBtn");
+
+    function renderQuestion() {
+      const q = quiz.questions[current];
+      const total = quiz.questions.length;
+      stepLabel.textContent = `문항 ${current + 1} / ${total}`;
+      const percent = Math.round((current / total) * 100);
+      progressBar.style.width = `${percent}%`;
+      progressText.textContent = `${percent}% 완료`;
+      questionEl.textContent = q.text;
+      optionsEl.innerHTML = "";
+
+      q.options.forEach((option, idx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-white/20 hover:border-emerald-300 hover:bg-white/10 transition";
+        btn.textContent = `${idx + 1}. ${option.label}`;
+        btn.addEventListener("click", () => {
+          answers[current] = option.trait;
+          if (current < total - 1) {
+            current += 1;
+            renderQuestion();
+          } else {
+            renderResult();
+          }
+        });
+        optionsEl.appendChild(btn);
+      });
+
+      prevBtn.disabled = current === 0;
+    }
+
+    function pickResult() {
+      const score = Object.keys(quiz.traits).reduce((acc, key) => {
+        acc[key] = 0;
+        return acc;
+      }, {});
+
+      answers.forEach((trait) => {
+        if (score[trait] !== undefined) score[trait] += 1;
+      });
+
+      const max = Math.max(...Object.values(score));
+      const top = Object.keys(score).filter((key) => score[key] === max);
+      return top[0];
+    }
+
+    function renderCompatibility(anchorId, key, label) {
+      const t = quiz.traits[key];
+      const encoded = encodeURIComponent(anchorId);
+      return {
+        text: `${label}: ${t.name} (${t.tagline})`,
+        href: `#result-${encoded}`,
+      };
+    }
+
+    function renderResult() {
+      const resultKey = pickResult();
+      const trait = quiz.traits[resultKey];
+      const total = quiz.questions.length;
+      progressBar.style.width = "100%";
+      progressText.textContent = "100% 완료";
+      stepLabel.textContent = `문항 ${total} / ${total}`;
+
+      quizCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+
+      resultCard.id = `result-${resultKey}`;
+      resultImage.src = trait.image;
+      resultImage.alt = trait.name;
+      resultTitle.textContent = trait.name;
+      resultBadge.textContent = trait.tagline;
+      resultDesc.textContent = trait.desc;
+
+      resultTips.innerHTML = "";
+      trait.tips.forEach((tip) => {
+        const card = document.createElement("div");
+        card.className = "bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-slate-100";
+        card.textContent = tip;
+        resultTips.appendChild(card);
+      });
+
+      const best = renderCompatibility(resultKey, trait.best, "최고 궁합");
+      const worst = renderCompatibility(resultKey, trait.worst, "주의 궁합");
+      bestLink.textContent = best.text;
+      bestLink.href = best.href;
+      worstLink.textContent = worst.text;
+      worstLink.href = worst.href;
+
+      if (window.setupKakaoShare) {
+        window.setupKakaoShare({
+          button: shareKakaoBtn,
+          title: "퍼즐조각 테스트",
+          description: `${trait.name} 결과가 나왔어요! 내 관계 퍼즐 역할을 확인해 보세요.`,
+          imageUrl: `https://partygame.pe.kr${trait.image}`,
+          linkUrl: "https://partygame.pe.kr/brainTest/pages/brainTest/puzzle-piece-test.html",
+          buttonText: "테스트 하러 가기"
+        });
+      }
+    }
+
+    prevBtn.addEventListener("click", () => {
+      if (current > 0) {
+        current -= 1;
+        renderQuestion();
+      }
+    });
+
+    restartBtn.addEventListener("click", () => {
+      answers.length = 0;
+      current = 0;
+      resultCard.classList.add("hidden");
+      quizCard.classList.remove("hidden");
+      renderQuestion();
+    });
+
+    renderQuestion();
+  </script>
+</body>
+</html>

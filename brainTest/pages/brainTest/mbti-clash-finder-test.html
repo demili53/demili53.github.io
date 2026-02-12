@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="관계 충돌 상황 질문으로 나와 상극이 되기 쉬운 MBTI 결을 찾는 6문항 테스트">
+  <meta name="keywords" content="상극 MBTI, MBTI 궁합, 관계 충돌, 연애 심리, 테스트">
+  <meta name="author" content="partygame.pe.kr">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <link rel="canonical" href="https://partygame.pe.kr/brainTest/pages/brainTest/mbti-clash-finder-test.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="상극 MBTI 찾기 테스트">
+  <meta property="og:description" content="내가 충돌하기 쉬운 대화 스타일과 관계 리듬을 가볍게 확인해 보세요.">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/viewpoint-love-og.jpg">
+  <meta property="og:url" content="https://partygame.pe.kr/brainTest/pages/brainTest/mbti-clash-finder-test.html">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
+          crossorigin="anonymous"></script>
+  <title>상극 MBTI 찾기 테스트</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-950 via-violet-950 to-fuchsia-950 text-slate-50">
+  <div class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <header class="text-center space-y-3">
+      <p class="uppercase text-xs tracking-[0.35em] text-fuchsia-200">Clash MBTI Finder</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold">상극 MBTI 찾기 테스트</h1>
+      <p class="text-slate-200">6개의 관계 상황으로 충돌 패턴을 확인해 보세요. <a href="/" class="underline text-fuchsia-200 hover:text-fuchsia-100 transition">홈으로 이동</a></p>
+    </header>
+
+    <main class="bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-lg p-6 md:p-8 space-y-6">
+      <section class="space-y-3">
+        <div class="text-xs font-semibold text-fuchsia-200 uppercase tracking-[0.3em]" id="stepLabel">문항 1 / 6</div>
+        <div class="w-full bg-white/10 rounded-full h-2 overflow-hidden"><div id="progressBar" class="h-2 bg-gradient-to-r from-fuchsia-400 via-violet-300 to-indigo-300 w-0 transition-all duration-300"></div></div>
+        <div class="text-sm text-slate-300 flex justify-between"><span>관계 충돌 패턴 분석 중...</span><span id="progressText">0% 완료</span></div>
+      </section>
+
+      <section id="quizCard" class="space-y-5">
+        <h2 id="question" class="text-2xl font-semibold"></h2>
+        <div id="options" class="space-y-3"></div>
+        <div class="flex justify-between text-sm text-slate-300"><button id="prevBtn" class="px-3 py-2 rounded-lg border border-white/20 hover:border-fuchsia-200 hover:bg-white/10 transition disabled:opacity-40">이전</button><span class="text-fuchsia-200">가장 가까운 반응을 선택해 주세요</span></div>
+      </section>
+
+      <section id="resultCard" class="hidden space-y-4">
+        <div class="text-xs font-semibold text-fuchsia-200 uppercase tracking-[0.3em]">결과</div>
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="md:w-48 w-full"><img id="resultImage" class="rounded-2xl border border-white/20 shadow-lg w-full h-48 object-cover" alt="result visual"></div>
+          <div class="flex-1 space-y-2">
+            <h2 id="resultTitle" class="text-3xl font-bold"></h2>
+            <div id="resultBadge" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/10 border border-white/20 text-sm"></div>
+            <p id="resultDesc" class="text-slate-100 leading-relaxed"></p>
+          </div>
+        </div>
+        <div id="resultTips" class="grid gap-3"></div>
+        <div class="space-y-2 bg-white/5 border border-white/10 rounded-2xl p-4">
+          <h3 class="text-lg font-semibold text-fuchsia-200">테스트 내 궁합</h3>
+          <div class="flex flex-col gap-2 text-sm">
+            <a id="bestLink" class="inline-flex items-center gap-2 text-slate-100 underline underline-offset-4 hover:text-fuchsia-200" href="#">최고 궁합 결과 보기</a>
+            <a id="worstLink" class="inline-flex items-center gap-2 text-slate-300 underline underline-offset-4 hover:text-rose-200" href="#">주의 궁합 결과 보기</a>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <button id="shareKakaoBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-fuchsia-300 text-fuchsia-100 hover:bg-fuchsia-400/10 transition">카카오톡 공유</button>
+          <button id="restartBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-fuchsia-500 text-slate-950 font-semibold shadow-lg hover:bg-fuchsia-400 transition">다시 시작하기</button>
+          <a href="/" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/20 text-slate-100 hover:bg-white/10 transition">홈으로 이동</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script>
+    window.__KAKAO_APP_KEY__ = "af0f520240f2c824b721bbd002c45178";
+    if (window.Kakao && !window.Kakao.isInitialized()) window.Kakao.init(window.__KAKAO_APP_KEY__);
+  </script>
+  <script src="/brainTest/scripts/kakao-share.js"></script>
+  <script>
+    const quiz = {
+      questions: [
+        { text: "갈등이 생겼을 때 내가 먼저 원하는 흐름은?", options: [
+          { label: "핵심 원인부터 짚고 빠르게 결론낸다", trait: "logic" },
+          { label: "서운했던 감정부터 충분히 공유한다", trait: "empathy" },
+          { label: "당장 실행할 수정안부터 정한다", trait: "action" },
+          { label: "시간을 두고 천천히 합의점을 찾는다", trait: "harmony" }
+        ]},
+        { text: "상대가 즉답을 피하면 나는 보통?", options: [
+          { label: "논리 부족으로 느껴 답답해진다", trait: "logic" },
+          { label: "내 감정을 피한다고 느껴 서운하다", trait: "empathy" },
+          { label: "결정 지연으로 에너지가 빠진다", trait: "action" },
+          { label: "압박하지 않고 상황을 지켜본다", trait: "harmony" }
+        ]},
+        { text: "데이트 계획을 잡을 때 가장 중요한 기준은?", options: [
+          { label: "동선과 비용이 효율적인지", trait: "logic" },
+          { label: "둘 다 기분 좋게 즐길 수 있는지", trait: "empathy" },
+          { label: "새롭고 바로 실행 가능한지", trait: "action" },
+          { label: "무리 없이 오래 유지 가능한지", trait: "harmony" }
+        ]},
+        { text: "대화 중 의견이 다를 때 내 반응은?", options: [
+          { label: "근거를 들며 쟁점을 분리한다", trait: "logic" },
+          { label: "말투와 감정 온도를 먼저 조절한다", trait: "empathy" },
+          { label: "일단 해보고 조정하자고 제안한다", trait: "action" },
+          { label: "각자 입장을 정리할 시간을 둔다", trait: "harmony" }
+        ]},
+        { text: "관계에서 가장 힘든 상대 스타일은?", options: [
+          { label: "감정만 말하고 결론이 없는 스타일", trait: "logic" },
+          { label: "차갑게 사실만 말하는 스타일", trait: "empathy" },
+          { label: "속도가 느려 계속 미루는 스타일", trait: "action" },
+          { label: "급하게 몰아붙이며 결정을 재촉하는 스타일", trait: "harmony" }
+        ]},
+        { text: "나와 상극이 줄어드는 순간은?", options: [
+          { label: "서로의 기준을 문장으로 명확히 합의할 때", trait: "logic" },
+          { label: "감정을 인정하고 말투를 맞춰줄 때", trait: "empathy" },
+          { label: "작은 행동 약속을 바로 실행할 때", trait: "action" },
+          { label: "관계 페이스를 존중하며 반복 대화할 때", trait: "harmony" }
+        ]}
+      ],
+      traits: {
+        logic: {
+          name: "논리 정렬형",
+          tagline: "분석 · 명확형",
+          desc: "당신은 관계에서 감정 자체보다 맥락과 구조를 먼저 봅니다. 그래서 근거 없는 단정이나 말의 일관성 부족에 특히 예민하게 반응하며, 대화가 순환만 되고 결론으로 가지 않으면 빠르게 지칩니다. 상극은 감정 파동이 크고 기준이 자주 바뀌는 유형입니다. 핵심 합의 문장을 먼저 만들면 충돌 강도가 눈에 띄게 줄어듭니다.",
+          image: "/brainTest/images/viewpoint-love-observer.jpg",
+          best: "harmony",
+          worst: "empathy",
+          tips: ["핵심 쟁점을 한 문장으로 정리해 시작하기", "감정 확인 한 줄을 먼저 말하면 대화 저항이 줄어듦", "결론 마감 시간을 정하면 갈등 반복이 감소"]
+        },
+        empathy: {
+          name: "감정 공명형",
+          tagline: "공감 · 연결형",
+          desc: "당신은 사실보다 감정의 결을 먼저 읽는 타입입니다. 말투, 타이밍, 표정 같은 미세한 신호가 관계 안정감을 결정하고, 차갑거나 단절된 표현이 이어지면 상처를 크게 느낍니다. 상극은 효율만 앞세워 감정 확인을 생략하는 유형입니다. 감정 라벨을 먼저 나누고 그다음 해결안을 정하면 대화의 만족도가 크게 올라갑니다.",
+          image: "/brainTest/images/viewpoint-love-empath.jpg",
+          best: "harmony",
+          worst: "action",
+          tips: ["대화 시작 전에 감정 상태를 먼저 공유하기", "요청을 구체 문장으로 바꾸면 오해가 줄어듦", "갈등 직후보다 진정 후 재대화가 효과적"]
+        },
+        action: {
+          name: "속도 추진형",
+          tagline: "결정 · 실행형",
+          desc: "당신은 관계에서도 추진력과 즉시성을 중요하게 여깁니다. 오래 고민만 이어지는 상황을 비효율로 느끼고, 결정이 늦어지면 관심이 줄어드는 경향이 있습니다. 상극은 신중함을 이유로 모든 선택을 뒤로 미루는 유형입니다. 합의 가능한 작은 행동을 먼저 실행하고 리뷰 주기를 정하면 속도 차이로 생기는 스트레스를 줄일 수 있습니다.",
+          image: "/brainTest/images/viewpoint-love-adventurer.jpg",
+          best: "logic",
+          worst: "harmony",
+          tips: ["큰 결정보다 24시간 내 가능한 작은 실행부터", "우선순위 1개만 합의해도 체감 만족도가 상승", "속도 압박이 세질 때 질문형 문장으로 전환"]
+        },
+        harmony: {
+          name: "안정 조율형",
+          tagline: "균형 · 지속형",
+          desc: "당신은 관계의 장기 안정성을 최우선으로 둡니다. 감정이 격해질수록 속도를 늦추고 균형점을 찾으려 하며, 급한 결론이나 단정적 표현에 강한 피로를 느낍니다. 상극은 즉시 답을 요구하고 압박 강도가 높은 유형입니다. 대화 규칙과 휴식 타이밍을 미리 합의하면 충돌이 커지기 전에 안전하게 조정할 수 있습니다.",
+          image: "/brainTest/images/viewpoint-love-strategist.jpg",
+          best: "empathy",
+          worst: "action",
+          tips: ["갈등 대화 시간 제한을 미리 정해 과열 방지", "합의 전 휴식 신호를 정하면 관계 안정성 증가", "모호한 표현을 체크리스트로 구체화"]
+        }
+      }
+    };
+
+    const answers = [];
+    let current = 0;
+
+    const stepLabel = document.getElementById("stepLabel");
+    const progressBar = document.getElementById("progressBar");
+    const progressText = document.getElementById("progressText");
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const prevBtn = document.getElementById("prevBtn");
+    const quizCard = document.getElementById("quizCard");
+    const resultCard = document.getElementById("resultCard");
+    const resultImage = document.getElementById("resultImage");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultBadge = document.getElementById("resultBadge");
+    const resultDesc = document.getElementById("resultDesc");
+    const resultTips = document.getElementById("resultTips");
+    const bestLink = document.getElementById("bestLink");
+    const worstLink = document.getElementById("worstLink");
+    const restartBtn = document.getElementById("restartBtn");
+    const shareKakaoBtn = document.getElementById("shareKakaoBtn");
+
+    function renderQuestion() {
+      const q = quiz.questions[current];
+      const total = quiz.questions.length;
+      stepLabel.textContent = `문항 ${current + 1} / ${total}`;
+      const percent = Math.round((current / total) * 100);
+      progressBar.style.width = `${percent}%`;
+      progressText.textContent = `${percent}% 완료`;
+      questionEl.textContent = q.text;
+      optionsEl.innerHTML = "";
+
+      q.options.forEach((option, idx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "w-full text-left px-4 py-3 rounded-xl border border-white/20 hover:border-fuchsia-300 hover:bg-white/10 transition";
+        btn.textContent = `${idx + 1}. ${option.label}`;
+        btn.addEventListener("click", () => {
+          answers[current] = option.trait;
+          if (current < total - 1) {
+            current += 1;
+            renderQuestion();
+          } else {
+            renderResult();
+          }
+        });
+        optionsEl.appendChild(btn);
+      });
+
+      prevBtn.disabled = current === 0;
+    }
+
+    function pickResult() {
+      const score = Object.keys(quiz.traits).reduce((acc, key) => {
+        acc[key] = 0;
+        return acc;
+      }, {});
+
+      answers.forEach((trait) => {
+        if (score[trait] !== undefined) score[trait] += 1;
+      });
+
+      const max = Math.max(...Object.values(score));
+      const top = Object.keys(score).filter((key) => score[key] === max);
+      return top[0];
+    }
+
+    function renderCompatibility(anchorId, key, label) {
+      const t = quiz.traits[key];
+      const encoded = encodeURIComponent(anchorId);
+      return {
+        text: `${label}: ${t.name} (${t.tagline})`,
+        href: `#result-${encoded}`,
+      };
+    }
+
+    function renderResult() {
+      const resultKey = pickResult();
+      const trait = quiz.traits[resultKey];
+      const total = quiz.questions.length;
+      progressBar.style.width = "100%";
+      progressText.textContent = "100% 완료";
+      stepLabel.textContent = `문항 ${total} / ${total}`;
+
+      quizCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+
+      resultCard.id = `result-${resultKey}`;
+      resultImage.src = trait.image;
+      resultImage.alt = trait.name;
+      resultTitle.textContent = trait.name;
+      resultBadge.textContent = trait.tagline;
+      resultDesc.textContent = trait.desc;
+
+      resultTips.innerHTML = "";
+      trait.tips.forEach((tip) => {
+        const card = document.createElement("div");
+        card.className = "bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-slate-100";
+        card.textContent = tip;
+        resultTips.appendChild(card);
+      });
+
+      const best = renderCompatibility(resultKey, trait.best, "최고 궁합");
+      const worst = renderCompatibility(resultKey, trait.worst, "주의 궁합");
+      bestLink.textContent = best.text;
+      bestLink.href = best.href;
+      worstLink.textContent = worst.text;
+      worstLink.href = worst.href;
+
+      if (window.setupKakaoShare) {
+        window.setupKakaoShare({
+          button: shareKakaoBtn,
+          title: "상극 MBTI 찾기 테스트",
+          description: `${trait.name} 결과가 나왔어요! 나와 충돌하기 쉬운 관계 결을 확인해 보세요.`,
+          imageUrl: `https://partygame.pe.kr${trait.image}`,
+          linkUrl: "https://partygame.pe.kr/brainTest/pages/brainTest/mbti-clash-finder-test.html",
+          buttonText: "테스트 하러 가기"
+        });
+      }
+    }
+
+    prevBtn.addEventListener("click", () => {
+      if (current > 0) {
+        current -= 1;
+        renderQuestion();
+      }
+    });
+
+    restartBtn.addEventListener("click", () => {
+      answers.length = 0;
+      current = 0;
+      resultCard.classList.add("hidden");
+      quizCard.classList.remove("hidden");
+      renderQuestion();
+    });
+
+    renderQuestion();
+  </script>
+</body>
+</html>
