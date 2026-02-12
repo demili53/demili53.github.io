@@ -804,5 +804,18 @@
             "소통",
             "테스트"
         ]
+    },
+    {
+        "id": "blood-love-test",
+        "title": "혈중연애 테스트",
+        "path": "/brainTest/pages/brainTest/blood-love-test.html",
+        "description": "연애 반응 질문으로 나의 혈중연애 농도와 관계 스타일을 찾는 6문항 테스트",
+        "keywords": [
+            "혈중연애",
+            "연애 농도",
+            "연애 성향",
+            "관계 스타일",
+            "테스트"
+        ]
     }
 ]
