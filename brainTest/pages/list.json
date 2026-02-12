@@ -817,5 +817,18 @@
             "관계 스타일",
             "테스트"
         ]
+    },
+    {
+        "id": "first-impression-current-impression-test",
+        "title": "첫인상 현인상 테스트",
+        "path": "/brainTest/pages/brainTest/first-impression-current-impression-test.html",
+        "description": "첫인상과 현재 인상 차이를 확인하는 6문항 관계 이미지 테스트",
+        "keywords": [
+            "첫인상",
+            "현인상",
+            "관계 심리",
+            "연애",
+            "테스트"
+        ]
     }
 ]
