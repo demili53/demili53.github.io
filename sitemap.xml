@@ -351,6 +351,11 @@
         <priority>0.8</priority>
       </url>
   <url>
+        <loc>https://partygame.pe.kr/brainTest/pages/brainTest/t-partner-strategy-simulation-test.html</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
+  <url>
         <loc>https://partygame.pe.kr/psychology-guide.html</loc>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>

@@ -830,5 +830,18 @@
             "연애",
             "테스트"
         ]
+    },
+    {
+        "id": "t-partner-strategy-simulation-test",
+        "title": "T애인 공략 시뮬레이션",
+        "path": "/brainTest/pages/brainTest/t-partner-strategy-simulation-test.html",
+        "description": "T 성향 애인과의 대화·갈등·데이트 전략을 점검하는 6문항 시뮬레이션 테스트",
+        "keywords": [
+            "T애인 공략",
+            "T 성향 연애",
+            "커뮤니케이션",
+            "전략",
+            "테스트"
+        ]
     }
 ]
