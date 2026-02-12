@@ -4,6 +4,7 @@
    - 블로그 목록은 `/blog/index.html`을 사용한다.
    - 신규 글은 `/blog/posts/` 아래에 HTML 단일 파일로 작성한다.
    - 파일명은 영문 소문자 kebab-case를 사용한다. 예: `how-to-read-test-results.html`
+   - 모든 파일은 반드시 `UTF-8` 인코딩으로 작성한다.
    - `<head>`에는 `canonical`, `description`, `robots`, `og:*`, 파비콘 태그를 반드시 포함한다.
 
 2. **필수 메타/광고 스니펫**
