@@ -2,4 +2,5 @@ User-agent: *
 Allow: /
 
 Sitemap: https://partygame.pe.kr/sitemap.xml
+# cache-refresh: 2026-02-19T14:33:10+09:00
 #DaumWebMasterTool:9ec94e272e82cdf4ad43e8071416bb6adf4b9416ae56e91e93d49c4bfd471006:yoPeIV5QL7Z1hL4c3KNBAg==
