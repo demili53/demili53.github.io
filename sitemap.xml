@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
         <loc>https://partygame.pe.kr/</loc>
@@ -377,7 +377,7 @@
       </url>
   <url>
         <loc>https://partygame.pe.kr/blog/</loc>
-        <lastmod>2026-02-19T14:33:10+09:00</lastmod>
+        <lastmod>2026-02-26T10:40:00+09:00</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
       </url>
@@ -695,4 +695,71 @@
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
       </url>
-</urlset>
+  <url>
+        <loc>https://partygame.pe.kr/blog/posts/romance-first-month-boundary-checklist-2026.html</loc>
+        <lastmod>2026-02-25T11:45:00+09:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
+  <url>
+        <loc>https://partygame.pe.kr/blog/posts/romance-reply-delay-misunderstanding-fix-guide-2026.html</loc>
+        <lastmod>2026-02-25T11:45:00+09:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
+  <url>
+        <loc>https://partygame.pe.kr/blog/posts/romance-second-date-signal-reading-guide-2026.html</loc>
+        <lastmod>2026-02-25T11:45:00+09:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
+  <url>
+        <loc>https://partygame.pe.kr/blog/posts/romance-couple-travel-budget-conversation-guide-2026.html</loc>
+        <lastmod>2026-02-25T11:45:00+09:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
+  <url>
+        <loc>https://partygame.pe.kr/blog/posts/romance-workaholic-partner-communication-guide-2026.html</loc>
+        <lastmod>2026-02-25T11:45:00+09:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
+  <url>
+        <loc>https://partygame.pe.kr/blog/posts/economy-month-end-zero-based-budget-routine-2026.html</loc>
+        <lastmod>2026-02-25T11:45:00+09:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
+  <url>
+        <loc>https://partygame.pe.kr/blog/posts/economy-small-savings-automation-52week-guide-2026.html</loc>
+        <lastmod>2026-02-25T11:45:00+09:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
+  <url>
+        <loc>https://partygame.pe.kr/blog/posts/economy-rent-vs-buy-ready-scorecard-2026.html</loc>
+        <lastmod>2026-02-25T11:45:00+09:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
+  <url>
+        <loc>https://partygame.pe.kr/blog/posts/economy-freelancer-tax-reserve-system-2026.html</loc>
+        <lastmod>2026-02-25T11:45:00+09:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
+  <url>
+        <loc>https://partygame.pe.kr/blog/posts/economy-wedding-budget-priority-framework-2026.html</loc>
+        <lastmod>2026-02-25T11:45:00+09:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
+  <url>
+        <loc>https://partygame.pe.kr/blog/posts/economy-used-ssd-health-check-crystaldiskinfo-guide-2026.html</loc>
+        <lastmod>2026-02-26T10:40:00+09:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url></urlset>
+
+
