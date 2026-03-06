@@ -2,14 +2,49 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0; url=/">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="refresh" content="4; url=/">
   <meta name="google-adsense-account" content="ca-pub-1087435977438565">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565"
           crossorigin="anonymous"></script>
-  <title>리다이렉트 중...</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>BrainTest 허브로 이동 중...</title>
 </head>
-<body>
-  <p>메인 페이지로 이동합니다. 자동으로 이동하지 않으면 <a href="/">여기</a>를 클릭하세요.</p>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 text-slate-50">
+  <main class="max-w-3xl mx-auto px-6 py-16 space-y-6">
+    <header class="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-8 space-y-4">
+      <p class="text-xs uppercase tracking-[0.28em] text-indigo-200">Brain Test Gateway</p>
+      <h1 class="text-3xl md:text-4xl font-bold">브레인테스트 허브로 이동합니다</h1>
+      <p class="text-slate-200">
+        자동 이동까지 <span id="countdown" class="font-semibold text-indigo-200">4</span>초 남았습니다.
+      </p>
+    </header>
+
+    <section class="rounded-2xl border border-white/10 bg-white/5 p-5 md:p-6 space-y-4">
+      <p class="text-sm text-slate-300">바로 이동할 메뉴를 선택하세요.</p>
+      <nav class="flex flex-wrap gap-2 text-sm">
+        <a href="/" class="px-3 py-2 rounded-full border border-indigo-200/70 text-indigo-100 hover:bg-white/10 transition">메인 홈</a>
+        <a href="/brainTest/test.html" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">테스트 모음</a>
+        <a href="/blog/" class="px-3 py-2 rounded-full border border-emerald-200/60 text-emerald-100 hover:bg-white/10 transition">블로그</a>
+        <a href="/psychology-guide.html" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">해설 가이드</a>
+        <a href="/contact.html" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">문의하기</a>
+      </nav>
+    </section>
+  </main>
+
+  <script>
+    let sec = 4;
+    const el = document.getElementById("countdown");
+    const timer = setInterval(() => {
+      sec -= 1;
+      if (sec <= 0) {
+        clearInterval(timer);
+        window.location.href = "/";
+        return;
+      }
+      el.textContent = String(sec);
+    }, 1000);
+  </script>
 </body>
 </html>
 
