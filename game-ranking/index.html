@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="날짜별 온라인 게임 순위 Top 20을 게임 스크린샷과 설명으로 확인하는 페이지">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://partygame.pe.kr/game-ranking/">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="온라인 게임 순위 Top 20 | partygame.pe.kr">
+  <meta property="og:description" content="날짜별로 보는 온라인 게임 순위와 게임별 스크린샷/설명">
+  <meta property="og:url" content="https://partygame.pe.kr/game-ranking/">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/fox.png">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565" crossorigin="anonymous"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>온라인 게임 순위 Top 20 | partygame.pe.kr</title>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 text-slate-50">
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-8">
+    <header class="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-8 space-y-4">
+      <p class="text-xs uppercase tracking-[0.28em] text-indigo-200">Game Ranking</p>
+      <h1 class="text-3xl md:text-4xl font-bold">온라인 게임 순위 Top 20</h1>
+      <p class="text-slate-200">날짜를 선택하면 해당 일자의 1~20위를 스크린샷과 함께 볼 수 있습니다.</p>
+      <nav class="flex flex-wrap gap-2 text-sm">
+        <a href="/" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">홈</a>
+        <a href="/blog/" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">블로그</a>
+        <a href="/ai-ranking/" class="px-3 py-2 rounded-full border border-emerald-200/60 text-emerald-100 hover:bg-white/10 transition">AI 순위</a>
+      </nav>
+    </header>
+
+    <section class="rounded-2xl border border-white/10 bg-white/5 p-4 md:p-6 space-y-4">
+      <div class="flex flex-wrap items-center gap-2" id="dateButtons"></div>
+      <p class="text-sm text-slate-300">기준일: <span id="selectedDate" class="font-semibold text-indigo-200"></span></p>
+      <p class="text-xs text-slate-400">참고: 이 페이지는 편집형 순위 정리 페이지이며, 실제 게임사/플랫폼의 공식 집계와 다를 수 있습니다.</p>
+    </section>
+
+    <section id="rankingList" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></section>
+  </main>
+
+  <script>
+    const games = {
+      lol: { name: "리그 오브 레전드", genre: "MOBA", url: "https://www.leagueoflegends.com/ko-kr/", desc: "라인 운영과 한타 전략 중심의 대표 팀 대전 게임." },
+      valorant: { name: "발로란트", genre: "FPS", url: "https://playvalorant.com/ko-kr/", desc: "정밀 슈팅과 요원 스킬 조합이 핵심인 전술 FPS." },
+      fconline: { name: "FC 온라인", genre: "스포츠", url: "https://fconline.nexon.com/main/index", desc: "실시간 매치와 스쿼드 운영이 중심인 온라인 축구 게임." },
+      maple: { name: "메이플스토리", genre: "MMORPG", url: "https://maplestory.nexon.com/Home/Main", desc: "캐릭터 성장과 보스 공략 중심의 장수 온라인 RPG." },
+      dnf: { name: "던전앤파이터", genre: "액션 RPG", url: "https://df.nexon.com/df/home", desc: "빠른 타격감과 직업별 콤보 액션이 강점인 게임." },
+      pubg: { name: "PUBG: 배틀그라운드", genre: "배틀로얄", url: "https://pubg.com/ko/main", desc: "생존 루트와 교전 판단이 중요한 배틀로얄 슈팅." },
+      overwatch2: { name: "오버워치 2", genre: "팀 FPS", url: "https://overwatch.blizzard.com/ko-kr/", desc: "영웅 조합과 포지션 플레이가 핵심인 팀 기반 슈팅." },
+      suddenattack: { name: "서든어택", genre: "FPS", url: "https://sa.nexon.com/main/index", desc: "빠른 템포의 라운드전과 맵 숙련도가 중요한 FPS." },
+      lostark: { name: "로스트아크", genre: "MMORPG", url: "https://lostark.game.onstove.com/Main", desc: "레이드 중심 협동 콘텐츠가 강한 액션 MMORPG." },
+      wow: { name: "월드 오브 워크래프트", genre: "MMORPG", url: "https://worldofwarcraft.blizzard.com/ko-kr/", desc: "확장팩 기반 세계관과 레이드 플레이가 강점." },
+      roblox: { name: "로블록스", genre: "플랫폼", url: "https://www.roblox.com/", desc: "유저 제작 콘텐츠를 중심으로 다양한 장르를 즐기는 플랫폼." },
+      minecraft: { name: "마인크래프트", genre: "샌드박스", url: "https://www.minecraft.net/ko-kr", desc: "건축·탐험·생존을 자유롭게 즐기는 샌드박스 게임." },
+      apex: { name: "에이펙스 레전드", genre: "배틀로얄", url: "https://www.ea.com/games/apex-legends", desc: "레전드 스킬 연계와 기동성이 특징인 배틀로얄 FPS." },
+      gtaonline: { name: "GTA 온라인", genre: "오픈월드", url: "https://www.rockstargames.com/gta-online", desc: "자유도 높은 오픈월드와 협동/경쟁 콘텐츠 제공." },
+      starcraft: { name: "스타크래프트 리마스터", genre: "RTS", url: "https://starcraft.com/ko-kr/", desc: "정교한 빌드와 컨트롤 중심의 실시간 전략 게임." },
+      diablo4: { name: "디아블로 IV", genre: "액션 RPG", url: "https://diablo4.blizzard.com/ko-kr/", desc: "파밍과 빌드 최적화가 핵심인 핵앤슬래시 RPG." },
+      ff14: { name: "파이널판타지 XIV", genre: "MMORPG", url: "https://www.finalfantasyxiv.com/", desc: "스토리 완성도와 파티 레이드 콘텐츠가 강점." },
+      poe2: { name: "패스 오브 엑자일 2", genre: "액션 RPG", url: "https://pathofexile2.com/", desc: "깊은 스킬 트리와 하드코어 파밍이 매력인 ARPG." },
+      albion: { name: "알비온 온라인", genre: "샌드박스 MMORPG", url: "https://albiononline.com/", desc: "경제/생활/영지전이 결합된 샌드박스형 MMORPG." },
+      warframe: { name: "워프레임", genre: "루터 슈터", url: "https://www.warframe.com/", desc: "빠른 이동 액션과 협동 미션 중심의 SF 루터 슈터." }
+    };
+
+    const rankingByDate = {
+      "2026-03-09": ["lol","valorant","fconline","maple","dnf","pubg","overwatch2","suddenattack","lostark","wow","roblox","minecraft","apex","gtaonline","starcraft","diablo4","ff14","poe2","albion","warframe"],
+      "2026-03-08": ["lol","fconline","valorant","maple","pubg","dnf","overwatch2","lostark","suddenattack","roblox","minecraft","wow","apex","starcraft","gtaonline","diablo4","ff14","warframe","poe2","albion"],
+      "2026-03-07": ["lol","valorant","maple","fconline","dnf","pubg","suddenattack","overwatch2","lostark","minecraft","roblox","wow","starcraft","apex","diablo4","gtaonline","ff14","poe2","warframe","albion"]
+    };
+
+    const dateButtons = document.getElementById("dateButtons");
+    const rankingList = document.getElementById("rankingList");
+    const selectedDateEl = document.getElementById("selectedDate");
+    const dates = Object.keys(rankingByDate).sort().reverse();
+    let selectedDate = dates[0];
+
+    function screenshotUrl(url) {
+      return `https://s.wordpress.com/mshots/v1/${encodeURIComponent(url)}?w=1200`;
+    }
+
+    function renderDateButtons() {
+      dateButtons.innerHTML = "";
+      dates.forEach((d) => {
+        const btn = document.createElement("button");
+        btn.textContent = d;
+        btn.className = d === selectedDate
+          ? "px-3 py-2 rounded-full border border-indigo-200/70 bg-white/10 text-indigo-100 text-sm"
+          : "px-3 py-2 rounded-full border border-white/20 text-slate-200 text-sm hover:bg-white/10";
+        btn.addEventListener("click", () => {
+          selectedDate = d;
+          render();
+        });
+        dateButtons.appendChild(btn);
+      });
+    }
+
+    function renderRanking() {
+      selectedDateEl.textContent = selectedDate;
+      rankingList.innerHTML = "";
+      rankingByDate[selectedDate].forEach((id, idx) => {
+        const game = games[id];
+        const card = document.createElement("article");
+        card.className = "rounded-2xl border border-white/10 bg-white/5 overflow-hidden";
+        card.innerHTML = `
+          <img src="${screenshotUrl(game.url)}" alt="${game.name} 스크린샷" class="w-full h-44 object-cover">
+          <div class="p-4 space-y-2">
+            <p class="text-xs text-indigo-200 font-semibold">#${idx + 1}</p>
+            <h2 class="text-lg font-semibold">${game.name}</h2>
+            <p class="text-xs text-slate-300">${game.genre}</p>
+            <p class="text-sm text-slate-200">${game.desc}</p>
+            <a href="${game.url}" target="_blank" rel="noopener noreferrer nofollow" class="text-indigo-200 underline">공식 페이지</a>
+          </div>
+        `;
+        rankingList.appendChild(card);
+      });
+    }
+
+    function render() {
+      renderDateButtons();
+      renderRanking();
+    }
+
+    render();
+  </script>
+</body>
+</html>
