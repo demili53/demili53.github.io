@@ -1,0 +1,84 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="일일 토렌트 순위 탭. 순위/제목/카테고리/기준일/상세 링크를 확인할 수 있습니다.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://partygame.pe.kr/torrent/tabs/daily-ranking.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="일일 토렌트 순위 | 토렌트 허브">
+  <meta property="og:description" content="일일 기준 순위를 1위부터 확인하세요.">
+  <meta property="og:url" content="https://partygame.pe.kr/torrent/tabs/daily-ranking.html">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/fox.png">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565" crossorigin="anonymous"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>일일 토렌트 순위 | 토렌트 허브</title>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 text-slate-50">
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-6">
+    <header class="rounded-3xl border border-white/10 bg-white/5 p-5 md:p-7 space-y-4">
+      <p class="text-xs uppercase tracking-[0.28em] text-indigo-200">Torrent Hub</p>
+      <h1 class="text-2xl md:text-3xl font-bold">일일 토렌트 순위</h1>
+      <nav class="flex flex-wrap gap-2 text-sm">
+        <a href="/torrent/tabs/daily-ranking.html" aria-current="page" class="px-4 py-2 rounded-full border border-indigo-200/70 text-indigo-100 bg-white/10">일일 토렌트 순위</a>
+        <a href="/torrent/tabs/site-directory.html" class="px-4 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">사이트 설명/링크 모음</a>
+        <a href="/torrent/" class="px-4 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">허브 홈</a>
+      </nav>
+    </header>
+
+    <section class="rounded-2xl border border-white/10 bg-white/5 p-4 md:p-6 space-y-4">
+      <div class="flex items-center justify-between gap-3">
+        <h2 class="text-lg font-semibold text-indigo-200">오늘 순위 (2026-03-09)</h2>
+        <span class="text-xs text-slate-300">기준일: 2026-03-09</span>
+      </div>
+
+      <div class="overflow-x-auto rounded-xl border border-white/10">
+        <table class="w-full min-w-[640px] text-sm">
+          <thead class="bg-white/10 text-slate-200">
+            <tr>
+              <th class="text-left p-3">순위</th>
+              <th class="text-left p-3">제목</th>
+              <th class="text-left p-3">카테고리</th>
+              <th class="text-left p-3">기준일</th>
+              <th class="text-left p-3">상세 링크</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/10 text-slate-100">
+            <tr>
+              <td class="p-3 font-semibold">1</td>
+              <td class="p-3">샘플 항목 A</td>
+              <td class="p-3">영화</td>
+              <td class="p-3">2026-03-09</td>
+              <td class="p-3"><a href="#" class="text-indigo-200 underline">보기</a></td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold">2</td>
+              <td class="p-3">샘플 항목 B</td>
+              <td class="p-3">드라마</td>
+              <td class="p-3">2026-03-09</td>
+              <td class="p-3"><a href="#" class="text-indigo-200 underline">보기</a></td>
+            </tr>
+            <tr>
+              <td class="p-3 font-semibold">3</td>
+              <td class="p-3">샘플 항목 C</td>
+              <td class="p-3">예능</td>
+              <td class="p-3">2026-03-09</td>
+              <td class="p-3"><a href="#" class="text-indigo-200 underline">보기</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="hidden rounded-xl border border-amber-300/40 bg-amber-500/10 p-4 text-amber-100" id="emptyState">
+        오늘 등록된 순위 데이터가 없습니다. 잠시 후 다시 확인해 주세요.
+      </div>
+
+      <p class="text-sm text-slate-400">본 페이지는 정보 제공 목적이며, 저작권 및 관련 법규 준수 책임은 이용자에게 있습니다.</p>
+      <p class="text-sm text-slate-400">불법/유해 콘텐츠 신고: <a href="/contact.html" class="text-indigo-200 underline hover:text-indigo-100">/contact.html</a></p>
+    </section>
+  </main>
+</body>
+</html>

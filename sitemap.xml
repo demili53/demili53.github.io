@@ -1006,6 +1006,24 @@
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
       </url>
+  <url>
+        <loc>https://partygame.pe.kr/torrent/</loc>
+        <lastmod>2026-03-09T23:40:00+09:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
+  <url>
+        <loc>https://partygame.pe.kr/torrent/tabs/daily-ranking.html</loc>
+        <lastmod>2026-03-09T23:40:00+09:00</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+      </url>
+  <url>
+        <loc>https://partygame.pe.kr/torrent/tabs/site-directory.html</loc>
+        <lastmod>2026-03-09T23:40:00+09:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
 </urlset>
 
 
