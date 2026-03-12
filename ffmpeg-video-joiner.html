@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FFmpeg가 설치된 PC에서 동영상 이어붙이기 작업을 쉽게 실행할 수 있는 Windows UI 프로그램 FFmpegVideoJoiner 소개와 다운로드 페이지">
+  <meta name="keywords" content="FFmpeg UI, 동영상 합치기, 비디오 병합, FFmpegVideoJoiner, Windows 도구">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://partygame.pe.kr/ffmpeg-video-joiner.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="FFmpegVideoJoiner | FFmpeg UI 프로그램">
+  <meta property="og:description" content="FFmpeg가 설치된 환경에서 동영상 이어붙이기를 더 쉽게 처리하는 Windows UI 도구">
+  <meta property="og:url" content="https://partygame.pe.kr/ffmpeg-video-joiner.html">
+  <meta property="og:image" content="https://partygame.pe.kr/favicon.ico">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="FFmpegVideoJoiner | FFmpeg UI 프로그램">
+  <meta name="twitter:description" content="FFmpeg 설치 환경에서 사용하는 간단한 비디오 합치기 UI 프로그램">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>FFmpegVideoJoiner | FFmpeg UI 프로그램</title>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-cyan-950 text-slate-50">
+  <main class="max-w-5xl mx-auto px-6 py-12 space-y-8">
+    <nav class="flex flex-wrap items-center gap-2 text-sm">
+      <a href="/" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">홈</a>
+      <a href="/blog/" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">블로그</a>
+      <a href="/ffmpeg-video-joiner.html" aria-current="page" class="px-3 py-2 rounded-full border border-cyan-200/70 bg-white/10 text-cyan-100">FFmpeg UI</a>
+      <a href="/contact.html" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">문의하기</a>
+    </nav>
+
+    <header class="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-8 space-y-4">
+      <p class="text-xs uppercase tracking-[0.28em] text-cyan-200">Windows Utility</p>
+      <h1 class="text-3xl md:text-4xl font-bold">FFmpegVideoJoiner</h1>
+      <p class="max-w-3xl text-slate-200">FFmpeg가 이미 설치된 Windows PC에서 여러 동영상 파일을 하나로 이어붙이는 작업을 UI로 간단하게 처리할 수 있는 실행 프로그램입니다.</p>
+      <div class="flex flex-wrap gap-3">
+        <a href="/downloads/FFmpegVideoJoiner.exe" class="px-5 py-3 rounded-xl bg-cyan-500/80 text-white font-semibold hover:bg-cyan-400 transition" download>FFmpegVideoJoiner.exe 다운로드</a>
+        <a href="#how-to-use" class="px-5 py-3 rounded-xl border border-white/20 text-slate-100 hover:bg-white/10 transition">사용 방법 보기</a>
+      </div>
+      <p class="text-sm text-slate-400">파일 크기: 약 10.3MB / FFmpeg 바이너리는 포함되어 있지 않습니다.</p>
+    </header>
+
+    <section class="grid gap-4 md:grid-cols-3">
+      <article class="rounded-2xl border border-white/10 bg-white/5 p-5 space-y-2">
+        <h2 class="text-lg font-semibold text-cyan-100">무엇을 해주나</h2>
+        <p class="text-sm text-slate-200">목록에 추가한 비디오 파일을 순서대로 이어붙이는 FFmpeg 명령 실행을 UI에서 처리합니다.</p>
+      </article>
+      <article class="rounded-2xl border border-white/10 bg-white/5 p-5 space-y-2">
+        <h2 class="text-lg font-semibold text-cyan-100">누가 쓰면 맞나</h2>
+        <p class="text-sm text-slate-200">명령줄보다 버튼과 파일 목록 기반 작업이 편한 사용자에게 맞습니다.</p>
+      </article>
+      <article class="rounded-2xl border border-white/10 bg-white/5 p-5 space-y-2">
+        <h2 class="text-lg font-semibold text-cyan-100">필수 조건</h2>
+        <p class="text-sm text-slate-200">시스템에 FFmpeg가 설치되어 있고, 실행 가능한 상태여야 합니다. 일반적으로 `ffmpeg` 명령이 동작해야 합니다.</p>
+      </article>
+    </section>
+
+    <section id="how-to-use" class="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-8 space-y-5">
+      <div class="space-y-2">
+        <p class="text-xs uppercase tracking-[0.25em] text-cyan-200">How To Use</p>
+        <h2 class="text-2xl font-bold">사용 방법</h2>
+      </div>
+      <ol class="list-decimal pl-5 space-y-3 text-sm text-slate-200">
+        <li>먼저 PC에 FFmpeg를 설치하고 `ffmpeg` 명령이 정상 실행되는지 확인합니다.</li>
+        <li>`FFmpegVideoJoiner.exe`를 실행합니다.</li>
+        <li>합칠 비디오 파일을 원하는 순서대로 추가합니다.</li>
+        <li>출력 파일 경로를 지정한 뒤 병합을 실행합니다.</li>
+        <li>프로그램은 FFmpeg를 호출해 이어붙이기 작업을 수행합니다.</li>
+      </ol>
+    </section>
+
+    <section class="grid gap-4 md:grid-cols-2">
+      <article class="rounded-2xl border border-white/10 bg-white/5 p-5 space-y-3">
+        <h2 class="text-xl font-semibold text-cyan-100">이런 점이 편합니다</h2>
+        <ul class="space-y-2 text-sm text-slate-200">
+          <li>명령어를 직접 조합하지 않아도 됩니다.</li>
+          <li>파일 순서를 시각적으로 확인하면서 작업할 수 있습니다.</li>
+          <li>반복적인 비디오 합치기 작업을 더 빠르게 처리할 수 있습니다.</li>
+        </ul>
+      </article>
+      <article class="rounded-2xl border border-white/10 bg-white/5 p-5 space-y-3">
+        <h2 class="text-xl font-semibold text-cyan-100">주의 사항</h2>
+        <ul class="space-y-2 text-sm text-slate-200">
+          <li>이 프로그램은 FFmpeg를 포함하지 않는 UI 도구입니다.</li>
+          <li>입력 파일 포맷과 인코딩 상태에 따라 FFmpeg 동작 결과가 달라질 수 있습니다.</li>
+          <li>병합 전 원본 파일 백업을 유지하는 편이 안전합니다.</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="rounded-2xl border border-cyan-300/20 bg-cyan-500/10 p-6 space-y-3">
+      <h2 class="text-xl font-semibold text-white">다운로드</h2>
+      <p class="text-sm text-slate-200">FFmpeg가 준비된 환경이라면 아래 링크로 바로 실행 파일을 받을 수 있습니다.</p>
+      <a href="/downloads/FFmpegVideoJoiner.exe" class="inline-flex items-center rounded-xl border border-cyan-200/60 px-4 py-3 text-sm font-semibold text-cyan-100 hover:bg-white/10 transition" download>FFmpegVideoJoiner.exe 받기</a>
+    </section>
+  </main>
+</body>
+</html>
