@@ -46,7 +46,11 @@
         <input id="searchInput" type="text" placeholder="제목, 요약, 태그 검색" class="w-full rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-slate-50 placeholder:text-slate-400 focus:outline-none focus:border-indigo-300">
         <button id="clearBtn" class="px-4 py-2 rounded-xl border border-white/20 hover:bg-white/10 transition">초기화</button>
       </div>
-      <div id="tagWrap" class="flex flex-wrap gap-2 text-sm"></div>
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div id="tagSummary" class="text-xs text-slate-300">태그 필터를 펼쳐 빠르게 찾을 수 있어요.</div>
+        <button id="toggleTagBtn" type="button" class="px-3 py-1 rounded-full border border-white/20 text-xs text-slate-200 hover:bg-white/10 transition" aria-expanded="false" aria-controls="tagWrap">태그 펼치기</button>
+      </div>
+      <div id="tagWrap" class="hidden flex flex-wrap gap-2 text-sm"></div>
     </section>
 
     <section id="postList" class="grid gap-4 md:grid-cols-2"></section>
@@ -54,6 +58,106 @@
 
   <script>
     const posts = [
+{
+    "title":  "데이트 비용 부담 줄이는 대화 가이드 2026",
+    "path":  "/blog/posts/romance-date-night-budget-conversation-guide-2026.html",
+    "summary":  "데이트 비용이 부담스러워질 때 분위기를 망치지 않고 예산을 맞추는 대화법과 주간 데이트 운영 기준을 정리했습니다.",
+    "tags":  [
+                 "연애",
+                 "데이트비용",
+                 "커플예산"
+             ]
+},
+{
+    "title":  "데이트 중 휴대폰 경계선 대화 가이드 2026",
+    "path":  "/blog/posts/romance-phone-addiction-boundary-guide-2026.html",
+    "summary":  "데이트 중 휴대폰 사용으로 서운함이 쌓일 때, 잔소리보다 효과적인 경계선 대화와 폰 없는 시간 합의법을 정리했습니다.",
+    "tags":  [
+                 "연애",
+                 "휴대폰",
+                 "경계선"
+             ]
+},
+{
+    "title":  "커플 수면 루틴 균형 가이드 2026",
+    "path":  "/blog/posts/romance-couple-sleep-routine-balance-guide-2026.html",
+    "summary":  "수면 시간과 생활 리듬이 다른 커플이 갈등을 줄이기 위해 취침 전 연락, 통화, 방해 기준을 맞추는 방법을 정리했습니다.",
+    "tags":  [
+                 "연애",
+                 "수면루틴",
+                 "생활리듬"
+             ]
+},
+{
+    "title":  "연애 선물 예산 기대치 가이드 2026",
+    "path":  "/blog/posts/romance-gift-budget-expectation-guide-2026.html",
+    "summary":  "연애 선물 예산과 기대치가 엇갈릴 때 서운함을 줄이기 위한 가격대 합의, 선호 확인, 기념일 운영법을 정리했습니다.",
+    "tags":  [
+                 "연애",
+                 "선물예산",
+                 "기념일"
+             ]
+},
+{
+    "title":  "번아웃 연인 위로 대화 가이드 2026",
+    "path":  "/blog/posts/romance-job-burnout-support-conversation-guide-2026.html",
+    "summary":  "번아웃 상태의 연인을 도우려다 서로 지치지 않도록, 위로 문장과 거리 조절, 지원 범위를 정하는 대화법을 정리했습니다.",
+    "tags":  [
+                 "연애",
+                 "번아웃",
+                 "위로"
+             ]
+},
+{
+    "title":  "공과금 월간 리셋 가이드 2026",
+    "path":  "/blog/posts/economy-utility-bill-monthly-reset-guide-2026.html",
+    "summary":  "전기·가스·수도요금이 매달 애매하게 늘어날 때 원인을 찾고, 계절별 사용량과 납부 루틴을 점검하는 방법을 정리했습니다.",
+    "tags":  [
+                 "경제",
+                 "공과금",
+                 "생활비관리"
+             ]
+},
+{
+    "title":  "주말 60분 밀프렙 식비 루틴 2026",
+    "path":  "/blog/posts/economy-meal-prep-budget-routine-guide-2026.html",
+    "summary":  "외식과 배달비를 줄이기 위해 주말 60분 meal prep으로 평일 식비를 안정시키는 장보기·소분·메뉴 운영법을 정리했습니다.",
+    "tags":  [
+                 "경제",
+                 "밀프렙",
+                 "식비절약"
+             ]
+},
+{
+    "title":  "이사 비용 누수 방지 체크리스트 2026",
+    "path":  "/blog/posts/economy-moving-cost-checklist-2026.html",
+    "summary":  "이사 준비 때 예상보다 커지는 비용을 줄이기 위해 견적, 포장, 청소, 중개, 입주 전 지출을 나눠 점검하는 체크리스트입니다.",
+    "tags":  [
+                 "경제",
+                 "이사비용",
+                 "주거비"
+             ]
+},
+{
+    "title":  "여행 적금 예산 봉투 가이드 2026",
+    "path":  "/blog/posts/economy-travel-saving-account-guide-2026.html",
+    "summary":  "여행을 다녀온 뒤 카드값으로 후회하지 않도록, 여행 적금과 목적별 예산 봉투를 만드는 현실적인 저축 루틴을 정리했습니다.",
+    "tags":  [
+                 "경제",
+                 "여행적금",
+                 "예산관리"
+             ]
+},
+{
+    "title":  "개인 구독 가족 플랜 전환 가이드 2026",
+    "path":  "/blog/posts/economy-personal-subscription-family-plan-guide-2026.html",
+    "summary":  "스트리밍·클라우드·앱 구독을 가족 플랜으로 묶을 때 비용 절감과 계정 공유 리스크를 함께 점검하는 기준을 정리했습니다.",
+    "tags":  [
+                 "경제",
+                 "구독관리",
+                 "고정비"
+             ]
+},
 {
     "title":  "누구나 그럴싸한 계획을 가지고 있다, 공부하기 전까진",
     "path":  "/blog/posts/study-plan-before-studying-tyson-meme.html",
@@ -1189,13 +1293,23 @@
     const searchInput = document.getElementById("searchInput");
     const clearBtn = document.getElementById("clearBtn");
     const tagWrap = document.getElementById("tagWrap");
+    const toggleTagBtn = document.getElementById("toggleTagBtn");
+    const tagSummary = document.getElementById("tagSummary");
     let filtered = posts.slice();
+
+    function updateTagToggle() {
+      const isHidden = tagWrap.classList.contains("hidden");
+      toggleTagBtn.textContent = isHidden ? "태그 펼치기" : "태그 접기";
+      toggleTagBtn.setAttribute("aria-expanded", String(!isHidden));
+    }
 
     function renderTags() {
       const set = new Set();
       posts.forEach(p => p.tags.forEach(t => set.add(t)));
       tagWrap.innerHTML = "";
-      Array.from(set).forEach(tag => {
+      const tags = Array.from(set);
+      tagSummary.textContent = `태그 ${tags.length}개를 펼쳐 빠르게 찾을 수 있어요.`;
+      tags.forEach(tag => {
         const btn = document.createElement("button");
         btn.className = "px-3 py-1 rounded-full border border-white/20 hover:bg-white/10 transition";
         btn.textContent = `#${tag}`;
@@ -1205,6 +1319,7 @@
         });
         tagWrap.appendChild(btn);
       });
+      updateTagToggle();
     }
 
     function renderList() {
@@ -1249,6 +1364,10 @@
     clearBtn.addEventListener("click", () => {
       searchInput.value = "";
       applyFilter();
+    });
+    toggleTagBtn.addEventListener("click", () => {
+      tagWrap.classList.toggle("hidden");
+      updateTagToggle();
     });
 
     renderTags();

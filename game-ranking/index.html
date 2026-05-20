@@ -33,7 +33,7 @@
     <section class="rounded-2xl border border-white/10 bg-white/5 p-4 md:p-6 space-y-4">
       <div class="flex flex-wrap items-center gap-2" id="dateButtons"></div>
       <p class="text-sm text-slate-300">기준일: <span id="selectedDate" class="font-semibold text-indigo-200"></span></p>
-      <p class="text-xs text-slate-400">참고: 이 페이지는 편집형 순위 정리 페이지이며, 실제 게임사/플랫폼의 공식 집계와 다를 수 있습니다.</p>
+      <p class="text-xs text-slate-400">참고: 최신 공개값은 게임트릭스 2026-05-19 종합게임지수 상위권을 기준으로 반영했고, 11~20위는 편집형 보조 순위입니다.</p>
     </section>
 
     <section id="rankingList" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></section>
@@ -42,6 +42,8 @@
   <script>
     const games = {
       lol: { name: "리그 오브 레전드", genre: "MOBA", url: "https://www.leagueoflegends.com/ko-kr/", desc: "라인 운영과 한타 전략 중심의 대표 팀 대전 게임." },
+      lineageclassic: { name: "리니지 클래식", genre: "MMORPG", url: "https://lineage.plaync.com/", desc: "원작 감성과 성장 경쟁을 앞세운 클래식 MMORPG." },
+      msworlds: { name: "MapleStory Worlds", genre: "샌드박스 플랫폼", url: "https://maplestoryworlds.nexon.com/", desc: "메이플 IP 기반 월드 제작과 플레이를 함께 즐기는 플랫폼." },
       valorant: { name: "발로란트", genre: "FPS", url: "https://playvalorant.com/ko-kr/", desc: "정밀 슈팅과 요원 스킬 조합이 핵심인 전술 FPS." },
       fconline: { name: "FC 온라인", genre: "스포츠", url: "https://fconline.nexon.com/main/index", desc: "실시간 매치와 스쿼드 운영이 중심인 온라인 축구 게임." },
       maple: { name: "메이플스토리", genre: "MMORPG", url: "https://maplestory.nexon.com/Home/Main", desc: "캐릭터 성장과 보스 공략 중심의 장수 온라인 RPG." },
@@ -64,6 +66,9 @@
     };
 
     const rankingByDate = {
+      "2026-05-19": ["lol","lineageclassic","pubg","valorant","overwatch2","suddenattack","fconline","msworlds","maple","starcraft","dnf","lostark","wow","roblox","minecraft","apex","diablo4","gtaonline","poe2","warframe"],
+      "2026-05-18": ["lol","lineageclassic","pubg","valorant","overwatch2","suddenattack","fconline","msworlds","maple","starcraft","dnf","lostark","roblox","wow","minecraft","apex","gtaonline","diablo4","warframe","poe2"],
+      "2026-05-17": ["lol","lineageclassic","pubg","valorant","overwatch2","suddenattack","fconline","msworlds","maple","starcraft","lostark","dnf","roblox","minecraft","wow","apex","diablo4","gtaonline","poe2","albion"],
       "2026-03-09": ["lol","valorant","fconline","maple","dnf","pubg","overwatch2","suddenattack","lostark","wow","roblox","minecraft","apex","gtaonline","starcraft","diablo4","ff14","poe2","albion","warframe"],
       "2026-03-08": ["lol","fconline","valorant","maple","pubg","dnf","overwatch2","lostark","suddenattack","roblox","minecraft","wow","apex","starcraft","gtaonline","diablo4","ff14","warframe","poe2","albion"],
       "2026-03-07": ["lol","valorant","maple","fconline","dnf","pubg","suddenattack","overwatch2","lostark","minecraft","roblox","wow","starcraft","apex","diablo4","gtaonline","ff14","poe2","warframe","albion"]
@@ -76,7 +81,7 @@
     let selectedDate = dates[0];
 
     function screenshotUrl(url) {
-      return `https://image.thum.io/get/width/1200/${url}`;
+      return `https://s.wordpress.com/mshots/v1/${encodeURIComponent(url)}?w=1200`;
     }
 
     function renderDateButtons() {
