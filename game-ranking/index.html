@@ -5,20 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="날짜별 온라인 게임 순위 Top 20을 게임 스크린샷과 설명으로 확인하는 페이지">
   <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0f172a">
   <link rel="canonical" href="https://partygame.pe.kr/game-ranking/">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Brain Test Hub">
   <meta property="og:title" content="온라인 게임 순위 Top 20 | partygame.pe.kr">
   <meta property="og:description" content="날짜별로 보는 온라인 게임 순위와 게임별 스크린샷/설명">
   <meta property="og:url" content="https://partygame.pe.kr/game-ranking/">
   <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/fox.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="온라인 게임 순위 Top 20 | partygame.pe.kr">
+  <meta name="twitter:description" content="날짜별로 보는 온라인 게임 순위와 게임별 스크린샷/설명">
+  <meta name="twitter:image" content="https://partygame.pe.kr/brainTest/images/fox.png">
   <meta name="google-adsense-account" content="ca-pub-1087435977438565">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565" crossorigin="anonymous"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .skip-link{position:absolute;left:-999px;top:1rem;z-index:50;border-radius:.75rem;background:#f8fafc;color:#0f172a;padding:.75rem 1rem;font-weight:700}
+    .skip-link:focus{left:1rem}
+    :focus-visible{outline:2px solid rgba(129,140,248,.95);outline-offset:3px}
+  </style>
   <title>온라인 게임 순위 Top 20 | partygame.pe.kr</title>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 text-slate-50">
-  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-8">
+  <a href="#mainContent" class="skip-link">본문 바로가기</a>
+  <main id="mainContent" class="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-8">
     <header class="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-8 space-y-4">
       <p class="text-xs uppercase tracking-[0.28em] text-indigo-200">Game Ranking</p>
       <h1 class="text-3xl md:text-4xl font-bold">온라인 게임 순위 Top 20</h1>
@@ -27,8 +39,27 @@
         <a href="/" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">홈</a>
         <a href="/blog/" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">블로그</a>
         <a href="/ai-ranking/" class="px-3 py-2 rounded-full border border-emerald-200/60 text-emerald-100 hover:bg-white/10 transition">AI 순위</a>
+        <a href="/game-ranking/" aria-current="page" class="px-3 py-2 rounded-full border border-amber-200/70 bg-white/10 text-amber-100">게임 순위</a>
+        <a href="/fruit-ranking/" class="px-3 py-2 rounded-full border border-lime-200/60 text-lime-100 hover:bg-white/10 transition">과일 순위</a>
+        <a href="/chat.html" class="px-3 py-2 rounded-full border border-cyan-200/60 text-cyan-100 hover:bg-white/10 transition">채팅</a>
+        <a href="/contact.html" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">문의하기</a>
       </nav>
     </header>
+
+    <section class="grid gap-3 md:grid-cols-3">
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+        <p class="text-xs font-semibold text-indigo-200">최신 기준일</p>
+        <p class="mt-2 text-2xl font-bold text-white">2026-05-19</p>
+      </div>
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+        <p class="text-xs font-semibold text-indigo-200">목록 구성</p>
+        <p class="mt-2 text-2xl font-bold text-white">Top 20</p>
+      </div>
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+        <p class="text-xs font-semibold text-indigo-200">표시 방식</p>
+        <p class="mt-2 text-sm text-slate-200">날짜 선택 시 카드 목록을 즉시 갱신합니다.</p>
+      </div>
+    </section>
 
     <section class="rounded-2xl border border-white/10 bg-white/5 p-4 md:p-6 space-y-4">
       <div class="flex flex-wrap items-center gap-2" id="dateButtons"></div>
@@ -36,7 +67,24 @@
       <p class="text-xs text-slate-400">참고: 최신 공개값은 게임트릭스 2026-05-19 종합게임지수 상위권을 기준으로 반영했고, 11~20위는 편집형 보조 순위입니다.</p>
     </section>
 
-    <section id="rankingList" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></section>
+    <section id="rankingList" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-live="polite">
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-5 text-sm text-slate-300">선택한 날짜의 순위 목록을 준비 중입니다.</div>
+    </section>
+    <noscript>
+      <section class="rounded-2xl border border-amber-200/30 bg-amber-500/10 p-5 text-sm text-amber-50">
+        이 순위 목록은 자바스크립트로 날짜별 카드를 구성합니다. 브라우저에서 자바스크립트를 켜면 Top 20 전체를 확인할 수 있습니다.
+      </section>
+    </noscript>
+    <footer class="border-t border-white/10 pt-6 text-sm text-slate-300">
+      <div class="flex flex-wrap gap-3">
+        <a href="/" class="hover:text-indigo-100">홈</a>
+        <a href="/blog/" class="hover:text-indigo-100">블로그</a>
+        <a href="/ai-ranking/" class="hover:text-indigo-100">AI 순위</a>
+        <a href="/fruit-ranking/" class="hover:text-indigo-100">과일 순위</a>
+        <a href="/chat.html" class="hover:text-indigo-100">채팅</a>
+        <a href="/contact.html" class="hover:text-indigo-100">문의하기</a>
+      </div>
+    </footer>
   </main>
 
   <script>
@@ -88,7 +136,9 @@
       dateButtons.innerHTML = "";
       dates.forEach((d) => {
         const btn = document.createElement("button");
+        btn.type = "button";
         btn.textContent = d;
+        btn.setAttribute("aria-pressed", String(d === selectedDate));
         btn.className = d === selectedDate
           ? "px-3 py-2 rounded-full border border-indigo-200/70 bg-white/10 text-indigo-100 text-sm"
           : "px-3 py-2 rounded-full border border-white/20 text-slate-200 text-sm hover:bg-white/10";
@@ -108,13 +158,13 @@
         const card = document.createElement("article");
         card.className = "rounded-2xl border border-white/10 bg-white/5 overflow-hidden";
         card.innerHTML = `
-          <img src="${screenshotUrl(game.url)}" alt="${game.name} 스크린샷" class="w-full h-44 object-cover">
+          <img src="${screenshotUrl(game.url)}" alt="${game.name} 스크린샷" loading="lazy" decoding="async" class="w-full h-44 object-cover bg-slate-950/50">
           <div class="p-4 space-y-2">
             <p class="text-xs text-indigo-200 font-semibold">#${idx + 1}</p>
             <h2 class="text-lg font-semibold">${game.name}</h2>
             <p class="text-xs text-slate-300">${game.genre}</p>
             <p class="text-sm text-slate-200">${game.desc}</p>
-            <a href="${game.url}" target="_blank" rel="noopener noreferrer nofollow" class="text-indigo-200 underline">공식 페이지</a>
+            <a href="${game.url}" target="_blank" rel="noopener noreferrer nofollow" class="inline-flex rounded-lg border border-indigo-200/40 px-3 py-2 text-sm text-indigo-100 hover:bg-white/10 transition">공식 페이지</a>
           </div>
         `;
         rankingList.appendChild(card);

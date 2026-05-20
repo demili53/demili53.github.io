@@ -6,20 +6,32 @@
   <meta name="description" content="최근 이슈 기반 연애+경제 실전 가이드 모음">
   <meta name="keywords" content="연애경제, 데이트 물가, 커플 예산, 관계 대화, 블로그">
   <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0f172a">
   <link rel="canonical" href="https://partygame.pe.kr/blog/">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Brain Test Hub">
   <meta property="og:title" content="연애경제 블로그 | Brain Test Hub">
   <meta property="og:description" content="최근 이슈 기반 연애+경제 실전 가이드 모음">
   <meta property="og:url" content="https://partygame.pe.kr/blog/">
   <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/fox.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="연애경제 블로그 | Brain Test Hub">
+  <meta name="twitter:description" content="최근 이슈 기반 연애+경제 실전 가이드 모음">
+  <meta name="twitter:image" content="https://partygame.pe.kr/brainTest/images/fox.png">
   <meta name="google-adsense-account" content="ca-pub-1087435977438565">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565" crossorigin="anonymous"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .skip-link{position:absolute;left:-999px;top:1rem;z-index:50;border-radius:.75rem;background:#f8fafc;color:#0f172a;padding:.75rem 1rem;font-weight:700}
+    .skip-link:focus{left:1rem}
+    :focus-visible{outline:2px solid rgba(129,140,248,.95);outline-offset:3px}
+  </style>
   <title>연애경제 블로그 | Brain Test Hub</title>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 text-slate-50">
-  <main class="max-w-5xl mx-auto px-6 py-12 space-y-8">
+  <a href="#mainContent" class="skip-link">본문 바로가기</a>
+  <main id="mainContent" class="max-w-5xl mx-auto px-6 py-12 space-y-8">
     <header class="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-8 space-y-3">
       <p class="text-xs uppercase tracking-[0.28em] text-indigo-200">Love + Economy Blog</p>
       <h1 class="text-3xl md:text-4xl font-bold">연애경제 블로그</h1>
@@ -30,6 +42,10 @@
           <a href="/" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">홈</a>
           <a href="/blog/" aria-current="page" class="px-3 py-2 rounded-full border border-indigo-200/70 text-indigo-100 bg-white/10">블로그 홈</a>
           <a href="/blog/longform.html" class="px-3 py-2 rounded-full border border-emerald-200/60 text-emerald-100 hover:bg-white/10 transition">긴 글 모음</a>
+          <a href="/ai-ranking/" class="px-3 py-2 rounded-full border border-emerald-200/60 text-emerald-100 hover:bg-white/10 transition">AI 순위</a>
+          <a href="/game-ranking/" class="px-3 py-2 rounded-full border border-amber-200/60 text-amber-100 hover:bg-white/10 transition">게임 순위</a>
+          <a href="/fruit-ranking/" class="px-3 py-2 rounded-full border border-lime-200/60 text-lime-100 hover:bg-white/10 transition">과일 순위</a>
+          <a href="/chat.html" class="px-3 py-2 rounded-full border border-cyan-200/60 text-cyan-100 hover:bg-white/10 transition">채팅</a>
           <a href="/ffmpeg-video-joiner.html" class="px-3 py-2 rounded-full border border-cyan-200/60 text-cyan-100 hover:bg-white/10 transition">FFmpeg UI</a>
         </div>
         <div class="flex flex-wrap items-center gap-2">
@@ -44,16 +60,29 @@
     <section class="rounded-2xl border border-white/10 bg-white/5 p-5 md:p-6 space-y-4">
       <div class="flex flex-col md:flex-row gap-3 md:items-center">
         <input id="searchInput" type="text" placeholder="제목, 요약, 태그 검색" class="w-full rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-slate-50 placeholder:text-slate-400 focus:outline-none focus:border-indigo-300">
-        <button id="clearBtn" class="px-4 py-2 rounded-xl border border-white/20 hover:bg-white/10 transition">초기화</button>
+        <button id="clearBtn" type="button" class="px-4 py-2 rounded-xl border border-white/20 hover:bg-white/10 transition">초기화</button>
       </div>
       <div class="flex flex-wrap items-center justify-between gap-2">
         <div id="tagSummary" class="text-xs text-slate-300">태그 필터를 펼쳐 빠르게 찾을 수 있어요.</div>
         <button id="toggleTagBtn" type="button" class="px-3 py-1 rounded-full border border-white/20 text-xs text-slate-200 hover:bg-white/10 transition" aria-expanded="false" aria-controls="tagWrap">태그 펼치기</button>
       </div>
       <div id="tagWrap" class="hidden flex flex-wrap gap-2 text-sm"></div>
+      <p id="resultCount" class="text-xs text-slate-400" aria-live="polite"></p>
     </section>
 
     <section id="postList" class="grid gap-4 md:grid-cols-2"></section>
+    <footer class="border-t border-white/10 pt-6 text-sm text-slate-300">
+      <div class="flex flex-wrap gap-3">
+        <a href="/" class="hover:text-indigo-100">홈</a>
+        <a href="/blog/longform.html" class="hover:text-indigo-100">긴 글 모음</a>
+        <a href="/ai-ranking/" class="hover:text-indigo-100">AI 순위</a>
+        <a href="/game-ranking/" class="hover:text-indigo-100">게임 순위</a>
+        <a href="/fruit-ranking/" class="hover:text-indigo-100">과일 순위</a>
+        <a href="/chat.html" class="hover:text-indigo-100">채팅</a>
+        <a href="/contact.html" class="hover:text-indigo-100">문의하기</a>
+      </div>
+      <p class="mt-3 text-xs text-slate-400">관계와 돈 이야기를 실전 문장으로 정리하는 정보형 블로그입니다.</p>
+    </footer>
   </main>
 
   <script>
@@ -1295,6 +1324,7 @@
     const tagWrap = document.getElementById("tagWrap");
     const toggleTagBtn = document.getElementById("toggleTagBtn");
     const tagSummary = document.getElementById("tagSummary");
+    const resultCount = document.getElementById("resultCount");
     let filtered = posts.slice();
 
     function updateTagToggle() {
@@ -1311,6 +1341,7 @@
       tagSummary.textContent = `태그 ${tags.length}개를 펼쳐 빠르게 찾을 수 있어요.`;
       tags.forEach(tag => {
         const btn = document.createElement("button");
+        btn.type = "button";
         btn.className = "px-3 py-1 rounded-full border border-white/20 hover:bg-white/10 transition";
         btn.textContent = `#${tag}`;
         btn.addEventListener("click", () => {
@@ -1324,6 +1355,8 @@
 
     function renderList() {
       listEl.innerHTML = "";
+      const q = searchInput.value.trim();
+      resultCount.textContent = q ? `"${q}" 검색 결과 ${filtered.length}개` : `전체 글 ${filtered.length}개`;
       if (!filtered.length) {
         const empty = document.createElement("div");
         empty.className = "md:col-span-2 rounded-xl border border-white/15 bg-white/5 p-5 text-sm text-slate-200";
