@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
@@ -34,7 +34,7 @@
     <header class="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-8 space-y-4">
       <p class="text-xs uppercase tracking-[0.28em] text-indigo-200">AI Ranking</p>
       <h1 class="text-3xl md:text-4xl font-bold">AI 생성 사이트 순위</h1>
-      <p class="text-slate-200">업데이트: 2026-05-20 | 실사용 관점(생성 품질, 속도, 활용 범위) 기준 편집 순위</p>
+      <p class="text-slate-200">업데이트: 2026-05-22 | 실사용 관점(생성 품질, 속도, 활용 범위) 기준 편집 순위</p>
       <nav class="flex flex-wrap gap-2 text-sm">
         <a href="/" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">홈</a>
         <a href="/blog/" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">블로그</a>
@@ -92,22 +92,22 @@
   </main>
   <script>
     const tools = [
-      { name: "ChatGPT", url: "https://chatgpt.com", desc: "글쓰기, 코딩, 요약, 이미지 생성까지 범용성이 넓은 일상형 AI 서비스입니다." },
-      { name: "Claude", url: "https://claude.ai", desc: "긴 문서 분석과 자연스러운 장문 작성, 복잡한 업무 추론에 강점이 있습니다." },
-      { name: "Google Gemini", url: "https://gemini.google.com", desc: "검색, 문서, 메일 등 구글 생태계와 함께 쓰기 좋은 멀티모달 AI입니다." },
-      { name: "Perplexity", url: "https://www.perplexity.ai", desc: "출처 기반 답변 흐름이 좋아 최신 리서치와 비교 검색에 유용합니다." },
-      { name: "Midjourney", url: "https://www.midjourney.com", desc: "스타일 강한 이미지와 콘셉트 아트 제작에서 여전히 선호도가 높습니다." },
-      { name: "Adobe Firefly", url: "https://www.adobe.com/products/firefly.html", desc: "상업 디자인 흐름과 Adobe 앱 연동을 고려할 때 실무 활용도가 높습니다." },
-      { name: "Canva Magic Studio", url: "https://www.canva.com/magic-studio/", desc: "SNS 이미지, 발표 자료, 짧은 디자인 작업을 빠르게 만들기 좋습니다." },
-      { name: "Runway", url: "https://runwayml.com", desc: "영상 생성과 편집 기능을 함께 제공해 숏폼 제작 실험에 적합합니다." },
-      { name: "Sora", url: "https://sora.com", desc: "텍스트와 이미지 기반 영상 생성 작업을 위한 대표 영상 AI 서비스입니다." },
+      { name: "ChatGPT", url: "https://chatgpt.com", desc: "범용 대화, 문서, 이미지, 코딩까지 일상 업무 전반에 쓰기 좋은 대표 AI 서비스입니다." },
+      { name: "Claude", url: "https://claude.ai", desc: "긴 문서 해석과 자연스러운 장문 작성, 복잡한 업무 추론에서 강점이 큽니다." },
+      { name: "Google Gemini", url: "https://gemini.google.com", desc: "구글 검색과 워크스페이스 흐름을 함께 쓰기 좋은 멀티모달 AI입니다." },
+      { name: "Perplexity", url: "https://www.perplexity.ai", desc: "출처 기반 답변과 최신 리서치 정리에 강한 검색형 AI 서비스입니다." },
+      { name: "Midjourney", url: "https://www.midjourney.com", desc: "스타일 완성도가 높은 이미지와 콘셉트 아트 제작에서 선호도가 높습니다." },
+      { name: "Sora", url: "https://sora.com", desc: "텍스트와 이미지 기반 영상 생성 실험에 적합한 대표 영상 AI 서비스입니다." },
+      { name: "Runway", url: "https://runwayml.com", desc: "영상 생성과 편집 기능을 함께 제공해 숏폼 제작 워크플로에 잘 맞습니다." },
+      { name: "Adobe Firefly", url: "https://www.adobe.com/products/firefly.html", desc: "Adobe 앱과 연동해 상업 디자인 시안 제작에 활용하기 좋습니다." },
+      { name: "Canva Magic Studio", url: "https://www.canva.com/magic-studio/", desc: "SNS 이미지, 발표 자료, 마케팅 소재를 빠르게 만들기 좋은 디자인 AI입니다." },
       { name: "ElevenLabs", url: "https://elevenlabs.io", desc: "음성 합성, 더빙, 내레이션 제작에 특화된 오디오 생성 AI입니다." },
       { name: "Suno", url: "https://suno.com", desc: "가사와 분위기 입력만으로 음악 초안을 빠르게 만들 수 있습니다." },
-      { name: "Cursor", url: "https://www.cursor.com", desc: "코드베이스 이해와 편집 흐름에 초점을 맞춘 AI 코딩 에디터입니다." },
+      { name: "Cursor", url: "https://www.cursor.com", desc: "코드베이스 이해와 파일 편집 흐름에 초점을 맞춘 AI 코딩 에디터입니다." },
       { name: "GitHub Copilot", url: "https://github.com/features/copilot", desc: "IDE와 GitHub 워크플로에 자연스럽게 붙는 코드 보조 도구입니다." },
-      { name: "Ideogram", url: "https://ideogram.ai", desc: "텍스트가 들어간 이미지와 포스터형 비주얼 생성에 활용하기 좋습니다." },
+      { name: "Grok", url: "https://grok.com", desc: "실시간 이슈 탐색과 추론형 답변을 함께 활용하기 좋은 대화형 AI입니다." },
       { name: "Kling AI", url: "https://klingai.com", desc: "이미지-투-비디오와 짧은 영상 생성 실험에 쓰기 좋은 영상 AI입니다." },
-      { name: "Pika", url: "https://pika.art", desc: "짧은 영상 클립과 스타일 변환을 가볍게 시도하기 좋은 서비스입니다." },
+      { name: "Ideogram", url: "https://ideogram.ai", desc: "텍스트가 들어간 이미지와 포스터형 비주얼 생성에 활용하기 좋습니다." },
       { name: "Leonardo AI", url: "https://leonardo.ai", desc: "게임 에셋, 제품 콘셉트, 일러스트 시안 제작에 강한 이미지 AI입니다." },
       { name: "Recraft", url: "https://www.recraft.ai", desc: "브랜드 그래픽, 벡터풍 이미지, 아이콘 제작 흐름에 잘 맞습니다." },
       { name: "Gamma", url: "https://gamma.app", desc: "문서형 입력을 발표 자료와 웹 문서 형태로 빠르게 바꿔줍니다." },
