@@ -1,8 +1,8 @@
 ## 일일 작업 가이드
 
-- 버전: `2026-05-19`
+- 버전: `2026-05-22`
 - 목적: 매일 콘텐츠 생산, 순위 페이지 최신화, 사이트맵/링크 검수까지 한 번에 수행한다.
-- 적용 범위: 블로그 글, AI 순위 페이지, 게임 순위 페이지, 과일 순위 페이지, 홈/사이트맵 연동
+- 적용 범위: 블로그 글, AI 순위 페이지, 게임 순위 페이지, 과일 순위 페이지, 웹툰 순위 페이지, 홈/사이트맵 연동
 
 1. **기본 원칙**
    - 모든 파일은 반드시 `UTF-8` 인코딩으로 작성한다.
@@ -16,6 +16,7 @@
    - [AI 순위 페이지 작성 가이드](rules/make-ai-ranking.md) 기준으로 `/ai-ranking/index.html`을 최신화한다.
    - [게임 순위 페이지 작성 가이드](rules/make-game-ranking.md) 기준으로 `/game-ranking/index.html`을 최신화한다.
    - [과일 순위 페이지 작성 가이드](rules/make-fluit.md) 기준으로 `/fruit-ranking/index.html`을 최신화한다.
+   - `/webtoon-ranking/index.html`은 공식/합법 무료 웹툰 플랫폼 Top 20 기준으로 최신화한다.
    - 변경된 신규 URL은 `sitemap.xml`에 반영한다.
 
 3. **작업 순서**
@@ -23,7 +24,7 @@
    - 블로그 주제 10개를 먼저 정하고 파일명은 영문 소문자 kebab-case로 만든다.
    - 각 블로그 글을 `/blog/posts/` 아래 HTML 단일 파일로 작성한다.
    - `/blog/index.html`의 `posts` 배열에 신규 글을 추가한다.
-   - 순위 페이지 3종(`/ai-ranking/`, `/game-ranking/`, `/fruit-ranking/`)을 최신 기준으로 점검한다.
+   - 순위 페이지 4종(`/ai-ranking/`, `/game-ranking/`, `/fruit-ranking/`, `/webtoon-ranking/`)을 최신 기준으로 점검한다.
    - 신규 글 및 갱신 페이지를 `sitemap.xml`에 추가 또는 유지한다.
    - 최종 검수 후 필요한 파일만 커밋 대상으로 분리한다.
 
@@ -42,9 +43,11 @@
    - 외부 링크는 `target="_blank"`와 `rel="noopener noreferrer nofollow"`를 적용한다.
    - 상단 업데이트 날짜를 `YYYY-MM-DD` 형식으로 표기한다.
    - 모바일에서 카드 간격, 줄바꿈, 버튼 터치 영역을 확인한다.
+   - 웹툰 순위는 공식 유통 플랫폼만 포함하고, 불법 스캔본/미러링/무단 업로드 사이트는 절대 포함하지 않는다.
+   - 웹툰 순위 설명은 `무료 회차`, `무료 연재`, `기다리면 무료`, `이벤트 무료`처럼 합법 무료 접근 방식으로 표현한다.
 
 6. **사이트 연동 규칙**
-   - `/blog/`, `/ai-ranking/`, `/game-ranking/`, `/fruit-ranking/` 링크가 홈 네비와 푸터에서 유지되는지 확인한다.
+   - `/blog/`, `/ai-ranking/`, `/game-ranking/`, `/fruit-ranking/`, `/webtoon-ranking/` 링크가 홈 네비와 푸터에서 유지되는지 확인한다.
    - 신규 블로그 글은 `/blog/index.html` 검색과 태그 필터에서 노출되어야 한다.
    - `sitemap.xml`에는 신규 글 URL과 갱신된 주요 페이지 URL을 반영한다.
    - 별도 블로그 사이트맵이 있는 경우 신규 글 URL을 함께 반영한다.
