@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-T2KDKBN8');</script>
+<!-- End Google Tag Manager -->
+<link rel="stylesheet" href="/styles/site-theme.css">
+<meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="연사하면 반동으로 총구가 올라가는 배그 반동 제어 연습 게임. 마우스와 터치로 반동을 누르며 표적을 맞혀보세요.">
+  <meta name="keywords" content="배그 반동 제어 연습, 에임 연습, 반동 제어, 슈팅 게임, 배틀로얄 에임, 브라우저 게임, 온라인 오락실">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111827">
+  <link rel="canonical" href="https://partygame.pe.kr/arcade/recoil-aim-trainer.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Brain Test Hub">
+  <meta property="og:title" content="배그 반동 제어 연습 | 온라인 오락실">
+  <meta property="og:description" content="자동 연사 반동을 직접 누르며 표적을 맞히는 브라우저 슈팅 연습 게임">
+  <meta property="og:url" content="https://partygame.pe.kr/arcade/recoil-aim-trainer.html">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/fox.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="배그 반동 제어 연습 | 온라인 오락실">
+  <meta name="twitter:description" content="연사 반동을 제어하며 명중률과 점수를 올리는 에임 연습 게임">
+  <meta name="twitter:image" content="https://partygame.pe.kr/brainTest/images/fox.png">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565" crossorigin="anonymous"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .skip-link{position:absolute;left:-999px;top:1rem;z-index:50;border-radius:.75rem;background:#f8fafc;color:#0f172a;padding:.75rem 1rem;font-weight:700}
+    .skip-link:focus{left:1rem}
+    :focus-visible{outline:2px solid rgba(248,113,113,.95);outline-offset:3px}
+    body.recoil-page{background:linear-gradient(135deg,#020617 0%,#18181b 48%,#1c1917 100%) !important;color:#f8fafc !important}
+    .recoil-page .text-white,.recoil-page .text-slate-50,.recoil-page .text-slate-100{color:#f8fafc !important}
+    .recoil-page .text-slate-200{color:#e2e8f0 !important}
+    .recoil-page .text-slate-300{color:#cbd5e1 !important}
+    .recoil-page .text-slate-400{color:#94a3b8 !important}
+    .recoil-page .text-red-100{color:#fee2e2 !important}
+    .recoil-page .text-red-200{color:#fecaca !important}
+    .recoil-page .text-amber-100{color:#fef3c7 !important}
+    .recoil-page .bg-white\/5{background:rgba(255,255,255,.05) !important}
+    .recoil-page .bg-white\/10{background:rgba(255,255,255,.1) !important}
+    .recoil-page .bg-slate-950\/40{background:rgba(2,6,23,.4) !important}
+    .recoil-page .bg-slate-950\/50{background:rgba(2,6,23,.5) !important}
+    .aim-canvas{touch-action:none;cursor:none}
+    .meter-fill{transition:width .08s linear}
+    .hud-value{font-variant-numeric:tabular-nums}
+  </style>
+  <title>배그 반동 제어 연습 | 온라인 오락실</title>
+</head>
+<body class="recoil-page min-h-screen bg-gradient-to-br from-slate-950 via-zinc-900 to-stone-950 text-slate-50">
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T2KDKBN8"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#mainContent" class="skip-link">본문 바로가기</a>
+  <main id="mainContent" class="mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-6 sm:px-6 lg:py-8">
+    <header class="mb-5 space-y-4">
+      <nav class="flex flex-wrap gap-2 text-sm">
+        <a href="/" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">홈</a>
+        <a href="/blog/" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">블로그</a>
+        <a href="/arcade/" class="px-3 py-2 rounded-full border border-cyan-200/70 text-cyan-100 hover:bg-white/10 transition">온라인 오락실</a>
+        <a href="/game-ranking/" class="px-3 py-2 rounded-full border border-amber-200/60 text-amber-100 hover:bg-white/10 transition">게임 순위</a>
+        <a href="/contact.html" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">문의하기</a>
+      </nav>
+      <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-[0.28em] text-red-200">BG Recoil Trainer</p>
+          <h1 class="mt-2 text-3xl font-bold md:text-4xl">배그 반동 제어 연습</h1>
+          <p class="mt-2 max-w-2xl text-sm leading-relaxed text-slate-300">마우스나 터치로 조준점을 끌어내리며 연사 반동을 제어하세요. 이 페이지는 팬 메이드 브라우저 미니게임이며 특정 게임사의 공식 콘텐츠가 아닙니다.</p>
+        </div>
+        <div class="flex flex-wrap gap-2 text-sm">
+          <button id="startBtn" type="button" class="rounded-lg border border-red-200/60 px-4 py-2 text-red-100 hover:bg-white/10 transition">시작</button>
+          <button id="pauseBtn" type="button" class="rounded-lg border border-white/20 px-4 py-2 text-slate-100 hover:bg-white/10 transition">일시정지</button>
+          <button id="resetBtn" type="button" class="rounded-lg border border-amber-200/50 px-4 py-2 text-amber-100 hover:bg-white/10 transition">다시하기</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="grid flex-1 gap-5 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start">
+      <div class="grid gap-5">
+        <div class="rounded-2xl border border-white/10 bg-black/30 p-3 shadow-2xl sm:p-4">
+          <div class="relative mx-auto aspect-[16/10] min-h-[420px] w-full overflow-hidden rounded-xl border border-red-200/20 bg-slate-950">
+            <canvas id="gameCanvas" width="1280" height="800" class="aim-canvas h-full w-full"></canvas>
+            <div id="gameOverlay" class="absolute inset-0 flex items-center justify-center bg-slate-950/82 p-6 text-center">
+              <div class="max-w-md space-y-4">
+                <h2 id="overlayTitle" class="text-2xl font-bold text-red-100">배그 반동 제어 연습</h2>
+                <p id="overlayText" class="text-sm leading-relaxed text-slate-200">연사하면 조준점이 위로 밀립니다. 마우스를 아래로 끌거나 화면을 드래그해서 반동을 누르며 표적 중앙을 맞히세요.</p>
+                <div id="modeChoiceWrap" class="grid gap-2 sm:grid-cols-2">
+                  <button id="practiceModeBtn" type="button" class="rounded-lg border border-cyan-200/60 px-4 py-3 text-cyan-100 hover:bg-white/10 transition">연습모드</button>
+                  <button id="stageModeBtn" type="button" class="rounded-lg border border-red-200/60 px-4 py-3 text-red-100 hover:bg-white/10 transition">스테이지모드</button>
+                </div>
+                <button id="overlayStartBtn" type="button" class="hidden rounded-lg border border-red-200/60 px-5 py-2 text-red-100 hover:bg-white/10 transition">훈련 시작</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <section class="recoil-board rounded-2xl border border-white/10 bg-white/5 p-4 md:p-5">
+          <div class="mb-4 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p class="text-xs uppercase tracking-[0.24em] text-red-200">Board</p>
+              <h2 class="mt-1 text-2xl font-bold text-white">게시판</h2>
+            </div>
+          </div>
+          <div class="overflow-hidden rounded-2xl border border-white/10 bg-slate-950/40 p-3 md:p-4">
+            <script src="https://elfsightcdn.com/platform.js" async></script>
+            <div class="elfsight-app-ce00e679-e5af-4015-9078-a75b4afbeb70" data-elfsight-app-lazy></div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="grid gap-4">
+        <section class="rounded-2xl border border-white/10 bg-white/5 p-5">
+          <h2 class="text-lg font-semibold text-red-100">전투 기록</h2>
+          <div class="mt-4 grid grid-cols-2 gap-2 text-center">
+            <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3">
+              <p class="text-xs text-slate-400">점수</p>
+              <p id="scoreEl" class="hud-value mt-1 text-2xl font-bold text-white">0</p>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3">
+              <p class="text-xs text-slate-400">최고</p>
+              <p id="bestEl" class="hud-value mt-1 text-2xl font-bold text-white">0</p>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3">
+              <p class="text-xs text-slate-400">명중률</p>
+              <p id="accuracyEl" class="hud-value mt-1 text-2xl font-bold text-white">0%</p>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3">
+              <p class="text-xs text-slate-400">콤보</p>
+              <p id="comboEl" class="hud-value mt-1 text-2xl font-bold text-white">0</p>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3">
+              <p class="text-xs text-slate-400">내 체력</p>
+              <p id="playerHpEl" class="hud-value mt-1 text-2xl font-bold text-white">100</p>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3">
+              <p class="text-xs text-slate-400">스테이지</p>
+              <p id="stageEl" class="hud-value mt-1 text-2xl font-bold text-white">-</p>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3">
+              <p class="text-xs text-slate-400">처치</p>
+              <p id="stageKillsEl" class="hud-value mt-1 text-2xl font-bold text-white">-</p>
+            </div>
+          </div>
+          <div class="mt-4 space-y-2">
+            <div class="flex items-center justify-between text-xs text-slate-300">
+              <span>남은 시간</span>
+              <span id="timeEl" class="hud-value">45.0초</span>
+            </div>
+            <div class="h-2 overflow-hidden rounded-full bg-slate-950/60">
+              <div id="timeBar" class="h-full bg-emerald-400" style="width:100%"></div>
+            </div>
+            <div class="flex items-center justify-between text-xs text-slate-300">
+              <span>반동 압력</span>
+              <span id="recoilEl" class="hud-value">0%</span>
+            </div>
+            <div class="h-2 overflow-hidden rounded-full bg-slate-950/60">
+              <div id="recoilBar" class="meter-fill h-full bg-red-400" style="width:0%"></div>
+            </div>
+          </div>
+          <p id="statusEl" class="mt-4 rounded-xl border border-white/10 bg-slate-950/40 px-3 py-2 text-sm text-slate-200" aria-live="polite">대기 중</p>
+        </section>
+
+        <section class="rounded-2xl border border-white/10 bg-white/5 p-5">
+          <h2 class="text-lg font-semibold text-red-100">훈련 설정</h2>
+          <div class="mt-4 grid gap-3">
+            <label class="grid gap-2 text-sm text-slate-300">
+              <span>게임 모드</span>
+              <select id="gameModeSelect" class="rounded-lg border border-white/20 bg-slate-950/50 px-3 py-2 text-slate-100">
+                <option value="training">훈련모드</option>
+                <option value="stage">스테이지 모드</option>
+              </select>
+            </label>
+            <label class="grid gap-2 text-sm text-slate-300">
+              <span>총기 선택</span>
+              <select id="weaponSelect" class="rounded-lg border border-white/20 bg-slate-950/50 px-3 py-2 text-slate-100">
+                <option value="m416">M416</option>
+                <option value="beryl">Beryl M762</option>
+                <option value="akm">AKM</option>
+                <option value="ace32">ACE32</option>
+                <option value="ump45">UMP45</option>
+                <option value="mini14">Mini14</option>
+              </select>
+            </label>
+            <label class="grid gap-2 text-sm text-slate-300">
+              <span>반동 강도</span>
+              <select id="difficultySelect" class="rounded-lg border border-white/20 bg-slate-950/50 px-3 py-2 text-slate-100">
+                <option value="normal">보통</option>
+                <option value="hard">강함</option>
+                <option value="expert">매우 강함</option>
+              </select>
+            </label>
+            <label class="grid gap-2 text-sm text-slate-300">
+              <span>표적 움직임</span>
+              <select id="targetModeSelect" class="rounded-lg border border-white/20 bg-slate-950/50 px-3 py-2 text-slate-100">
+                <option value="steady">고정</option>
+                <option value="strafe">좌우 이동</option>
+                <option value="random">불규칙 이동</option>
+              </select>
+            </label>
+            <label class="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-slate-950/40 px-3 py-3 text-sm text-slate-300">
+              <span>사운드</span>
+              <button id="soundToggleBtn" type="button" class="rounded-lg border border-white/20 px-3 py-2 text-xs font-semibold text-slate-100 hover:bg-white/10 transition" aria-pressed="true">켜짐</button>
+            </label>
+            <div id="weaponInfo" class="rounded-xl border border-white/10 bg-slate-950/40 px-3 py-2 text-xs leading-relaxed text-slate-300"></div>
+            <button id="fireBtn" type="button" class="rounded-xl border border-red-200/60 px-4 py-4 text-base font-semibold text-red-100 hover:bg-white/10 transition">터치 연사</button>
+          </div>
+        </section>
+
+        <section class="rounded-2xl border border-white/10 bg-white/5 p-5">
+          <h2 class="text-lg font-semibold text-red-100">조작</h2>
+          <div class="mt-4 grid gap-2 text-sm text-slate-300">
+            <p>마우스: 이동으로 조준, 누르고 있으면 연사</p>
+            <p>터치: 화면을 드래그해서 조준, 터치 연사 버튼으로 발사</p>
+            <p>스페이스: 연사, P: 일시정지, R: 다시하기</p>
+            <p>스테이지 모드: 10스테이지, 각 스테이지마다 적 10명을 처치해야 합니다.</p>
+          </div>
+        </section>
+      </aside>
+    </section>
+
+    <footer class="mt-6 border-t border-white/10 pt-5 text-sm text-slate-300">
+      <div class="flex flex-wrap gap-3">
+        <a href="/" class="hover:text-red-100">홈</a>
+        <a href="/arcade/" class="hover:text-red-100">온라인 오락실</a>
+        <a href="/game-ranking/" class="hover:text-red-100">게임 순위</a>
+        <a href="/contact.html" class="hover:text-red-100">문의하기</a>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const scoreEl = document.getElementById("scoreEl");
+    const bestEl = document.getElementById("bestEl");
+    const accuracyEl = document.getElementById("accuracyEl");
+    const comboEl = document.getElementById("comboEl");
+    const playerHpEl = document.getElementById("playerHpEl");
+    const stageEl = document.getElementById("stageEl");
+    const stageKillsEl = document.getElementById("stageKillsEl");
+    const timeEl = document.getElementById("timeEl");
+    const timeBar = document.getElementById("timeBar");
+    const recoilEl = document.getElementById("recoilEl");
+    const recoilBar = document.getElementById("recoilBar");
+    const statusEl = document.getElementById("statusEl");
+    const overlay = document.getElementById("gameOverlay");
+    const overlayTitle = document.getElementById("overlayTitle");
+    const overlayText = document.getElementById("overlayText");
+    const overlayStartBtn = document.getElementById("overlayStartBtn");
+    const modeChoiceWrap = document.getElementById("modeChoiceWrap");
+    const practiceModeBtn = document.getElementById("practiceModeBtn");
+    const stageModeBtn = document.getElementById("stageModeBtn");
+    const startBtn = document.getElementById("startBtn");
+    const pauseBtn = document.getElementById("pauseBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const fireBtn = document.getElementById("fireBtn");
+    const gameModeSelect = document.getElementById("gameModeSelect");
+    const weaponSelect = document.getElementById("weaponSelect");
+    const difficultySelect = document.getElementById("difficultySelect");
+    const targetModeSelect = document.getElementById("targetModeSelect");
+    const soundToggleBtn = document.getElementById("soundToggleBtn");
+    const weaponInfo = document.getElementById("weaponInfo");
+
+    const roundSeconds = 45;
+    const maxStage = 10;
+    const killsPerStage = 10;
+    const targetScale = 0.5;
+    const difficulties = {
+      normal: { recoil: 1, drift: 1, recovery: 1, label: "보통" },
+      hard: { recoil: 1.22, drift: 1.2, recovery: 0.9, label: "강함" },
+      expert: { recoil: 1.45, drift: 1.38, recovery: 0.78, label: "매우 강함" }
+    };
+    const weaponProfiles = {
+      m416: {
+        label: "M416",
+        damage: 32,
+        rise: 12.2,
+        drift: 3.2,
+        recovery: 20,
+        interval: 86,
+        shape: { body: "#334155", accent: "#64748b", stock: 118, barrel: 98, mag: 58, width: 142, grip: "straight", scope: true },
+        pattern: [0.4, -0.6, 0.8, -0.9, 1.1, -1.0, 0.7, -0.5, 1.3, -1.4],
+        note: "수직 반동은 낮지만 좌우 보정이 조금씩 필요합니다."
+      },
+      beryl: {
+        label: "Beryl M762",
+        damage: 37,
+        rise: 18.8,
+        drift: 6.4,
+        recovery: 13,
+        interval: 82,
+        shape: { body: "#3f3a2f", accent: "#a16207", stock: 132, barrel: 88, mag: 68, width: 154, grip: "curved", scope: false },
+        pattern: [-1.1, 1.8, -2.4, 2.9, -2.1, 3.2, -3.4, 2.5, -1.7, 3.6],
+        note: "수직 반동과 좌우 튐이 모두 커서 강하게 끌어내려야 합니다."
+      },
+      akm: {
+        label: "AKM",
+        damage: 41,
+        rise: 20.5,
+        drift: 5.4,
+        recovery: 11,
+        interval: 106,
+        shape: { body: "#3b2f25", accent: "#92400e", stock: 146, barrel: 82, mag: 74, width: 160, grip: "curved", scope: false },
+        pattern: [1.7, -1.2, 2.4, -2.8, 1.5, -3.1, 2.2, -1.8],
+        note: "발사 속도는 느리지만 한 발마다 위로 크게 튑니다."
+      },
+      ace32: {
+        label: "ACE32",
+        damage: 35,
+        rise: 15.6,
+        drift: 4.9,
+        recovery: 15,
+        interval: 88,
+        shape: { body: "#1f2937", accent: "#475569", stock: 124, barrel: 92, mag: 62, width: 150, grip: "straight", scope: true },
+        pattern: [-0.8, 1.2, -1.6, 2.3, -2.0, 1.4, -2.6, 2.2],
+        note: "중간 정도의 수직 반동에 불규칙한 좌우 흔들림이 섞입니다."
+      },
+      ump45: {
+        label: "UMP45",
+        damage: 27,
+        rise: 8.6,
+        drift: 2.2,
+        recovery: 24,
+        interval: 94,
+        shape: { body: "#111827", accent: "#38bdf8", stock: 82, barrel: 54, mag: 46, width: 116, grip: "straight", scope: false },
+        pattern: [0.3, -0.2, 0.4, -0.5, 0.6, -0.4, 0.2],
+        note: "반동이 낮아 초보자가 반동 제어 감각을 잡기 좋습니다."
+      },
+      mini14: {
+        label: "Mini14",
+        damage: 46,
+        rise: 23.5,
+        drift: 3.8,
+        recovery: 9,
+        interval: 155,
+        shape: { body: "#1e293b", accent: "#94a3b8", stock: 156, barrel: 128, mag: 38, width: 132, grip: "straight", scope: true },
+        pattern: [-0.5, 0.9, -1.2, 1.5, -1.0, 1.8],
+        note: "단발성 강한 킥이 있어 연타 리듬과 복귀 제어가 중요합니다."
+      }
+    };
+
+    let aim;
+    let visualAim;
+    let target;
+    let enemies;
+    let score;
+    let shots;
+    let hits;
+    let combo;
+    let best = Number(localStorage.getItem("recoilAimBest") || "0");
+    let running = false;
+    let paused = false;
+    let firing = false;
+    let roundOver = false;
+    let lastFrame = 0;
+    let lastShot = 0;
+    let timeLeft = roundSeconds;
+    let recoilPressure = 0;
+    let pointerActive = false;
+    let muzzleFlash = 0;
+    let hitFlash = 0;
+    let shotMarks = [];
+    let recoilShot = 0;
+    let recoilOffset;
+    let playerHp = 100;
+    let stage = 1;
+    let stageKills = 0;
+    let stagePending = false;
+    let damageFlash = 0;
+    let soundEnabled = localStorage.getItem("recoilAimSound") !== "0";
+    let audioCtx = null;
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function rand(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    function updateSoundButton() {
+      soundToggleBtn.textContent = soundEnabled ? "켜짐" : "꺼짐";
+      soundToggleBtn.setAttribute("aria-pressed", String(soundEnabled));
+      soundToggleBtn.classList.toggle("text-red-100", soundEnabled);
+      soundToggleBtn.classList.toggle("text-slate-100", !soundEnabled);
+    }
+
+    function ensureAudio() {
+      if (!soundEnabled) return null;
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === "suspended") {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playTone({ frequency, endFrequency, duration, type = "sine", gain = 0.08 }) {
+      const ctxAudio = ensureAudio();
+      if (!ctxAudio) return;
+      const now = ctxAudio.currentTime;
+      const osc = ctxAudio.createOscillator();
+      const amp = ctxAudio.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(frequency, now);
+      if (endFrequency) {
+        osc.frequency.exponentialRampToValueAtTime(Math.max(20, endFrequency), now + duration);
+      }
+      amp.gain.setValueAtTime(0.0001, now);
+      amp.gain.exponentialRampToValueAtTime(gain, now + 0.01);
+      amp.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+      osc.connect(amp);
+      amp.connect(ctxAudio.destination);
+      osc.start(now);
+      osc.stop(now + duration + 0.02);
+    }
+
+    function playNoise(duration = 0.04, gain = 0.06) {
+      const ctxAudio = ensureAudio();
+      if (!ctxAudio) return;
+      const samples = Math.max(1, Math.floor(ctxAudio.sampleRate * duration));
+      const buffer = ctxAudio.createBuffer(1, samples, ctxAudio.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < samples; i += 1) {
+        data[i] = Math.random() * 2 - 1;
+      }
+      const source = ctxAudio.createBufferSource();
+      const amp = ctxAudio.createGain();
+      const now = ctxAudio.currentTime;
+      amp.gain.setValueAtTime(gain, now);
+      amp.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+      source.buffer = buffer;
+      source.connect(amp);
+      amp.connect(ctxAudio.destination);
+      source.start(now);
+      source.stop(now + duration + 0.02);
+    }
+
+    function playShotSound() {
+      const weapon = getWeapon();
+      const heavy = weapon.rise > 17;
+      playNoise(heavy ? 0.055 : 0.04, heavy ? 0.075 : 0.052);
+      playTone({
+        frequency: heavy ? 150 : 190,
+        endFrequency: heavy ? 58 : 82,
+        duration: heavy ? 0.105 : 0.075,
+        type: "sawtooth",
+        gain: heavy ? 0.05 : 0.035
+      });
+    }
+
+    function playHitSound() {
+      playTone({ frequency: 740, endFrequency: 1180, duration: 0.08, type: "triangle", gain: 0.055 });
+      window.setTimeout(() => playTone({ frequency: 1040, duration: 0.045, type: "triangle", gain: 0.035 }), 45);
+    }
+
+    function playEndSound() {
+      playTone({ frequency: 420, endFrequency: 180, duration: 0.28, type: "sine", gain: 0.05 });
+    }
+
+    function getWeapon() {
+      return weaponProfiles[weaponSelect.value] || weaponProfiles.m416;
+    }
+
+    function getDifficulty() {
+      return difficulties[difficultySelect.value] || difficulties.normal;
+    }
+
+    function isStageMode() {
+      return gameModeSelect.value === "stage";
+    }
+
+    function stageStartEnemyCount() {
+      return isStageMode() ? Math.min(1 + Math.floor((stage - 1) / 2), 5) : 1;
+    }
+
+    function stageMaxEnemyCount() {
+      return isStageMode() ? Math.min(stageStartEnemyCount() + 2 + Math.floor(stage / 3), 9) : 1;
+    }
+
+    function stageSpeedMultiplier() {
+      return isStageMode() ? 0.95 + stage * 0.13 + stageKills * 0.018 : 1;
+    }
+
+    function updateWeaponInfo() {
+      const weapon = getWeapon();
+      weaponInfo.textContent = `${weapon.label} · 수직 ${Math.round(weapon.rise)} / 좌우 ${Math.round(weapon.drift)} · ${weapon.note}`;
+    }
+
+    function currentAim() {
+      return {
+        x: clamp(aim.x + recoilOffset.x, 28, canvas.width - 28),
+        y: clamp(aim.y + recoilOffset.y, 28, canvas.height - 28)
+      };
+    }
+
+    function setOverlayModeChoice(enabled) {
+      modeChoiceWrap.classList.toggle("hidden", !enabled);
+      overlayStartBtn.classList.toggle("hidden", enabled);
+    }
+
+    function resetState(showOverlay = true) {
+      aim = { x: canvas.width / 2, y: canvas.height / 2 + 80 };
+      recoilOffset = { x: 0, y: 0 };
+      visualAim = { ...aim };
+      stage = 1;
+      stageKills = 0;
+      stagePending = false;
+      playerHp = 100;
+      damageFlash = 0;
+      enemies = [];
+      if (isStageMode()) {
+        spawnStageEnemies();
+      } else {
+        target = createTarget();
+        enemies.push(target);
+      }
+      score = 0;
+      shots = 0;
+      hits = 0;
+      combo = 0;
+      running = false;
+      paused = false;
+      firing = false;
+      roundOver = false;
+      lastFrame = 0;
+      lastShot = 0;
+      timeLeft = roundSeconds;
+      recoilPressure = 0;
+      muzzleFlash = 0;
+      hitFlash = 0;
+      shotMarks = [];
+      recoilShot = 0;
+      syncUi("대기 중");
+      if (showOverlay) {
+        setOverlayModeChoice(true);
+        overlayTitle.textContent = "모드 선택";
+        overlayText.textContent = "반동과 부위 데미지를 연습하거나, 10개 스테이지를 클리어하는 게임 모드로 시작하세요.";
+        overlay.classList.remove("hidden");
+      }
+      draw();
+    }
+
+    function createTarget() {
+      return {
+        x: rand(300, canvas.width - 300),
+        y: rand(90, canvas.height - 240),
+        hp: 140,
+        maxHp: 140,
+        lastHitPart: "",
+        attackTimer: 3,
+        attackFlash: 0,
+        vx: rand(-110, 110),
+        vy: rand(-45, 45),
+        phase: rand(0, Math.PI * 2)
+      };
+    }
+
+    function spawnEnemy() {
+      const enemy = createTarget();
+      enemy.hp = Math.round(95 + stage * 18 + stageKills * 2);
+      enemy.maxHp = enemy.hp;
+      enemy.attackTimer = Math.max(1.15, 4.7 - stage * 0.24 - stageKills * 0.035);
+      const speed = stageSpeedMultiplier();
+      enemy.vx *= speed;
+      enemy.vy *= speed;
+      enemies.push(enemy);
+      target = enemies[0];
+      return enemy;
+    }
+
+    function spawnStageEnemies() {
+      const count = stageStartEnemyCount();
+      for (let i = 0; i < count; i += 1) {
+        spawnEnemy();
+      }
+      target = enemies[0];
+    }
+
+    function advanceStage() {
+      if (!isStageMode()) return;
+      if (stage >= maxStage) {
+        running = false;
+        firing = false;
+        roundOver = true;
+        best = Math.max(best, score);
+        localStorage.setItem("recoilAimBest", String(best));
+        setOverlayModeChoice(false);
+        overlayTitle.textContent = "클리어";
+        overlayText.textContent = `10개 스테이지, 총 ${maxStage * killsPerStage}명 처치 완료. 점수 ${score}점, 명중률 ${shots ? Math.round((hits / shots) * 100) : 0}%.`;
+        overlayStartBtn.textContent = "다시 시작";
+        overlay.classList.remove("hidden");
+        syncUi("클리어");
+        playEndSound();
+        return;
+      }
+      running = false;
+      firing = false;
+      stagePending = true;
+      best = Math.max(best, score);
+      localStorage.setItem("recoilAimBest", String(best));
+      setOverlayModeChoice(false);
+      overlayTitle.textContent = `스테이지 ${stage} 클리어`;
+      const nextStartCount = Math.min(1 + Math.floor(stage / 2), 5);
+      overlayText.textContent = `점수 ${score}점 · 처치 ${stageKills}/${killsPerStage} · 다음 스테이지 ${stage + 1}/${maxStage} · 시작 적 ${nextStartCount}명`;
+      overlayStartBtn.textContent = "다음 스테이지";
+      overlay.classList.remove("hidden");
+      syncUi(`스테이지 ${stage} 클리어`);
+      playEndSound();
+    }
+
+    function startNextStage() {
+      stage += 1;
+      stageKills = 0;
+      stagePending = false;
+      enemies = [];
+      spawnStageEnemies();
+      lastFrame = 0;
+      lastShot = 0;
+      recoilShot = 0;
+      recoilPressure = 0;
+      recoilOffset = { x: 0, y: 0 };
+      running = true;
+      paused = false;
+      overlay.classList.add("hidden");
+      syncUi(`스테이지 ${stage} 시작`);
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    function pointInRect(px, py, x, y, w, h) {
+      return px >= x && px <= x + w && py >= y && py <= y + h;
+    }
+
+    function getHitPart(point, enemy) {
+      const lx = (point.x - enemy.x) / targetScale;
+      const ly = (point.y - enemy.y) / targetScale;
+      const headDx = lx;
+      const headDy = ly - 38;
+      if (Math.hypot(headDx, headDy) <= 30) {
+        return { key: "head", label: "머리", multiplier: 2.2, score: 260 };
+      }
+      if (pointInRect(lx, ly, -48, 76, 96, 88)) {
+        return { key: "chest", label: "가슴", multiplier: 1, score: 150 };
+      }
+      if (pointInRect(lx, ly, -46, 164, 38, 104) || pointInRect(lx, ly, 8, 164, 38, 104)) {
+        return { key: "legs", label: "다리", multiplier: 0.7, score: 110 };
+      }
+      return null;
+    }
+
+    function findHit(point) {
+      for (let i = enemies.length - 1; i >= 0; i -= 1) {
+        const part = getHitPart(point, enemies[i]);
+        if (part) return { enemy: enemies[i], part, index: i };
+      }
+      return null;
+    }
+
+    function syncUi(status) {
+      const accuracy = shots ? Math.round((hits / shots) * 100) : 0;
+      updateWeaponInfo();
+      scoreEl.textContent = String(score);
+      bestEl.textContent = String(best);
+      accuracyEl.textContent = `${accuracy}%`;
+      comboEl.textContent = String(combo);
+      playerHpEl.textContent = isStageMode() ? String(Math.max(0, Math.round(playerHp))) : "-";
+      stageEl.textContent = isStageMode() ? `${stage}/${maxStage}` : "-";
+      stageKillsEl.textContent = isStageMode() ? `${stageKills}/${killsPerStage}` : "-";
+      timeEl.textContent = isStageMode() ? "생존 중" : `${Math.max(0, timeLeft).toFixed(1)}초`;
+      timeBar.style.width = `${isStageMode() ? 100 : clamp(timeLeft / roundSeconds, 0, 1) * 100}%`;
+      recoilEl.textContent = `${Math.round(recoilPressure)}%`;
+      recoilBar.style.width = `${clamp(recoilPressure, 0, 100)}%`;
+      statusEl.textContent = status;
+    }
+
+    function startGame() {
+      ensureAudio();
+      if (stagePending) {
+        startNextStage();
+        return;
+      }
+      if (roundOver) resetState(false);
+      if (!running) {
+        running = true;
+        paused = false;
+        overlay.classList.add("hidden");
+        syncUi("플레이 중");
+        requestAnimationFrame(loop);
+      }
+    }
+
+    function startSelectedMode(mode) {
+      gameModeSelect.value = mode;
+      resetState(false);
+      setOverlayModeChoice(false);
+      startGame();
+    }
+
+    function togglePause() {
+      if (!running || roundOver) return;
+      paused = !paused;
+      firing = false;
+      setOverlayModeChoice(false);
+      overlayTitle.textContent = "일시정지";
+      overlayText.textContent = "P 또는 일시정지 버튼을 누르면 이어서 훈련합니다.";
+      overlayStartBtn.textContent = "계속하기";
+      overlay.classList.toggle("hidden", !paused);
+      syncUi(paused ? "일시정지" : "플레이 중");
+      if (!paused) requestAnimationFrame(loop);
+    }
+
+    function endRound(playerDead = false) {
+      running = false;
+      firing = false;
+      roundOver = true;
+      playEndSound();
+      best = Math.max(best, score);
+      localStorage.setItem("recoilAimBest", String(best));
+      setOverlayModeChoice(false);
+      overlayTitle.textContent = playerDead ? "사망" : "훈련 종료";
+      overlayText.textContent = playerDead
+        ? `점수 ${score}점, 스테이지 ${stage}/${maxStage}, 처치 ${stageKills}/${killsPerStage}. 얼굴 숫자가 0이 되기 전에 처치해야 적 추가와 공격을 막을 수 있습니다.`
+        : `점수 ${score}점, 명중률 ${shots ? Math.round((hits / shots) * 100) : 0}%. 반동을 더 일정하게 누르면 콤보가 빨리 쌓입니다.`;
+      overlayStartBtn.textContent = "다시 시작";
+      overlay.classList.remove("hidden");
+      syncUi("훈련 종료");
+    }
+
+    function applyPointer(clientX, clientY) {
+      const rect = canvas.getBoundingClientRect();
+      const x = (clientX - rect.left) * (canvas.width / rect.width);
+      const y = (clientY - rect.top) * (canvas.height / rect.height);
+      aim.x = clamp(x, 38, canvas.width - 38);
+      aim.y = clamp(y, 38, canvas.height - 38);
+      if (!running || paused || roundOver) {
+        const finalAim = currentAim();
+        visualAim = { ...finalAim };
+        draw();
+      }
+    }
+
+    function fireShot(now) {
+      const weapon = getWeapon();
+      const diff = getDifficulty();
+      const pattern = weapon.pattern[recoilShot % weapon.pattern.length];
+      const fatigue = Math.min(1.55, 1 + recoilShot * 0.035);
+      const verticalKick = weapon.rise * diff.recoil * fatigue;
+      const horizontalKick = (pattern * weapon.drift * diff.drift) + rand(-weapon.drift * 0.38, weapon.drift * 0.38);
+      shots += 1;
+      recoilShot += 1;
+      playShotSound();
+      recoilPressure = clamp(recoilPressure + verticalKick * 0.56 + Math.abs(horizontalKick) * 0.42, 0, 100);
+      recoilOffset.y = clamp(recoilOffset.y - verticalKick, -canvas.height * 0.42, canvas.height * 0.3);
+      recoilOffset.x = clamp(recoilOffset.x + horizontalKick, -canvas.width * 0.25, canvas.width * 0.25);
+      muzzleFlash = 1;
+
+      const shotAim = currentAim();
+      const hitInfo = findHit(shotAim);
+      const part = hitInfo?.part || null;
+      const hit = Boolean(hitInfo);
+      if (hit) {
+        hits += 1;
+        combo += 1;
+        const damage = Math.round(weapon.damage * part.multiplier);
+        hitInfo.enemy.hp = Math.max(0, hitInfo.enemy.hp - damage);
+        hitInfo.enemy.lastHitPart = part.label;
+        hitFlash = 1;
+        playHitSound();
+        if (hitInfo.enemy.hp <= 0) {
+          const gained = part.score + 420 + combo * 12 + (isStageMode() ? stage * 35 : 0);
+          score += gained;
+          enemies.splice(hitInfo.index, 1);
+          if (isStageMode()) {
+            stageKills += 1;
+            if (stageKills >= killsPerStage) {
+              advanceStage();
+            } else {
+              while (enemies.length < stageStartEnemyCount()) spawnEnemy();
+              target = enemies[0];
+              syncUi(`${part.label} 격파 · ${stageKills}/${killsPerStage}`);
+            }
+          } else {
+            target = createTarget();
+            enemies = [target];
+            syncUi(`${part.label} 격파 · +${gained}`);
+          }
+        } else {
+          syncUi(`${part.label} 명중 · ${damage} 데미지`);
+        }
+      } else {
+        combo = 0;
+        syncUi("빗나감");
+      }
+
+      shotMarks.push({ x: shotAim.x, y: shotAim.y, life: 0.55, hit, part: part?.key || "" });
+      if (shotMarks.length > 24) shotMarks.shift();
+      lastShot = now;
+    }
+
+    function updateEnemyMovement(enemy, dt) {
+      const mode = targetModeSelect.value;
+      if (mode === "steady" && !isStageMode()) return;
+      enemy.phase += dt * (mode === "random" || isStageMode() ? 2.2 : 1.35);
+      enemy.x += enemy.vx * dt * (isStageMode() ? 0.72 : 1);
+      enemy.y += (mode === "random" || isStageMode() ? Math.sin(enemy.phase) * 90 : enemy.vy * 0.35) * dt;
+      if (enemy.x < 110 || enemy.x > canvas.width - 110) enemy.vx *= -1;
+      if (enemy.y < 70 || enemy.y > canvas.height - 230) enemy.vy *= -1;
+      enemy.x = clamp(enemy.x, 110, canvas.width - 110);
+      enemy.y = clamp(enemy.y, 70, canvas.height - 230);
+    }
+
+    function updateEnemies(dt) {
+      enemies.forEach(enemy => {
+        updateEnemyMovement(enemy, dt);
+        enemy.attackFlash = Math.max(0, enemy.attackFlash - dt * 5);
+        if (!isStageMode()) return;
+        enemy.attackTimer -= dt;
+        if (enemy.attackTimer <= 0) {
+          const damage = Math.round(rand(5, 9) + stage * 1.7 + enemies.length * 1.2);
+          playerHp = Math.max(0, playerHp - damage);
+          damageFlash = 1;
+          enemy.attackFlash = 1;
+          enemy.attackTimer = Math.max(1.05, 4.7 - stage * 0.24 - stageKills * 0.035);
+          if (enemies.length < stageMaxEnemyCount()) {
+            spawnEnemy();
+          }
+          playTone({ frequency: 190, endFrequency: 90, duration: 0.12, type: "square", gain: 0.035 });
+          syncUi(`카운트 실패 · 적 추가 · -${damage}`);
+          if (playerHp <= 0) {
+            endRound(true);
+          }
+        }
+      });
+    }
+
+    function update(dt, now) {
+      const weapon = getWeapon();
+      const diff = getDifficulty();
+      if (!isStageMode()) timeLeft -= dt;
+      if (!isStageMode() && timeLeft <= 0) {
+        endRound();
+        return;
+      }
+      updateEnemies(dt);
+      if (roundOver) return;
+      if (!firing) {
+        recoilShot = 0;
+        recoilPressure = clamp(recoilPressure - weapon.recovery * diff.recovery * dt, 0, 100);
+        const settle = Math.min(1, weapon.recovery * diff.recovery * dt * 0.18);
+        recoilOffset.x += (0 - recoilOffset.x) * settle;
+        recoilOffset.y += (0 - recoilOffset.y) * settle;
+      }
+      if (firing && now - lastShot >= weapon.interval) {
+        fireShot(now);
+      }
+      const finalAim = currentAim();
+      visualAim.x += (finalAim.x - visualAim.x) * 0.32;
+      visualAim.y += (finalAim.y - visualAim.y) * 0.32;
+      muzzleFlash = Math.max(0, muzzleFlash - dt * 7);
+      hitFlash = Math.max(0, hitFlash - dt * 4);
+      damageFlash = Math.max(0, damageFlash - dt * 3);
+      shotMarks.forEach(mark => { mark.life -= dt; });
+      shotMarks = shotMarks.filter(mark => mark.life > 0);
+      syncUi(firing ? `${weapon.label} 연사 중 · ${diff.label}` : `${weapon.label} 준비`);
+    }
+
+    function drawBackground() {
+      ctx.fillStyle = "#020617";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const grd = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      grd.addColorStop(0, "rgba(30, 41, 59, 0.88)");
+      grd.addColorStop(0.58, "rgba(15, 23, 42, 0.98)");
+      grd.addColorStop(1, "rgba(28, 25, 23, 1)");
+      ctx.fillStyle = grd;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = "rgba(148, 163, 184, 0.11)";
+      ctx.lineWidth = 1;
+      for (let x = 0; x <= canvas.width; x += 80) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+      }
+      for (let y = 0; y <= canvas.height; y += 80) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = "rgba(120, 113, 108, 0.28)";
+      ctx.fillRect(0, canvas.height - 122, canvas.width, 122);
+      ctx.fillStyle = "rgba(15, 23, 42, 0.55)";
+      for (let i = 0; i < 9; i += 1) {
+        const w = 70 + i * 12;
+        const h = 110 + (i % 3) * 50;
+        ctx.fillRect(70 + i * 135, canvas.height - 122 - h, w, h);
+      }
+      if (damageFlash > 0) {
+        ctx.fillStyle = `rgba(239, 68, 68, ${damageFlash * 0.24})`;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    function roundedRectPath(x, y, w, h, r) {
+      const radius = Math.min(r, w / 2, h / 2);
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + w - radius, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+      ctx.lineTo(x + w, y + h - radius);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+      ctx.lineTo(x + radius, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+    }
+
+    function drawTarget(enemy) {
+      ctx.save();
+      ctx.translate(enemy.x, enemy.y);
+      ctx.scale(targetScale, targetScale);
+      if (hitFlash > 0 && enemy.lastHitPart) {
+        ctx.fillStyle = `rgba(248, 113, 113, ${hitFlash * 0.22})`;
+        ctx.fillRect(-78, 0, 156, 278);
+      }
+      if (enemy.attackFlash > 0) {
+        ctx.strokeStyle = `rgba(251, 191, 36, ${enemy.attackFlash})`;
+        ctx.lineWidth = 7;
+        ctx.beginPath();
+        ctx.arc(0, 126, 94 + enemy.attackFlash * 20, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = "rgba(15, 23, 42, 0.94)";
+      ctx.strokeStyle = "#fecaca";
+      ctx.lineWidth = 4;
+
+      ctx.beginPath();
+      ctx.arc(0, 38, 30, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      if (isStageMode()) {
+        const count = Math.max(0, Math.ceil(enemy.attackTimer));
+        ctx.fillStyle = count <= 1 ? "#facc15" : "#f8fafc";
+        ctx.font = "bold 30px sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(String(count), 0, 38);
+        ctx.textBaseline = "alphabetic";
+      }
+
+      ctx.fillStyle = "rgba(30, 41, 59, 0.96)";
+      ctx.beginPath();
+      roundedRectPath(-48, 76, 96, 88, 14);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = "rgba(15, 23, 42, 0.92)";
+      ctx.beginPath();
+      roundedRectPath(-82, 86, 34, 100, 14);
+      roundedRectPath(48, 86, 34, 100, 14);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.beginPath();
+      roundedRectPath(-46, 164, 38, 104, 12);
+      roundedRectPath(8, 164, 38, 104, 12);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.strokeStyle = "rgba(248, 113, 113, 0.72)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(-24, 38);
+      ctx.lineTo(24, 38);
+      ctx.moveTo(-40, 116);
+      ctx.lineTo(40, 116);
+      ctx.moveTo(-34, 214);
+      ctx.lineTo(-18, 214);
+      ctx.moveTo(18, 214);
+      ctx.lineTo(34, 214);
+      ctx.stroke();
+
+      const hpRatio = clamp(enemy.hp / enemy.maxHp, 0, 1);
+      ctx.fillStyle = "rgba(2, 6, 23, 0.82)";
+      ctx.fillRect(-58, -30, 116, 12);
+      ctx.fillStyle = hpRatio > 0.5 ? "#22c55e" : hpRatio > 0.25 ? "#f59e0b" : "#ef4444";
+      ctx.fillRect(-56, -28, 112 * hpRatio, 8);
+      ctx.strokeStyle = "rgba(226, 232, 240, 0.5)";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(-58, -30, 116, 12);
+
+      ctx.fillStyle = "rgba(226, 232, 240, 0.86)";
+      ctx.font = "16px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(`${enemy.hp}/${enemy.maxHp}`, 0, -38);
+      if (enemy.lastHitPart) {
+        ctx.fillStyle = "#fecaca";
+        ctx.fillText(enemy.lastHitPart, 0, 294);
+      }
+      ctx.restore();
+    }
+
+    function drawWeapon() {
+      const weapon = getWeapon();
+      const shape = weapon.shape;
+      const baseX = canvas.width / 2;
+      const baseY = canvas.height + 14;
+      const sway = (visualAim.x - canvas.width / 2) * 0.035;
+      ctx.save();
+      ctx.translate(baseX, baseY);
+      ctx.rotate(sway * Math.PI / 180);
+      ctx.strokeStyle = "rgba(226, 232, 240, 0.16)";
+      ctx.lineWidth = 2;
+
+      ctx.fillStyle = "#111827";
+      ctx.fillRect(-shape.stock / 2, -64, shape.stock, 48);
+
+      ctx.fillStyle = shape.body;
+      ctx.fillRect(-shape.width / 2, -138, shape.width, 72);
+      ctx.strokeRect(-shape.width / 2, -138, shape.width, 72);
+
+      ctx.fillStyle = shape.accent;
+      ctx.fillRect(-shape.width / 2 + 16, -152, shape.width - 32, 18);
+      ctx.fillRect(-18, -214, 36, 80);
+
+      ctx.fillStyle = "#0f172a";
+      ctx.fillRect(-11, -214 - shape.barrel, 22, shape.barrel);
+      ctx.fillStyle = shape.accent;
+      ctx.fillRect(-18, -222 - shape.barrel, 36, 14);
+
+      ctx.fillStyle = "#020617";
+      if (shape.grip === "curved") {
+        ctx.beginPath();
+        ctx.moveTo(-34, -66);
+        ctx.quadraticCurveTo(-54, -24, -28, 12);
+        ctx.lineTo(8, 12);
+        ctx.quadraticCurveTo(-6, -24, 12, -66);
+        ctx.closePath();
+        ctx.fill();
+      } else {
+        ctx.fillRect(-34, -66, 52, 78);
+      }
+
+      ctx.fillStyle = "#1f2937";
+      ctx.beginPath();
+      ctx.moveTo(18, -68);
+      ctx.lineTo(18 + shape.mag * 0.42, -24);
+      ctx.lineTo(18 + shape.mag * 0.18, 24);
+      ctx.lineTo(-10, -14);
+      ctx.closePath();
+      ctx.fill();
+
+      if (shape.scope) {
+        ctx.fillStyle = "#020617";
+        ctx.fillRect(-38, -176, 76, 22);
+        ctx.fillStyle = shape.accent;
+        ctx.fillRect(-54, -170, 22, 10);
+        ctx.fillRect(32, -170, 22, 10);
+      }
+
+      ctx.fillStyle = "rgba(226, 232, 240, 0.9)";
+      ctx.font = "18px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(weapon.label, 0, -92);
+
+      if (muzzleFlash > 0) {
+        ctx.fillStyle = `rgba(251, 191, 36, ${muzzleFlash})`;
+        ctx.beginPath();
+        const muzzleY = -222 - shape.barrel;
+        ctx.moveTo(0, muzzleY - 48);
+        ctx.lineTo(-28, muzzleY - 8);
+        ctx.lineTo(0, muzzleY - 22);
+        ctx.lineTo(28, muzzleY - 8);
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    function drawCrosshair() {
+      const x = visualAim.x;
+      const y = visualAim.y;
+      const spread = 12 + recoilPressure * 0.18;
+      ctx.strokeStyle = "rgba(226, 232, 240, 0.94)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x - spread - 18, y);
+      ctx.lineTo(x - spread, y);
+      ctx.moveTo(x + spread, y);
+      ctx.lineTo(x + spread + 18, y);
+      ctx.moveTo(x, y - spread - 18);
+      ctx.lineTo(x, y - spread);
+      ctx.moveTo(x, y + spread);
+      ctx.lineTo(x, y + spread + 18);
+      ctx.stroke();
+      ctx.strokeStyle = "rgba(248, 113, 113, 0.85)";
+      ctx.beginPath();
+      ctx.arc(x, y, 3, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    function drawShotMarks() {
+      shotMarks.forEach(mark => {
+        const alpha = clamp(mark.life / 0.55, 0, 1);
+        const color = mark.part === "head"
+          ? "250, 204, 21"
+          : mark.part === "chest"
+            ? "74, 222, 128"
+            : mark.part === "legs"
+              ? "56, 189, 248"
+              : "248, 113, 113";
+        ctx.strokeStyle = `rgba(${color}, ${alpha})`;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(mark.x, mark.y, 7 + (1 - alpha) * 10, 0, Math.PI * 2);
+        ctx.stroke();
+      });
+    }
+
+    function draw() {
+      drawBackground();
+      enemies.forEach(enemy => drawTarget(enemy));
+      drawShotMarks();
+      drawWeapon();
+      drawCrosshair();
+    }
+
+    function loop(now) {
+      if (!running || paused || roundOver || stagePending) return;
+      if (!lastFrame) lastFrame = now;
+      const dt = Math.min(0.033, (now - lastFrame) / 1000);
+      lastFrame = now;
+      update(dt, now);
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    canvas.addEventListener("pointerdown", event => {
+      event.preventDefault();
+      pointerActive = true;
+      applyPointer(event.clientX, event.clientY);
+      startGame();
+      firing = !stagePending && running;
+      canvas.setPointerCapture(event.pointerId);
+    });
+
+    canvas.addEventListener("pointermove", event => {
+      if (!pointerActive && event.pointerType !== "mouse") return;
+      event.preventDefault();
+      applyPointer(event.clientX, event.clientY);
+    });
+
+    function stopPointerFire(event) {
+      pointerActive = false;
+      firing = false;
+      if (event && canvas.hasPointerCapture(event.pointerId)) {
+        canvas.releasePointerCapture(event.pointerId);
+      }
+    }
+
+    canvas.addEventListener("pointerup", stopPointerFire);
+    canvas.addEventListener("pointercancel", stopPointerFire);
+    canvas.addEventListener("pointerleave", () => {
+      if (!pointerActive) firing = false;
+    });
+
+    fireBtn.addEventListener("pointerdown", event => {
+      event.preventDefault();
+      startGame();
+      firing = !stagePending && running;
+    });
+    fireBtn.addEventListener("pointerup", () => { firing = false; });
+    fireBtn.addEventListener("pointercancel", () => { firing = false; });
+    fireBtn.addEventListener("pointerleave", () => { firing = false; });
+
+    document.addEventListener("keydown", event => {
+      if (event.code === "Space") {
+        event.preventDefault();
+        startGame();
+        firing = !stagePending && running;
+      }
+      if (event.code === "KeyP") togglePause();
+      if (event.code === "KeyR") resetState();
+    });
+
+    document.addEventListener("keyup", event => {
+      if (event.code === "Space") {
+        event.preventDefault();
+        firing = false;
+      }
+    });
+
+    startBtn.addEventListener("click", startGame);
+    overlayStartBtn.addEventListener("click", startGame);
+    practiceModeBtn.addEventListener("click", () => startSelectedMode("training"));
+    stageModeBtn.addEventListener("click", () => startSelectedMode("stage"));
+    pauseBtn.addEventListener("click", togglePause);
+    resetBtn.addEventListener("click", () => resetState());
+    gameModeSelect.addEventListener("change", () => resetState());
+    soundToggleBtn.addEventListener("click", () => {
+      soundEnabled = !soundEnabled;
+      localStorage.setItem("recoilAimSound", soundEnabled ? "1" : "0");
+      updateSoundButton();
+      if (soundEnabled) {
+        ensureAudio();
+        playTone({ frequency: 620, duration: 0.06, type: "triangle", gain: 0.035 });
+      }
+    });
+    weaponSelect.addEventListener("change", () => {
+      recoilShot = 0;
+      recoilPressure = 0;
+      syncUi(running ? `${getWeapon().label} 준비` : "대기 중");
+      draw();
+    });
+    difficultySelect.addEventListener("change", () => {
+      recoilShot = 0;
+      syncUi(running ? `${getWeapon().label} 준비` : "대기 중");
+    });
+    targetModeSelect.addEventListener("change", () => {
+      target = createTarget();
+      draw();
+    });
+
+    updateSoundButton();
+    resetState();
+  </script>
+</body>
+</html>
