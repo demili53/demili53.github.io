@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-T2KDKBN8');</script>
+<!-- End Google Tag Manager -->
+<link rel="stylesheet" href="/styles/site-theme.css">
+<meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="온라인 오락실에서 바로 즐기는 스네이크 게임. 키보드와 모바일 버튼으로 점수를 올려보세요.">
+  <meta name="keywords" content="온라인 오락실, 스네이크 게임, 브라우저 게임, 미니게임, partygame">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="canonical" href="https://partygame.pe.kr/arcade/">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Brain Test Hub">
+  <meta property="og:title" content="온라인 오락실 | 스네이크 게임">
+  <meta property="og:description" content="브라우저에서 바로 즐기는 클래식 스네이크 게임">
+  <meta property="og:url" content="https://partygame.pe.kr/arcade/">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/fox.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="온라인 오락실 | 스네이크 게임">
+  <meta name="twitter:description" content="키보드와 모바일 버튼으로 즐기는 클래식 스네이크 게임">
+  <meta name="twitter:image" content="https://partygame.pe.kr/brainTest/images/fox.png">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565" crossorigin="anonymous"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .skip-link{position:absolute;left:-999px;top:1rem;z-index:50;border-radius:.75rem;background:#f8fafc;color:#0f172a;padding:.75rem 1rem;font-weight:700}
+    .skip-link:focus{left:1rem}
+    :focus-visible{outline:2px solid rgba(34,211,238,.95);outline-offset:3px}
+    .arcade-board{image-rendering:pixelated;touch-action:none}
+    .control-btn{height:3.25rem;min-width:3.25rem}
+  </style>
+  <title>온라인 오락실 | 스네이크 게임</title>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-950 via-zinc-900 to-emerald-950 text-slate-50">
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T2KDKBN8"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#mainContent" class="skip-link">본문 바로가기</a>
+  <main id="mainContent" class="mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-6 sm:px-6 lg:py-8">
+    <header class="mb-5 space-y-4">
+      <nav class="flex flex-wrap gap-2 text-sm">
+        <a href="/" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">홈</a>
+        <a href="/blog/" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">블로그</a>
+        <a href="/arcade/" aria-current="page" class="px-3 py-2 rounded-full border border-cyan-200/70 bg-white/10 text-cyan-100">온라인 오락실</a>
+        <a href="/ai-ranking/" class="px-3 py-2 rounded-full border border-emerald-200/60 text-emerald-100 hover:bg-white/10 transition">AI 순위</a>
+        <a href="/game-ranking/" class="px-3 py-2 rounded-full border border-amber-200/60 text-amber-100 hover:bg-white/10 transition">게임 순위</a>
+        <a href="/fruit-ranking/" class="px-3 py-2 rounded-full border border-lime-200/60 text-lime-100 hover:bg-white/10 transition">과일 순위</a>
+        <a href="/webtoon-ranking/" class="px-3 py-2 rounded-full border border-rose-200/60 text-rose-100 hover:bg-white/10 transition">웹툰 순위</a>
+        <a href="/contact.html" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">문의하기</a>
+      </nav>
+      <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-[0.28em] text-cyan-200">Online Arcade</p>
+          <h1 class="mt-2 text-3xl font-bold md:text-4xl">온라인 오락실</h1>
+        </div>
+        <div class="flex flex-wrap gap-2 text-sm">
+          <button id="startBtn" type="button" class="rounded-lg border border-cyan-200/50 px-4 py-2 text-cyan-100 hover:bg-white/10 transition">시작</button>
+          <button id="pauseBtn" type="button" class="rounded-lg border border-white/20 px-4 py-2 text-slate-100 hover:bg-white/10 transition">일시정지</button>
+          <button id="resetBtn" type="button" class="rounded-lg border border-rose-200/50 px-4 py-2 text-rose-100 hover:bg-white/10 transition">다시하기</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="grid flex-1 gap-5 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+      <div class="rounded-2xl border border-white/10 bg-black/30 p-3 shadow-2xl sm:p-4">
+        <div class="relative mx-auto aspect-square w-full max-w-[min(88vw,640px)] overflow-hidden rounded-xl border border-cyan-200/20 bg-slate-950">
+          <canvas id="gameCanvas" width="600" height="600" class="arcade-board h-full w-full"></canvas>
+          <div id="gameOverlay" class="absolute inset-0 flex items-center justify-center bg-slate-950/80 p-6 text-center">
+            <div class="max-w-sm space-y-3">
+              <h2 id="overlayTitle" class="text-2xl font-bold text-cyan-100">스네이크</h2>
+              <p id="overlayText" class="text-sm leading-relaxed text-slate-200">시작을 누르고 먹이를 먹으며 몸을 길게 늘려보세요. 벽이나 몸에 부딪히면 게임이 끝납니다.</p>
+              <button id="overlayStartBtn" type="button" class="rounded-lg border border-cyan-200/60 px-5 py-2 text-cyan-100 hover:bg-white/10 transition">플레이</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="grid gap-4">
+        <section class="rounded-2xl border border-white/10 bg-white/5 p-5">
+          <h2 class="text-lg font-semibold text-cyan-100">스네이크 게임</h2>
+          <div class="mt-4 grid grid-cols-3 gap-2 text-center">
+            <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3">
+              <p class="text-xs text-slate-400">점수</p>
+              <p id="scoreEl" class="mt-1 text-2xl font-bold text-white">0</p>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3">
+              <p class="text-xs text-slate-400">최고</p>
+              <p id="bestEl" class="mt-1 text-2xl font-bold text-white">0</p>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3">
+              <p class="text-xs text-slate-400">속도</p>
+              <p id="speedEl" class="mt-1 text-2xl font-bold text-white">1</p>
+            </div>
+          </div>
+          <p id="statusEl" class="mt-4 rounded-xl border border-white/10 bg-slate-950/40 px-3 py-2 text-sm text-slate-200" aria-live="polite">대기 중</p>
+        </section>
+
+        <section class="rounded-2xl border border-white/10 bg-white/5 p-5">
+          <h2 class="text-lg font-semibold text-cyan-100">조작</h2>
+          <div class="mt-4 grid grid-cols-3 gap-2">
+            <span></span>
+            <button type="button" data-dir="up" class="control-btn rounded-xl border border-white/20 text-xl hover:bg-white/10" aria-label="위">↑</button>
+            <span></span>
+            <button type="button" data-dir="left" class="control-btn rounded-xl border border-white/20 text-xl hover:bg-white/10" aria-label="왼쪽">←</button>
+            <button type="button" data-dir="down" class="control-btn rounded-xl border border-white/20 text-xl hover:bg-white/10" aria-label="아래">↓</button>
+            <button type="button" data-dir="right" class="control-btn rounded-xl border border-white/20 text-xl hover:bg-white/10" aria-label="오른쪽">→</button>
+          </div>
+          <div class="mt-4 grid gap-2 text-sm text-slate-300">
+            <p>키보드: 방향키 또는 WASD</p>
+            <p>스페이스: 일시정지</p>
+          </div>
+        </section>
+      </aside>
+    </section>
+
+    <footer class="mt-6 border-t border-white/10 pt-5 text-sm text-slate-300">
+      <div class="flex flex-wrap gap-3">
+        <a href="/" class="hover:text-cyan-100">홈</a>
+        <a href="/blog/" class="hover:text-cyan-100">블로그</a>
+        <a href="/arcade/" class="hover:text-cyan-100">온라인 오락실</a>
+        <a href="/game-ranking/" class="hover:text-cyan-100">게임 순위</a>
+        <a href="/contact.html" class="hover:text-cyan-100">문의하기</a>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const scoreEl = document.getElementById("scoreEl");
+    const bestEl = document.getElementById("bestEl");
+    const speedEl = document.getElementById("speedEl");
+    const statusEl = document.getElementById("statusEl");
+    const overlay = document.getElementById("gameOverlay");
+    const overlayTitle = document.getElementById("overlayTitle");
+    const overlayText = document.getElementById("overlayText");
+    const startBtn = document.getElementById("startBtn");
+    const pauseBtn = document.getElementById("pauseBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const overlayStartBtn = document.getElementById("overlayStartBtn");
+    const grid = 24;
+    const cell = canvas.width / grid;
+    const vectors = {
+      up: { x: 0, y: -1 },
+      down: { x: 0, y: 1 },
+      left: { x: -1, y: 0 },
+      right: { x: 1, y: 0 }
+    };
+    let snake;
+    let food;
+    let direction;
+    let nextDirection;
+    let score;
+    let best = Number(localStorage.getItem("arcadeSnakeBest") || "0");
+    let running = false;
+    let paused = false;
+    let gameOver = false;
+    let lastTime = 0;
+    let stepMs = 135;
+
+    function resetState() {
+      snake = [{ x: 11, y: 12 }, { x: 10, y: 12 }, { x: 9, y: 12 }];
+      direction = vectors.right;
+      nextDirection = vectors.right;
+      score = 0;
+      stepMs = 135;
+      lastTime = 0;
+      paused = false;
+      gameOver = false;
+      placeFood();
+      syncUi("대기 중");
+      draw();
+    }
+
+    function syncUi(status) {
+      scoreEl.textContent = String(score);
+      bestEl.textContent = String(best);
+      speedEl.textContent = String(Math.max(1, Math.floor((155 - stepMs) / 15) + 1));
+      statusEl.textContent = status;
+    }
+
+    function placeFood() {
+      do {
+        food = {
+          x: Math.floor(Math.random() * grid),
+          y: Math.floor(Math.random() * grid)
+        };
+      } while (snake.some(part => part.x === food.x && part.y === food.y));
+    }
+
+    function drawCell(x, y, fill, inset = 2) {
+      ctx.fillStyle = fill;
+      ctx.fillRect(x * cell + inset, y * cell + inset, cell - inset * 2, cell - inset * 2);
+    }
+
+    function draw() {
+      ctx.fillStyle = "#020617";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = "rgba(148, 163, 184, 0.12)";
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= grid; i += 1) {
+        const p = i * cell;
+        ctx.beginPath();
+        ctx.moveTo(p, 0);
+        ctx.lineTo(p, canvas.height);
+        ctx.moveTo(0, p);
+        ctx.lineTo(canvas.width, p);
+        ctx.stroke();
+      }
+      drawCell(food.x, food.y, "#f43f5e", 4);
+      snake.forEach((part, index) => {
+        drawCell(part.x, part.y, index === 0 ? "#22d3ee" : "#34d399", index === 0 ? 2 : 3);
+      });
+    }
+
+    function setDirection(next) {
+      const vector = vectors[next];
+      if (!vector || (vector.x + direction.x === 0 && vector.y + direction.y === 0)) return;
+      nextDirection = vector;
+      if (!running && !gameOver) startGame();
+    }
+
+    function startGame() {
+      if (gameOver) resetState();
+      if (running && !paused) return;
+      running = true;
+      paused = false;
+      lastTime = 0;
+      overlay.classList.add("hidden");
+      syncUi("플레이 중");
+      requestAnimationFrame(loop);
+    }
+
+    function togglePause() {
+      if (!running || gameOver) return;
+      paused = !paused;
+      overlayTitle.textContent = "일시정지";
+      overlayText.textContent = "다시 움직이려면 일시정지 버튼이나 스페이스 키를 누르세요.";
+      overlayStartBtn.textContent = "계속하기";
+      overlay.classList.toggle("hidden", !paused);
+      syncUi(paused ? "일시정지" : "플레이 중");
+      if (!paused) requestAnimationFrame(loop);
+    }
+
+    function endGame() {
+      running = false;
+      gameOver = true;
+      best = Math.max(best, score);
+      localStorage.setItem("arcadeSnakeBest", String(best));
+      overlayTitle.textContent = "게임 종료";
+      overlayText.textContent = `점수 ${score}점. 다시 시작해서 최고 기록을 갱신해보세요.`;
+      overlayStartBtn.textContent = "다시 시작";
+      overlay.classList.remove("hidden");
+      syncUi("게임 종료");
+      draw();
+    }
+
+    function step() {
+      direction = nextDirection;
+      const head = snake[0];
+      const nextHead = { x: head.x + direction.x, y: head.y + direction.y };
+      const hitWall = nextHead.x < 0 || nextHead.x >= grid || nextHead.y < 0 || nextHead.y >= grid;
+      const hitBody = snake.some(part => part.x === nextHead.x && part.y === nextHead.y);
+      if (hitWall || hitBody) {
+        endGame();
+        return;
+      }
+      snake.unshift(nextHead);
+      if (nextHead.x === food.x && nextHead.y === food.y) {
+        score += 10;
+        stepMs = Math.max(70, stepMs - 3);
+        placeFood();
+      } else {
+        snake.pop();
+      }
+      syncUi("플레이 중");
+      draw();
+    }
+
+    function loop(time) {
+      if (!running || paused || gameOver) return;
+      if (!lastTime) lastTime = time;
+      if (time - lastTime >= stepMs) {
+        lastTime = time;
+        step();
+      }
+      requestAnimationFrame(loop);
+    }
+
+    document.addEventListener("keydown", (event) => {
+      const map = {
+        ArrowUp: "up",
+        KeyW: "up",
+        ArrowDown: "down",
+        KeyS: "down",
+        ArrowLeft: "left",
+        KeyA: "left",
+        ArrowRight: "right",
+        KeyD: "right"
+      };
+      if (event.code === "Space") {
+        event.preventDefault();
+        togglePause();
+        return;
+      }
+      if (map[event.code]) {
+        event.preventDefault();
+        setDirection(map[event.code]);
+      }
+    });
+
+    document.querySelectorAll("[data-dir]").forEach(button => {
+      button.addEventListener("click", () => setDirection(button.dataset.dir));
+    });
+    startBtn.addEventListener("click", startGame);
+    overlayStartBtn.addEventListener("click", startGame);
+    pauseBtn.addEventListener("click", togglePause);
+    resetBtn.addEventListener("click", () => {
+      running = false;
+      resetState();
+      overlayTitle.textContent = "스네이크";
+      overlayText.textContent = "시작을 누르고 먹이를 먹으며 몸을 길게 늘려보세요. 벽이나 몸에 부딪히면 게임이 끝납니다.";
+      overlayStartBtn.textContent = "플레이";
+      overlay.classList.remove("hidden");
+    });
+
+    resetState();
+  </script>
+</body>
+</html>
