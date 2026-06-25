@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-T2KDKBN8');</script>
+<!-- End Google Tag Manager -->
+<link rel="stylesheet" href="/styles/site-theme.css">
+<meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Windows에서 8080 포트를 사용 중인 프로그램을 netstat, taskkill, PowerShell로 찾아 종료하는 방법을 정리했습니다. 개발 서버 포트 충돌 해결용 배치 파일 예시도 함께 제공합니다.">
+  <meta name="keywords" content="Windows,8080포트종료,netstat,taskkill,포트충돌,개발서버">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://partygame.pe.kr/blog/posts/windows-kill-process-using-port-8080-guide-2026.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Windows에서 8080 포트 사용 프로그램 종료하는 방법 | 연애경제 블로그">
+  <meta property="og:description" content="Windows에서 8080 포트를 사용 중인 프로그램을 netstat, taskkill, PowerShell로 찾아 종료하는 방법과 배치 파일 예시를 정리했습니다.">
+  <meta property="og:url" content="https://partygame.pe.kr/blog/posts/windows-kill-process-using-port-8080-guide-2026.html">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/site/sm_ChatGPT%20Image%202025%EB%85%84%2012%EC%9B%94%2017%EC%9D%BC%20%EC%98%A4%ED%9B%84%2012_36_38.png">
+  <meta property="article:section" content="개발">
+  <meta property="article:published_time" content="2026-06-07">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565" crossorigin="anonymous"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Windows에서 8080 포트 사용 프로그램 종료하는 방법 | 연애경제 블로그</title>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 text-slate-50">
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T2KDKBN8"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<main class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <article class="rounded-3xl border border-white/10 bg-white/5 p-8 space-y-6">
+      <header class="space-y-4">
+        <div class="flex flex-wrap gap-2 text-sm">
+          <span class="px-3 py-1 rounded-full border border-white/20 text-slate-200">#Windows</span>
+          <span class="px-3 py-1 rounded-full border border-white/20 text-slate-200">#포트충돌</span>
+          <span class="px-3 py-1 rounded-full border border-white/20 text-slate-200">#개발환경</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold">Windows에서 8080 포트 사용 프로그램 종료하는 방법</h1>
+        <p class="text-slate-200">개발 서버가 "port 8080 already in use"로 막힐 때 바로 확인하고 종료하는 실전 순서</p>
+        <p class="text-sm text-slate-400">업데이트: 2026-06-07</p>
+      </header>
+
+      <section class="space-y-4">
+        <h2 class="text-2xl font-semibold text-indigo-200">8080 포트 충돌이 자주 생기는 이유</h2>
+        <p class="leading-relaxed text-slate-200">Windows에서 개발하다 보면 8080 포트가 이미 사용 중이라는 메시지를 자주 만납니다. Spring Boot, Tomcat, Jenkins, 프록시 도구, 로컬 테스트 서버가 기본 포트로 8080을 쓰는 경우가 많기 때문입니다. 문제는 프로그램 창을 닫았는데도 백그라운드 프로세스가 남아 있거나, 이전 실행이 정상 종료되지 않아 포트를 계속 붙잡고 있는 상황입니다. 이때 새 서버를 다시 실행하면 같은 포트를 열 수 없어 실행이 실패합니다. 해결 방법은 단순합니다. 먼저 8080 포트를 잡고 있는 PID를 찾고, 그 PID의 프로세스를 종료하면 됩니다.</p>
+      </section>
+
+      <section class="space-y-4">
+        <h2 class="text-2xl font-semibold text-indigo-200">가장 기본: netstat로 PID 확인 후 taskkill 실행</h2>
+        <p class="leading-relaxed text-slate-200">명령 프롬프트를 관리자 권한으로 열고 아래 명령을 실행하면 8080 포트를 사용하는 연결 정보를 볼 수 있습니다. 마지막 열에 표시되는 숫자가 PID입니다. 예를 들어 PID가 12345라면, 그 값을 `taskkill`에 넘겨 강제 종료합니다.</p>
+        <pre class="overflow-x-auto rounded-2xl border border-white/10 bg-slate-950/70 p-4 text-sm text-slate-100"><code>netstat -aon | findstr ":8080 "
+taskkill /F /PID 12345</code></pre>
+        <p class="leading-relaxed text-slate-200">여기서 `-aon`은 모든 연결과 수신 포트, 숫자 주소, PID를 함께 보여주는 옵션입니다. `findstr ":8080 "`처럼 뒤에 공백을 붙이면 8080이 포함된 다른 숫자와 섞이는 일을 줄일 수 있습니다. `taskkill /F`는 해당 PID를 강제로 종료하므로, 중요한 작업을 하는 프로세스가 아닌지 한 번 확인한 뒤 실행하는 습관이 좋습니다.</p>
+      </section>
+
+      <section class="space-y-4">
+        <h2 class="text-2xl font-semibold text-indigo-200">반복 작업용 배치 파일 만들기</h2>
+        <p class="leading-relaxed text-slate-200">8080 포트 충돌이 자주 난다면 매번 PID를 복사해서 종료하는 대신 `.bat` 파일로 만들어 두면 편합니다. 예를 들어 `kill-8080.bat` 파일을 만들고 아래 내용을 넣어두면, 실행할 때마다 8080 포트를 사용하는 PID를 찾아 종료합니다.</p>
+        <pre class="overflow-x-auto rounded-2xl border border-white/10 bg-slate-950/70 p-4 text-sm text-slate-100"><code>@echo off
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr ":8080 "') do (
+    echo Killing PID %%a on port 8080
+    taskkill /F /PID %%a 2&gt;nul
+)
+echo Done.</code></pre>
+        <p class="leading-relaxed text-slate-200">배치 파일 안에서는 `%a`가 아니라 `%%a`처럼 퍼센트를 두 번 써야 합니다. 또 `netstat` 결과를 `findstr`로 넘길 때 파이프 문자는 `^|`처럼 이스케이프해야 합니다. 이 파일은 관리자 권한 명령 프롬프트에서 실행하는 편이 안정적입니다. 종료 대상이 여러 개면 반복문이 각각의 PID에 대해 `taskkill`을 실행합니다.</p>
+      </section>
+
+      <section class="space-y-4">
+        <h2 class="text-2xl font-semibold text-indigo-200">PowerShell 방식으로 더 읽기 쉽게 처리하기</h2>
+        <p class="leading-relaxed text-slate-200">PowerShell을 쓰는 환경이라면 `Get-NetTCPConnection`으로 포트와 프로세스를 더 구조적으로 조회할 수 있습니다. 아래 명령은 로컬 포트 8080을 쓰는 프로세스 ID를 찾고, 해당 프로세스를 종료합니다.</p>
+        <pre class="overflow-x-auto rounded-2xl border border-white/10 bg-slate-950/70 p-4 text-sm text-slate-100"><code>$pids = Get-NetTCPConnection -LocalPort 8080 -ErrorAction SilentlyContinue |
+    Select-Object -ExpandProperty OwningProcess -Unique
+
+$pids | ForEach-Object {
+    Write-Host "Killing PID $_ on port 8080"
+    Stop-Process -Id $_ -Force
+}</code></pre>
+        <p class="leading-relaxed text-slate-200">PowerShell 방식의 장점은 결과를 객체로 다룰 수 있다는 점입니다. 텍스트 열 위치가 바뀌는 문제를 덜 걱정해도 되고, `Get-Process -Id PID`로 프로세스 이름을 먼저 확인하기도 쉽습니다. 팀에서 배치 파일보다 PowerShell 스크립트를 선호한다면 이 방식이 더 관리하기 좋습니다.</p>
+      </section>
+
+      <section class="space-y-4">
+        <h2 class="text-2xl font-semibold text-indigo-200">종료 전에 프로세스 이름 확인하기</h2>
+        <p class="leading-relaxed text-slate-200">8080 포트를 쓰는 프로세스가 항상 내가 방금 띄운 개발 서버라고 단정하면 위험합니다. 회사 PC나 여러 도구를 동시에 쓰는 환경에서는 로컬 프록시, 테스트 도구, 다른 프로젝트 서버가 같은 포트를 사용할 수 있습니다. PID를 찾은 뒤 아래처럼 프로세스 이름을 확인하면 실수를 줄일 수 있습니다.</p>
+        <pre class="overflow-x-auto rounded-2xl border border-white/10 bg-slate-950/70 p-4 text-sm text-slate-100"><code>tasklist /FI "PID eq 12345"</code></pre>
+        <p class="leading-relaxed text-slate-200">Java 기반 서버라면 `java.exe`, Node 개발 서버라면 `node.exe`, Tomcat이면 관련 실행 파일이 보일 수 있습니다. 이름만으로 확신이 어렵다면 IDE 실행 로그, 터미널 탭, 작업 관리자 세부 정보 탭을 함께 확인하세요. 강제 종료는 빠르지만 저장 중인 작업이나 배치 처리까지 끊을 수 있으니, 반복적으로 충돌하는 포트라면 프로젝트 설정에서 서버 포트를 바꾸는 것도 좋은 선택입니다.</p>
+      </section>
+
+      <section class="space-y-4">
+        <h2 class="text-2xl font-semibold text-indigo-200">포트 충돌을 줄이는 운영 습관</h2>
+        <p class="leading-relaxed text-slate-200">매번 8080을 죽이는 방식은 응급 처치에 가깝습니다. 자주 충돌한다면 프로젝트별 포트를 분리해 두는 편이 좋습니다. 예를 들어 백엔드 A는 8080, 백엔드 B는 8081, 프론트 로컬 프록시는 5173처럼 정해두면 충돌 원인을 찾는 시간이 줄어듭니다. Spring Boot라면 `server.port=8081`, Node 계열이라면 실행 스크립트나 환경 변수에서 포트를 조정할 수 있습니다. 팀 프로젝트에서는 README에 기본 포트와 대체 포트를 적어두면 새로 합류한 사람도 덜 헤맵니다.</p>
+      </section>
+
+      <section class="space-y-4">
+        <h2 class="text-2xl font-semibold text-indigo-200">3줄 요약</h2>
+        <p class="leading-relaxed text-slate-200">1) `netstat -aon | findstr ":8080 "`으로 8080 포트를 잡은 PID를 찾습니다. 2) `taskkill /F /PID PID번호`로 해당 프로세스를 종료합니다. 3) 자주 반복된다면 배치 파일이나 PowerShell 스크립트로 자동화하고, 장기적으로는 프로젝트별 포트를 분리하세요.</p>
+      </section>
+
+      <footer class="pt-6 border-t border-white/10">
+        <p class="text-sm text-slate-400">본 글은 Windows 개발 환경에서 로컬 포트 충돌을 해결하기 위한 일반 정보입니다. 중요한 서비스나 회사 관리 프로세스는 종료 전 반드시 담당자 또는 실행 목적을 확인하세요.</p>
+      </footer>
+    </article>
+
+    <nav class="rounded-2xl border border-white/10 bg-white/5 p-6">
+      <a href="/blog/" class="text-indigo-200 hover:text-indigo-100 transition">&larr; 블로그 목록으로 돌아가기</a>
+    </nav>
+  </main>
+</body>
+</html>
