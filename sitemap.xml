@@ -14,13 +14,19 @@
       </url>
   <url>
         <loc>https://partygame.pe.kr/arcade/</loc>
-        <lastmod>2026-06-02T14:20:00+09:00</lastmod>
+        <lastmod>2026-06-04T15:00:00+09:00</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
       </url>
   <url>
+        <loc>https://partygame.pe.kr/arcade/snake-game.html</loc>
+        <lastmod>2026-06-04T15:00:00+09:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
+  <url>
         <loc>https://partygame.pe.kr/arcade/recoil-aim-trainer.html</loc>
-        <lastmod>2026-06-02T18:40:00+09:00</lastmod>
+        <lastmod>2026-06-04T15:00:00+09:00</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
       </url>
@@ -1032,25 +1038,25 @@
       </url>
   <url>
         <loc>https://partygame.pe.kr/ai-ranking/</loc>
-        <lastmod>2026-06-02T10:30:00+09:00</lastmod>
+        <lastmod>2026-06-25T10:30:00+09:00</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
       </url>
   <url>
         <loc>https://partygame.pe.kr/game-ranking/</loc>
-        <lastmod>2026-06-02T10:30:00+09:00</lastmod>
+        <lastmod>2026-06-25T10:30:00+09:00</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.8</priority>
       </url>
       <url>
         <loc>https://partygame.pe.kr/fruit-ranking/</loc>
-        <lastmod>2026-06-02T10:30:00+09:00</lastmod>
+        <lastmod>2026-06-25T10:30:00+09:00</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
       </url>
       <url>
         <loc>https://partygame.pe.kr/webtoon-ranking/</loc>
-        <lastmod>2026-06-02T10:30:00+09:00</lastmod>
+        <lastmod>2026-06-25T10:30:00+09:00</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
       </url>
@@ -1237,6 +1243,66 @@
   <url>
         <loc>https://partygame.pe.kr/blog/posts/economy-rainy-season-delivery-food-budget-routine-2026.html</loc>
         <lastmod>2026-06-02T10:30:00+09:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
+  <url>
+        <loc>https://partygame.pe.kr/blog/posts/romance-summer-festival-date-planning-guide-2026.html</loc>
+        <lastmod>2026-06-25T10:30:00+09:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
+  <url>
+        <loc>https://partygame.pe.kr/blog/posts/romance-humid-weather-mood-care-guide-2026.html</loc>
+        <lastmod>2026-06-25T10:30:00+09:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
+  <url>
+        <loc>https://partygame.pe.kr/blog/posts/romance-partner-friends-first-meeting-guide-2026.html</loc>
+        <lastmod>2026-06-25T10:30:00+09:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
+  <url>
+        <loc>https://partygame.pe.kr/blog/posts/romance-summer-vacation-conflict-prevention-guide-2026.html</loc>
+        <lastmod>2026-06-25T10:30:00+09:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
+  <url>
+        <loc>https://partygame.pe.kr/blog/posts/romance-long-distance-summer-reunion-planning-guide-2026.html</loc>
+        <lastmod>2026-06-25T10:30:00+09:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
+  <url>
+        <loc>https://partygame.pe.kr/blog/posts/economy-mid-year-budget-review-checklist-2026.html</loc>
+        <lastmod>2026-06-25T10:30:00+09:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
+  <url>
+        <loc>https://partygame.pe.kr/blog/posts/economy-summer-food-waste-reduction-saving-guide-2026.html</loc>
+        <lastmod>2026-06-25T10:30:00+09:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
+  <url>
+        <loc>https://partygame.pe.kr/blog/posts/economy-vacation-cost-installment-decision-guide-2026.html</loc>
+        <lastmod>2026-06-25T10:30:00+09:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
+  <url>
+        <loc>https://partygame.pe.kr/blog/posts/economy-summer-sale-online-shopping-control-guide-2026.html</loc>
+        <lastmod>2026-06-25T10:30:00+09:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
+  <url>
+        <loc>https://partygame.pe.kr/blog/posts/economy-air-conditioner-efficiency-saving-guide-2026.html</loc>
+        <lastmod>2026-06-25T10:30:00+09:00</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
       </url>
