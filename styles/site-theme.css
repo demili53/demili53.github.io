@@ -1,143 +1,192 @@
+/* =====================================================================
+   Forceteller-inspired cosmic theme (site-wide)
+   - Deep purple/navy night sky, starfield, soft nebula glows
+   - Glassy violet cards, gold mystical accent
+   The base markup is already dark (slate gradient + light text);
+   this stylesheet turns it into a celestial fortune-teller mood.
+   ===================================================================== */
+
+/* --- Base canvas: deep cosmic gradient on the root background --- */
 html {
-  background: #fff7ed;
-}
-
-body {
   background:
-    radial-gradient(circle at top left, rgba(251, 113, 133, .16), transparent 32rem),
-    radial-gradient(circle at top right, rgba(56, 189, 248, .16), transparent 30rem),
-    linear-gradient(135deg, #fff7ed 0%, #f8fafc 44%, #ecfeff 100%) !important;
-  color: #1f2937 !important;
+    radial-gradient(ellipse at 50% -8%, rgba(124, 58, 237, .38), transparent 60%),
+    radial-gradient(ellipse at 50% 120%, rgba(217, 70, 239, .20), transparent 60%),
+    linear-gradient(180deg, #0c0722 0%, #140a32 48%, #0a0620 100%);
+  background-attachment: fixed;
 }
 
-.bg-white\/5,
+/* Body holds nebula glows; base stays transparent so the canvas shows.
+   `:not(.text-slate-900)` opts out a handful of self-contained light
+   test pages that ship their own pastel theme + dark text. */
+body:not(.text-slate-900) {
+  position: relative;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 14% 12%, rgba(139, 92, 246, .20), transparent 42%),
+    radial-gradient(circle at 86% 8%, rgba(59, 130, 246, .16), transparent 44%),
+    radial-gradient(circle at 50% 118%, rgba(192, 132, 252, .16), transparent 55%),
+    transparent !important;
+  color: #e7e3f7 !important;
+}
+
+/* --- Starfield: sits above the canvas, behind all page content --- */
+body:not(.text-slate-900)::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(1.4px 1.4px at 20% 28%, rgba(255, 255, 255, .95), transparent 100%),
+    radial-gradient(1px 1px at 75% 16%, rgba(214, 200, 255, .85), transparent 100%),
+    radial-gradient(1.6px 1.6px at 41% 68%, rgba(255, 255, 255, .9), transparent 100%),
+    radial-gradient(1px 1px at 88% 58%, rgba(186, 230, 253, .8), transparent 100%),
+    radial-gradient(1.2px 1.2px at 12% 78%, rgba(255, 255, 255, .8), transparent 100%),
+    radial-gradient(1px 1px at 62% 38%, rgba(255, 255, 255, .7), transparent 100%),
+    radial-gradient(1.5px 1.5px at 33% 12%, rgba(252, 211, 77, .8), transparent 100%),
+    radial-gradient(1px 1px at 92% 86%, rgba(255, 255, 255, .7), transparent 100%),
+    radial-gradient(1.3px 1.3px at 55% 90%, rgba(214, 200, 255, .8), transparent 100%),
+    radial-gradient(1px 1px at 8% 45%, rgba(255, 255, 255, .65), transparent 100%),
+    radial-gradient(1.4px 1.4px at 68% 72%, rgba(255, 255, 255, .85), transparent 100%),
+    radial-gradient(1px 1px at 48% 22%, rgba(186, 230, 253, .7), transparent 100%);
+  opacity: .85;
+  animation: twinkle 7s ease-in-out infinite alternate;
+}
+
+@keyframes twinkle {
+  from { opacity: .55; }
+  to   { opacity: .95; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body:not(.text-slate-900)::before { animation: none; }
+}
+
+/* --- Glassy cards --- */
+.bg-white\/5 {
+  background: rgba(139, 92, 246, .07) !important;
+}
+
 .bg-white\/10 {
-  background: rgba(255, 255, 255, .82) !important;
+  background: rgba(139, 92, 246, .12) !important;
 }
 
 .border-white\/10,
 .border-white\/15,
 .border-white\/20,
 .border-white\/30 {
-  border-color: rgba(148, 163, 184, .34) !important;
+  border-color: rgba(167, 139, 250, .20) !important;
 }
 
 .shadow-2xl {
-  box-shadow: 0 24px 70px rgba(15, 23, 42, .11) !important;
+  box-shadow: 0 24px 70px rgba(91, 33, 182, .42) !important;
 }
 
+/* --- Hero / section headers: deep nebula panel with glow edge --- */
 header.rounded-3xl,
 header.rounded-2xl {
   background:
-    linear-gradient(135deg, rgba(255, 241, 242, .95), rgba(239, 246, 255, .9) 52%, rgba(236, 253, 245, .9)) !important;
-  border-color: rgba(244, 114, 182, .28) !important;
-  box-shadow: 0 22px 60px rgba(244, 114, 182, .16);
+    linear-gradient(135deg, rgba(76, 29, 149, .55), rgba(30, 27, 75, .50) 52%, rgba(124, 58, 237, .42)) !important;
+  border-color: rgba(167, 139, 250, .32) !important;
+  box-shadow: 0 24px 70px rgba(124, 58, 237, .30);
 }
 
 header .absolute {
-  opacity: .28;
+  opacity: .55;
 }
 
-.text-white,
-.text-slate-50,
-.text-slate-100,
-.text-slate-200,
-.text-slate-300 {
-  color: #334155 !important;
+h1 {
+  text-shadow: 0 2px 32px rgba(124, 58, 237, .38);
 }
 
-.text-slate-400 {
-  color: #64748b !important;
-}
-
+/* --- Mystical accent palette (kept light for contrast on the dark sky) --- */
 .text-indigo-100,
 .text-indigo-200,
 .text-indigo-50 {
-  color: #4f46e5 !important;
+  color: #c4b5fd !important;
 }
 
 .text-rose-100,
 .text-rose-50 {
-  color: #be123c !important;
+  color: #f0abfc !important;
 }
 
 .text-amber-100,
 .text-amber-50,
 .text-yellow-100,
 .text-yellow-50 {
-  color: #b45309 !important;
+  color: #fcd34d !important;
 }
 
 .text-emerald-100,
 .text-emerald-50,
 .text-teal-100,
 .text-teal-50 {
-  color: #047857 !important;
+  color: #6ee7b7 !important;
 }
 
 .text-cyan-100,
 .text-cyan-50 {
-  color: #0369a1 !important;
+  color: #7dd3fc !important;
 }
 
 .text-purple-100,
 .text-purple-50 {
-  color: #7e22ce !important;
+  color: #d8b4fe !important;
 }
 
+/* --- Primary call-to-action: glowing gold (premium fortune accent) --- */
 .bg-rose-500\/80 {
-  background: #fb7185 !important;
-  color: #fff !important;
-  box-shadow: 0 12px 26px rgba(251, 113, 133, .27);
+  background: linear-gradient(135deg, #fcd34d 0%, #f59e0b 100%) !important;
+  color: #2a1a04 !important;
+  border-color: rgba(252, 211, 77, .55) !important;
+  box-shadow: 0 14px 30px rgba(245, 158, 11, .34) !important;
 }
 
 .bg-rose-500\/80:hover {
-  background: #e11d48 !important;
-  color: #fff !important;
-  border-color: rgba(225, 29, 72, .45) !important;
+  background: linear-gradient(135deg, #fde68a 0%, #fbbf24 100%) !important;
+  color: #2a1a04 !important;
+  border-color: rgba(253, 230, 138, .7) !important;
 }
 
+/* --- Cosmic highlight box (e.g. featured tool / promo) --- */
 .bg-cyan-500\/10 {
-  background: linear-gradient(135deg, rgba(236, 254, 255, .96), rgba(240, 253, 244, .9)) !important;
+  background: linear-gradient(135deg, rgba(56, 132, 255, .14), rgba(139, 92, 246, .14)) !important;
 }
 
 .bg-slate-950\/30,
 .bg-slate-950\/50 {
-  background: rgba(255, 255, 255, .7) !important;
+  background: rgba(10, 6, 30, .45) !important;
 }
 
+/* --- Links & buttons: subtle violet edge and hover wash --- */
 a,
 button {
-  border-color: rgba(148, 163, 184, .38) !important;
+  border-color: rgba(167, 139, 250, .26) !important;
 }
 
 a:hover,
 button:hover {
-  background-color: rgba(255, 255, 255, .72) !important;
-  border-color: rgba(99, 102, 241, .42) !important;
+  background-color: rgba(139, 92, 246, .14) !important;
+  border-color: rgba(196, 181, 253, .50) !important;
 }
 
+/* Keep the gold CTA from picking up the generic violet hover wash. */
+.bg-rose-500\/80:hover {
+  background-color: transparent;
+}
+
+/* --- Form fields --- */
 input,
 textarea,
 select {
-  background: rgba(255, 255, 255, .9) !important;
-  border-color: rgba(148, 163, 184, .42) !important;
-  color: #1f2937 !important;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9);
+  background: rgba(20, 12, 46, .60) !important;
+  border-color: rgba(167, 139, 250, .30) !important;
+  color: #ece9fa !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05);
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: #94a3b8 !important;
-}
-
-[class*="bg-indigo-500\/20"],
-[class*="bg-emerald-500\/20"],
-[class*="bg-rose-500\/20"],
-[class*="bg-teal-500\/20"],
-[class*="bg-purple-500\/20"],
-[class*="bg-yellow-500\/20"],
-[class*="bg-amber-500\/20"],
-[class*="bg-cyan-500\/20"] {
-  background-color: rgba(255, 255, 255, .7) !important;
+  color: #9b93c4 !important;
 }
