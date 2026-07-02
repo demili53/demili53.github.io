@@ -11,8 +11,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="stylesheet" href="/styles/site-theme.css">
 <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="PC 브라우저에서 바로 즐기는 온라인 PC게임 모음. 자동차 사고 시뮬레이션, 사람 계단 굴리기, 똥피하기, 지렁이 게임, 배그 에임연습을 설치 없이 플레이하세요.">
-  <meta name="keywords" content="온라인 PC게임, 자동차 사고 시뮬레이션, 자동차 충돌 게임, 사람 계단 굴리기, 래그돌 물리 게임, 똥피하기 게임, 회피 게임, 지렁이 게임, 배그 에임연습, 배그 반동 제어 연습, 브라우저 게임, 미니게임, partygame">
+  <meta name="description" content="PC 브라우저에서 바로 즐기는 온라인 PC게임 모음. 다마고치 키우기, 자동차 사고 시뮬레이션, 사람 계단 굴리기, 똥피하기, 지렁이 게임, 배그 에임연습을 설치 없이 플레이하세요.">
+  <meta name="keywords" content="온라인 PC게임, 다마고치 키우기, 펫 키우기 게임, 자동차 사고 시뮬레이션, 자동차 충돌 게임, 사람 계단 굴리기, 래그돌 물리 게임, 똥피하기 게임, 회피 게임, 지렁이 게임, 배그 에임연습, 브라우저 게임, 미니게임, partygame">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#0f172a">
   <link rel="canonical" href="https://partygame.pe.kr/arcade/">
@@ -44,6 +44,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     .poop-tile::before{background:linear-gradient(135deg,rgba(217,119,6,.34),rgba(180,83,9,.16) 52%,rgba(15,23,42,.08))}
     .physics-tile::before{background:linear-gradient(135deg,rgba(139,92,246,.34),rgba(99,102,241,.16) 52%,rgba(15,23,42,.08))}
     .crash-tile::before{background:linear-gradient(135deg,rgba(249,115,22,.34),rgba(220,38,38,.16) 52%,rgba(15,23,42,.08))}
+    .raise-tile::before{background:linear-gradient(135deg,rgba(20,184,166,.34),rgba(16,185,129,.16) 52%,rgba(15,23,42,.08))}
     .tile-inner{position:relative;z-index:1}
     .tile-icon{display:inline-flex;width:3rem;height:3rem;align-items:center;justify-content:center;border-radius:1rem;border:1px solid rgba(255,255,255,.16);background:rgba(2,6,23,.42);font-size:1.55rem;box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
     .play-cta{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;border-radius:.85rem;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.1);padding:.78rem 1rem;font-size:.9rem;font-weight:800;color:#f8fafc;transition:transform .2s ease,background .2s ease,color .2s ease}
@@ -72,11 +73,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-2xl md:p-8">
         <p class="text-xs uppercase tracking-[0.28em] text-cyan-200">Online PC Games</p>
         <h1 class="mt-2 text-3xl font-bold md:text-4xl">온라인 PC게임</h1>
-        <p class="mt-3 max-w-2xl text-sm leading-relaxed text-slate-300">설치 없이 PC 브라우저에서 바로 플레이할 수 있는 게임 모음입니다. 자동차 사고 시뮬레이션, 사람 계단 굴리기, 똥피하기, 지렁이 게임, 배그 에임연습을 같은 게임 상세 구조로 분류했습니다.</p>
+        <p class="mt-3 max-w-2xl text-sm leading-relaxed text-slate-300">설치 없이 PC 브라우저에서 바로 플레이할 수 있는 게임 모음입니다. 다마고치 키우기, 자동차 사고 시뮬레이션, 사람 계단 굴리기, 똥피하기, 지렁이 게임, 배그 에임연습을 같은 게임 상세 구조로 분류했습니다.</p>
       </div>
     </header>
 
     <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <a href="/arcade/tamagotchi.html" class="game-tile raise-tile flex flex-col justify-between border border-teal-200/40 bg-white/5 p-5 transition">
+        <div class="tile-inner">
+          <div class="flex items-center justify-between gap-3">
+            <span class="tile-icon" aria-hidden="true">🥚</span>
+            <span class="rounded-full border border-teal-200/40 px-2 py-1 text-xs text-teal-100">PC·모바일</span>
+          </div>
+          <div class="mt-5 text-xs font-semibold uppercase tracking-widest text-teal-100">Raising</div>
+          <h2 class="mt-4 text-2xl font-bold text-white">다마고치 키우기</h2>
+          <p class="mt-3 text-sm leading-relaxed text-slate-300">밥 주고 놀아주고 씻겨서 알에서 어른까지 펫을 건강하게 키우는 Excalibur.js 육성 게임입니다.</p>
+        </div>
+        <div class="tile-inner mt-6 space-y-4">
+          <div class="grid grid-cols-3 gap-2 text-xs text-slate-300">
+            <span class="feature-chip">육성</span>
+            <span class="feature-chip">돌보기</span>
+            <span class="feature-chip">성장단계</span>
+          </div>
+          <span class="play-cta w-full">다마고치 키우기 플레이 <span aria-hidden="true">→</span></span>
+        </div>
+      </a>
+
       <a href="/arcade/car-crash.html" class="game-tile crash-tile flex flex-col justify-between border border-orange-200/40 bg-white/5 p-5 transition">
         <div class="tile-inner">
           <div class="flex items-center justify-between gap-3">
