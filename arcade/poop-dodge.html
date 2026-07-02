@@ -133,6 +133,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <p>스페이스: 일시정지 / 다시 시작</p>
             <p>시간이 지날수록 똥이 더 빠르고 많아집니다.</p>
           </div>
+          <p class="mt-4 text-xs text-slate-500">Powered by <a href="https://excaliburjs.com/" target="_blank" rel="noopener noreferrer" class="text-amber-200/80 underline">Excalibur.js</a> 게임 엔진</p>
         </section>
       </aside>
     </section>
@@ -163,9 +164,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </footer>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/excalibur@0.30.3/build/dist/excalibur.min.js"></script>
   <script>
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
     const scoreEl = document.getElementById("scoreEl");
     const bestEl = document.getElementById("bestEl");
     const dodgeEl = document.getElementById("dodgeEl");
@@ -178,34 +178,79 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const resetBtn = document.getElementById("resetBtn");
     const overlayStartBtn = document.getElementById("overlayStartBtn");
 
-    const W = canvas.width;
-    const H = canvas.height;
-    const PLAYER_R = 16;
-    const POOP_R = 16;
+    // ------------------------------------------------------------------
+    // Excalibur.js game engine setup
+    // ------------------------------------------------------------------
+    const W = 600;
+    const H = 600;
+    const PLAYER_R = 15;
 
-    let player = { x: W / 2, y: H / 2 };
+    const game = new ex.Engine({
+      canvasElementId: "gameCanvas",
+      width: W,
+      height: H,
+      displayMode: ex.DisplayMode.FitContainer,
+      backgroundColor: ex.Color.fromHex("#0b1020"),
+      antialiasing: true,
+      suppressPlayButton: true,
+      suppressConsoleBootMessage: true,
+      pointerScope: ex.PointerScope.Canvas,
+    });
+    const scene = game.currentScene;
+
+    // Game state
     let poops = [];
     let elapsed = 0;          // survival time in seconds
     let dodged = 0;           // poops that left the screen
     let spawnTimer = 0;
     let best = Number(localStorage.getItem("arcadePoopBest") || "0");
-    let running = false;
-    let paused = false;
-    let gameOver = false;
-    let lastTime = 0;
+    let state = "idle";       // idle | playing | paused | over
 
-    function resetState() {
-      player = { x: W / 2, y: H / 2 };
-      poops = [];
-      elapsed = 0;
-      dodged = 0;
-      spawnTimer = 0;
-      lastTime = 0;
-      paused = false;
-      gameOver = false;
-      syncUi("대기 중");
-      draw();
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+    function makeEmoji(str, size) {
+      return new ex.Text({
+        text: str,
+        font: new ex.Font({ size, unit: ex.FontUnit.Px, family: "serif" }),
+      });
     }
+
+    // Background grid (drawn once, cached)
+    const gridGraphic = new ex.Canvas({
+      width: W,
+      height: H,
+      cache: true,
+      draw: (c) => {
+        c.fillStyle = "#0b1020";
+        c.fillRect(0, 0, W, H);
+        c.strokeStyle = "rgba(148, 163, 184, 0.08)";
+        c.lineWidth = 1;
+        for (let i = 0; i <= 10; i += 1) {
+          const p = (i / 10) * W;
+          c.beginPath();
+          c.moveTo(p, 0); c.lineTo(p, H);
+          c.moveTo(0, p); c.lineTo(W, p);
+          c.stroke();
+        }
+      },
+    });
+    const background = new ex.Actor({ pos: ex.vec(W / 2, H / 2), z: -10 });
+    background.graphics.use(gridGraphic);
+    scene.add(background);
+
+    // Player + aura
+    const faceOk = makeEmoji("🙂", 32);
+    const faceDead = makeEmoji("😵", 32);
+    const auraOk = new ex.Circle({ radius: PLAYER_R + 4, color: new ex.Color(251, 191, 36, 0.25) });
+    const auraDead = new ex.Circle({ radius: PLAYER_R + 4, color: new ex.Color(244, 63, 94, 0.35) });
+
+    const aura = new ex.Actor({ pos: ex.vec(W / 2, H / 2), z: 5 });
+    aura.graphics.use(auraOk);
+    scene.add(aura);
+
+    const player = new ex.Actor({ pos: ex.vec(W / 2, H / 2), z: 10 });
+    player.graphics.use(faceOk);
+    scene.add(player);
 
     function syncUi(status) {
       scoreEl.textContent = elapsed.toFixed(1);
@@ -214,180 +259,192 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       statusEl.textContent = status;
     }
 
-    // Spawn a poop from a random edge, aimed toward the player with some spread.
-    function spawnPoop() {
-      const side = Math.floor(Math.random() * 4);
-      let x = 0, y = 0;
-      if (side === 0) { x = Math.random() * W; y = -POOP_R * 2; }        // top
-      else if (side === 1) { x = W + POOP_R * 2; y = Math.random() * H; } // right
-      else if (side === 2) { x = Math.random() * W; y = H + POOP_R * 2; } // bottom
-      else { x = -POOP_R * 2; y = Math.random() * H; }                    // left
-
-      const baseSpeed = 150 + elapsed * 9;            // px/s, grows over time
-      const speed = baseSpeed * (0.85 + Math.random() * 0.5);
-      let ang = Math.atan2(player.y - y, player.x - x);
-      ang += (Math.random() - 0.5) * 0.6;             // aim spread
-      poops.push({
-        x, y,
-        vx: Math.cos(ang) * speed,
-        vy: Math.sin(ang) * speed,
-        r: POOP_R * (0.8 + Math.random() * 0.5),
-        rot: Math.random() * Math.PI * 2,
-        spin: (Math.random() - 0.5) * 6,
-        counted: false
-      });
-    }
-
     function currentSpawnInterval() {
       // seconds between spawns: starts ~0.62s, ramps down to ~0.18s
       return Math.max(0.18, 0.62 - elapsed * 0.012);
     }
 
-    function drawEmoji(emoji, x, y, size, rot) {
-      ctx.save();
-      ctx.translate(x, y);
-      if (rot) ctx.rotate(rot);
-      ctx.font = size + "px serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(emoji, 0, size * 0.06);
-      ctx.restore();
+    // Spawn a poop actor from a random edge, aimed toward the player.
+    function spawnPoop() {
+      const side = Math.floor(Math.random() * 4);
+      let x = 0, y = 0;
+      if (side === 0) { x = Math.random() * W; y = -32; }        // top
+      else if (side === 1) { x = W + 32; y = Math.random() * H; } // right
+      else if (side === 2) { x = Math.random() * W; y = H + 32; } // bottom
+      else { x = -32; y = Math.random() * H; }                    // left
+
+      const baseSpeed = 150 + elapsed * 9;            // px/s, grows over time
+      const speed = baseSpeed * (0.85 + Math.random() * 0.5);
+      let ang = Math.atan2(player.pos.y - y, player.pos.x - x);
+      ang += (Math.random() - 0.5) * 0.6;             // aim spread
+      const r = 16 * (0.8 + Math.random() * 0.5);
+
+      const poop = new ex.Actor({
+        pos: ex.vec(x, y),
+        vel: ex.vec(Math.cos(ang) * speed, Math.sin(ang) * speed),
+        rotation: Math.random() * Math.PI * 2,
+        z: 8,
+      });
+      poop.hitR = r * 0.72;
+      poop.angularVelocity = (Math.random() - 0.5) * 6;
+      poop.addTag("poop");
+      poop.graphics.use(makeEmoji("💩", Math.round(r * 2)));
+      scene.add(poop);
+      poops.push(poop);
     }
 
-    function draw() {
-      ctx.fillStyle = "#0b1020";
-      ctx.fillRect(0, 0, W, H);
-      // soft grid
-      ctx.strokeStyle = "rgba(148, 163, 184, 0.08)";
-      ctx.lineWidth = 1;
-      for (let i = 0; i <= 10; i += 1) {
-        const p = (i / 10) * W;
-        ctx.beginPath();
-        ctx.moveTo(p, 0); ctx.lineTo(p, H);
-        ctx.moveTo(0, p); ctx.lineTo(W, p);
-        ctx.stroke();
+    // Brown debris burst on impact.
+    function burst(pos) {
+      for (let i = 0; i < 18; i += 1) {
+        const a = Math.random() * Math.PI * 2;
+        const s = 90 + Math.random() * 260;
+        const d = new ex.Actor({
+          pos: ex.vec(pos.x, pos.y),
+          vel: ex.vec(Math.cos(a) * s, Math.sin(a) * s),
+          acc: ex.vec(0, 240),
+          z: 20,
+        });
+        d.addTag("debris");
+        d.graphics.use(new ex.Circle({ radius: 3 + Math.random() * 4, color: ex.Color.fromHex("#8b5a2b") }));
+        let life = 0;
+        d.on("postupdate", (e) => {
+          life += (e.delta || 16);
+          d.graphics.opacity = Math.max(0, 1 - life / 700);
+          if (life > 700) d.kill();
+        });
+        scene.add(d);
       }
-      // poops
-      poops.forEach(p => drawEmoji("💩", p.x, p.y, p.r * 2, p.rot));
-      // player
-      ctx.beginPath();
-      ctx.arc(player.x, player.y, PLAYER_R + 3, 0, Math.PI * 2);
-      ctx.fillStyle = gameOver ? "rgba(244,63,94,0.30)" : "rgba(251,191,36,0.25)";
-      ctx.fill();
-      drawEmoji(gameOver ? "😵" : "🙂", player.x, player.y, PLAYER_R * 2, 0);
+    }
+
+    function setFrozen(frozen) {
+      poops.forEach((p) => {
+        if (frozen) {
+          p._sv = p.vel.clone();
+          p._sa = p.angularVelocity;
+          p.vel = ex.Vector.Zero;
+          p.angularVelocity = 0;
+        } else {
+          if (p._sv) p.vel = p._sv;
+          p.angularVelocity = p._sa || 0;
+        }
+      });
+    }
+
+    function clearActors() {
+      poops.forEach((p) => p.kill());
+      poops = [];
+      scene.actors.filter((a) => a.hasTag && a.hasTag("debris")).forEach((a) => a.kill());
+    }
+
+    function resetGame() {
+      clearActors();
+      elapsed = 0;
+      dodged = 0;
+      spawnTimer = 0;
+      state = "idle";
+      player.pos = ex.vec(W / 2, H / 2);
+      player.graphics.use(faceOk);
+      aura.graphics.use(auraOk);
+      syncUi("대기 중");
     }
 
     function startGame() {
-      if (gameOver) resetState();
-      if (running && !paused) return;
-      running = true;
-      paused = false;
-      lastTime = 0;
+      if (state === "over") resetGame();
+      if (state === "playing") return;
+      if (state === "paused") setFrozen(false);
+      state = "playing";
       overlay.classList.add("hidden");
       syncUi("플레이 중");
-      requestAnimationFrame(loop);
     }
 
     function togglePause() {
-      if (!running || gameOver) return;
-      paused = !paused;
-      overlayTitle.textContent = "일시정지";
-      overlayText.textContent = "다시 움직이려면 일시정지 버튼이나 스페이스 키를 누르세요.";
-      overlayStartBtn.textContent = "계속하기";
-      overlay.classList.toggle("hidden", !paused);
-      syncUi(paused ? "일시정지" : "플레이 중");
-      if (!paused) { lastTime = 0; requestAnimationFrame(loop); }
+      if (state === "playing") {
+        state = "paused";
+        setFrozen(true);
+        overlayTitle.textContent = "일시정지";
+        overlayText.textContent = "다시 움직이려면 일시정지 버튼이나 스페이스 키를 누르세요.";
+        overlayStartBtn.textContent = "계속하기";
+        overlay.classList.remove("hidden");
+        syncUi("일시정지");
+      } else if (state === "paused") {
+        startGame();
+      }
     }
 
     function endGame() {
-      running = false;
-      gameOver = true;
+      if (state === "over") return;
+      state = "over";
       if (elapsed > best) {
         best = elapsed;
         localStorage.setItem("arcadePoopBest", String(best));
       }
+      player.graphics.use(faceDead);
+      aura.graphics.use(auraDead);
+      burst(player.pos.clone());
+      scene.camera.shake(14, 14, 450);
       overlayTitle.textContent = "게임 종료";
       overlayText.textContent = `${elapsed.toFixed(1)}초 동안 버텼어요. 다시 도전해서 기록을 갱신해보세요.`;
       overlayStartBtn.textContent = "다시 시작";
       overlay.classList.remove("hidden");
       syncUi("게임 종료");
-      draw();
     }
 
-    function update(dt) {
+    // Main per-frame logic driven by the engine loop.
+    scene.on("postupdate", (evt) => {
+      // aura always tracks the player
+      aura.pos.x = player.pos.x;
+      aura.pos.y = player.pos.y;
+
+      if (state !== "playing" && state !== "idle") return;
+
+      // character follows the pointer (Excalibur handles world-space conversion)
+      const wp = game.input.pointers.primary.lastWorldPos;
+      if (wp) {
+        player.pos.x = clamp(wp.x, PLAYER_R, W - PLAYER_R);
+        player.pos.y = clamp(wp.y, PLAYER_R, H - PLAYER_R);
+      }
+
+      if (state !== "playing") return;
+
+      let dt = Math.min(evt.delta || 16, 50) / 1000;
       elapsed += dt;
 
-      // spawning
       spawnTimer += dt;
       while (spawnTimer >= currentSpawnInterval()) {
         spawnTimer -= currentSpawnInterval();
         spawnPoop();
       }
 
-      // move poops + collision + cleanup
-      const margin = POOP_R * 3;
+      const margin = 48;
       for (let i = poops.length - 1; i >= 0; i -= 1) {
         const p = poops[i];
-        p.x += p.vx * dt;
-        p.y += p.vy * dt;
-        p.rot += p.spin * dt;
-
-        const dx = p.x - player.x;
-        const dy = p.y - player.y;
-        const hitDist = PLAYER_R + p.r * 0.72;
+        const dx = p.pos.x - player.pos.x;
+        const dy = p.pos.y - player.pos.y;
+        const hitDist = PLAYER_R + p.hitR;
         if (dx * dx + dy * dy <= hitDist * hitDist) {
           endGame();
           return;
         }
-
-        if (p.x < -margin || p.x > W + margin || p.y < -margin || p.y > H + margin) {
-          if (!p.counted) { dodged += 1; }
+        if (p.pos.x < -margin || p.pos.x > W + margin || p.pos.y < -margin || p.pos.y > H + margin) {
+          dodged += 1;
+          p.kill();
           poops.splice(i, 1);
         }
       }
 
       syncUi("플레이 중");
-    }
+    });
 
-    function loop(time) {
-      if (!running || paused || gameOver) return;
-      if (!lastTime) lastTime = time;
-      let dt = (time - lastTime) / 1000;
-      lastTime = time;
-      if (dt > 0.05) dt = 0.05; // clamp after tab switch / lag
-      update(dt);
-      if (gameOver) return;
-      draw();
-      requestAnimationFrame(loop);
-    }
+    // Pointer / touch: tap or click on the board starts the game
+    game.input.pointers.primary.on("down", () => {
+      if (state === "idle" || state === "over") startGame();
+    });
 
-    // --- Pointer / touch control: character follows the cursor ---
-    function pointerToCanvas(clientX, clientY) {
-      const rect = canvas.getBoundingClientRect();
-      const x = (clientX - rect.left) * (W / rect.width);
-      const y = (clientY - rect.top) * (H / rect.height);
-      player.x = Math.max(PLAYER_R, Math.min(W - PLAYER_R, x));
-      player.y = Math.max(PLAYER_R, Math.min(H - PLAYER_R, y));
-      if (!running && !gameOver) draw();
-    }
-
-    canvas.addEventListener("mousemove", (e) => pointerToCanvas(e.clientX, e.clientY));
-    canvas.addEventListener("touchstart", (e) => {
-      e.preventDefault();
-      const t = e.touches[0];
-      pointerToCanvas(t.clientX, t.clientY);
-      if (!running && !gameOver) startGame();
-    }, { passive: false });
-    canvas.addEventListener("touchmove", (e) => {
-      e.preventDefault();
-      const t = e.touches[0];
-      pointerToCanvas(t.clientX, t.clientY);
-    }, { passive: false });
-
+    // Keyboard: space to pause / resume / start
     document.addEventListener("keydown", (event) => {
       if (event.code === "Space") {
         event.preventDefault();
-        if (!running || gameOver) startGame();
+        if (state === "idle" || state === "over") startGame();
         else togglePause();
       }
     });
@@ -396,15 +453,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     overlayStartBtn.addEventListener("click", startGame);
     pauseBtn.addEventListener("click", togglePause);
     resetBtn.addEventListener("click", () => {
-      running = false;
-      resetState();
+      resetGame();
       overlayTitle.textContent = "똥피하기 게임";
       overlayText.textContent = "플레이를 누르고 마우스(또는 터치)로 캐릭터를 움직이세요. 사방에서 날아오는 똥에 맞으면 게임이 끝납니다.";
       overlayStartBtn.textContent = "플레이";
       overlay.classList.remove("hidden");
     });
 
-    resetState();
+    game.start().then(() => {
+      resetGame();
+    });
   </script>
 </body>
 </html>
