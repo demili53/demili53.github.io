@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-T2KDKBN8');</script>
+<!-- End Google Tag Manager -->
+<link rel="stylesheet" href="/styles/site-theme.css">
+<meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PC 브라우저에서 바로 즐기는 사람 계단 굴리기 게임. 마우스나 터치로 인형을 잡아 계단 아래로 던지고 굴러떨어지는 물리 시뮬레이션 점수를 겨뤄보세요.">
+  <meta name="keywords" content="사람 계단 굴리기, 래그돌 게임, 물리 게임, matter.js 게임, 계단 굴러떨어지기, 인형 던지기, 브라우저 게임, 온라인 PC게임, 미니게임, partygame">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="canonical" href="https://partygame.pe.kr/arcade/stair-tumble.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Brain Test Hub">
+  <meta property="og:title" content="사람 계단 굴리기 게임 | 온라인 PC게임">
+  <meta property="og:description" content="래그돌 인형을 잡아 계단 아래로 던지고 굴러떨어지는 물리 점수를 겨루는 게임">
+  <meta property="og:url" content="https://partygame.pe.kr/arcade/stair-tumble.html">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/fox.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="사람 계단 굴리기 게임 | 온라인 PC게임">
+  <meta name="twitter:description" content="인형을 계단 아래로 던져 굴러떨어뜨리는 래그돌 물리 게임">
+  <meta name="twitter:image" content="https://partygame.pe.kr/brainTest/images/fox.png">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565" crossorigin="anonymous"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .skip-link{position:absolute;left:-999px;top:1rem;z-index:50;border-radius:.75rem;background:#f8fafc;color:#0f172a;padding:.75rem 1rem;font-weight:700}
+    .skip-link:focus{left:1rem}
+    :focus-visible{outline:2px solid rgba(167,139,250,.95);outline-offset:3px}
+    .arcade-board{touch-action:none;cursor:grab}
+    .arcade-board:active{cursor:grabbing}
+    .arcade-chat .minnit-chat-sembed{margin:0 auto}
+    .arcade-chat .powered-by-minnit{margin-top:.75rem;text-align:center;font-size:.75rem;color:#94a3b8}
+    .arcade-chat .powered-by-minnit a{color:#c4b5fd;text-decoration:underline}
+  </style>
+  <title>사람 계단 굴리기 게임 | 온라인 PC게임</title>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-violet-950 text-slate-50">
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T2KDKBN8"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#mainContent" class="skip-link">본문 바로가기</a>
+  <main id="mainContent" class="mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-6 sm:px-6 lg:py-8">
+    <header class="mb-5 space-y-4">
+      <nav class="flex flex-wrap gap-2 text-sm">
+        <a href="/" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">홈</a>
+        <a href="/blog/" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">블로그</a>
+        <a href="/arcade/" class="px-3 py-2 rounded-full border border-violet-200/70 text-violet-100 hover:bg-white/10 transition">온라인 PC게임</a>
+        <a href="/ai-ranking/" class="px-3 py-2 rounded-full border border-emerald-200/60 text-emerald-100 hover:bg-white/10 transition">AI 순위</a>
+        <a href="/game-ranking/" class="px-3 py-2 rounded-full border border-amber-200/60 text-amber-100 hover:bg-white/10 transition">게임 순위</a>
+        <a href="/fruit-ranking/" class="px-3 py-2 rounded-full border border-lime-200/60 text-lime-100 hover:bg-white/10 transition">과일 순위</a>
+        <a href="/webtoon-ranking/" class="px-3 py-2 rounded-full border border-rose-200/60 text-rose-100 hover:bg-white/10 transition">웹툰 순위</a>
+        <a href="/contact.html" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">문의하기</a>
+      </nav>
+      <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-[0.28em] text-violet-200">Ragdoll Physics</p>
+          <h1 class="mt-2 text-3xl font-bold md:text-4xl">사람 계단 굴리기</h1>
+          <p class="mt-2 text-sm text-slate-300">인형을 마우스나 터치로 잡아 계단 아래로 던지세요. 멀리, 많이 굴러떨어질수록 높은 점수를 얻는 래그돌 물리 게임입니다.</p>
+        </div>
+        <div class="flex flex-wrap gap-2 text-sm">
+          <button id="pushBtn" type="button" class="rounded-lg border border-violet-200/50 px-4 py-2 text-violet-100 hover:bg-white/10 transition">밀기</button>
+          <button id="resetBtn" type="button" class="rounded-lg border border-rose-200/50 px-4 py-2 text-rose-100 hover:bg-white/10 transition">다시하기</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="mb-5 grid gap-3 md:grid-cols-3">
+      <a href="/arcade/stair-tumble.html" aria-current="page" class="block rounded-2xl border border-violet-200/40 bg-white/5 p-4 hover:bg-white/10 transition">
+        <div class="text-xs font-semibold uppercase tracking-widest text-violet-100">Physics</div>
+        <h2 class="mt-2 text-xl font-bold text-white">사람 계단 굴리기</h2>
+        <p class="mt-2 text-sm text-slate-300">래그돌 인형을 잡아 계단 아래로 던지는 Matter.js 물리 게임</p>
+      </a>
+      <a href="/arcade/poop-dodge.html" class="block rounded-2xl border border-amber-200/40 bg-white/5 p-4 hover:bg-white/10 transition">
+        <div class="text-xs font-semibold uppercase tracking-widest text-amber-100">Dodge</div>
+        <h2 class="mt-2 text-xl font-bold text-white">똥피하기 게임</h2>
+        <p class="mt-2 text-sm text-slate-300">마우스로 캐릭터를 움직여 사방에서 날아오는 똥을 피하는 회피 게임</p>
+      </a>
+      <a href="/arcade/recoil-aim-trainer.html" class="block rounded-2xl border border-red-200/40 bg-white/5 p-4 hover:bg-white/10 transition">
+        <div class="text-xs font-semibold uppercase tracking-widest text-red-100">Shooter</div>
+        <h2 class="mt-2 text-xl font-bold text-white">배그 에임연습</h2>
+        <p class="mt-2 text-sm text-slate-300">연사할수록 총구가 올라가는 반동을 직접 눌러 표적을 맞히는 슈팅 훈련</p>
+      </a>
+    </section>
+
+    <section class="grid flex-1 gap-5 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+      <div class="rounded-2xl border border-white/10 bg-black/30 p-3 shadow-2xl sm:p-4">
+        <div class="relative mx-auto aspect-[16/10] w-full max-w-[min(94vw,960px)] overflow-hidden rounded-xl border border-violet-200/20 bg-slate-950">
+          <canvas id="gameCanvas" width="960" height="600" class="arcade-board h-full w-full"></canvas>
+          <div id="gameOverlay" class="absolute inset-0 flex items-center justify-center bg-slate-950/80 p-6 text-center">
+            <div class="max-w-sm space-y-3">
+              <h2 id="overlayTitle" class="text-2xl font-bold text-violet-100">사람 계단 굴리기</h2>
+              <p id="overlayText" class="text-sm leading-relaxed text-slate-200">인형을 마우스(또는 손가락)로 잡아 계단 아래로 힘껏 던지세요. 밀기 버튼이나 스페이스로도 굴릴 수 있습니다. 멀리·많이 굴러떨어질수록 점수가 올라갑니다.</p>
+              <button id="overlayStartBtn" type="button" class="rounded-lg border border-violet-200/60 px-5 py-2 text-violet-100 hover:bg-white/10 transition">플레이</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="grid gap-4">
+        <section class="rounded-2xl border border-white/10 bg-white/5 p-5">
+          <h2 class="text-lg font-semibold text-violet-100">기록</h2>
+          <div class="mt-4 grid grid-cols-2 gap-2 text-center">
+            <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3">
+              <p class="text-xs text-slate-400">점수</p>
+              <p id="scoreEl" class="mt-1 text-2xl font-bold text-white">0</p>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3">
+              <p class="text-xs text-slate-400">최고 점수</p>
+              <p id="bestEl" class="mt-1 text-2xl font-bold text-white">0</p>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3">
+              <p class="text-xs text-slate-400">낙하 거리</p>
+              <p id="distEl" class="mt-1 text-2xl font-bold text-white">0.0m</p>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3">
+              <p class="text-xs text-slate-400">지나간 계단</p>
+              <p id="stepsEl" class="mt-1 text-2xl font-bold text-white">0</p>
+            </div>
+          </div>
+          <p id="statusEl" class="mt-4 rounded-xl border border-white/10 bg-slate-950/40 px-3 py-2 text-sm text-slate-200" aria-live="polite">대기 중</p>
+        </section>
+
+        <section class="rounded-2xl border border-white/10 bg-white/5 p-5">
+          <h2 class="text-lg font-semibold text-violet-100">조작 방법</h2>
+          <div class="mt-4 grid gap-2 text-sm text-slate-300">
+            <p>마우스/터치: 인형을 잡고 아래로 던지기</p>
+            <p>밀기 버튼 / 스페이스: 인형을 계단 쪽으로 밀기</p>
+            <p>다시하기 / R: 인형을 계단 위로 다시 올리기</p>
+            <p>낙하 거리 · 지나간 계단 · 회전 수가 점수에 반영됩니다.</p>
+          </div>
+          <p class="mt-4 text-xs text-slate-500">Powered by <a href="https://brm.io/matter-js/" target="_blank" rel="noopener noreferrer" class="text-violet-200/80 underline">Matter.js</a> 물리 엔진</p>
+        </section>
+      </aside>
+    </section>
+
+    <section class="arcade-chat mt-6 rounded-2xl border border-white/10 bg-white/5 p-4 md:p-5">
+      <div class="mb-4 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-[0.24em] text-violet-200">Live Chat</p>
+          <h2 class="mt-1 text-2xl font-bold text-white">채팅방</h2>
+        </div>
+        <a href="/chat.html" class="inline-flex w-fit items-center justify-center rounded-lg border border-violet-200/40 px-3 py-2 text-sm text-violet-100 hover:bg-white/10 transition">전체 채팅방 열기</a>
+      </div>
+      <div class="overflow-hidden rounded-2xl border border-white/10 bg-slate-950/40 py-4">
+        <script src="https://minnit.chat/js/embed.js?c=1772345192" defer></script>
+        <span style="display: none;" class="minnit-chat-sembed" data-chatname="https://organizations.minnit.chat/454977109448764/c/Main?embed" data-style="width:92%; height:430px; max-height:80vh;" data-version="1.55">Chat</span>
+        <p class="powered-by-minnit"><a href="https://minnit.chat" target="_blank" rel="noopener noreferrer nofollow">Get your own free chatroom with Minnit Chat</a></p>
+      </div>
+    </section>
+
+    <footer class="mt-6 border-t border-white/10 pt-5 text-sm text-slate-300">
+      <div class="flex flex-wrap gap-3">
+        <a href="/" class="hover:text-violet-100">홈</a>
+        <a href="/blog/" class="hover:text-violet-100">블로그</a>
+        <a href="/arcade/" class="hover:text-violet-100">온라인 PC게임</a>
+        <a href="/game-ranking/" class="hover:text-violet-100">게임 순위</a>
+        <a href="/contact.html" class="hover:text-violet-100">문의하기</a>
+      </div>
+    </footer>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.20.0/matter.min.js"></script>
+  <script>
+    const { Engine, Render, Runner, Bodies, Body, Composite, Constraint, Mouse, MouseConstraint, Events } = Matter;
+
+    const scoreEl = document.getElementById("scoreEl");
+    const bestEl = document.getElementById("bestEl");
+    const distEl = document.getElementById("distEl");
+    const stepsEl = document.getElementById("stepsEl");
+    const statusEl = document.getElementById("statusEl");
+    const overlay = document.getElementById("gameOverlay");
+    const overlayTitle = document.getElementById("overlayTitle");
+    const overlayText = document.getElementById("overlayText");
+    const overlayStartBtn = document.getElementById("overlayStartBtn");
+    const pushBtn = document.getElementById("pushBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const canvas = document.getElementById("gameCanvas");
+
+    const CW = 960;
+    const CH = 600;
+    const STEP_COUNT = 9;
+    const STEP_W = 90;
+    const STEP_H = 44;
+    const STAIR_X0 = 150;   // where the staircase begins
+    const STAIR_Y0 = 150;   // top tread height
+    const PPM = 46;         // pixels per "meter" for the distance readout
+    const START = { x: 92, y: 96 };
+
+    let best = Number(localStorage.getItem("stairTumbleBest") || "0");
+    let ragdoll = null;
+    let start = { x: START.x, y: START.y };
+    let dist = 0;
+    let spins = 0;
+    let stepsPassed = 0;
+    let score = 0;
+    let lastAngle = 0;
+    let restFrames = 0;
+    let roundMs = 0;
+    let launched = false;
+    let roundOver = false;
+
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+    // ---- Engine / world ----
+    const engine = Engine.create();
+    engine.gravity.y = 1.15;
+    const world = engine.world;
+
+    const render = Render.create({
+      canvas,
+      engine,
+      options: {
+        width: CW,
+        height: CH,
+        pixelRatio: 1,
+        wireframes: false,
+        background: "#0b1226",
+      },
+    });
+
+    // ---- Static level: landing, staircase, floor, walls ----
+    function stepBody(x, y, w, h) {
+      return Bodies.rectangle(x, y, w, h, {
+        isStatic: true,
+        friction: 0.7,
+        render: { fillStyle: "#312e5f", strokeStyle: "#4c4791", lineWidth: 2 },
+      });
+    }
+
+    function buildLevel() {
+      const parts = [];
+      // top-left landing
+      parts.push(stepBody(STAIR_X0 / 2, (STAIR_Y0 + CH) / 2, STAIR_X0, CH - STAIR_Y0));
+      // descending staircase
+      for (let i = 0; i < STEP_COUNT; i += 1) {
+        const topY = STAIR_Y0 + i * STEP_H;
+        const cx = STAIR_X0 + i * STEP_W + STEP_W / 2;
+        parts.push(stepBody(cx, (topY + CH) / 2, STEP_W, CH - topY));
+      }
+      // floor + side walls
+      parts.push(Bodies.rectangle(CW / 2, CH + 40, CW * 2, 80, { isStatic: true, render: { fillStyle: "#1e1b4b" } }));
+      parts.push(Bodies.rectangle(-40, CH / 2, 80, CH * 2, { isStatic: true, render: { fillStyle: "#1e1b4b" } }));
+      parts.push(Bodies.rectangle(CW + 40, CH / 2, 80, CH * 2, { isStatic: true, render: { fillStyle: "#1e1b4b" } }));
+      Composite.add(world, parts);
+    }
+
+    // ---- Ragdoll ----
+    function createRagdoll(x0, y0) {
+      const group = Body.nextGroup(true); // negative group => parts never collide with each other
+      const part = (fill, extra) => Object.assign({
+        collisionFilter: { group },
+        friction: 0.6,
+        frictionStatic: 0.7,
+        restitution: 0.18,
+        density: 0.0016,
+        render: { fillStyle: fill, strokeStyle: "#0b1226", lineWidth: 1 },
+      }, extra || {});
+
+      const head = Bodies.circle(x0, y0 - 40, 14, part("#f4c58c"));
+      const torso = Bodies.rectangle(x0, y0, 28, 46, part("#e11d48", { chamfer: { radius: 6 } }));
+      const armL = Bodies.rectangle(x0 - 24, y0 - 8, 12, 34, part("#f4c58c", { chamfer: { radius: 5 } }));
+      const armR = Bodies.rectangle(x0 + 24, y0 - 8, 12, 34, part("#f4c58c", { chamfer: { radius: 5 } }));
+      const legL = Bodies.rectangle(x0 - 9, y0 + 42, 14, 40, part("#1e3a8a", { chamfer: { radius: 5 } }));
+      const legR = Bodies.rectangle(x0 + 9, y0 + 42, 14, 40, part("#1e3a8a", { chamfer: { radius: 5 } }));
+
+      const joint = (a, b, pa, pb) => Constraint.create({
+        bodyA: a, bodyB: b, pointA: pa, pointB: pb,
+        stiffness: 0.6, length: 0, render: { visible: false },
+      });
+
+      const joints = [
+        joint(torso, head, { x: 0, y: -23 }, { x: 0, y: 14 }),
+        joint(torso, armL, { x: -14, y: -18 }, { x: 0, y: -17 }),
+        joint(torso, armR, { x: 14, y: -18 }, { x: 0, y: -17 }),
+        joint(torso, legL, { x: -10, y: 23 }, { x: 0, y: -20 }),
+        joint(torso, legR, { x: 10, y: 23 }, { x: 0, y: -20 }),
+      ];
+
+      const composite = Composite.create({ label: "ragdoll" });
+      Composite.add(composite, [head, torso, armL, armR, legL, legR, ...joints]);
+      return { composite, torso, head };
+    }
+
+    function spawnRagdoll() {
+      if (ragdoll) Composite.remove(world, ragdoll.composite);
+      ragdoll = createRagdoll(START.x, START.y);
+      Composite.add(world, ragdoll.composite);
+      start = { x: ragdoll.torso.position.x, y: ragdoll.torso.position.y };
+      lastAngle = ragdoll.torso.angle;
+    }
+
+    function syncUi(status) {
+      scoreEl.textContent = String(score);
+      bestEl.textContent = String(best);
+      distEl.textContent = `${(dist / PPM).toFixed(1)}m`;
+      stepsEl.textContent = String(stepsPassed);
+      if (status) statusEl.textContent = status;
+    }
+
+    function resetGame() {
+      spawnRagdoll();
+      dist = 0;
+      spins = 0;
+      stepsPassed = 0;
+      score = 0;
+      restFrames = 0;
+      roundMs = 0;
+      launched = false;
+      roundOver = false;
+      syncUi("잡아서 아래로 던지거나 밀어보세요");
+    }
+
+    function push() {
+      if (!ragdoll || roundOver) return;
+      launched = true;
+      Body.setVelocity(ragdoll.torso, { x: 15, y: -4 });
+      Body.setAngularVelocity(ragdoll.torso, 0.35);
+      overlay.classList.add("hidden");
+      syncUi("굴러가는 중");
+    }
+
+    function finalize() {
+      roundOver = true;
+      if (score > best) {
+        best = score;
+        localStorage.setItem("stairTumbleBest", String(best));
+      }
+      overlayTitle.textContent = "결과";
+      overlayText.textContent =
+        `점수 ${score}점 · 낙하 ${(dist / PPM).toFixed(1)}m · 계단 ${stepsPassed}칸 · 회전 ${(spins / (Math.PI * 2)).toFixed(1)}바퀴. 다시 던져서 기록을 갱신해보세요.`;
+      overlayStartBtn.textContent = "다시 던지기";
+      overlay.classList.remove("hidden");
+      syncUi("결과");
+    }
+
+    // ---- Scoring / rest detection, driven by the physics update ----
+    Events.on(engine, "afterUpdate", (evt) => {
+      if (!ragdoll || roundOver) return;
+      const t = ragdoll.torso;
+      const dx = t.position.x - start.x;
+      const dy = t.position.y - start.y;
+
+      dist = Math.max(dist, Math.hypot(dx, dy));
+      spins += Math.abs(t.angle - lastAngle);
+      lastAngle = t.angle;
+      stepsPassed = clamp(Math.floor(dx / STEP_W), 0, STEP_COUNT);
+      score = Math.round((dist / PPM) * 10 + (spins / (Math.PI * 2)) * 18 + stepsPassed * 12);
+
+      const speed = Math.hypot(t.velocity.x, t.velocity.y);
+      if (dx > 40 || dy > 40) launched = true;
+
+      if (launched) {
+        roundMs += (evt.delta || 16.666);
+        if (speed < 0.45 && Math.abs(t.angularVelocity) < 0.03) restFrames += 1;
+        else restFrames = 0;
+        if (restFrames > 65 || roundMs > 18000) {
+          finalize();
+          return;
+        }
+      }
+      syncUi();
+    });
+
+    // ---- On-canvas HUD ----
+    Events.on(render, "afterRender", () => {
+      const c = render.context;
+      c.save();
+      c.fillStyle = "rgba(15, 23, 42, 0.55)";
+      c.fillRect(12, 12, 208, 58);
+      c.strokeStyle = "rgba(167, 139, 250, 0.45)";
+      c.lineWidth = 1;
+      c.strokeRect(12, 12, 208, 58);
+      c.fillStyle = "#ede9fe";
+      c.font = "bold 26px system-ui, sans-serif";
+      c.textBaseline = "middle";
+      c.fillText(`${score}점`, 24, 34);
+      c.fillStyle = "#c4b5fd";
+      c.font = "13px system-ui, sans-serif";
+      c.fillText(`낙하 ${(dist / PPM).toFixed(1)}m · 계단 ${stepsPassed}칸`, 24, 56);
+      c.restore();
+    });
+
+    // ---- Boot ----
+    buildLevel();
+    Render.run(render);
+    const runner = Runner.create();
+    Runner.run(runner, engine);
+
+    // Mouse / touch: grab and fling the ragdoll
+    const mouse = Mouse.create(render.canvas);
+    const mouseConstraint = MouseConstraint.create(engine, {
+      mouse,
+      constraint: { stiffness: 0.2, render: { visible: false } },
+    });
+    Composite.add(world, mouseConstraint);
+    render.mouse = mouse;
+    Events.on(mouseConstraint, "startdrag", () => {
+      launched = true;
+      if (!roundOver) { overlay.classList.add("hidden"); syncUi("굴러가는 중"); }
+    });
+
+    pushBtn.addEventListener("click", push);
+    overlayStartBtn.addEventListener("click", () => {
+      if (roundOver) resetGame();
+      overlay.classList.add("hidden");
+    });
+    resetBtn.addEventListener("click", () => {
+      resetGame();
+      overlayTitle.textContent = "사람 계단 굴리기";
+      overlayText.textContent = "인형을 마우스(또는 손가락)로 잡아 계단 아래로 힘껏 던지세요. 밀기 버튼이나 스페이스로도 굴릴 수 있습니다.";
+      overlayStartBtn.textContent = "플레이";
+      overlay.classList.remove("hidden");
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.code === "Space") { event.preventDefault(); push(); }
+      if (event.code === "KeyR") { event.preventDefault(); resetBtn.click(); }
+    });
+
+    resetGame();
+    best = Number(localStorage.getItem("stairTumbleBest") || "0");
+    syncUi("대기 중");
+  </script>
+</body>
+</html>

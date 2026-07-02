@@ -37,6 +37,12 @@
         <priority>0.8</priority>
       </url>
   <url>
+        <loc>https://partygame.pe.kr/arcade/stair-tumble.html</loc>
+        <lastmod>2026-07-02T10:00:00+09:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
+  <url>
         <loc>https://partygame.pe.kr/brainTest/test.html</loc>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
