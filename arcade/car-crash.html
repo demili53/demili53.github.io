@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-T2KDKBN8');</script>
+<!-- End Google Tag Manager -->
+<link rel="stylesheet" href="/styles/site-theme.css">
+<meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PC 브라우저에서 바로 즐기는 자동차 사고 시뮬레이션 게임. 차종과 속도를 설정하고 시작하면 벽에 충돌해 지붕과 운전자가 날아가는 물리 충돌 게임입니다.">
+  <meta name="keywords" content="자동차 사고 시뮬레이션, 자동차 충돌 게임, 크래시 게임, 물리 게임, matter.js 게임, 차 충돌, 래그돌 게임, 브라우저 게임, 온라인 PC게임, partygame">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="canonical" href="https://partygame.pe.kr/arcade/car-crash.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Brain Test Hub">
+  <meta property="og:title" content="자동차 사고 시뮬레이션 게임 | 온라인 PC게임">
+  <meta property="og:description" content="차종과 속도를 설정하고 벽에 충돌시켜 지붕과 운전자가 날아가는 물리 충돌 게임">
+  <meta property="og:url" content="https://partygame.pe.kr/arcade/car-crash.html">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/fox.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="자동차 사고 시뮬레이션 게임 | 온라인 PC게임">
+  <meta name="twitter:description" content="차종·속도 설정 후 충돌시켜 날려버리는 물리 크래시 게임">
+  <meta name="twitter:image" content="https://partygame.pe.kr/brainTest/images/fox.png">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565" crossorigin="anonymous"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .skip-link{position:absolute;left:-999px;top:1rem;z-index:50;border-radius:.75rem;background:#f8fafc;color:#0f172a;padding:.75rem 1rem;font-weight:700}
+    .skip-link:focus{left:1rem}
+    :focus-visible{outline:2px solid rgba(251,146,60,.95);outline-offset:3px}
+    .arcade-board{touch-action:none}
+    .arcade-chat .minnit-chat-sembed{margin:0 auto}
+    .arcade-chat .powered-by-minnit{margin-top:.75rem;text-align:center;font-size:.75rem;color:#94a3b8}
+    .arcade-chat .powered-by-minnit a{color:#fdba74;text-decoration:underline}
+    input[type=range]{accent-color:#fb923c}
+  </style>
+  <title>자동차 사고 시뮬레이션 게임 | 온라인 PC게임</title>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-950 via-zinc-900 to-orange-950 text-slate-50">
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T2KDKBN8"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#mainContent" class="skip-link">본문 바로가기</a>
+  <main id="mainContent" class="mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-6 sm:px-6 lg:py-8">
+    <header class="mb-5 space-y-4">
+      <nav class="flex flex-wrap gap-2 text-sm">
+        <a href="/" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">홈</a>
+        <a href="/blog/" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">블로그</a>
+        <a href="/arcade/" class="px-3 py-2 rounded-full border border-orange-200/70 text-orange-100 hover:bg-white/10 transition">온라인 PC게임</a>
+        <a href="/ai-ranking/" class="px-3 py-2 rounded-full border border-emerald-200/60 text-emerald-100 hover:bg-white/10 transition">AI 순위</a>
+        <a href="/game-ranking/" class="px-3 py-2 rounded-full border border-amber-200/60 text-amber-100 hover:bg-white/10 transition">게임 순위</a>
+        <a href="/fruit-ranking/" class="px-3 py-2 rounded-full border border-lime-200/60 text-lime-100 hover:bg-white/10 transition">과일 순위</a>
+        <a href="/webtoon-ranking/" class="px-3 py-2 rounded-full border border-rose-200/60 text-rose-100 hover:bg-white/10 transition">웹툰 순위</a>
+        <a href="/contact.html" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">문의하기</a>
+      </nav>
+      <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-[0.28em] text-orange-200">Crash Physics</p>
+          <h1 class="mt-2 text-3xl font-bold md:text-4xl">자동차 사고 시뮬레이션</h1>
+          <p class="mt-2 text-sm text-slate-300">차종과 속도를 정하고 시작하면 자동차가 벽으로 돌진해 충돌합니다. 지붕과 운전자가 날아가는 래그돌 물리 크래시 게임입니다.</p>
+        </div>
+        <div class="flex flex-wrap gap-2 text-sm">
+          <button id="startBtn" type="button" class="rounded-lg border border-orange-200/60 px-4 py-2 font-semibold text-orange-100 hover:bg-white/10 transition">시작</button>
+          <button id="resetBtn" type="button" class="rounded-lg border border-rose-200/50 px-4 py-2 text-rose-100 hover:bg-white/10 transition">다시하기</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="mb-5 grid gap-3 md:grid-cols-3">
+      <a href="/arcade/car-crash.html" aria-current="page" class="block rounded-2xl border border-orange-200/40 bg-white/5 p-4 hover:bg-white/10 transition">
+        <div class="text-xs font-semibold uppercase tracking-widest text-orange-100">Crash</div>
+        <h2 class="mt-2 text-xl font-bold text-white">자동차 사고 시뮬레이션</h2>
+        <p class="mt-2 text-sm text-slate-300">차종·속도를 설정해 벽에 충돌시키는 Matter.js 물리 크래시 게임</p>
+      </a>
+      <a href="/arcade/stair-tumble.html" class="block rounded-2xl border border-violet-200/40 bg-white/5 p-4 hover:bg-white/10 transition">
+        <div class="text-xs font-semibold uppercase tracking-widest text-violet-100">Physics</div>
+        <h2 class="mt-2 text-xl font-bold text-white">사람 계단 굴리기</h2>
+        <p class="mt-2 text-sm text-slate-300">래그돌 인형을 잡아 계단 아래로 던지는 물리 게임</p>
+      </a>
+      <a href="/arcade/poop-dodge.html" class="block rounded-2xl border border-amber-200/40 bg-white/5 p-4 hover:bg-white/10 transition">
+        <div class="text-xs font-semibold uppercase tracking-widest text-amber-100">Dodge</div>
+        <h2 class="mt-2 text-xl font-bold text-white">똥피하기 게임</h2>
+        <p class="mt-2 text-sm text-slate-300">사방에서 날아오는 똥을 피하는 마우스 회피 게임</p>
+      </a>
+    </section>
+
+    <section class="grid flex-1 gap-5 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+      <div class="rounded-2xl border border-white/10 bg-black/30 p-3 shadow-2xl sm:p-4">
+        <div class="relative mx-auto aspect-[16/10] w-full max-w-[min(94vw,960px)] overflow-hidden rounded-xl border border-orange-200/20 bg-slate-950">
+          <canvas id="gameCanvas" width="960" height="600" class="arcade-board h-full w-full"></canvas>
+          <div id="gameOverlay" class="absolute inset-0 flex items-center justify-center bg-slate-950/80 p-6 text-center">
+            <div class="max-w-sm space-y-3">
+              <h2 id="overlayTitle" class="text-2xl font-bold text-orange-100">자동차 사고 시뮬레이션</h2>
+              <p id="overlayText" class="text-sm leading-relaxed text-slate-200">오른쪽에서 차종과 속도를 설정한 뒤 시작을 누르세요. 자동차가 벽으로 돌진해 충돌하고, 충격이 클수록 지붕과 운전자가 멀리 날아갑니다.</p>
+              <button id="overlayStartBtn" type="button" class="rounded-lg border border-orange-200/60 px-5 py-2 text-orange-100 hover:bg-white/10 transition">충돌 시작</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="grid gap-4">
+        <section class="rounded-2xl border border-white/10 bg-white/5 p-5">
+          <h2 class="text-lg font-semibold text-orange-100">충돌 설정</h2>
+          <div class="mt-4 grid gap-3">
+            <label class="grid gap-2 text-sm text-slate-300">
+              <span>차종</span>
+              <select id="carTypeSelect" class="rounded-lg border border-white/20 bg-slate-950/50 px-3 py-2 text-slate-100">
+                <option value="kei">경차</option>
+                <option value="sedan" selected>세단</option>
+                <option value="suv">SUV</option>
+                <option value="truck">트럭</option>
+                <option value="sports">스포츠카</option>
+              </select>
+            </label>
+            <label class="grid gap-2 text-sm text-slate-300">
+              <span class="flex items-center justify-between">차 속도 <span id="speedValue" class="font-semibold text-orange-100">140 km/h</span></span>
+              <input id="speedRange" type="range" min="40" max="240" step="10" value="140" class="w-full">
+            </label>
+          </div>
+        </section>
+
+        <section class="rounded-2xl border border-white/10 bg-white/5 p-5">
+          <h2 class="text-lg font-semibold text-orange-100">사고 기록</h2>
+          <div class="mt-4 grid grid-cols-2 gap-2 text-center">
+            <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3">
+              <p class="text-xs text-slate-400">충격 속도</p>
+              <p id="impactEl" class="mt-1 text-2xl font-bold text-white">0</p>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3">
+              <p class="text-xs text-slate-400">날아간 거리</p>
+              <p id="flyEl" class="mt-1 text-2xl font-bold text-white">0.0m</p>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3">
+              <p class="text-xs text-slate-400">점수</p>
+              <p id="scoreEl" class="mt-1 text-2xl font-bold text-white">0</p>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3">
+              <p class="text-xs text-slate-400">최고 점수</p>
+              <p id="bestEl" class="mt-1 text-2xl font-bold text-white">0</p>
+            </div>
+          </div>
+          <p id="statusEl" class="mt-4 rounded-xl border border-white/10 bg-slate-950/40 px-3 py-2 text-sm text-slate-200" aria-live="polite">대기 중</p>
+        </section>
+
+        <section class="rounded-2xl border border-white/10 bg-white/5 p-5">
+          <h2 class="text-lg font-semibold text-orange-100">조작 방법</h2>
+          <div class="mt-4 grid gap-2 text-sm text-slate-300">
+            <p>차종과 속도를 고르고 시작(또는 스페이스)을 누르세요.</p>
+            <p>자동차가 오른쪽 벽으로 돌진해 충돌합니다.</p>
+            <p>다시하기 / R: 새 자동차를 출발선에 세팅</p>
+            <p>충격 속도 · 날아간 거리가 점수에 반영됩니다.</p>
+          </div>
+          <p class="mt-4 text-xs text-slate-500">Powered by <a href="https://brm.io/matter-js/" target="_blank" rel="noopener noreferrer" class="text-orange-200/80 underline">Matter.js</a> 물리 엔진</p>
+        </section>
+      </aside>
+    </section>
+
+    <section class="arcade-chat mt-6 rounded-2xl border border-white/10 bg-white/5 p-4 md:p-5">
+      <div class="mb-4 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-[0.24em] text-orange-200">Live Chat</p>
+          <h2 class="mt-1 text-2xl font-bold text-white">채팅방</h2>
+        </div>
+        <a href="/chat.html" class="inline-flex w-fit items-center justify-center rounded-lg border border-orange-200/40 px-3 py-2 text-sm text-orange-100 hover:bg-white/10 transition">전체 채팅방 열기</a>
+      </div>
+      <div class="overflow-hidden rounded-2xl border border-white/10 bg-slate-950/40 py-4">
+        <script src="https://minnit.chat/js/embed.js?c=1772345192" defer></script>
+        <span style="display: none;" class="minnit-chat-sembed" data-chatname="https://organizations.minnit.chat/454977109448764/c/Main?embed" data-style="width:92%; height:430px; max-height:80vh;" data-version="1.55">Chat</span>
+        <p class="powered-by-minnit"><a href="https://minnit.chat" target="_blank" rel="noopener noreferrer nofollow">Get your own free chatroom with Minnit Chat</a></p>
+      </div>
+    </section>
+
+    <footer class="mt-6 border-t border-white/10 pt-5 text-sm text-slate-300">
+      <div class="flex flex-wrap gap-3">
+        <a href="/" class="hover:text-orange-100">홈</a>
+        <a href="/blog/" class="hover:text-orange-100">블로그</a>
+        <a href="/arcade/" class="hover:text-orange-100">온라인 PC게임</a>
+        <a href="/game-ranking/" class="hover:text-orange-100">게임 순위</a>
+        <a href="/contact.html" class="hover:text-orange-100">문의하기</a>
+      </div>
+    </footer>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.20.0/matter.min.js"></script>
+  <script>
+    const { Engine, Render, Runner, Bodies, Body, Composite, Constraint, Events } = Matter;
+
+    const impactEl = document.getElementById("impactEl");
+    const flyEl = document.getElementById("flyEl");
+    const scoreEl = document.getElementById("scoreEl");
+    const bestEl = document.getElementById("bestEl");
+    const statusEl = document.getElementById("statusEl");
+    const overlay = document.getElementById("gameOverlay");
+    const overlayTitle = document.getElementById("overlayTitle");
+    const overlayText = document.getElementById("overlayText");
+    const overlayStartBtn = document.getElementById("overlayStartBtn");
+    const startBtn = document.getElementById("startBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const carTypeSelect = document.getElementById("carTypeSelect");
+    const speedRange = document.getElementById("speedRange");
+    const speedValue = document.getElementById("speedValue");
+    const canvas = document.getElementById("gameCanvas");
+
+    const CW = 960, CH = 600;
+    const GROUND = 512;      // top of the road surface
+    const WALL_X = 792;      // face of the crash barrier
+    const START_X = 150;
+    const LV = 0.18;         // velocity units per km/h
+    const PPM = 46;          // pixels per "meter" for the fly-distance readout
+
+    const CAR_TYPES = {
+      kei:    { label: "경차",     w: 116, h: 44, rw: 72,  rh: 28, wr: 16, density: 0.0012, body: "#38bdf8", roof: "#7dd3fc" },
+      sedan:  { label: "세단",     w: 152, h: 46, rw: 92,  rh: 30, wr: 18, density: 0.0015, body: "#f43f5e", roof: "#fb7185" },
+      suv:    { label: "SUV",      w: 164, h: 58, rw: 112, rh: 42, wr: 22, density: 0.0019, body: "#22c55e", roof: "#4ade80" },
+      truck:  { label: "트럭",     w: 214, h: 70, rw: 92,  rh: 48, wr: 26, density: 0.0026, body: "#f59e0b", roof: "#fcd34d" },
+      sports: { label: "스포츠카", w: 164, h: 38, rw: 82,  rh: 24, wr: 17, density: 0.0016, body: "#a855f7", roof: "#c084fc" },
+    };
+
+    let best = Number(localStorage.getItem("carCrashBest") || "0");
+    let car = null;
+    let state = "idle";      // idle | running | over
+    let crashed = false;
+    let impactSpeed = 0;
+    let impactKmh = 0;
+    let flyPx = 0;
+    let score = 0;
+    let crashPos = null;
+    let restFrames = 0;
+    let runMs = 0;
+
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+    const currentType = () => CAR_TYPES[carTypeSelect.value] || CAR_TYPES.sedan;
+    const currentSpeed = () => Number(speedRange.value);
+
+    // ---- Engine / renderer ----
+    const engine = Engine.create();
+    engine.gravity.y = 1.1;
+    const world = engine.world;
+
+    const render = Render.create({
+      canvas, engine,
+      options: { width: CW, height: CH, pixelRatio: 1, wireframes: false, background: "#0b1226" },
+    });
+
+    // ---- Static scene: road, crash barrier, walls ----
+    function buildScene() {
+      const road = Bodies.rectangle(CW / 2, GROUND + 80, CW * 2, 160, {
+        isStatic: true, friction: 0.9, render: { fillStyle: "#1f2937" },
+      });
+      const barrier = Bodies.rectangle(WALL_X + 44, GROUND - 130, 88, 300, {
+        isStatic: true, render: { fillStyle: "#64748b", strokeStyle: "#f8fafc", lineWidth: 3 },
+      });
+      const ceiling = Bodies.rectangle(CW / 2, -80, CW * 2, 80, { isStatic: true, render: { visible: false } });
+      const leftWall = Bodies.rectangle(-60, CH / 2, 80, CH * 3, { isStatic: true, render: { visible: false } });
+      Composite.add(world, [road, barrier, ceiling, leftWall]);
+    }
+
+    // ---- Car builder ----
+    function createCar(type) {
+      const cy = GROUND - type.h / 2 - type.wr - 2;
+      const cx = START_X;
+      const group = Body.nextGroup(true);
+      const part = (fill, extra) => Object.assign({
+        collisionFilter: { group },
+        density: type.density,
+        friction: 0.35,
+        frictionAir: 0.002,
+        restitution: 0.25,
+        render: { fillStyle: fill, strokeStyle: "#0b1226", lineWidth: 1 },
+      }, extra || {});
+
+      const chassis = Bodies.rectangle(cx, cy, type.w, type.h, part(type.body, { chamfer: { radius: 8 } }));
+      const roof = Bodies.rectangle(cx, cy - type.h / 2 - type.rh / 2 + 6, type.rw, type.rh, part(type.roof, { chamfer: { radius: 10 } }));
+      const wheelOpts = part("#111827");
+      const wf = Bodies.circle(cx + type.w * 0.32, cy + type.h / 2 + type.wr * 0.2, type.wr, wheelOpts);
+      const wr = Bodies.circle(cx - type.w * 0.32, cy + type.h / 2 + type.wr * 0.2, type.wr, part("#111827"));
+      const torso = Bodies.rectangle(cx - type.w * 0.05, cy - type.h / 2 - type.rh / 2 + 6, 16, 26, part("#1e293b", { chamfer: { radius: 5 } }));
+      const head = Bodies.circle(cx - type.w * 0.05, cy - type.h / 2 - type.rh / 2 - 9, 10, part("#f4c58c"));
+
+      const joint = (a, b, pa, pb, s) => Constraint.create({
+        bodyA: a, bodyB: b, pointA: pa, pointB: pb, stiffness: s, length: 0, render: { visible: false },
+      });
+      const roofJ = [
+        joint(chassis, roof, { x: -type.rw / 2 + 8, y: -type.h / 2 }, { x: -type.rw / 2 + 8, y: type.rh / 2 }, 0.9),
+        joint(chassis, roof, { x: type.rw / 2 - 8, y: -type.h / 2 }, { x: type.rw / 2 - 8, y: type.rh / 2 }, 0.9),
+      ];
+      const wheelJ = [
+        joint(chassis, wf, { x: type.w * 0.32, y: type.h / 2 + type.wr * 0.2 }, { x: 0, y: 0 }, 0.85),
+        joint(chassis, wr, { x: -type.w * 0.32, y: type.h / 2 + type.wr * 0.2 }, { x: 0, y: 0 }, 0.85),
+      ];
+      const belt = joint(chassis, torso, { x: -type.w * 0.05, y: -type.h / 2 + 4 }, { x: 0, y: 0 }, 0.5);
+      const neck = joint(torso, head, { x: 0, y: -13 }, { x: 0, y: 10 }, 0.7);
+
+      const composite = Composite.create({ label: "car" });
+      Composite.add(composite, [chassis, roof, wf, wr, torso, head, ...roofJ, ...wheelJ, belt, neck]);
+      return { composite, chassis, roof, wf, wr, torso, head, roofJ, wheelJ, belt, parts: [chassis, roof, wf, wr, torso, head] };
+    }
+
+    function spawnCar() {
+      if (car) Composite.remove(world, car.composite);
+      car = createCar(currentType());
+    }
+
+    function syncUi(status) {
+      impactEl.textContent = impactKmh ? `${impactKmh}` : "0";
+      flyEl.textContent = `${(flyPx / PPM).toFixed(1)}m`;
+      scoreEl.textContent = String(score);
+      bestEl.textContent = String(best);
+      if (status) statusEl.textContent = status;
+    }
+
+    function resetGame() {
+      spawnCar();
+      Composite.add(world, car.composite);
+      state = "idle";
+      crashed = false;
+      impactSpeed = 0;
+      impactKmh = 0;
+      flyPx = 0;
+      score = 0;
+      crashPos = null;
+      restFrames = 0;
+      runMs = 0;
+      syncUi("대기 중");
+    }
+
+    function launch() {
+      if (state === "running") return;
+      if (state === "over") resetGame();
+      const v = currentSpeed() * LV;
+      car.parts.forEach((b) => Body.setVelocity(b, { x: v, y: 0 }));
+      Body.setAngularVelocity(car.wf, v / currentType().wr);
+      Body.setAngularVelocity(car.wr, v / currentType().wr);
+      state = "running";
+      runMs = 0;
+      overlay.classList.add("hidden");
+      syncUi(`${currentSpeed()}km/h 돌진!`);
+    }
+
+    function crash(speed) {
+      crashed = true;
+      impactSpeed = speed;
+      impactKmh = Math.round(speed / LV);
+      crashPos = { x: car.torso.position.x, y: car.torso.position.y };
+      // break the car apart
+      car.roofJ.forEach((j) => Composite.remove(car.composite, j));
+      Composite.remove(car.composite, car.belt);
+      Composite.remove(car.composite, car.wheelJ[0]);
+      // send parts flying
+      Body.setVelocity(car.roof, { x: -speed * 0.35, y: -speed * 0.85 });
+      Body.setAngularVelocity(car.roof, (Math.random() - 0.5) * 0.8);
+      Body.setVelocity(car.torso, { x: -speed * 0.25, y: -speed * 1.15 });
+      Body.setVelocity(car.head, { x: -speed * 0.25, y: -speed * 1.15 });
+      Body.setAngularVelocity(car.torso, (Math.random() - 0.5) * 1.2);
+      Body.setVelocity(car.wf, { x: -speed * 0.3, y: -speed * 0.6 });
+      syncUi("💥 충돌!");
+    }
+
+    function finalize() {
+      state = "over";
+      score = Math.round(impactKmh * 2 + (flyPx / PPM) * 25);
+      if (score > best) {
+        best = score;
+        localStorage.setItem("carCrashBest", String(best));
+      }
+      overlayTitle.textContent = "충돌 결과";
+      overlayText.textContent =
+        `${currentType().label} · 충격 ${impactKmh}km/h · 운전자 ${(flyPx / PPM).toFixed(1)}m 비행 · 점수 ${score}점. 차종과 속도를 바꿔 더 큰 사고를 내보세요.`;
+      overlayStartBtn.textContent = "다시 충돌";
+      overlay.classList.remove("hidden");
+      syncUi("결과");
+    }
+
+    // ---- Crash detection ----
+    Events.on(engine, "collisionStart", (evt) => {
+      if (!car || crashed || state !== "running") return;
+      for (const pair of evt.pairs) {
+        const hit = pair.bodyA === car.chassis || pair.bodyB === car.chassis
+          || pair.bodyA === car.roof || pair.bodyB === car.roof;
+        if (hit && car.chassis.speed > 3 && car.chassis.position.x > START_X + 60) {
+          crash(car.chassis.speed);
+          break;
+        }
+      }
+    });
+
+    // ---- Post-step scoring / rest detection ----
+    Events.on(engine, "afterUpdate", (evt) => {
+      if (!car || state !== "running") return;
+      runMs += evt.delta || 16.666;
+
+      if (crashed && crashPos) {
+        const d = Math.hypot(car.torso.position.x - crashPos.x, car.torso.position.y - crashPos.y);
+        flyPx = Math.max(flyPx, d);
+        score = Math.round(impactKmh * 2 + (flyPx / PPM) * 25);
+        const slow = car.torso.speed < 0.5 && car.chassis.speed < 0.5 && car.roof.speed < 0.5;
+        if (slow) restFrames += 1; else restFrames = 0;
+        if (restFrames > 60 || runMs > 14000) { finalize(); return; }
+      } else if (!crashed && runMs > 9000) {
+        // never reached the wall (too slow) — end the run
+        impactKmh = Math.round(car.chassis.speed / LV);
+        finalize();
+        return;
+      }
+      syncUi();
+    });
+
+    // ---- On-canvas HUD ----
+    Events.on(render, "afterRender", () => {
+      const c = render.context;
+      c.save();
+      c.fillStyle = "rgba(15, 23, 42, 0.55)";
+      c.fillRect(12, 12, 232, 58);
+      c.strokeStyle = "rgba(251, 146, 60, 0.5)";
+      c.lineWidth = 1;
+      c.strokeRect(12, 12, 232, 58);
+      c.textBaseline = "middle";
+      c.fillStyle = "#ffedd5";
+      c.font = "bold 24px system-ui, sans-serif";
+      c.fillText(`${score}점`, 24, 33);
+      c.fillStyle = "#fdba74";
+      c.font = "13px system-ui, sans-serif";
+      c.fillText(`충격 ${impactKmh}km/h · 비행 ${(flyPx / PPM).toFixed(1)}m`, 24, 56);
+      c.restore();
+    });
+
+    // ---- Boot ----
+    buildScene();
+    Render.run(render);
+    const runner = Runner.create();
+    Runner.run(runner, engine);
+
+    // ---- Controls ----
+    function onSpeedInput() { speedValue.textContent = `${speedRange.value} km/h`; }
+    speedRange.addEventListener("input", onSpeedInput);
+    carTypeSelect.addEventListener("change", () => { if (state !== "running") resetGame(); });
+    startBtn.addEventListener("click", launch);
+    overlayStartBtn.addEventListener("click", launch);
+    resetBtn.addEventListener("click", () => {
+      resetGame();
+      overlayTitle.textContent = "자동차 사고 시뮬레이션";
+      overlayText.textContent = "오른쪽에서 차종과 속도를 설정한 뒤 시작을 누르세요. 자동차가 벽으로 돌진해 충돌하고, 충격이 클수록 지붕과 운전자가 멀리 날아갑니다.";
+      overlayStartBtn.textContent = "충돌 시작";
+      overlay.classList.remove("hidden");
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.code === "Space") { event.preventDefault(); launch(); }
+      if (event.code === "KeyR") { event.preventDefault(); resetBtn.click(); }
+    });
+
+    onSpeedInput();
+    resetGame();
+    best = Number(localStorage.getItem("carCrashBest") || "0");
+    syncUi("대기 중");
+  </script>
+</body>
+</html>
