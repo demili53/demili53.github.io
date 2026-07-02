@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-T2KDKBN8');</script>
+<!-- End Google Tag Manager -->
+<link rel="stylesheet" href="/styles/site-theme.css">
+<meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PC 브라우저에서 바로 즐기는 우주 슈팅 게임. 마우스와 터치로 기체를 조종해 적을 격추하고 웨이브와 보스를 돌파하는 세로 스크롤 슈팅입니다.">
+  <meta name="keywords" content="우주 슈팅 게임, 슈팅 게임, 비행기 슈팅, 탄막 게임, 세로 스크롤 슈팅, excalibur 게임, 브라우저 게임, 온라인 PC게임, 미니게임, partygame">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="canonical" href="https://partygame.pe.kr/arcade/space-shooter.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Brain Test Hub">
+  <meta property="og:title" content="우주 슈팅 게임 | 온라인 PC게임">
+  <meta property="og:description" content="기체를 조종해 적을 격추하고 웨이브와 보스를 돌파하는 세로 스크롤 슈팅 게임">
+  <meta property="og:url" content="https://partygame.pe.kr/arcade/space-shooter.html">
+  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/fox.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="우주 슈팅 게임 | 온라인 PC게임">
+  <meta name="twitter:description" content="적을 격추하고 보스를 돌파하는 브라우저 세로 스크롤 슈팅 게임">
+  <meta name="twitter:image" content="https://partygame.pe.kr/brainTest/images/fox.png">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565" crossorigin="anonymous"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .skip-link{position:absolute;left:-999px;top:1rem;z-index:50;border-radius:.75rem;background:#f8fafc;color:#0f172a;padding:.75rem 1rem;font-weight:700}
+    .skip-link:focus{left:1rem}
+    :focus-visible{outline:2px solid rgba(34,211,238,.95);outline-offset:3px}
+    .arcade-board{touch-action:none;cursor:crosshair}
+    .arcade-chat .minnit-chat-sembed{margin:0 auto}
+    .arcade-chat .powered-by-minnit{margin-top:.75rem;text-align:center;font-size:.75rem;color:#94a3b8}
+    .arcade-chat .powered-by-minnit a{color:#67e8f9;text-decoration:underline}
+  </style>
+  <title>우주 슈팅 게임 | 온라인 PC게임</title>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 text-slate-50">
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T2KDKBN8"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#mainContent" class="skip-link">본문 바로가기</a>
+  <main id="mainContent" class="mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-6 sm:px-6 lg:py-8">
+    <header class="mb-5 space-y-4">
+      <nav class="flex flex-wrap gap-2 text-sm">
+        <a href="/" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">홈</a>
+        <a href="/blog/" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">블로그</a>
+        <a href="/arcade/" class="px-3 py-2 rounded-full border border-cyan-200/70 text-cyan-100 hover:bg-white/10 transition">온라인 PC게임</a>
+        <a href="/ai-ranking/" class="px-3 py-2 rounded-full border border-emerald-200/60 text-emerald-100 hover:bg-white/10 transition">AI 순위</a>
+        <a href="/game-ranking/" class="px-3 py-2 rounded-full border border-amber-200/60 text-amber-100 hover:bg-white/10 transition">게임 순위</a>
+        <a href="/fruit-ranking/" class="px-3 py-2 rounded-full border border-lime-200/60 text-lime-100 hover:bg-white/10 transition">과일 순위</a>
+        <a href="/webtoon-ranking/" class="px-3 py-2 rounded-full border border-rose-200/60 text-rose-100 hover:bg-white/10 transition">웹툰 순위</a>
+        <a href="/contact.html" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">문의하기</a>
+      </nav>
+      <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-[0.28em] text-cyan-200">Space Shooter</p>
+          <h1 class="mt-2 text-3xl font-bold md:text-4xl">우주 슈팅 게임</h1>
+          <p class="mt-2 text-sm text-slate-300">마우스나 터치로 기체를 조종해 적을 격추하세요. 웨이브를 넘기고 보스를 물리치며 최고 점수에 도전하는 세로 스크롤 슈팅입니다.</p>
+        </div>
+        <div class="flex flex-wrap gap-2 text-sm">
+          <button id="startBtn" type="button" class="rounded-lg border border-cyan-200/60 px-4 py-2 font-semibold text-cyan-100 hover:bg-white/10 transition">시작</button>
+          <button id="pauseBtn" type="button" class="rounded-lg border border-white/20 px-4 py-2 text-slate-100 hover:bg-white/10 transition">일시정지</button>
+          <button id="resetBtn" type="button" class="rounded-lg border border-rose-200/50 px-4 py-2 text-rose-100 hover:bg-white/10 transition">다시하기</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="mb-5 grid gap-3 md:grid-cols-3">
+      <a href="/arcade/space-shooter.html" aria-current="page" class="block rounded-2xl border border-cyan-200/40 bg-white/5 p-4 hover:bg-white/10 transition">
+        <div class="text-xs font-semibold uppercase tracking-widest text-cyan-100">Shooter</div>
+        <h2 class="mt-2 text-xl font-bold text-white">우주 슈팅 게임</h2>
+        <p class="mt-2 text-sm text-slate-300">적을 격추하고 보스를 돌파하는 Excalibur.js 세로 스크롤 슈팅</p>
+      </a>
+      <a href="/arcade/tamagotchi.html" class="block rounded-2xl border border-teal-200/40 bg-white/5 p-4 hover:bg-white/10 transition">
+        <div class="text-xs font-semibold uppercase tracking-widest text-teal-100">Raising</div>
+        <h2 class="mt-2 text-xl font-bold text-white">다마고치 키우기</h2>
+        <p class="mt-2 text-sm text-slate-300">밥·놀이·청결로 펫을 건강하게 키우는 육성 게임</p>
+      </a>
+      <a href="/arcade/car-crash.html" class="block rounded-2xl border border-orange-200/40 bg-white/5 p-4 hover:bg-white/10 transition">
+        <div class="text-xs font-semibold uppercase tracking-widest text-orange-100">Crash</div>
+        <h2 class="mt-2 text-xl font-bold text-white">자동차 사고 시뮬레이션</h2>
+        <p class="mt-2 text-sm text-slate-300">차종·속도를 설정해 벽에 충돌시키는 물리 크래시 게임</p>
+      </a>
+    </section>
+
+    <section class="grid flex-1 gap-5 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+      <div class="rounded-2xl border border-white/10 bg-black/30 p-3 shadow-2xl sm:p-4">
+        <div class="relative mx-auto aspect-[3/4] w-full max-w-[min(88vw,480px)] overflow-hidden rounded-xl border border-cyan-200/20 bg-slate-950">
+          <canvas id="gameCanvas" width="480" height="640" class="arcade-board h-full w-full"></canvas>
+          <div id="gameOverlay" class="absolute inset-0 flex items-center justify-center bg-slate-950/80 p-6 text-center">
+            <div class="max-w-sm space-y-3">
+              <h2 id="overlayTitle" class="text-2xl font-bold text-cyan-100">우주 슈팅 게임</h2>
+              <p id="overlayText" class="text-sm leading-relaxed text-slate-200">마우스나 손가락으로 기체를 움직이면 자동으로 발사됩니다. 적과 적탄을 피하며 최대한 오래 살아남아 점수를 올리세요. 5웨이브마다 보스가 등장합니다.</p>
+              <button id="overlayStartBtn" type="button" class="rounded-lg border border-cyan-200/60 px-5 py-2 text-cyan-100 hover:bg-white/10 transition">게임 시작</button>
+            </div>
+          </div>
+        </div>
+        <div class="mt-3 flex flex-wrap items-center justify-between gap-2 text-sm">
+          <button id="bombBtn" type="button" class="rounded-lg border border-fuchsia-200/50 px-4 py-2 font-semibold text-fuchsia-100 hover:bg-white/10 transition">💣 봄 (B)</button>
+          <span class="text-xs text-slate-400">마우스/터치 이동 · 자동 발사 · 스페이스 발사 · B 봄 · P 일시정지</span>
+        </div>
+      </div>
+
+      <aside class="grid gap-4">
+        <section class="rounded-2xl border border-white/10 bg-white/5 p-5">
+          <h2 class="text-lg font-semibold text-cyan-100">전투 정보</h2>
+          <div class="mt-4 grid grid-cols-3 gap-2 text-center">
+            <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3">
+              <p class="text-xs text-slate-400">점수</p>
+              <p id="scoreEl" class="mt-1 text-2xl font-bold text-white">0</p>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3">
+              <p class="text-xs text-slate-400">최고</p>
+              <p id="bestEl" class="mt-1 text-2xl font-bold text-white">0</p>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3">
+              <p class="text-xs text-slate-400">웨이브</p>
+              <p id="waveEl" class="mt-1 text-2xl font-bold text-white">1</p>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3">
+              <p class="text-xs text-slate-400">라이프</p>
+              <p id="livesEl" class="mt-1 text-2xl font-bold text-white">3</p>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3">
+              <p class="text-xs text-slate-400">무기</p>
+              <p id="levelEl" class="mt-1 text-2xl font-bold text-white">1</p>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3">
+              <p class="text-xs text-slate-400">콤보</p>
+              <p id="comboEl" class="mt-1 text-2xl font-bold text-white">0</p>
+            </div>
+          </div>
+          <p id="statusEl" class="mt-4 rounded-xl border border-white/10 bg-slate-950/40 px-3 py-2 text-sm text-slate-200" aria-live="polite">대기 중</p>
+        </section>
+
+        <section class="rounded-2xl border border-white/10 bg-white/5 p-5">
+          <h2 class="text-lg font-semibold text-cyan-100">조작 방법</h2>
+          <div class="mt-4 grid gap-2 text-sm text-slate-300">
+            <p>마우스/터치: 기체 이동 (자동 발사)</p>
+            <p>방향키·WASD: 이동, 스페이스: 발사</p>
+            <p>B: 봄(화면 정리), P: 일시정지</p>
+            <p>🅿 파워업으로 무기를 강화하고, ♥로 라이프를 회복하세요.</p>
+          </div>
+          <p class="mt-4 text-xs text-slate-500">Powered by <a href="https://excaliburjs.com/" target="_blank" rel="noopener noreferrer" class="text-cyan-200/80 underline">Excalibur.js</a> 게임 엔진</p>
+        </section>
+      </aside>
+    </section>
+
+    <section class="arcade-chat mt-6 rounded-2xl border border-white/10 bg-white/5 p-4 md:p-5">
+      <div class="mb-4 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-[0.24em] text-cyan-200">Live Chat</p>
+          <h2 class="mt-1 text-2xl font-bold text-white">채팅방</h2>
+        </div>
+        <a href="/chat.html" class="inline-flex w-fit items-center justify-center rounded-lg border border-cyan-200/40 px-3 py-2 text-sm text-cyan-100 hover:bg-white/10 transition">전체 채팅방 열기</a>
+      </div>
+      <div class="overflow-hidden rounded-2xl border border-white/10 bg-slate-950/40 py-4">
+        <script src="https://minnit.chat/js/embed.js?c=1772345192" defer></script>
+        <span style="display: none;" class="minnit-chat-sembed" data-chatname="https://organizations.minnit.chat/454977109448764/c/Main?embed" data-style="width:92%; height:430px; max-height:80vh;" data-version="1.55">Chat</span>
+        <p class="powered-by-minnit"><a href="https://minnit.chat" target="_blank" rel="noopener noreferrer nofollow">Get your own free chatroom with Minnit Chat</a></p>
+      </div>
+    </section>
+
+    <footer class="mt-6 border-t border-white/10 pt-5 text-sm text-slate-300">
+      <div class="flex flex-wrap gap-3">
+        <a href="/" class="hover:text-cyan-100">홈</a>
+        <a href="/blog/" class="hover:text-cyan-100">블로그</a>
+        <a href="/arcade/" class="hover:text-cyan-100">온라인 PC게임</a>
+        <a href="/game-ranking/" class="hover:text-cyan-100">게임 순위</a>
+        <a href="/contact.html" class="hover:text-cyan-100">문의하기</a>
+      </div>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/excalibur@0.30.3/build/dist/excalibur.min.js"></script>
+  <script>
+    const W = 480, H = 640;
+    let ctx = null;
+
+    const el = (id) => document.getElementById(id);
+    const scoreEl = el("scoreEl"), bestEl = el("bestEl"), waveEl = el("waveEl");
+    const livesEl = el("livesEl"), levelEl = el("levelEl"), comboEl = el("comboEl");
+    const statusEl = el("statusEl"), overlay = el("gameOverlay");
+    const overlayTitle = el("overlayTitle"), overlayText = el("overlayText"), overlayStartBtn = el("overlayStartBtn");
+
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+    const rand = (a, b) => a + Math.random() * (b - a);
+
+    let best = Number(localStorage.getItem("spaceShooterBest") || "0");
+    let state = "idle";           // idle | playing | paused | over
+    let nowMs = 0;
+
+    let player, pBullets, enemies, eBullets, items, particles, stars;
+    let score, wave, waveTimer, spawnTimer, combo, comboTimer, bombs, bossActive;
+    const keys = {};
+
+    const WAVE_LEN = 12;          // seconds per wave
+    const FIRE_INTERVAL = 0.15;
+
+    // ---- Excalibur engine ----
+    const game = new ex.Engine({
+      canvasElementId: "gameCanvas",
+      width: W, height: H,
+      displayMode: ex.DisplayMode.FitContainer,
+      backgroundColor: ex.Color.fromHex("#05060f"),
+      antialiasing: true,
+      suppressPlayButton: true,
+      suppressConsoleBootMessage: true,
+      pointerScope: ex.PointerScope.Canvas,
+    });
+    const scene = game.currentScene;
+    scene.camera.pos = ex.vec(W / 2, H / 2);
+
+    const sceneCanvas = new ex.Canvas({
+      width: W, height: H, cache: false,
+      draw: (c) => { ctx = c; drawScene(); ctx = null; },
+    });
+    const sceneActor = new ex.Actor({ pos: ex.vec(W / 2, H / 2), z: 0 });
+    sceneActor.graphics.use(sceneCanvas);
+    scene.add(sceneActor);
+    function shake(m, d) { if (scene.camera) scene.camera.shake(m, m, d); }
+
+    function initStars() {
+      stars = [];
+      for (let i = 0; i < 70; i += 1) {
+        const layer = Math.floor(rand(0, 3));
+        stars.push({ x: rand(0, W), y: rand(0, H), speed: 30 + layer * 45, size: 1 + layer });
+      }
+    }
+
+    function resetGame() {
+      player = { x: W / 2, y: H - 90, w: 26, h: 30, cooldown: 0, level: 1, lives: 3, invuln: 0 };
+      pBullets = []; enemies = []; eBullets = []; items = []; particles = [];
+      if (!stars) initStars();
+      score = 0; wave = 1; waveTimer = 0; spawnTimer = 0.6;
+      combo = 0; comboTimer = 0; bombs = 2; bossActive = false;
+      state = "idle";
+      syncUi("대기 중");
+    }
+
+    function syncUi(status) {
+      scoreEl.textContent = String(score);
+      bestEl.textContent = String(best);
+      waveEl.textContent = String(wave);
+      livesEl.textContent = String(Math.max(0, player.lives));
+      levelEl.textContent = String(player.level);
+      comboEl.textContent = String(combo);
+      if (status) statusEl.textContent = status;
+    }
+
+    function startGame() {
+      if (state === "over") resetGame();
+      if (state === "playing") return;
+      state = "playing";
+      overlay.classList.add("hidden");
+      syncUi("전투 시작!");
+    }
+    function togglePause() {
+      if (state === "playing") {
+        state = "paused";
+        overlayTitle.textContent = "일시정지";
+        overlayText.textContent = "P 또는 일시정지 버튼을 누르면 이어서 진행합니다.";
+        overlayStartBtn.textContent = "계속하기";
+        overlay.classList.remove("hidden");
+        syncUi("일시정지");
+      } else if (state === "paused") {
+        startGame();
+      }
+    }
+    function gameOver() {
+      state = "over";
+      if (score > best) { best = score; localStorage.setItem("spaceShooterBest", String(best)); }
+      overlayTitle.textContent = "게임 오버";
+      overlayText.textContent = `점수 ${score}점 · 웨이브 ${wave}까지 도달. 다시 도전해 최고 점수를 갱신하세요.`;
+      overlayStartBtn.textContent = "다시 시작";
+      overlay.classList.remove("hidden");
+      syncUi("게임 오버");
+    }
+
+    // ---- spawning ----
+    function spawnEnemy() {
+      const roll = Math.random();
+      const x = rand(40, W - 40);
+      let e;
+      if (roll < 0.5) {
+        e = { type: "grunt", x, y: -24, w: 30, h: 26, hp: 2 + Math.floor(wave * 0.4), maxHp: 1, vx: 0, vy: 90 + wave * 6, fireCd: 999, score: 100 };
+      } else if (roll < 0.8) {
+        e = { type: "shooter", x, y: -24, w: 32, h: 30, hp: 3 + Math.floor(wave * 0.5), maxHp: 1, vx: rand(-60, 60), vy: 60 + wave * 4, fireCd: rand(1.2, 2.2), phase: rand(0, 6.28), score: 150 };
+      } else {
+        e = { type: "rusher", x, y: -24, w: 26, h: 30, hp: 2 + Math.floor(wave * 0.3), maxHp: 1, vx: 0, vy: 210 + wave * 8, fireCd: 999, score: 120 };
+      }
+      e.maxHp = e.hp;
+      enemies.push(e);
+    }
+
+    function spawnBoss() {
+      const hp = 120 + wave * 40;
+      enemies.push({
+        type: "boss", x: W / 2, y: -80, w: 130, h: 70, hp, maxHp: hp,
+        vx: 70, vy: 0, fireCd: 1.4, pattern: 0, score: 3000, entering: true,
+      });
+      bossActive = true;
+    }
+
+    function dropItem(x, y) {
+      const r = Math.random();
+      let kind = null;
+      if (r < 0.12) kind = "power";
+      else if (r < 0.17) kind = "life";
+      else if (r < 0.22) kind = "bomb";
+      if (kind) items.push({ x, y, vy: 80, kind });
+    }
+
+    function burst(x, y, color, n) {
+      for (let i = 0; i < n; i += 1) {
+        const a = rand(0, Math.PI * 2), s = rand(40, 220);
+        particles.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: rand(0.3, 0.7), color, size: rand(2, 4) });
+      }
+    }
+
+    // ---- weapons ----
+    function playerFire() {
+      const y = player.y - 16, s = 600;
+      const mk = (dx, vx) => pBullets.push({ x: player.x + dx, y, vx: vx || 0, vy: -s, r: 5, dmg: 1 });
+      const lv = player.level;
+      if (lv === 1) { mk(0, 0); }
+      else if (lv === 2) { mk(-9, 0); mk(9, 0); }
+      else if (lv === 3) { mk(0, 0); mk(-12, -70); mk(12, 70); }
+      else { mk(-6, 0); mk(6, 0); mk(-16, -130); mk(16, 130); mk(0, 0); }
+    }
+    function enemyFireAimed(e, speed) {
+      const ang = Math.atan2(player.y - e.y, player.x - e.x);
+      eBullets.push({ x: e.x, y: e.y, vx: Math.cos(ang) * speed, vy: Math.sin(ang) * speed, r: 5 });
+    }
+    function bossFire(e) {
+      e.pattern = (e.pattern + 1) % 2;
+      const s = 160 + wave * 6;
+      if (e.pattern === 0) {
+        // downward fan
+        for (let i = -3; i <= 3; i += 1) {
+          const ang = Math.PI / 2 + i * 0.2;
+          eBullets.push({ x: e.x, y: e.y + 20, vx: Math.cos(ang) * s, vy: Math.sin(ang) * s, r: 6 });
+        }
+      } else {
+        // aimed triple burst with slight spread
+        for (let k = 0; k < 3; k += 1) {
+          enemyFireAimed({ x: e.x + rand(-30, 30), y: e.y + 20 }, s);
+        }
+      }
+    }
+
+    function bomb() {
+      if (state !== "playing" || bombs <= 0) return;
+      bombs -= 1;
+      eBullets = [];
+      enemies.forEach((e) => {
+        if (e.type === "boss") { e.hp -= 30; burst(e.x, e.y, "#f0abfc", 14); }
+        else { e.hp = 0; }
+      });
+      burst(player.x, player.y, "#67e8f9", 40);
+      shake(10, 300);
+      resolveEnemyDeaths(false);
+      syncUi("💣 봄 사용!");
+    }
+
+    function hitCircleRect(cx, cy, cr, rx, ry, rw, rh) {
+      const nx = clamp(cx, rx - rw / 2, rx + rw / 2);
+      const ny = clamp(cy, ry - rh / 2, ry + rh / 2);
+      const dx = cx - nx, dy = cy - ny;
+      return dx * dx + dy * dy <= cr * cr;
+    }
+    function rectsOverlap(a, b) {
+      return Math.abs(a.x - b.x) < (a.w + b.w) / 2 && Math.abs(a.y - b.y) < (a.h + b.h) / 2;
+    }
+
+    function killEnemy(e, byPlayer) {
+      if (byPlayer) {
+        combo += 1; comboTimer = 2.5;
+        score += Math.round(e.score * (1 + combo * 0.08));
+      }
+      burst(e.x, e.y, e.type === "boss" ? "#f0abfc" : "#fca5a5", e.type === "boss" ? 60 : 16);
+      if (e.type === "boss") { shake(14, 450); dropItem(e.x - 20, e.y); items.push({ x: e.x + 20, y: e.y, vy: 70, kind: "life" }); bossActive = false; }
+      else dropItem(e.x, e.y);
+    }
+    function resolveEnemyDeaths(byPlayer) {
+      for (let i = enemies.length - 1; i >= 0; i -= 1) {
+        if (enemies[i].hp <= 0) { killEnemy(enemies[i], byPlayer); enemies.splice(i, 1); }
+      }
+    }
+
+    function hitPlayer() {
+      if (player.invuln > 0) return;
+      player.lives -= 1;
+      player.invuln = 1.6;
+      combo = 0;
+      burst(player.x, player.y, "#fca5a5", 24);
+      shake(12, 350);
+      if (player.lives <= 0) gameOver();
+      else syncUi("피격!");
+    }
+
+    function applyItem(kind) {
+      if (kind === "power") { player.level = Math.min(4, player.level + 1); syncUi("무기 강화!"); }
+      else if (kind === "life") { player.lives = Math.min(5, player.lives + 1); syncUi("라이프 +1"); }
+      else if (kind === "bomb") { bombs += 1; syncUi("봄 +1"); }
+      burst(player.x, player.y, "#a5f3fc", 12);
+    }
+
+    // ---- update ----
+    function update(dt) {
+      // background stars always scroll
+      stars.forEach((s) => { s.y += s.speed * dt; if (s.y > H) { s.y = -2; s.x = rand(0, W); } });
+      // particles
+      for (let i = particles.length - 1; i >= 0; i -= 1) {
+        const p = particles[i];
+        p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt;
+        if (p.life <= 0) particles.splice(i, 1);
+      }
+      if (state !== "playing") return;
+
+      // player movement
+      const kbLeft = keys["ArrowLeft"] || keys["KeyA"], kbRight = keys["ArrowRight"] || keys["KeyD"];
+      const kbUp = keys["ArrowUp"] || keys["KeyW"], kbDown = keys["ArrowDown"] || keys["KeyS"];
+      if (kbLeft || kbRight || kbUp || kbDown) {
+        const sp = 340;
+        player.x += ((kbRight ? 1 : 0) - (kbLeft ? 1 : 0)) * sp * dt;
+        player.y += ((kbDown ? 1 : 0) - (kbUp ? 1 : 0)) * sp * dt;
+      } else {
+        const wp = game.input.pointers.primary.lastWorldPos;
+        if (wp) {
+          player.x += (clamp(wp.x, 0, W) - player.x) * Math.min(1, dt * 12);
+          player.y += (clamp(wp.y - 42, 0, H) - player.y) * Math.min(1, dt * 12);
+        }
+      }
+      player.x = clamp(player.x, player.w / 2, W - player.w / 2);
+      player.y = clamp(player.y, player.h / 2, H - player.h / 2);
+      if (player.invuln > 0) player.invuln -= dt;
+
+      // auto fire
+      player.cooldown -= dt;
+      if (player.cooldown <= 0) { playerFire(); player.cooldown = FIRE_INTERVAL; }
+
+      // waves
+      if (!bossActive) {
+        waveTimer += dt;
+        spawnTimer -= dt;
+        if (spawnTimer <= 0) { spawnEnemy(); spawnTimer = Math.max(0.35, 1.15 - wave * 0.05); }
+        if (waveTimer >= WAVE_LEN) {
+          wave += 1; waveTimer = 0;
+          if (wave % 5 === 0) { spawnBoss(); syncUi(`웨이브 ${wave} · 보스 등장!`); }
+          else syncUi(`웨이브 ${wave}`);
+        }
+      }
+
+      if (comboTimer > 0) { comboTimer -= dt; if (comboTimer <= 0) combo = 0; }
+
+      // player bullets
+      for (let i = pBullets.length - 1; i >= 0; i -= 1) {
+        const b = pBullets[i];
+        b.x += b.vx * dt; b.y += b.vy * dt;
+        if (b.y < -20 || b.x < -20 || b.x > W + 20) { pBullets.splice(i, 1); continue; }
+        for (let j = 0; j < enemies.length; j += 1) {
+          const e = enemies[j];
+          if (hitCircleRect(b.x, b.y, b.r, e.x, e.y, e.w, e.h)) {
+            e.hp -= b.dmg;
+            if (e.type === "boss") burst(b.x, b.y, "#f0abfc", 2);
+            pBullets.splice(i, 1);
+            break;
+          }
+        }
+      }
+      resolveEnemyDeaths(true);
+
+      // enemies
+      for (let i = enemies.length - 1; i >= 0; i -= 1) {
+        const e = enemies[i];
+        if (e.type === "boss") {
+          if (e.entering) { e.y += 60 * dt; if (e.y >= 90) { e.y = 90; e.entering = false; } }
+          else {
+            e.x += e.vx * dt;
+            if (e.x < e.w / 2 + 10 || e.x > W - e.w / 2 - 10) e.vx *= -1;
+            e.x = clamp(e.x, e.w / 2 + 10, W - e.w / 2 - 10);
+            e.fireCd -= dt;
+            if (e.fireCd <= 0) { bossFire(e); e.fireCd = Math.max(0.7, 1.4 - wave * 0.03); }
+          }
+        } else {
+          e.y += e.vy * dt;
+          if (e.type === "shooter") {
+            e.phase += dt * 2; e.x += Math.sin(e.phase) * 60 * dt + e.vx * dt * 0.3;
+            e.x = clamp(e.x, 20, W - 20);
+            e.fireCd -= dt;
+            if (e.fireCd <= 0 && e.y > 0 && e.y < H * 0.7) { enemyFireAimed(e, 150 + wave * 6); e.fireCd = rand(1.3, 2.4); }
+          }
+          if (e.y > H + 30) { enemies.splice(i, 1); continue; }
+        }
+        // contact with player
+        if (rectsOverlap(e, player)) {
+          hitPlayer();
+          if (e.type !== "boss") { e.hp = 0; }
+        }
+      }
+      resolveEnemyDeaths(false);
+
+      // enemy bullets
+      for (let i = eBullets.length - 1; i >= 0; i -= 1) {
+        const b = eBullets[i];
+        b.x += b.vx * dt; b.y += b.vy * dt;
+        if (b.y > H + 20 || b.y < -20 || b.x < -20 || b.x > W + 20) { eBullets.splice(i, 1); continue; }
+        if (player.invuln <= 0 && hitCircleRect(b.x, b.y, b.r, player.x, player.y, player.w * 0.7, player.h * 0.7)) {
+          eBullets.splice(i, 1);
+          hitPlayer();
+        }
+      }
+
+      // items
+      for (let i = items.length - 1; i >= 0; i -= 1) {
+        const it = items[i];
+        it.y += it.vy * dt;
+        if (it.y > H + 20) { items.splice(i, 1); continue; }
+        if (rectsOverlap({ x: it.x, y: it.y, w: 22, h: 22 }, player)) { applyItem(it.kind); items.splice(i, 1); }
+      }
+
+      syncUi();
+    }
+
+    scene.on("postupdate", (evt) => {
+      nowMs += evt.delta || 16;
+      if (sceneCanvas.flagDirty) sceneCanvas.flagDirty();
+      update(Math.min((evt.delta || 16) / 1000, 0.05));
+    });
+
+    game.input.pointers.primary.on("down", () => {
+      if (state === "idle" || state === "over") startGame();
+    });
+
+    // ---- rendering ----
+    function drawShip(x, y, blink) {
+      if (blink) return;
+      ctx.save();
+      ctx.translate(x, y);
+      // thruster
+      ctx.fillStyle = "#38bdf8";
+      const f = 6 + Math.sin(nowMs / 40) * 4;
+      ctx.beginPath();
+      ctx.moveTo(-6, 14); ctx.lineTo(0, 14 + f); ctx.lineTo(6, 14); ctx.closePath(); ctx.fill();
+      // body
+      ctx.fillStyle = "#e0f2fe";
+      ctx.beginPath();
+      ctx.moveTo(0, -18); ctx.lineTo(14, 14); ctx.lineTo(0, 6); ctx.lineTo(-14, 14); ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = "#0891b2";
+      ctx.beginPath();
+      ctx.moveTo(0, -12); ctx.lineTo(6, 8); ctx.lineTo(-6, 8); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "#67e8f9";
+      ctx.beginPath(); ctx.arc(0, -2, 3, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    }
+
+    function drawEnemy(e) {
+      ctx.save();
+      ctx.translate(e.x, e.y);
+      if (e.type === "grunt") {
+        ctx.fillStyle = "#f87171";
+        ctx.beginPath();
+        ctx.moveTo(0, -13); ctx.lineTo(14, -4); ctx.lineTo(14, 8); ctx.lineTo(0, 13); ctx.lineTo(-14, 8); ctx.lineTo(-14, -4); ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = "#7f1d1d"; ctx.beginPath(); ctx.arc(0, 0, 5, 0, Math.PI * 2); ctx.fill();
+      } else if (e.type === "shooter") {
+        ctx.fillStyle = "#c084fc";
+        ctx.beginPath(); ctx.moveTo(0, -15); ctx.lineTo(16, 0); ctx.lineTo(0, 15); ctx.lineTo(-16, 0); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = "#581c87"; ctx.beginPath(); ctx.arc(0, 0, 5, 0, Math.PI * 2); ctx.fill();
+      } else if (e.type === "rusher") {
+        ctx.fillStyle = "#fb923c";
+        ctx.beginPath(); ctx.moveTo(0, 15); ctx.lineTo(13, -13); ctx.lineTo(-13, -13); ctx.closePath(); ctx.fill();
+      } else if (e.type === "boss") {
+        ctx.fillStyle = "#a21caf";
+        ctx.beginPath();
+        ctx.moveTo(-e.w / 2, -e.h / 2 + 10);
+        ctx.lineTo(e.w / 2, -e.h / 2 + 10);
+        ctx.lineTo(e.w / 2 - 16, e.h / 2);
+        ctx.lineTo(-e.w / 2 + 16, e.h / 2);
+        ctx.closePath(); ctx.fill();
+        ctx.fillStyle = "#f0abfc";
+        ctx.fillRect(-e.w / 2, -e.h / 2, e.w, 12);
+        ctx.fillStyle = "#fde047";
+        ctx.beginPath(); ctx.arc(0, 6, 12 + Math.sin(nowMs / 200) * 3, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    function drawScene() {
+      // space background
+      const g = ctx.createLinearGradient(0, 0, 0, H);
+      g.addColorStop(0, "#0b1026"); g.addColorStop(1, "#05060f");
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+      if (stars) stars.forEach((s) => {
+        ctx.fillStyle = s.size >= 3 ? "rgba(165,243,252,0.9)" : "rgba(148,163,184,0.6)";
+        ctx.fillRect(s.x, s.y, s.size, s.size);
+      });
+
+      if (!player) return;
+
+      // items
+      items.forEach((it) => {
+        const col = it.kind === "power" ? "#22d3ee" : it.kind === "life" ? "#fb7185" : "#c084fc";
+        const label = it.kind === "power" ? "P" : it.kind === "life" ? "♥" : "B";
+        ctx.fillStyle = col;
+        ctx.beginPath();
+        const x = it.x - 11, y = it.y - 11;
+        ctx.moveTo(x + 5, y); ctx.arcTo(x + 22, y, x + 22, y + 22, 5); ctx.arcTo(x + 22, y + 22, x, y + 22, 5);
+        ctx.arcTo(x, y + 22, x, y, 5); ctx.arcTo(x, y, x + 22, y, 5); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = "#0f172a"; ctx.font = "bold 14px system-ui, sans-serif";
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText(label, it.x, it.y + 1);
+      });
+
+      // player bullets
+      ctx.fillStyle = "#67e8f9";
+      pBullets.forEach((b) => {
+        ctx.beginPath(); ctx.ellipse(b.x, b.y, b.r * 0.7, b.r * 1.5, 0, 0, Math.PI * 2); ctx.fill();
+      });
+
+      // enemies
+      enemies.forEach(drawEnemy);
+
+      // enemy bullets
+      eBullets.forEach((b) => {
+        ctx.fillStyle = "#fda4af";
+        ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "rgba(244,63,94,0.35)";
+        ctx.beginPath(); ctx.arc(b.x, b.y, b.r + 3, 0, Math.PI * 2); ctx.fill();
+      });
+
+      // player (blink while invulnerable)
+      const blink = player.invuln > 0 && Math.floor(nowMs / 90) % 2 === 0;
+      drawShip(player.x, player.y, blink);
+
+      // particles
+      particles.forEach((p) => {
+        ctx.save();
+        ctx.globalAlpha = clamp(p.life * 2, 0, 1);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
+        ctx.restore();
+      });
+
+      // boss HP bar
+      const boss = enemies.find((e) => e.type === "boss");
+      if (boss) {
+        const ratio = clamp(boss.hp / boss.maxHp, 0, 1);
+        ctx.fillStyle = "rgba(2,6,23,0.7)"; ctx.fillRect(40, 16, W - 80, 12);
+        ctx.fillStyle = "#f0abfc"; ctx.fillRect(42, 18, (W - 84) * ratio, 8);
+        ctx.strokeStyle = "rgba(240,171,252,0.6)"; ctx.lineWidth = 1; ctx.strokeRect(40, 16, W - 80, 12);
+        ctx.fillStyle = "#e9d5ff"; ctx.font = "bold 12px system-ui, sans-serif";
+        ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
+        ctx.fillText("BOSS", W / 2, 14);
+      }
+
+      // top-left score + bomb count
+      ctx.fillStyle = "#e2e8f0"; ctx.font = "bold 18px system-ui, sans-serif";
+      ctx.textAlign = "left"; ctx.textBaseline = "top";
+      ctx.fillText(`${score}`, 12, 12);
+      ctx.font = "12px system-ui, sans-serif"; ctx.fillStyle = "#c4b5fd";
+      ctx.fillText(`💣 ${bombs}`, 12, 34);
+      if (combo > 1) {
+        ctx.fillStyle = "#fcd34d"; ctx.font = "bold 16px system-ui, sans-serif";
+        ctx.textAlign = "right";
+        ctx.fillText(`${combo} COMBO`, W - 12, 12);
+      }
+    }
+
+    // ---- controls ----
+    el("startBtn").addEventListener("click", startGame);
+    overlayStartBtn.addEventListener("click", startGame);
+    el("pauseBtn").addEventListener("click", togglePause);
+    el("bombBtn").addEventListener("click", bomb);
+    el("resetBtn").addEventListener("click", () => {
+      resetGame();
+      overlayTitle.textContent = "우주 슈팅 게임";
+      overlayText.textContent = "마우스나 손가락으로 기체를 움직이면 자동으로 발사됩니다. 적과 적탄을 피하며 최대한 오래 살아남으세요.";
+      overlayStartBtn.textContent = "게임 시작";
+      overlay.classList.remove("hidden");
+    });
+    document.addEventListener("keydown", (e) => {
+      keys[e.code] = true;
+      if (e.code === "Space") { e.preventDefault(); if (state === "idle" || state === "over") startGame(); }
+      if (e.code === "KeyP") { e.preventDefault(); togglePause(); }
+      if (e.code === "KeyB") { e.preventDefault(); bomb(); }
+      if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.code)) e.preventDefault();
+    });
+    document.addEventListener("keyup", (e) => { keys[e.code] = false; });
+
+    // ---- boot ----
+    resetGame();
+    game.start().then(() => syncUi("대기 중"));
+  </script>
+</body>
+</html>

@@ -98,7 +98,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <div id="gameOverlay" class="absolute inset-0 flex items-center justify-center bg-slate-950/80 p-6 text-center">
             <div class="max-w-sm space-y-3">
               <h2 id="overlayTitle" class="text-2xl font-bold text-teal-100">다마고치 키우기</h2>
-              <p id="overlayText" class="text-sm leading-relaxed text-slate-200">알에서 펫이 태어납니다. 아래 버튼으로 밥을 주고, 놀아주고, 씻겨서 건강하게 키우세요. 펫을 쓰다듬으면 행복이 올라갑니다.</p>
+              <p id="overlayText" class="text-sm leading-relaxed text-slate-200">이름과 종류를 정한 뒤 시작하세요. 밥을 주고, 놀아주고, 씻겨서 건강하게 키우세요. 펫을 쓰다듬으면 행복이 올라갑니다.</p>
+              <div class="grid gap-2 text-left">
+                <label class="text-xs text-slate-300">이름
+                  <input id="nameInput" type="text" maxlength="8" value="몽이" class="mt-1 w-full rounded-lg border border-white/20 bg-slate-950/60 px-3 py-2 text-sm text-white">
+                </label>
+                <label class="text-xs text-slate-300">종류
+                  <select id="speciesSelect" class="mt-1 w-full rounded-lg border border-white/20 bg-slate-950/60 px-3 py-2 text-sm text-white">
+                    <option value="slime">🟢 초록 슬라임</option>
+                    <option value="aqua">💧 물방울</option>
+                    <option value="flame">🔥 불꽃</option>
+                    <option value="star">⭐ 별</option>
+                    <option value="sprout">🌱 새싹</option>
+                  </select>
+                </label>
+              </div>
               <button id="overlayStartBtn" type="button" class="rounded-lg border border-teal-200/60 px-5 py-2 text-teal-100 hover:bg-white/10 transition">키우기 시작</button>
             </div>
           </div>
@@ -110,6 +124,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <button id="poopBtn" type="button" class="rounded-lg border border-lime-200/50 px-3 py-3 text-sm font-semibold text-lime-100 hover:bg-white/10 transition">🧹 치우기</button>
           <button id="snackBtn" type="button" class="rounded-lg border border-orange-200/50 px-3 py-3 text-sm font-semibold text-orange-100 hover:bg-white/10 transition">🍬 간식</button>
           <button id="medicineBtn" type="button" class="rounded-lg border border-emerald-200/50 px-3 py-3 text-sm font-semibold text-emerald-100 hover:bg-white/10 transition">💊 약주기</button>
+          <button id="minigameBtn" type="button" class="col-span-2 sm:col-span-4 rounded-lg border border-teal-200/60 bg-teal-400/10 px-3 py-3 text-sm font-bold text-teal-100 hover:bg-teal-400/20 transition">🎮 미니게임 · 먹이 받기 (스탯 회복)</button>
         </div>
       </div>
 
@@ -161,9 +176,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <section class="rounded-2xl border border-white/10 bg-white/5 p-5">
           <h2 class="text-lg font-semibold text-teal-100">키우는 법</h2>
           <div class="mt-4 grid gap-2 text-sm text-slate-300">
+            <p>시작할 때 이름과 종류(5종)를 정할 수 있어요.</p>
             <p>버튼으로 밥·간식·놀이·목욕·약·청소를 해주세요.</p>
             <p>화면의 펫을 클릭/터치하면 쓰다듬어 행복이 오릅니다.</p>
-            <p>재우기: 에너지가 회복됩니다 (자는 동안 놀 수 없어요).</p>
+            <p>🎮 미니게임(먹이 받기)으로 스탯을 회복할 수 있어요.</p>
             <p>수치를 방치하면 아프고, 체력이 0이 되면 떠납니다.</p>
           </div>
           <p class="mt-4 text-xs text-slate-500">Powered by <a href="https://excaliburjs.com/" target="_blank" rel="noopener noreferrer" class="text-teal-200/80 underline">Excalibur.js</a> 게임 엔진</p>
@@ -210,6 +226,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const nameEl = el("nameEl"), ageEl = el("ageEl"), stageEl = el("stageEl"), bestEl = el("bestEl");
     const statusEl = el("statusEl"), overlay = el("gameOverlay");
     const overlayTitle = el("overlayTitle"), overlayText = el("overlayText"), overlayStartBtn = el("overlayStartBtn");
+    const nameInput = el("nameInput"), speciesSelect = el("speciesSelect");
     const bars = {
       fullness: [el("fullnessBar"), el("fullnessVal")],
       happiness: [el("happyBar"), el("happyVal")],
@@ -225,10 +242,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     let hearts = [];
     let bestDays = Number(localStorage.getItem(BEST_KEY) || "0");
     let pet = null;
+    let mode = "care";   // "care" | "minigame"
+    let mg = null;       // minigame state
 
-    function newPet() {
+    // Pet species: base colours + a little signature feature drawn on the head.
+    const SPECIES = {
+      slime:  { label: "초록 슬라임", body: "#22c55e", belly: "#bbf7d0" },
+      aqua:   { label: "물방울",      body: "#38bdf8", belly: "#bae6fd" },
+      flame:  { label: "불꽃",        body: "#fb7185", belly: "#fecdd3" },
+      star:   { label: "별",          body: "#a78bfa", belly: "#ddd6fe" },
+      sprout: { label: "새싹",        body: "#4ade80", belly: "#d9f99d" },
+    };
+
+    function newPet(name, species) {
       return {
-        name: "몽이", ageSec: 0, lastTick: Date.now(),
+        name: (name || "몽이"), species: (SPECIES[species] ? species : "slime"),
+        ageSec: 0, lastTick: Date.now(),
         fullness: 80, happiness: 80, cleanliness: 90, energy: 90, health: 100,
         asleep: false, alive: true, poops: [], nextPoopIn: rand(14, 28), stage: "알",
       };
@@ -319,21 +348,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     function afterAction(msg) { save(); syncUi(); setStatus(msg); }
 
     function feed() {
-      if (!pet.alive || pet.stage === "알") return;
+      if (mode !== "care" || !pet.alive || pet.stage === "알") return;
       pet.fullness = clamp(pet.fullness + 28, 0, 100);
       pet.happiness = clamp(pet.happiness + 3, 0, 100);
       pet.nextPoopIn = Math.min(pet.nextPoopIn, rand(4, 8));
       afterAction("냠냠, 잘 먹었어요");
     }
     function snack() {
-      if (!pet.alive || pet.stage === "알") return;
+      if (mode !== "care" || !pet.alive || pet.stage === "알") return;
       pet.fullness = clamp(pet.fullness + 12, 0, 100);
       pet.happiness = clamp(pet.happiness + 12, 0, 100);
       spawnHearts(2);
       afterAction("간식 최고예요!");
     }
     function play() {
-      if (!pet.alive || pet.stage === "알") return;
+      if (mode !== "care" || !pet.alive || pet.stage === "알") return;
       if (pet.asleep) { setStatus("지금은 자는 중이에요"); return; }
       if (pet.energy < 8) { setStatus("너무 피곤해요. 재워주세요"); return; }
       pet.happiness = clamp(pet.happiness + 22, 0, 100);
@@ -343,25 +372,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       afterAction("신나게 놀았어요!");
     }
     function washPet() {
-      if (!pet.alive) return;
+      if (mode !== "care" || !pet.alive) return;
       pet.cleanliness = 100;
       pet.happiness = clamp(pet.happiness + 4, 0, 100);
       afterAction("뽀득뽀득 깨끗해졌어요");
     }
     function cleanPoop() {
-      if (!pet.alive) return;
+      if (mode !== "care" || !pet.alive) return;
       if (pet.poops.length === 0) { setStatus("치울 게 없어요"); return; }
       pet.poops = [];
       pet.cleanliness = clamp(pet.cleanliness + 18, 0, 100);
       afterAction("깔끔하게 치웠어요");
     }
     function toggleSleep() {
-      if (!pet.alive || pet.stage === "알") return;
+      if (mode !== "care" || !pet.alive || pet.stage === "알") return;
       pet.asleep = !pet.asleep;
       afterAction(pet.asleep ? "쿨쿨 자는 중..." : "잘 잤어요!");
     }
     function medicine() {
-      if (!pet.alive) return;
+      if (mode !== "care" || !pet.alive) return;
       if (pet.health < 70 || moodOf() === "sick") {
         pet.health = clamp(pet.health + 30, 0, 100);
         pet.happiness = clamp(pet.happiness - 6, 0, 100);
@@ -371,10 +400,59 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
     }
     function petTap() {
-      if (!pet.alive || pet.stage === "알") return;
+      if (mode !== "care" || !pet.alive || pet.stage === "알") return;
       pet.happiness = clamp(pet.happiness + 4, 0, 100);
       spawnHearts(1);
       save();
+    }
+
+    // ---- Mini-game: 먹이 받기 (catch falling food to recover stats) ----
+    function startMinigame() {
+      if (mode !== "care") return;
+      if (!pet.alive || pet.stage === "알") { setStatus("아직 놀 수 없어요"); return; }
+      if (pet.asleep) { setStatus("자는 중이에요. 먼저 깨워주세요"); return; }
+      mode = "minigame";
+      mg = { time: 20, score: 0, items: [], basketX: W / 2, spawn: 0.4 };
+      overlay.classList.add("hidden");
+      setStatus("먹이 받기! 바구니로 받아요");
+    }
+
+    function endMinigame() {
+      const caught = mg ? mg.score : 0;
+      mode = "care";
+      mg = null;
+      pet.happiness = clamp(pet.happiness + Math.min(40, caught * 4), 0, 100);
+      pet.fullness = clamp(pet.fullness + Math.min(28, caught * 3), 0, 100);
+      pet.health = clamp(pet.health + Math.min(10, caught), 0, 100);
+      pet.energy = clamp(pet.energy - 6, 0, 100);
+      spawnHearts(3);
+      save();
+      syncUi();
+      setStatus(`미니게임 ${caught}점! 스탯을 회복했어요`);
+    }
+
+    function mgStep(dt) {
+      const wp = game.input.pointers.primary.lastWorldPos;
+      if (wp) mg.basketX = clamp(wp.x, 46, W - 46);
+      mg.time -= dt;
+      mg.spawn -= dt;
+      if (mg.spawn <= 0) {
+        mg.spawn = rand(0.5, 1.0);
+        mg.items.push({ x: rand(46, W - 46), y: -20, vy: rand(130, 205), bad: Math.random() < 0.18 });
+      }
+      const basketY = H - 76;
+      for (let i = mg.items.length - 1; i >= 0; i -= 1) {
+        const it = mg.items[i];
+        it.y += it.vy * dt;
+        if (it.y > basketY - 20 && it.y < basketY + 26 && Math.abs(it.x - mg.basketX) < 48) {
+          if (it.bad) { mg.score = Math.max(0, mg.score - 3); }
+          else { mg.score += 1; spawnHearts(1); }
+          mg.items.splice(i, 1);
+          continue;
+        }
+        if (it.y > H + 30) mg.items.splice(i, 1);
+      }
+      if (mg.time <= 0) endMinigame();
     }
 
     function die() {
@@ -391,17 +469,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       syncUi();
     }
 
-    function resetGame() {
+    function beginNewPet() {
+      const nm = (nameInput.value || "").trim().slice(0, 8) || "몽이";
+      const sp = SPECIES[speciesSelect.value] ? speciesSelect.value : "slime";
       localStorage.removeItem(SAVE_KEY);
-      pet = newPet();
+      pet = newPet(nm, sp);
       hearts = [];
+      mode = "care";
+      mg = null;
       save();
+      syncUi();
+    }
+
+    function resetGame() {
+      beginNewPet();
+      nameInput.value = pet.name;
+      speciesSelect.value = pet.species;
       overlayTitle.textContent = "다마고치 키우기";
-      overlayText.textContent = "알에서 펫이 태어납니다. 아래 버튼으로 밥을 주고, 놀아주고, 씻겨서 건강하게 키우세요.";
+      overlayText.textContent = "이름과 종류를 정하고 시작하세요. 밥·놀이·목욕으로 건강하게 키우세요.";
       overlayStartBtn.textContent = "키우기 시작";
       overlay.classList.remove("hidden");
       setStatus("새 알을 받았어요");
-      syncUi();
     }
 
     // ---- Simulation ----
@@ -452,7 +540,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       nowMs += evt.delta || 16;
       if (sceneCanvas.flagDirty) sceneCanvas.flagDirty();
       const dt = Math.min((evt.delta || 16) / 1000, 0.12);
-      step(dt);
+      if (mode === "minigame" && mg) mgStep(dt);
+      else step(dt);
       hearts.forEach((h) => { h.life -= dt; h.y -= dt * 32; });
       hearts = hearts.filter((h) => h.life > 0);
       saveTimer += dt;
@@ -461,6 +550,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     });
 
     game.input.pointers.primary.on("down", () => {
+      if (mode === "minigame" && mg) {
+        const wp = game.input.pointers.primary.lastWorldPos;
+        if (wp) mg.basketX = clamp(wp.x, 46, W - 46);
+        return;
+      }
       if (pet.alive && pet.stage !== "알" && !pet.asleep) petTap();
     });
 
@@ -551,10 +645,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const cy = baseY + bob;
       const size = pet.stage === "아기" ? 46 : pet.stage === "어린이" ? 60 : 76;
 
-      let body = "#22c55e", belly = "#bbf7d0";
+      const sp = SPECIES[pet.species] || SPECIES.slime;
+      let body = sp.body, belly = sp.belly;
       if (mood === "sick" || mood === "dead") { body = "#94a3b8"; belly = "#e2e8f0"; }
-      else if (mood === "happy") { body = "#34d399"; belly = "#d1fae5"; }
-      else if (mood === "sad") { body = "#4ade80"; belly = "#dcfce7"; }
 
       ctx.save();
       // shadow
@@ -581,6 +674,50 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       ctx.beginPath();
       ctx.ellipse(cx, cy + size * 0.18, size * 0.6, size * 0.62, 0, 0, Math.PI * 2);
       ctx.fill();
+
+      // species signature feature on the head
+      const topY = cy - size * 0.86;
+      if (mood !== "dead") {
+        if (pet.species === "flame") {
+          ctx.fillStyle = "#f97316";
+          ctx.beginPath();
+          ctx.moveTo(cx - 12, topY + 10);
+          ctx.quadraticCurveTo(cx - 2, topY - 26, cx + 12, topY + 10);
+          ctx.quadraticCurveTo(cx, topY - 6, cx - 12, topY + 10);
+          ctx.fill();
+          ctx.fillStyle = "#fde047";
+          ctx.beginPath();
+          ctx.moveTo(cx - 5, topY + 8);
+          ctx.quadraticCurveTo(cx, topY - 12, cx + 6, topY + 8);
+          ctx.fill();
+        } else if (pet.species === "sprout") {
+          ctx.strokeStyle = "#15803d"; ctx.lineWidth = 4;
+          ctx.beginPath(); ctx.moveTo(cx, topY + 12); ctx.lineTo(cx, topY - 14); ctx.stroke();
+          ctx.fillStyle = "#22c55e";
+          ctx.beginPath(); ctx.ellipse(cx - 9, topY - 8, 10, 6, -0.6, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.ellipse(cx + 9, topY - 12, 10, 6, 0.6, 0, Math.PI * 2); ctx.fill();
+        } else if (pet.species === "aqua") {
+          ctx.fillStyle = "#e0f2fe";
+          ctx.beginPath();
+          ctx.moveTo(cx, topY - 16);
+          ctx.quadraticCurveTo(cx + 9, topY, cx, topY + 8);
+          ctx.quadraticCurveTo(cx - 9, topY, cx, topY - 16);
+          ctx.fill();
+        } else if (pet.species === "star") {
+          ctx.fillStyle = "#fde047";
+          const drawStar = (sx, sy, r) => {
+            ctx.beginPath();
+            for (let k = 0; k < 5; k += 1) {
+              const a = -Math.PI / 2 + k * (Math.PI * 2 / 5);
+              const a2 = a + Math.PI / 5;
+              ctx.lineTo(sx + Math.cos(a) * r, sy + Math.sin(a) * r);
+              ctx.lineTo(sx + Math.cos(a2) * r * 0.45, sy + Math.sin(a2) * r * 0.45);
+            }
+            ctx.closePath(); ctx.fill();
+          };
+          drawStar(cx, topY - 6, 12);
+        }
+      }
 
       // antenna for adult
       if (pet.stage === "어른") {
@@ -668,7 +805,75 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       ctx.restore();
     }
 
+    function drawHearts() {
+      hearts.forEach((h) => {
+        ctx.save();
+        ctx.globalAlpha = clamp(h.life, 0, 1);
+        ctx.fillStyle = "#fb7185";
+        ctx.font = "22px system-ui, sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("♥", h.x, h.y);
+        ctx.restore();
+      });
+    }
+
+    function drawMinigame() {
+      const g = ctx.createLinearGradient(0, 0, 0, H);
+      g.addColorStop(0, "#0ea5e9");
+      g.addColorStop(1, "#0b1226");
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = "#166534";
+      ctx.fillRect(0, H - 40, W, 40);
+
+      // falling items
+      mg.items.forEach((it) => {
+        if (it.bad) {
+          ctx.fillStyle = "#334155";
+          ctx.beginPath(); ctx.arc(it.x, it.y, 13, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = "#f59e0b"; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(it.x, it.y - 13); ctx.lineTo(it.x + 6, it.y - 22); ctx.stroke();
+        } else {
+          ctx.fillStyle = "#ef4444";
+          ctx.beginPath(); ctx.arc(it.x, it.y, 13, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = "#166534"; ctx.lineWidth = 3;
+          ctx.beginPath(); ctx.moveTo(it.x, it.y - 13); ctx.lineTo(it.x + 4, it.y - 20); ctx.stroke();
+          ctx.fillStyle = "#22c55e";
+          ctx.beginPath(); ctx.ellipse(it.x + 7, it.y - 19, 5, 3, 0.6, 0, Math.PI * 2); ctx.fill();
+        }
+      });
+
+      // basket
+      const bx = mg.basketX, by = H - 70;
+      ctx.fillStyle = "#a16207";
+      ctx.beginPath();
+      ctx.moveTo(bx - 44, by); ctx.lineTo(bx + 44, by);
+      ctx.lineTo(bx + 34, by + 34); ctx.lineTo(bx - 34, by + 34);
+      ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = "#facc15"; ctx.lineWidth = 3; ctx.stroke();
+      ctx.strokeStyle = "#78350f"; ctx.lineWidth = 2;
+      for (let k = -3; k <= 3; k += 1) {
+        ctx.beginPath(); ctx.moveTo(bx + k * 11, by); ctx.lineTo(bx + k * 9, by + 34); ctx.stroke();
+      }
+
+      // HUD
+      ctx.fillStyle = "rgba(2,6,23,0.55)";
+      ctx.fillRect(0, 0, W, 44);
+      ctx.fillStyle = "#e2e8f0";
+      ctx.font = "bold 20px system-ui, sans-serif";
+      ctx.textBaseline = "middle";
+      ctx.textAlign = "left";
+      ctx.fillText(`⏱ ${Math.ceil(mg.time)}초`, 16, 22);
+      ctx.textAlign = "right";
+      ctx.fillText(`🍎 ${mg.score}점`, W - 16, 22);
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#bae6fd";
+      ctx.font = "13px system-ui, sans-serif";
+      ctx.fillText("바구니를 움직여 사과는 받고 폭탄은 피하세요", W / 2, H - 14);
+    }
+
     function drawScene() {
+      if (mode === "minigame" && mg) { drawMinigame(); drawHearts(); return; }
       // room
       const g = ctx.createLinearGradient(0, 0, 0, H);
       g.addColorStop(0, "#134e4a");
@@ -712,15 +917,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         ctx.fillText("z", W / 2 + 78, H - 215);
       }
       // hearts
-      hearts.forEach((h) => {
-        ctx.save();
-        ctx.globalAlpha = clamp(h.life, 0, 1);
-        ctx.fillStyle = "#fb7185";
-        ctx.font = "22px system-ui, sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText("♥", h.x, h.y);
-        ctx.restore();
-      });
+      drawHearts();
     }
 
     // ---- Boot ----
@@ -729,6 +926,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // saved pet had already died offline is prevented; keep safety
       pet = newPet();
     }
+    nameInput.value = pet.name;
+    speciesSelect.value = pet.species;
     game.start().then(() => { syncUi(); });
 
     el("feedBtn").addEventListener("click", feed);
@@ -738,10 +937,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     el("poopBtn").addEventListener("click", cleanPoop);
     el("medicineBtn").addEventListener("click", medicine);
     el("sleepBtn").addEventListener("click", toggleSleep);
+    el("minigameBtn").addEventListener("click", startMinigame);
     el("resetBtn").addEventListener("click", resetGame);
     overlayStartBtn.addEventListener("click", () => {
-      if (!pet.alive) resetGame();
+      if (!pet.alive || pet.ageSec === 0) {
+        beginNewPet(); // seed a fresh pet from the name / species inputs
+      } else {
+        const nm = (nameInput.value || "").trim().slice(0, 8);
+        if (nm) { pet.name = nm; save(); syncUi(); }
+      }
       overlay.classList.add("hidden");
+      setStatus(pet.stage === "알" ? "알을 따뜻하게 품는 중..." : "잘 돌봐주세요!");
     });
     window.addEventListener("beforeunload", save);
 
