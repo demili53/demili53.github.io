@@ -1,4 +1,4 @@
-﻿$ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Stop"
 
 $root = Split-Path -Parent $PSScriptRoot
 $postsDir = Join-Path $root "blog\posts"
@@ -37,7 +37,7 @@ function Make-PostHtml {
   $keywords = Escape-Html $item.keywords
   $section = Escape-Html $item.section
   $canonical = "https://partygame.pe.kr/blog/posts/$($item.slug)"
-  $ogImage = "https://partygame.pe.kr/brainTest/images/$($item.image)"
+  $ogImage = "https://partygame.pe.kr/site-share.png"
   $tagHtml = ($item.tags | ForEach-Object { "          <span class=""px-3 py-1 rounded-full border border-white/20 text-slate-200"">#$(Escape-Html $_)</span>" }) -join "`r`n"
   $intro = "$topic 문제는 날씨, 일정, 체력, 돈이 한꺼번에 움직일 때 더 커집니다. 특히 6월은 여름 준비와 휴가 계획이 겹치면서 평소에는 괜찮았던 약속이나 지출도 갑자기 부담스럽게 느껴질 수 있어요. 그래서 이 글의 핵심은 감정만 참거나 숫자만 들이대는 방식이 아니라, 생활 리듬 안에서 반복 가능한 기준을 세우는 것입니다. $angle 이 기준이 되면 선택이 조금 더 선명해집니다. 중요한 것은 완벽한 해결이 아니라 다음 주에도 다시 꺼내 쓸 수 있는 말과 숫자를 남기는 일입니다."
   $p1 = "첫 번째는 지금 불편한 지점을 한 문장으로 좁히는 것입니다. '요즘 너무 힘들어', '돈이 너무 많이 나가'처럼 넓게 말하면 상대도 나도 무엇을 바꿔야 할지 찾기 어렵습니다. 대신 '이번 달에는 예약금이 몰려서 부담이 커졌어', '비 오는 날에는 이동 시간이 길어져서 피곤해'처럼 상황과 이유를 붙이면 대화가 부드러워집니다. 실전 문장은 '$action'처럼 바로 행동으로 이어지는 형태가 좋습니다. 이렇게 시작하면 탓하는 말보다 조정하는 말에 가까워집니다."
@@ -92,7 +92,7 @@ $tagHtml
         <h1 class="text-3xl md:text-4xl font-bold">$title</h1>
         <p class="text-slate-200">$summary</p>
         <p class="text-sm text-slate-400">업데이트: $date</p>
-        <img src="/brainTest/images/$($item.image)" alt="$title 대표 이미지" class="w-full rounded-2xl border border-white/10">
+        <img src="/site-share.png" alt="$title 대표 이미지" class="w-full rounded-2xl border border-white/10">
       </header>
       <section class="space-y-4"><h2 class="text-2xl font-semibold text-indigo-200">왜 지금 이 기준이 필요한가</h2><p class="leading-relaxed text-slate-200">$intro</p></section>
       <section class="space-y-4"><h2 class="text-2xl font-semibold text-indigo-200">상황을 한 문장으로 좁히기</h2><p class="leading-relaxed text-slate-200">$p1</p></section>

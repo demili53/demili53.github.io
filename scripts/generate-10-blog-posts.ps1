@@ -118,7 +118,7 @@ function Make-PostHtml {
   $topic = $item.topic
   $tags = $item.tags
   $canonical = "https://partygame.pe.kr/blog/posts/$($item.slug)"
-  $ogImage = "https://partygame.pe.kr/brainTest/images/$($item.image)"
+  $ogImage = "https://partygame.pe.kr/site-share.png"
   $keywords = $item.keywords
   $section = $item.section
   $tagHtml = ($tags | ForEach-Object { "          <span class=""px-3 py-1 rounded-full border border-white/20 text-slate-200"">#$_</span>" }) -join "`r`n"
@@ -164,7 +164,7 @@ $tagHtml
         <h1 class="text-3xl md:text-4xl font-bold">$title</h1>
         <p class="text-slate-200">30대 여성의 현실 감각으로 정리한 실전 적용형 가이드</p>
         <p class="text-sm text-slate-400">업데이트: $date</p>
-        <img src="/brainTest/images/$($item.image)" alt="$title 대표 이미지" class="w-full rounded-2xl border border-white/10">
+        <img src="/site-share.png" alt="$title 대표 이미지" class="w-full rounded-2xl border border-white/10">
       </header>
 
       <section class="space-y-4">

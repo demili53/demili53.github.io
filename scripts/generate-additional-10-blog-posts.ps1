@@ -189,7 +189,7 @@ function Make-PostHtml {
   <meta property="og:title" content="$($item.title) | 연애경제 블로그">
   <meta property="og:description" content="$($item.summary)">
   <meta property="og:url" content="https://partygame.pe.kr/blog/posts/$($item.slug)">
-  <meta property="og:image" content="https://partygame.pe.kr/brainTest/images/$($item.image)">
+  <meta property="og:image" content="https://partygame.pe.kr/site-share.png">
   <meta property="article:section" content="$($item.section)">
   <meta property="article:published_time" content="$date">
   <meta name="google-adsense-account" content="ca-pub-1087435977438565">
@@ -207,7 +207,7 @@ $tagHtml
         <h1 class="text-3xl md:text-4xl font-bold">$($item.title)</h1>
         <p class="text-slate-200">30대 여성의 현실 감각으로 정리한 실전 적용형 가이드</p>
         <p class="text-sm text-slate-400">업데이트: $date</p>
-        <img src="/brainTest/images/$($item.image)" alt="$($item.title) 대표 이미지" class="w-full rounded-2xl border border-white/10">
+        <img src="/site-share.png" alt="$($item.title) 대표 이미지" class="w-full rounded-2xl border border-white/10">
       </header>
 
       <section class="space-y-4">

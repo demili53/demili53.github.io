@@ -148,7 +148,7 @@ function Make-PostHtml {
   $angle = Escape-Html $item.angle
   $action = Escape-Html $item.action
   $canonical = "https://partygame.pe.kr/blog/posts/$($item.slug)"
-  $ogImage = "https://partygame.pe.kr/brainTest/images/$($item.image)"
+  $ogImage = "https://partygame.pe.kr/site-share.png"
   $keywords = Escape-Html $item.keywords
   $section = Escape-Html $item.section
   $tagHtml = ($item.tags | ForEach-Object { "          <span class=""px-3 py-1 rounded-full border border-white/20 text-slate-200"">#$(Escape-Html $_)</span>" }) -join "`r`n"
@@ -194,7 +194,7 @@ $tagHtml
         <h1 class="text-3xl md:text-4xl font-bold">$title</h1>
         <p class="text-slate-200">$summary</p>
         <p class="text-sm text-slate-400">업데이트: $date</p>
-        <img src="/brainTest/images/$($item.image)" alt="$title 대표 이미지" class="w-full rounded-2xl border border-white/10">
+        <img src="/site-share.png" alt="$title 대표 이미지" class="w-full rounded-2xl border border-white/10">
       </header>
 
       <section class="space-y-4">
