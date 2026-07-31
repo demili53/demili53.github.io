@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-T2KDKBN8');</script>
+<!-- End Google Tag Manager -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PartyGame 계정을 만들거나 로그인하고 회원 정보를 관리하는 페이지입니다.">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="canonical" href="https://partygame.pe.kr/account.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/styles/site-theme.css">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="PartyGame">
+  <meta property="og:title" content="회원가입·로그인 | PartyGame">
+  <meta property="og:description" content="PartyGame 계정을 만들고 로그인하세요.">
+  <meta property="og:url" content="https://partygame.pe.kr/account.html">
+  <meta property="og:image" content="https://partygame.pe.kr/site-share.png">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565" crossorigin="anonymous"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .skip-link{position:absolute;left:-9999px;top:1rem;z-index:50;border-radius:.75rem;background:#f8fafc;color:#0f172a;padding:.75rem 1rem;font-weight:700}
+    .skip-link:focus{left:1rem}
+    :focus-visible{outline:2px solid #67e8f9;outline-offset:3px}
+    .auth-tab[aria-selected="true"]{border-color:#67e8f9;background:rgba(8,145,178,.18);color:#cffafe}
+    .field{width:100%;border-radius:.75rem;border:1px solid rgba(255,255,255,.16);background:rgba(2,6,23,.58);padding:.8rem 1rem;color:#f8fafc}
+    .field::placeholder{color:#64748b}
+  </style>
+  <title>회원가입·로그인 | PartyGame</title>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-950 via-cyan-950 to-slate-950 text-slate-50">
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T2KDKBN8"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+  <a href="#mainContent" class="skip-link">본문 바로가기</a>
+  <main id="mainContent" class="mx-auto min-h-screen max-w-5xl px-5 py-8 md:px-8 md:py-12">
+    <nav class="mb-8 flex flex-wrap gap-2 text-sm" aria-label="주요 메뉴">
+      <a href="/" class="rounded-full border border-white/20 px-4 py-2 hover:bg-white/10">홈</a>
+      <a href="/arcade/" class="rounded-full border border-white/20 px-4 py-2 hover:bg-white/10">온라인 PC게임</a>
+      <a href="/blog/" class="rounded-full border border-white/20 px-4 py-2 hover:bg-white/10">블로그</a>
+      <a href="/account.html" aria-current="page" class="rounded-full border border-cyan-200/70 bg-white/10 px-4 py-2 text-cyan-100">회원 계정</a>
+      <a href="/contact.html" class="rounded-full border border-white/20 px-4 py-2 hover:bg-white/10">문의하기</a>
+    </nav>
+
+    <header class="mb-8">
+      <p class="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-200">PartyGame Account</p>
+      <h1 class="mt-3 text-4xl font-black md:text-5xl">회원 계정</h1>
+      <p class="mt-3 max-w-2xl text-sm leading-7 text-slate-300">이메일로 계정을 만들고 로그인할 수 있습니다. 로그인 상태는 같은 브라우저에서 유지됩니다.</p>
+    </header>
+
+    <div id="loadingPanel" class="rounded-3xl border border-white/10 bg-white/5 p-8 text-center text-slate-300">
+      계정 상태를 확인하고 있습니다.
+    </div>
+
+    <section id="guestPanel" class="hidden grid gap-6 md:grid-cols-[minmax(0,1fr)_17rem] md:items-start">
+      <div class="rounded-3xl border border-white/10 bg-white/5 p-5 shadow-2xl md:p-7">
+        <div role="tablist" aria-label="회원 계정 메뉴" class="mb-6 grid grid-cols-2 gap-2">
+          <button id="signupTab" type="button" role="tab" aria-selected="true" aria-controls="signupForm" class="auth-tab rounded-xl border border-white/15 px-4 py-3 font-bold">회원가입</button>
+          <button id="loginTab" type="button" role="tab" aria-selected="false" aria-controls="loginForm" class="auth-tab rounded-xl border border-white/15 px-4 py-3 font-bold">로그인</button>
+        </div>
+
+        <form id="signupForm" class="space-y-4" novalidate>
+          <div>
+            <label for="signupName" class="mb-2 block text-sm font-semibold text-slate-200">닉네임</label>
+            <input id="signupName" name="name" type="text" class="field" minlength="2" maxlength="20" autocomplete="nickname" placeholder="2~20자" required>
+          </div>
+          <div>
+            <label for="signupEmail" class="mb-2 block text-sm font-semibold text-slate-200">이메일</label>
+            <input id="signupEmail" name="email" type="email" class="field" autocomplete="email" placeholder="name@example.com" required>
+          </div>
+          <div>
+            <label for="signupPassword" class="mb-2 block text-sm font-semibold text-slate-200">비밀번호</label>
+            <input id="signupPassword" name="password" type="password" class="field" minlength="6" autocomplete="new-password" placeholder="6자 이상" required>
+          </div>
+          <div>
+            <label for="signupPasswordConfirm" class="mb-2 block text-sm font-semibold text-slate-200">비밀번호 확인</label>
+            <input id="signupPasswordConfirm" name="passwordConfirm" type="password" class="field" minlength="6" autocomplete="new-password" placeholder="비밀번호를 다시 입력하세요" required>
+          </div>
+          <label class="flex items-start gap-3 rounded-xl border border-white/10 bg-slate-950/30 p-3 text-sm leading-6 text-slate-300">
+            <input id="termsAgree" type="checkbox" class="mt-1 h-4 w-4 accent-cyan-300" required>
+            <span><a href="/terms.html" target="_blank" class="text-cyan-200 underline">이용약관</a>과 <a href="/privacy.html" target="_blank" class="text-cyan-200 underline">개인정보처리방침</a>을 확인하고 동의합니다.</span>
+          </label>
+          <button id="signupBtn" type="submit" class="w-full rounded-xl bg-cyan-300 px-5 py-3 font-black text-slate-950 hover:bg-cyan-200">계정 만들기</button>
+        </form>
+
+        <form id="loginForm" class="hidden space-y-4" novalidate>
+          <div>
+            <label for="loginEmail" class="mb-2 block text-sm font-semibold text-slate-200">이메일</label>
+            <input id="loginEmail" name="email" type="email" class="field" autocomplete="email" placeholder="name@example.com" required>
+          </div>
+          <div>
+            <label for="loginPassword" class="mb-2 block text-sm font-semibold text-slate-200">비밀번호</label>
+            <input id="loginPassword" name="password" type="password" class="field" minlength="6" autocomplete="current-password" placeholder="비밀번호" required>
+          </div>
+          <button id="loginBtn" type="submit" class="w-full rounded-xl bg-cyan-300 px-5 py-3 font-black text-slate-950 hover:bg-cyan-200">로그인</button>
+          <button id="resetPasswordBtn" type="button" class="w-full rounded-xl border border-white/20 px-5 py-3 text-sm text-slate-200 hover:bg-white/10">비밀번호 재설정 메일 보내기</button>
+        </form>
+
+        <p id="authMessage" class="mt-5 hidden rounded-xl border px-4 py-3 text-sm leading-6" role="status" aria-live="polite"></p>
+      </div>
+
+      <aside class="rounded-2xl border border-white/10 bg-white/5 p-5">
+        <h2 class="text-lg font-bold text-cyan-100">계정 안내</h2>
+        <ul class="mt-3 space-y-2 text-sm leading-6 text-slate-300">
+          <li>이메일과 닉네임으로 가입합니다.</li>
+          <li>비밀번호는 Firebase가 안전하게 처리합니다.</li>
+          <li>인증 메일을 통해 이메일을 확인할 수 있습니다.</li>
+          <li>현재 게임 기록은 기존처럼 브라우저에 저장됩니다.</li>
+        </ul>
+      </aside>
+    </section>
+
+    <section id="memberPanel" class="hidden rounded-3xl border border-cyan-200/20 bg-white/5 p-6 shadow-2xl md:p-8">
+      <div class="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-[0.25em] text-cyan-200">Signed in</p>
+          <h2 id="memberName" class="mt-2 text-3xl font-black">회원님</h2>
+          <p id="memberEmail" class="mt-2 text-slate-300"></p>
+          <span id="verifyBadge" class="mt-3 inline-flex rounded-full border px-3 py-1 text-xs"></span>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button id="verifyEmailBtn" type="button" class="rounded-xl border border-cyan-200/50 px-4 py-3 text-sm font-bold text-cyan-100 hover:bg-white/10">인증 메일 다시 보내기</button>
+          <button id="logoutBtn" type="button" class="rounded-xl border border-rose-200/50 px-4 py-3 text-sm font-bold text-rose-100 hover:bg-white/10">로그아웃</button>
+        </div>
+      </div>
+      <div class="mt-7 grid gap-3 sm:grid-cols-2">
+        <a href="/arcade/fantagia-card.html" class="rounded-2xl border border-purple-200/30 bg-purple-500/10 p-5 hover:bg-purple-500/20">
+          <span class="text-2xl">🔮</span>
+          <strong class="mt-2 block text-purple-100">Fantagia Card 플레이</strong>
+          <span class="mt-1 block text-sm text-slate-300">카드 전투단을 구성해 AI 지휘관과 겨뤄보세요.</span>
+        </a>
+        <a href="/arcade/" class="rounded-2xl border border-cyan-200/30 bg-cyan-500/10 p-5 hover:bg-cyan-500/20">
+          <span class="text-2xl">🎮</span>
+          <strong class="mt-2 block text-cyan-100">전체 게임 보기</strong>
+          <span class="mt-1 block text-sm text-slate-300">브라우저에서 바로 즐기는 게임을 둘러보세요.</span>
+        </a>
+      </div>
+      <p id="memberMessage" class="mt-5 hidden rounded-xl border px-4 py-3 text-sm" role="status" aria-live="polite"></p>
+    </section>
+
+    <footer class="mt-10 border-t border-white/10 pt-6 text-sm text-slate-400">
+      <div class="flex flex-wrap gap-4">
+        <a href="/privacy.html" class="hover:text-cyan-100">개인정보처리방침</a>
+        <a href="/terms.html" class="hover:text-cyan-100">이용약관</a>
+        <a href="/contact.html" class="hover:text-cyan-100">문의하기</a>
+      </div>
+    </footer>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
+    import { getAnalytics, isSupported as isAnalyticsSupported } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-analytics.js";
+    import {
+      getAuth,
+      setPersistence,
+      browserLocalPersistence,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged,
+      updateProfile,
+      sendEmailVerification,
+      sendPasswordResetEmail
+    } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCtCAly3XVVZTu0szIHAoQwYu0QaaXoNRM",
+      authDomain: "gitpage-93dfb.firebaseapp.com",
+      projectId: "gitpage-93dfb",
+      storageBucket: "gitpage-93dfb.firebasestorage.app",
+      messagingSenderId: "590509724278",
+      appId: "1:590509724278:web:cb26ed63e8733ffa240557",
+      measurementId: "G-0JPQ9J5Y18"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    isAnalyticsSupported().then((supported) => {
+      if (supported) getAnalytics(app);
+    }).catch(() => {});
+    const auth = getAuth(app);
+    setPersistence(auth, browserLocalPersistence).catch(() => {});
+
+    const el = (id) => document.getElementById(id);
+    const loadingPanel = el("loadingPanel");
+    const guestPanel = el("guestPanel");
+    const memberPanel = el("memberPanel");
+    let currentUser = null;
+
+    function showMessage(target, text, type = "info") {
+      target.textContent = text;
+      target.classList.remove("hidden", "border-rose-200/40", "bg-rose-500/10", "text-rose-100", "border-emerald-200/40", "bg-emerald-500/10", "text-emerald-100", "border-cyan-200/40", "bg-cyan-500/10", "text-cyan-100");
+      const styles = type === "error"
+        ? ["border-rose-200/40", "bg-rose-500/10", "text-rose-100"]
+        : type === "success"
+          ? ["border-emerald-200/40", "bg-emerald-500/10", "text-emerald-100"]
+          : ["border-cyan-200/40", "bg-cyan-500/10", "text-cyan-100"];
+      target.classList.add(...styles);
+    }
+    function authErrorMessage(error) {
+      const messages = {
+        "auth/email-already-in-use": "이미 가입된 이메일입니다. 로그인 메뉴를 이용해 주세요.",
+        "auth/invalid-email": "올바른 이메일 주소를 입력해 주세요.",
+        "auth/weak-password": "비밀번호는 6자 이상이어야 합니다.",
+        "auth/invalid-credential": "이메일 또는 비밀번호가 올바르지 않습니다.",
+        "auth/user-disabled": "사용이 중지된 계정입니다.",
+        "auth/too-many-requests": "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.",
+        "auth/network-request-failed": "네트워크 연결을 확인하고 다시 시도해 주세요.",
+        "auth/operation-not-allowed": "Firebase 콘솔에서 이메일/비밀번호 로그인을 먼저 활성화해야 합니다."
+      };
+      return messages[error.code] || `계정 처리 중 오류가 발생했습니다. (${error.code || "unknown"})`;
+    }
+    function setBusy(button, busy, busyText, normalText) {
+      button.disabled = busy;
+      button.textContent = busy ? busyText : normalText;
+    }
+    function renderMember(user) {
+      el("memberName").textContent = user.displayName || "PartyGame 회원";
+      el("memberEmail").textContent = user.email || "";
+      const badge = el("verifyBadge");
+      badge.textContent = user.emailVerified ? "이메일 인증 완료" : "이메일 인증 필요";
+      badge.className = `mt-3 inline-flex rounded-full border px-3 py-1 text-xs ${user.emailVerified ? "border-emerald-200/40 bg-emerald-500/10 text-emerald-100" : "border-amber-200/40 bg-amber-500/10 text-amber-100"}`;
+      el("verifyEmailBtn").classList.toggle("hidden", user.emailVerified);
+    }
+    function switchTab(tab) {
+      const signup = tab === "signup";
+      el("signupTab").setAttribute("aria-selected", String(signup));
+      el("loginTab").setAttribute("aria-selected", String(!signup));
+      el("signupForm").classList.toggle("hidden", !signup);
+      el("loginForm").classList.toggle("hidden", signup);
+      el("authMessage").classList.add("hidden");
+      (signup ? el("signupName") : el("loginEmail")).focus();
+    }
+
+    el("signupTab").addEventListener("click", () => switchTab("signup"));
+    el("loginTab").addEventListener("click", () => switchTab("login"));
+
+    el("signupForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const name = el("signupName").value.trim();
+      const email = el("signupEmail").value.trim();
+      const password = el("signupPassword").value;
+      const confirmation = el("signupPasswordConfirm").value;
+      if (!form.checkValidity()) return form.reportValidity();
+      if (name.length < 2 || name.length > 20) return showMessage(el("authMessage"), "닉네임은 2~20자로 입력해 주세요.", "error");
+      if (password !== confirmation) return showMessage(el("authMessage"), "비밀번호 확인이 일치하지 않습니다.", "error");
+      const button = el("signupBtn");
+      setBusy(button, true, "계정 만드는 중…", "계정 만들기");
+      try {
+        const credential = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(credential.user, { displayName: name });
+        try { await sendEmailVerification(credential.user); } catch (error) {}
+        renderMember(credential.user);
+        showMessage(el("memberMessage"), "회원가입이 완료되었습니다. 이메일 인증 메일을 확인해 주세요.", "success");
+      } catch (error) {
+        showMessage(el("authMessage"), authErrorMessage(error), "error");
+      } finally {
+        setBusy(button, false, "계정 만드는 중…", "계정 만들기");
+      }
+    });
+
+    el("loginForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      if (!form.checkValidity()) return form.reportValidity();
+      const button = el("loginBtn");
+      setBusy(button, true, "로그인 중…", "로그인");
+      try {
+        await signInWithEmailAndPassword(auth, el("loginEmail").value.trim(), el("loginPassword").value);
+      } catch (error) {
+        showMessage(el("authMessage"), authErrorMessage(error), "error");
+      } finally {
+        setBusy(button, false, "로그인 중…", "로그인");
+      }
+    });
+
+    el("resetPasswordBtn").addEventListener("click", async () => {
+      const email = el("loginEmail").value.trim();
+      if (!email) return showMessage(el("authMessage"), "비밀번호를 재설정할 이메일을 입력해 주세요.", "error");
+      const button = el("resetPasswordBtn");
+      setBusy(button, true, "메일 보내는 중…", "비밀번호 재설정 메일 보내기");
+      try {
+        await sendPasswordResetEmail(auth, email);
+        showMessage(el("authMessage"), "비밀번호 재설정 메일을 보냈습니다.", "success");
+      } catch (error) {
+        showMessage(el("authMessage"), authErrorMessage(error), "error");
+      } finally {
+        setBusy(button, false, "메일 보내는 중…", "비밀번호 재설정 메일 보내기");
+      }
+    });
+
+    el("logoutBtn").addEventListener("click", async () => {
+      try { await signOut(auth); }
+      catch (error) { showMessage(el("memberMessage"), authErrorMessage(error), "error"); }
+    });
+    el("verifyEmailBtn").addEventListener("click", async () => {
+      if (!currentUser || currentUser.emailVerified) return;
+      const button = el("verifyEmailBtn");
+      setBusy(button, true, "메일 보내는 중…", "인증 메일 다시 보내기");
+      try {
+        await sendEmailVerification(currentUser);
+        showMessage(el("memberMessage"), "인증 메일을 다시 보냈습니다.", "success");
+      } catch (error) {
+        showMessage(el("memberMessage"), authErrorMessage(error), "error");
+      } finally {
+        setBusy(button, false, "메일 보내는 중…", "인증 메일 다시 보내기");
+      }
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      currentUser = user;
+      loadingPanel.classList.add("hidden");
+      guestPanel.classList.toggle("hidden", Boolean(user));
+      memberPanel.classList.toggle("hidden", !user);
+      if (!user) return;
+      renderMember(user);
+    });
+  </script>
+</body>
+</html>

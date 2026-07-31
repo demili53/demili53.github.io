@@ -1,6 +1,6 @@
 ## 아케이드 게임 페이지 작성 가이드
 
-- 버전: `2026-07-02`
+- 버전: `2026-07-31`
 - 기준: `/arcade/` 하위 브라우저 미니게임 (단일 HTML)
 
 1. **엔진 규칙 (필수)**
@@ -70,4 +70,35 @@
    - `Powered by <엔진>` 표기 확인
    - `/arcade/` 타일 추가 및 `sitemap.xml` 등록 확인
    - SEO 태그(`title`, `description`, `canonical`, `og:title`, `og:description`) 확인
+   - Firebase 앱이 한 번만 초기화되고 배포된 HTTPS 페이지에서 Analytics 요청 오류가 없는지 확인
    - 배포 전 검증: 인라인 스크립트 구문 검사 + (가능 시) 실제 엔진 라이브러리로 초기화/1프레임 이상 런타임 확인
+
+10. **Firebase 앱 연동 규칙 (필수)**
+   - 신규 `/arcade/` 게임 페이지에는 아래 Firebase Web SDK 모듈 스크립트를 한 번만 추가한다.
+   - `initializeApp(firebaseConfig)` 호출은 페이지당 한 번만 실행하고, 반환된 앱으로 Analytics를 초기화한다.
+   - Firebase 모듈 스크립트는 일반 인라인 게임 스크립트와 분리한다. 게임 엔진의 전역 객체(`ex`, `Matter`) 초기화 순서에 영향을 주지 않도록 `<head>` 또는 게임 스크립트 앞에 배치한다.
+   - 로컬 `file://` 실행 결과만으로 Analytics 성공 여부를 판단하지 않는다. Analytics는 배포된 HTTPS 주소에서 최종 확인한다.
+   - 아래 웹 설정값은 Firebase 클라이언트 식별 정보다. Firebase Admin SDK 키, 서비스 계정 JSON, 개인키 등 서버 비밀정보는 HTML이나 저장소에 절대 추가하지 않는다.
+   - 회원가입·로그인은 공용 `/account.html`에서 처리한다. 게임 페이지에서 별도 가입 폼을 중복 구현하지 말고 공통 네비게이션에 `회원 계정` 링크를 제공한다.
+   - 인증이 필요한 기능은 `onAuthStateChanged`로 초기 인증 확인이 끝난 다음 노출한다. `auth.currentUser`를 페이지 로드 직후 바로 신뢰하지 않는다.
+   - 비밀번호를 `localStorage`, 쿠키, 게임 저장 데이터 또는 로그에 기록하지 않는다.
+
+```html
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-analytics.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCtCAly3XVVZTu0szIHAoQwYu0QaaXoNRM",
+    authDomain: "gitpage-93dfb.firebaseapp.com",
+    projectId: "gitpage-93dfb",
+    storageBucket: "gitpage-93dfb.firebasestorage.app",
+    messagingSenderId: "590509724278",
+    appId: "1:590509724278:web:cb26ed63e8733ffa240557",
+    measurementId: "G-0JPQ9J5Y18"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  getAnalytics(app);
+</script>
+```
