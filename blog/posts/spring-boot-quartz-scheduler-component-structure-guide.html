@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-T2KDKBN8');</script>
+<!-- End Google Tag Manager -->
+  <link rel="stylesheet" href="/styles/site-theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Spring Boot에서 Quartz 스케줄러를 설정하고 Job, JobDetail, Trigger, Service 컴포넌트를 분리하는 방법을 실행 가능한 Java 예제로 설명합니다.">
+  <meta name="keywords" content="Spring Boot,Quartz,스케줄러,JobDetail,CronTrigger,컴포넌트 구조,Java">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://partygame.pe.kr/blog/posts/spring-boot-quartz-scheduler-component-structure-guide.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Spring Boot Quartz 스케줄러 사용법과 컴포넌트 구조 | 연애경제 블로그">
+  <meta property="og:description" content="의존성 추가부터 Job, JobDetail, Trigger 구성과 운영 환경 설정까지 Spring Boot Quartz의 구조를 예제로 정리했습니다.">
+  <meta property="og:url" content="https://partygame.pe.kr/blog/posts/spring-boot-quartz-scheduler-component-structure-guide.html">
+  <meta property="og:image" content="https://partygame.pe.kr/site-share.png">
+  <meta property="article:section" content="개발">
+  <meta property="article:published_time" content="2026-08-20">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565" crossorigin="anonymous"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .skip-link{position:absolute;left:-999px;top:1rem;z-index:50;border-radius:.75rem;background:#f8fafc;color:#0f172a;padding:.75rem 1rem;font-weight:700}
+    .skip-link:focus{left:1rem}
+    :focus-visible{outline:2px solid rgba(129,140,248,.95);outline-offset:3px}
+  </style>
+  <title>Spring Boot Quartz 스케줄러 사용법과 컴포넌트 구조 | 연애경제 블로그</title>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 text-slate-50">
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T2KDKBN8"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#mainContent" class="skip-link">본문 바로가기</a>
+  <main id="mainContent" class="max-w-4xl mx-auto px-6 py-12 space-y-8">
+    <nav class="flex flex-wrap gap-2 text-sm" aria-label="주요 메뉴">
+      <a href="/" class="px-3 py-2 rounded-full border border-white/20 text-slate-100 hover:bg-white/10 transition">홈</a>
+      <a href="/blog/" class="px-3 py-2 rounded-full border border-indigo-200/60 text-indigo-100 hover:bg-white/10 transition">블로그</a>
+      <a href="/arcade/" class="px-3 py-2 rounded-full border border-cyan-200/60 text-cyan-100 hover:bg-white/10 transition">온라인 PC게임</a>
+      <a href="/ai-ranking/" class="px-3 py-2 rounded-full border border-emerald-200/60 text-emerald-100 hover:bg-white/10 transition">AI 순위</a>
+      <a href="/contact.html" class="px-3 py-2 rounded-full border border-white/20 text-slate-100 hover:bg-white/10 transition">문의하기</a>
+    </nav>
+
+    <article class="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-8 space-y-8">
+      <header class="space-y-4">
+        <div class="flex flex-wrap gap-2 text-sm">
+          <span class="px-3 py-1 rounded-full border border-white/20 text-slate-200">#SpringBoot</span>
+          <span class="px-3 py-1 rounded-full border border-white/20 text-slate-200">#Quartz</span>
+          <span class="px-3 py-1 rounded-full border border-white/20 text-slate-200">#스케줄러</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold">Spring Boot Quartz 스케줄러 사용법과 컴포넌트 구조</h1>
+        <p class="text-lg text-slate-200">Job은 얇게, 실제 업무는 Service로: 유지보수하기 쉬운 정기 배치 구성</p>
+        <p class="text-sm text-slate-400">작성: 2026-08-20</p>
+      </header>
+
+      <section class="space-y-4">
+        <h2 class="text-2xl font-semibold text-indigo-200">Quartz를 쓰면 무엇이 달라질까?</h2>
+        <p class="leading-relaxed text-slate-200">단순히 한 서버에서 정해진 시간마다 메서드 하나를 실행한다면 Spring의 <code>@Scheduled</code>만으로도 충분합니다. 반면 실행 일정을 런타임에 바꾸거나, 실패 후 재실행 정책이 필요하거나, 여러 서버가 같은 스케줄을 공유해야 한다면 Quartz가 더 잘 맞습니다. Quartz는 “무슨 일을 할지”와 “언제 실행할지”를 분리합니다. 그래서 같은 Job에 서로 다른 Trigger를 연결하거나, Job은 그대로 두고 Cron 표현식만 교체할 수 있습니다.</p>
+        <div class="rounded-2xl border border-indigo-300/20 bg-indigo-950/30 p-5">
+          <p class="font-semibold text-indigo-100">핵심 실행 흐름</p>
+          <p class="mt-2 overflow-x-auto font-mono text-sm text-slate-200">Scheduler → Trigger → JobDetail → Job → Service → Repository</p>
+        </div>
+        <ul class="list-disc pl-6 space-y-2 text-slate-200">
+          <li><strong>Scheduler</strong>: Job과 Trigger를 등록·일시정지·재개·삭제하는 실행 엔진입니다.</li>
+          <li><strong>Trigger</strong>: 실행 시점을 정의합니다. 반복 간격은 SimpleTrigger, 달력 기반 일정은 CronTrigger가 대표적입니다.</li>
+          <li><strong>JobDetail</strong>: 실행할 Job 클래스, 이름, 그룹, JobDataMap 같은 메타데이터를 담습니다.</li>
+          <li><strong>Job</strong>: 스케줄이 발화될 때 Quartz 스레드가 호출하는 진입점입니다.</li>
+          <li><strong>Service</strong>: 조회, 정산, 알림 발송처럼 테스트해야 할 실제 비즈니스 로직을 담당합니다.</li>
+        </ul>
+      </section>
+
+      <section class="space-y-4">
+        <h2 class="text-2xl font-semibold text-indigo-200">추천 패키지와 컴포넌트 구조</h2>
+        <p class="leading-relaxed text-slate-200">예제는 매일 새벽 2시에 전날의 주문 리포트를 생성하는 상황입니다. 스케줄 정의와 업무 로직을 아래처럼 나누면 실행 시각이 바뀌어도 Service는 건드리지 않고, 리포트 생성 방식이 바뀌어도 Quartz 설정은 건드리지 않아도 됩니다.</p>
+        <pre class="overflow-x-auto rounded-2xl border border-white/10 bg-slate-950/70 p-4 text-sm text-slate-100"><code>com.example.batch
+├─ config
+│  └─ QuartzConfig.java          # JobDetail, Trigger 빈 등록
+├─ job
+│  └─ DailyReportJob.java        # Quartz 실행 진입점
+├─ service
+│  └─ DailyReportService.java    # 실제 리포트 생성 로직
+└─ repository
+   └─ OrderRepository.java       # 데이터 조회</code></pre>
+        <p class="leading-relaxed text-slate-200">Job 안에 긴 SQL, 외부 API 호출, 복잡한 분기까지 모두 넣으면 단위 테스트가 어려워집니다. Job은 실행 로그와 파라미터 확인, Service 호출까지만 담당하게 두는 편이 안전합니다.</p>
+      </section>
+
+      <section class="space-y-4">
+        <h2 class="text-2xl font-semibold text-indigo-200">1. 의존성과 기본 설정 추가</h2>
+        <p class="leading-relaxed text-slate-200">Spring Boot에서는 Quartz 스타터를 추가하면 <code>Scheduler</code>가 자동 구성됩니다. Gradle 기준 의존성은 한 줄이면 됩니다.</p>
+        <pre class="overflow-x-auto rounded-2xl border border-white/10 bg-slate-950/70 p-4 text-sm text-slate-100"><code>dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-quartz'
+}</code></pre>
+        <p class="leading-relaxed text-slate-200">처음에는 메모리 저장소로 동작을 확인하고, 운영 환경에서는 뒤에서 설명할 JDBC JobStore로 전환하는 흐름이 이해하기 쉽습니다.</p>
+        <pre class="overflow-x-auto rounded-2xl border border-white/10 bg-slate-950/70 p-4 text-sm text-slate-100"><code>spring:
+  quartz:
+    scheduler-name: order-report-scheduler
+    wait-for-jobs-to-complete-on-shutdown: true
+    properties:
+      org.quartz.threadPool.threadCount: 5</code></pre>
+      </section>
+
+      <section class="space-y-4">
+        <h2 class="text-2xl font-semibold text-indigo-200">2. 실제 업무를 담당하는 Service 작성</h2>
+        <p class="leading-relaxed text-slate-200">Service는 Quartz 타입을 몰라도 되게 작성합니다. 그러면 웹 요청, 관리자 수동 실행, 통합 테스트에서도 같은 로직을 재사용할 수 있습니다.</p>
+        <pre class="overflow-x-auto rounded-2xl border border-white/10 bg-slate-950/70 p-4 text-sm text-slate-100"><code>package com.example.batch.service;
+
+import java.time.LocalDate;
+import org.springframework.stereotype.Service;
+
+@Service
+public class DailyReportService {
+
+    public void createReport(LocalDate targetDate) {
+        // 주문 조회 → 집계 → 파일 저장 또는 알림 전송
+        System.out.println("리포트 생성: " + targetDate);
+    }
+}</code></pre>
+      </section>
+
+      <section class="space-y-4">
+        <h2 class="text-2xl font-semibold text-indigo-200">3. Quartz Job은 얇게 작성</h2>
+        <p class="leading-relaxed text-slate-200"><code>QuartzJobBean</code>을 상속하고 <code>executeInternal</code>에서 Service를 호출합니다. 같은 Job이 이전 실행을 끝내기 전에 다시 시작되면 중복 집계가 생길 수 있으므로 <code>@DisallowConcurrentExecution</code>도 붙였습니다. 이 제한은 Job 클래스 전체가 아니라 같은 JobKey로 등록된 JobDetail에 적용된다는 점을 기억하세요.</p>
+        <pre class="overflow-x-auto rounded-2xl border border-white/10 bg-slate-950/70 p-4 text-sm text-slate-100"><code>package com.example.batch.job;
+
+import java.time.LocalDate;
+import org.quartz.DisallowConcurrentExecution;
+import org.quartz.JobExecutionContext;
+import org.springframework.scheduling.quartz.QuartzJobBean;
+import com.example.batch.service.DailyReportService;
+
+@DisallowConcurrentExecution
+public class DailyReportJob extends QuartzJobBean {
+
+    private DailyReportService dailyReportService;
+
+    public void setDailyReportService(DailyReportService dailyReportService) {
+        this.dailyReportService = dailyReportService;
+    }
+
+    @Override
+    protected void executeInternal(JobExecutionContext context) {
+        LocalDate targetDate = LocalDate.now().minusDays(1);
+        dailyReportService.createReport(targetDate);
+    }
+}</code></pre>
+        <p class="leading-relaxed text-slate-200">Spring Boot의 Quartz 구성은 Job 속성의 setter를 통해 일반 Spring Bean을 주입할 수 있습니다. JobDataMap 값도 같은 방식으로 받을 수 있지만, DB 연결 객체나 Service 자체를 JobDataMap에 넣는 방식은 피하는 것이 좋습니다. 영속 JobStore에서는 직렬화 문제로 이어질 수 있기 때문입니다.</p>
+      </section>
+
+      <section class="space-y-4">
+        <h2 class="text-2xl font-semibold text-indigo-200">4. JobDetail과 CronTrigger를 Bean으로 연결</h2>
+        <p class="leading-relaxed text-slate-200">Spring Boot는 컨텍스트에 등록된 JobDetail과 Trigger Bean을 찾아 Scheduler에 연결합니다. 아래 Cron 표현식 <code>0 0 2 * * ?</code>는 매일 02:00:00을 뜻합니다. 서버 기본 시간대에 기대지 않고 Asia/Seoul을 명시하면 배포 지역이 바뀌어도 실행 시각이 흔들리지 않습니다.</p>
+        <pre class="overflow-x-auto rounded-2xl border border-white/10 bg-slate-950/70 p-4 text-sm text-slate-100"><code>package com.example.batch.config;
+
+import java.util.TimeZone;
+import org.quartz.CronScheduleBuilder;
+import org.quartz.JobBuilder;
+import org.quartz.JobDetail;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import com.example.batch.job.DailyReportJob;
+
+@Configuration
+public class QuartzConfig {
+
+    @Bean
+    public JobDetail dailyReportJobDetail() {
+        return JobBuilder.newJob(DailyReportJob.class)
+                .withIdentity("dailyReportJob", "report")
+                .withDescription("전날 주문 리포트 생성")
+                .storeDurably()
+                .build();
+    }
+
+    @Bean
+    public Trigger dailyReportTrigger(
+            @Qualifier("dailyReportJobDetail") JobDetail jobDetail) {
+        return TriggerBuilder.newTrigger()
+                .forJob(jobDetail)
+                .withIdentity("dailyReportTrigger", "report")
+                .withSchedule(CronScheduleBuilder
+                        .cronSchedule("0 0 2 * * ?")
+                        .inTimeZone(TimeZone.getTimeZone("Asia/Seoul"))
+                        .withMisfireHandlingInstructionDoNothing())
+                .build();
+    }
+}</code></pre>
+        <p class="leading-relaxed text-slate-200">Misfire는 서버 중단이나 스레드 부족으로 예정 시각을 놓친 상황입니다. 예제의 <code>DoNothing</code>은 놓친 실행을 즉시 보충하지 않고 다음 일정부터 재개합니다. 결제 정산처럼 빠진 회차를 반드시 처리해야 하는 업무라면 정책을 그대로 복사하지 말고, 데이터 기준의 재처리와 멱등성까지 함께 설계해야 합니다.</p>
+      </section>
+
+      <section class="space-y-4">
+        <h2 class="text-2xl font-semibold text-indigo-200">운영 환경에서는 JDBC JobStore 검토</h2>
+        <p class="leading-relaxed text-slate-200">기본 메모리 JobStore는 애플리케이션을 재시작하면 실행 정보가 사라집니다. 일정과 실행 상태를 DB에 보관하거나 여러 인스턴스가 하나의 스케줄을 공유해야 한다면 JDBC 저장소와 클러스터링을 검토합니다.</p>
+        <pre class="overflow-x-auto rounded-2xl border border-white/10 bg-slate-950/70 p-4 text-sm text-slate-100"><code>spring:
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: never
+    overwrite-existing-jobs: true
+    properties:
+      org.quartz.jobStore.isClustered: true
+      org.quartz.scheduler.instanceId: AUTO</code></pre>
+        <p class="leading-relaxed text-slate-200">운영 DB에서 <code>initialize-schema: always</code>를 켜는 것은 주의해야 합니다. Spring Boot가 제공하는 기본 Quartz 초기화 스크립트는 기존 테이블을 삭제할 수 있어 등록된 Trigger가 사라질 수 있습니다. 테이블 생성은 Flyway나 Liquibase 같은 마이그레이션으로 한 번만 관리하고, 애플리케이션 설정은 <code>never</code>로 두는 방식이 안전합니다. 여러 서버에서 클러스터링할 때는 모든 인스턴스가 같은 Quartz 테이블을 바라보고 서버 시각도 동기화되어야 합니다.</p>
+      </section>
+
+      <section class="space-y-4">
+        <h2 class="text-2xl font-semibold text-indigo-200">실무 점검 체크리스트</h2>
+        <ul class="list-disc pl-6 space-y-2 text-slate-200">
+          <li>Job은 Service 호출만 담당하고, 핵심 로직은 일반 단위 테스트가 가능한 Service에 둡니다.</li>
+          <li>중복 실행에 취약한 작업은 <code>@DisallowConcurrentExecution</code>과 DB 유니크 키, 처리 상태값으로 이중 방어합니다.</li>
+          <li>Cron 표현식과 TimeZone을 함께 명시하고, 서머타임이 있는 지역이면 경계 날짜를 테스트합니다.</li>
+          <li>실패 로그에는 JobKey, TriggerKey, fireInstanceId를 남겨 어떤 실행이 실패했는지 추적합니다.</li>
+          <li>JobDataMap에는 문자열·숫자 같은 단순 값만 넣고, 대용량 데이터는 식별자만 전달한 뒤 Service에서 조회합니다.</li>
+          <li>외부 API 호출과 메일 발송에는 타임아웃을 설정하고, 재시도해도 결과가 중복되지 않는 멱등성을 확보합니다.</li>
+        </ul>
+      </section>
+
+      <section class="space-y-4">
+        <h2 class="text-2xl font-semibold text-indigo-200">정리</h2>
+        <p class="leading-relaxed text-slate-200">Spring Boot Quartz의 기본 구조는 어렵지 않습니다. Trigger가 실행 시각을 결정하고, JobDetail이 실행 대상을 설명하며, Job은 실제 Service를 호출합니다. 이 경계를 지키면 Cron 변경, 수동 재실행, JDBC 전환, 클러스터 확장 같은 요구가 생겨도 수정 범위를 작게 유지할 수 있습니다. 처음에는 메모리 저장소와 단일 Job으로 흐름을 확인한 뒤, 운영 요건에 맞춰 영속화·중복 방지·실패 복구를 추가해 보세요.</p>
+      </section>
+
+      <section class="space-y-3 border-t border-white/10 pt-6">
+        <h2 class="text-xl font-semibold text-indigo-200">참고한 공식 문서</h2>
+        <ul class="list-disc pl-6 space-y-2 text-sm text-slate-300">
+          <li><a class="text-indigo-200 underline hover:text-indigo-100" href="https://docs.spring.io/spring-boot/reference/io/quartz.html" target="_blank" rel="noopener noreferrer">Spring Boot Reference: Quartz Scheduler</a></li>
+          <li><a class="text-indigo-200 underline hover:text-indigo-100" href="https://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/" target="_blank" rel="noopener noreferrer">Quartz 공식 튜토리얼</a></li>
+        </ul>
+      </section>
+    </article>
+
+    <nav class="rounded-2xl border border-white/10 bg-white/5 p-6">
+      <a href="/blog/" class="text-indigo-200 hover:text-indigo-100 transition">&larr; 블로그 목록으로 돌아가기</a>
+    </nav>
+  </main>
+</body>
+</html>
