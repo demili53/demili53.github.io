@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-T2KDKBN8');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="Phaser Arcade Physics로 만든 똥피하기 게임 2. 키보드·마우스·터치로 이동하고 대시와 보호막을 활용해 단계별 똥비를 피하세요.">
+<meta name="keywords" content="똥피하기 게임 2, Phaser 게임, 회피 게임, 온라인 PC게임, 모바일 게임, 브라우저 게임, partygame">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#120c24">
+<link rel="canonical" href="https://partygame.pe.kr/arcade/poop-dodge-2.html">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PartyGame">
+<meta property="og:title" content="똥피하기 게임 2 | Phaser 생존 게임">
+<meta property="og:description" content="대시, 보호막, 콤보와 거대 똥이 추가된 Phaser 기반 똥피하기 게임">
+<meta property="og:url" content="https://partygame.pe.kr/arcade/poop-dodge-2.html">
+<meta property="og:image" content="https://partygame.pe.kr/site-share.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="똥피하기 게임 2 | Phaser 생존 게임">
+<meta name="twitter:description" content="똥비를 피하고 대시와 보호막으로 최고 점수에 도전하세요.">
+<meta name="twitter:image" content="https://partygame.pe.kr/site-share.png">
+<meta name="google-adsense-account" content="ca-pub-1087435977438565">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565" crossorigin="anonymous"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
+<link rel="stylesheet" href="/styles/site-theme.css">
+<style>
+  :root{color-scheme:dark}
+  .skip-link{position:absolute;left:-999px;top:1rem;z-index:100;border-radius:.75rem;background:#f8fafc;color:#0f172a;padding:.75rem 1rem;font-weight:800}.skip-link:focus{left:1rem}
+  :focus-visible{outline:3px solid rgba(251,191,36,.95);outline-offset:3px}
+  #gameShell{position:relative;isolation:isolate;overflow:hidden;border-radius:1.4rem;background:#090612;box-shadow:0 28px 80px rgba(0,0,0,.5)}
+  #phaserGame{aspect-ratio:3/4;width:100%;max-height:min(76vh,960px);touch-action:none;background:#090612}
+  #phaserGame canvas{display:block;width:100%!important;height:100%!important;object-fit:contain}
+  .game-overlay{position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:1.25rem;background:linear-gradient(180deg,rgba(9,6,18,.72),rgba(9,6,18,.94));backdrop-filter:blur(5px)}
+  .game-overlay[hidden]{display:none}
+  .control-key{display:flex;min-height:3.5rem;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.18);border-radius:1rem;background:rgba(255,255,255,.08);font-weight:900;color:#f8fafc;box-shadow:inset 0 1px 0 rgba(255,255,255,.08);touch-action:none;user-select:none;-webkit-user-select:none}
+  .control-key.is-active,.control-key:active{transform:translateY(1px);background:rgba(251,191,36,.24);border-color:rgba(251,191,36,.72)}
+  .stat-pill{border:1px solid rgba(255,255,255,.12);border-radius:.85rem;background:rgba(2,6,23,.6);padding:.55rem .7rem;text-align:center}
+  @media (min-width:900px){#phaserGame{max-height:790px}.mobile-controls{display:none}}
+</style>
+<title>똥피하기 게임 2 | Phaser 생존 게임</title>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-950 via-violet-950 to-amber-950 text-slate-50">
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T2KDKBN8" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#mainContent" class="skip-link">본문 바로가기</a>
+<main id="mainContent" class="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:py-8">
+  <header class="mb-5 space-y-5">
+    <nav class="flex flex-wrap gap-2 text-sm" aria-label="주요 메뉴">
+      <a href="/" class="rounded-full border border-white/20 px-3 py-2 hover:bg-white/10">홈</a>
+      <a href="/arcade/" class="rounded-full border border-amber-200/60 px-3 py-2 text-amber-100 hover:bg-white/10">온라인 PC게임</a>
+      <a href="/arcade/poop-dodge.html" class="rounded-full border border-white/20 px-3 py-2 hover:bg-white/10">똥피하기 1</a>
+      <a href="/game-ranking/" class="rounded-full border border-white/20 px-3 py-2 hover:bg-white/10">게임 순위</a>
+      <a href="/contact.html" class="rounded-full border border-white/20 px-3 py-2 hover:bg-white/10">문의하기</a>
+    </nav>
+    <div class="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-8">
+      <p class="text-xs font-bold uppercase tracking-[.28em] text-amber-200">Phaser Survival</p>
+      <h1 class="mt-2 text-3xl font-black md:text-5xl">똥피하기 게임 2</h1>
+      <p class="mt-3 max-w-3xl leading-7 text-slate-300">쏟아지는 똥비를 피하면서 콤보를 이어가세요. 위험할 때는 대시로 통과하고, 비누 보호막을 챙기면 한 번의 충돌을 막을 수 있습니다.</p>
+    </div>
+  </header>
+
+  <section class="grid gap-5 lg:grid-cols-[minmax(0,720px)_1fr] lg:items-start">
+    <div>
+      <div class="mb-3 grid grid-cols-5 gap-2 text-xs sm:text-sm" aria-live="polite">
+        <div class="stat-pill"><span class="block text-slate-400">점수</span><strong id="scoreValue" class="text-lg text-white">0</strong></div>
+        <div class="stat-pill"><span class="block text-slate-400">최고</span><strong id="bestValue" class="text-lg text-amber-200">0</strong></div>
+        <div class="stat-pill"><span class="block text-slate-400">체력</span><strong id="lifeValue" class="text-lg text-rose-300">♥♥♥</strong></div>
+        <div class="stat-pill"><span class="block text-slate-400">콤보</span><strong id="comboValue" class="text-lg text-cyan-200">0</strong></div>
+        <div class="stat-pill"><span class="block text-slate-400">단계</span><strong id="levelValue" class="text-lg text-violet-200">1</strong></div>
+      </div>
+
+      <div id="gameShell" class="border border-amber-200/20">
+        <div id="phaserGame" role="application" aria-label="똥피하기 게임 2 플레이 화면"></div>
+        <div id="startOverlay" class="game-overlay">
+          <div class="max-w-sm rounded-3xl border border-amber-200/25 bg-slate-950/90 p-6 text-center shadow-2xl">
+            <div class="text-6xl" aria-hidden="true">🏃💩</div>
+            <h2 id="overlayTitle" class="mt-4 text-2xl font-black text-amber-100">똥비가 다시 온다!</h2>
+            <p id="overlayText" class="mt-3 text-sm leading-7 text-slate-300">방향키·WASD 또는 화면 터치로 이동하세요. Space·Shift나 DASH 버튼을 누르면 잠깐 무적 상태로 돌진합니다.</p>
+            <button id="startButton" type="button" class="mt-5 min-h-12 w-full rounded-xl bg-amber-300 px-5 py-3 font-black text-slate-950 hover:bg-amber-200">게임 시작</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mobile-controls mt-3 grid grid-cols-[1fr_1fr_1fr_1.25fr] gap-2" aria-label="모바일 게임 조작">
+        <button class="control-key" data-control="left" type="button" aria-label="왼쪽 이동">←</button>
+        <button class="control-key" data-control="up" type="button" aria-label="위쪽 이동">↑</button>
+        <button class="control-key" data-control="down" type="button" aria-label="아래쪽 이동">↓</button>
+        <button class="control-key border-amber-200/50 text-amber-100" data-control="dash" type="button">DASH</button>
+        <button class="control-key" data-control="right" type="button" aria-label="오른쪽 이동">→</button>
+        <button id="pauseButton" class="control-key col-span-3" type="button">일시정지</button>
+      </div>
+    </div>
+
+    <aside class="space-y-4">
+      <section class="rounded-2xl border border-white/10 bg-white/5 p-5">
+        <h2 class="text-xl font-bold text-amber-100">플레이 방법</h2>
+        <ul class="mt-4 space-y-3 text-sm leading-6 text-slate-300">
+          <li><strong class="text-white">이동:</strong> 방향키·WASD, 마우스 드래그 또는 터치</li>
+          <li><strong class="text-white">대시:</strong> Space·Shift 또는 DASH 버튼. 재사용까지 1.6초</li>
+          <li><strong class="text-white">비누:</strong> 파란 비누를 먹으면 충돌을 한 번 막아줍니다.</li>
+          <li><strong class="text-white">피버:</strong> 20콤보부터 점수 배수가 2배로 올라갑니다.</li>
+        </ul>
+      </section>
+      <section class="rounded-2xl border border-white/10 bg-white/5 p-5">
+        <h2 class="text-xl font-bold text-violet-100">2편에서 달라진 점</h2>
+        <p class="mt-3 text-sm leading-7 text-slate-300">체력 3칸, 대시 무적, 보호막 아이템, 연속 회피 콤보와 15초마다 상승하는 난이도를 추가했습니다. 일정 횟수를 피하면 경고 표시 뒤 거대 똥이 떨어집니다.</p>
+      </section>
+      <section class="rounded-2xl border border-white/10 bg-white/5 p-5 text-sm leading-7 text-slate-300">
+        <h2 class="text-xl font-bold text-cyan-100">기술 안내</h2>
+        <p class="mt-3">Phaser 3.90의 Scale Manager와 Arcade Physics 그룹·오버랩 충돌 방식을 사용했습니다. 게임 기록은 이 브라우저의 로컬 저장소에만 보관됩니다.</p>
+        <a href="https://phaser.io/tools/phaser-docs" target="_blank" rel="noopener noreferrer nofollow" class="mt-3 inline-flex min-h-11 items-center text-cyan-200 hover:text-cyan-100">Phaser 공식 문서 보기 →</a>
+      </section>
+    </aside>
+  </section>
+
+  <footer class="mt-7 border-t border-white/10 pt-5 text-sm text-slate-300">
+    <div class="flex flex-wrap gap-3"><a href="/" class="hover:text-amber-100">홈</a><a href="/arcade/" class="hover:text-amber-100">온라인 PC게임</a><a href="/arcade/poop-dodge.html" class="hover:text-amber-100">똥피하기 1</a><a href="/privacy.html" class="hover:text-amber-100">개인정보처리방침</a></div>
+  </footer>
+</main>
+
+<script>
+(() => {
+  "use strict";
+
+  const ui = {
+    overlay: document.getElementById("startOverlay"),
+    title: document.getElementById("overlayTitle"),
+    text: document.getElementById("overlayText"),
+    start: document.getElementById("startButton"),
+    pause: document.getElementById("pauseButton"),
+    score: document.getElementById("scoreValue"),
+    best: document.getElementById("bestValue"),
+    life: document.getElementById("lifeValue"),
+    combo: document.getElementById("comboValue"),
+    level: document.getElementById("levelValue")
+  };
+
+  const touch = { left: false, right: false, up: false, down: false, dash: false };
+  let activeScene = null;
+  let storedBest = 0;
+  try { storedBest = Number(localStorage.getItem("poopDodge2Best") || 0); } catch (_) {}
+  ui.best.textContent = String(storedBest);
+  if (!window.Phaser) {
+    ui.title.textContent = "게임 엔진을 불러오지 못했습니다";
+    ui.text.textContent = "네트워크 연결을 확인한 뒤 페이지를 새로고침해 주세요.";
+    ui.start.disabled = true;
+    return;
+  }
+
+  class PoopDodge2 extends Phaser.Scene {
+    constructor() {
+      super("PoopDodge2");
+      this.playing = false;
+      this.paused = false;
+    }
+
+    create() {
+      activeScene = this;
+      this.createTextures();
+      this.createBackdrop();
+
+      this.hazards = this.physics.add.group({ maxSize: 70 });
+      this.pickups = this.physics.add.group({ maxSize: 8 });
+      this.player = this.physics.add.sprite(360, 820, "runner").setDepth(8);
+      this.player.setCircle(21, 11, 11).setCollideWorldBounds(true);
+      this.player.body.setMaxVelocity(720, 720);
+
+      this.physics.add.overlap(this.player, this.hazards, this.hitPlayer, null, this);
+      this.physics.add.overlap(this.player, this.pickups, this.collectPickup, null, this);
+
+      this.cursors = this.input.keyboard.createCursorKeys();
+      this.keys = this.input.keyboard.addKeys("W,A,S,D,SPACE,SHIFT");
+      this.input.keyboard.on("keydown-P", () => this.togglePause());
+      this.input.on("pointerdown", (pointer) => { if (this.playing) this.pointerTarget = new Phaser.Math.Vector2(pointer.worldX, pointer.worldY); });
+      this.input.on("pointermove", (pointer) => { if (this.playing && pointer.isDown) this.pointerTarget = new Phaser.Math.Vector2(pointer.worldX, pointer.worldY); });
+      this.input.on("pointerup", () => { this.pointerTarget = null; });
+
+      this.events.on("shutdown", () => { activeScene = null; });
+      this.resetState();
+    }
+
+    createTextures() {
+      const g = this.make.graphics({ x: 0, y: 0, add: false });
+      g.fillStyle(0x38bdf8).fillCircle(32, 30, 24);
+      g.fillStyle(0xf8fafc).fillCircle(24, 25, 7).fillCircle(40, 25, 7);
+      g.fillStyle(0x172554).fillCircle(25, 26, 3).fillCircle(41, 26, 3);
+      g.fillStyle(0xf43f5e).fillRoundedRect(21, 41, 22, 7, 4);
+      g.generateTexture("runner", 64, 64); g.clear();
+
+      g.fillStyle(0x7c3f18).fillCircle(27, 36, 18).fillCircle(27, 24, 14).fillCircle(27, 14, 9);
+      g.fillStyle(0xa85f25).fillCircle(20, 27, 5).fillCircle(31, 18, 4);
+      g.fillStyle(0xf8fafc).fillCircle(21, 33, 3).fillCircle(33, 33, 3);
+      g.generateTexture("poop", 54, 58); g.clear();
+
+      g.fillStyle(0x51210c).fillCircle(48, 62, 32).fillCircle(48, 42, 25).fillCircle(48, 21, 16);
+      g.lineStyle(5, 0xfbbf24, .9).strokeCircle(48, 48, 42);
+      g.generateTexture("megaPoop", 96, 102); g.clear();
+
+      g.fillStyle(0x67e8f9).fillRoundedRect(3, 8, 42, 30, 10);
+      g.lineStyle(4, 0xecfeff, .9).strokeRoundedRect(3, 8, 42, 30, 10);
+      g.fillStyle(0xffffff).fillCircle(13, 9, 5).fillCircle(25, 5, 7).fillCircle(36, 10, 4);
+      g.generateTexture("soap", 48, 44); g.clear();
+
+      g.fillStyle(0xf43f5e).fillCircle(15, 15, 11).fillCircle(31, 15, 11).fillTriangle(5, 18, 41, 18, 23, 42);
+      g.generateTexture("heart", 46, 44); g.clear();
+
+      g.fillStyle(0xfbbf24, .28).fillCircle(36, 36, 34);
+      g.lineStyle(4, 0xfbbf24, .95).strokeCircle(36, 36, 30);
+      g.generateTexture("warning", 72, 72); g.destroy();
+    }
+
+    createBackdrop() {
+      this.cameras.main.setBackgroundColor("#090612");
+      const bg = this.add.graphics();
+      bg.fillGradientStyle(0x160c2e, 0x160c2e, 0x29130b, 0x29130b, 1);
+      bg.fillRect(0, 0, 720, 960);
+      for (let i = 0; i < 46; i += 1) {
+        const color = i % 3 === 0 ? 0xfbbf24 : 0x8b5cf6;
+        bg.fillStyle(color, Phaser.Math.FloatBetween(.08, .22));
+        bg.fillCircle(Phaser.Math.Between(0, 720), Phaser.Math.Between(0, 960), Phaser.Math.Between(1, 4));
+      }
+      this.add.rectangle(360, 932, 720, 56, 0x020617, .82).setDepth(2);
+      this.add.text(22, 18, "DANGER ZONE 02", { fontFamily: "system-ui, sans-serif", fontSize: "18px", fontStyle: "bold", color: "#fde68a" }).setDepth(3);
+      this.add.text(698, 20, "P: PAUSE", { fontFamily: "system-ui, sans-serif", fontSize: "13px", color: "#94a3b8" }).setOrigin(1, 0).setDepth(3);
+      this.statusText = this.add.text(360, 86, "", { fontFamily: "system-ui, sans-serif", fontSize: "28px", fontStyle: "bold", color: "#ffffff", stroke: "#090612", strokeThickness: 7 }).setOrigin(.5).setDepth(15);
+      this.dashBarBg = this.add.rectangle(360, 920, 260, 13, 0x334155, .8).setDepth(10);
+      this.dashBar = this.add.rectangle(230, 920, 260, 13, 0xfbbf24, 1).setOrigin(0, .5).setDepth(11);
+      this.add.text(360, 942, "DASH", { fontFamily: "system-ui, sans-serif", fontSize: "12px", fontStyle: "bold", color: "#cbd5e1" }).setOrigin(.5).setDepth(11);
+    }
+
+    resetState() {
+      this.score = 0;
+      this.lives = 3;
+      this.combo = 0;
+      this.level = 1;
+      this.dodged = 0;
+      this.shield = 0;
+      this.elapsed = 0;
+      this.spawnClock = 0;
+      this.pickupClock = 0;
+      this.nextPickup = Phaser.Math.Between(9000, 13000);
+      this.dashReadyAt = 0;
+      this.dashUntil = 0;
+      this.invulnerableUntil = 0;
+      this.lastDashKey = false;
+      this.pointerTarget = null;
+      this.paused = false;
+      this.physics.world.resume();
+      this.time.paused = false;
+      this.tweens.resumeAll();
+      this.hazards.clear(true, true);
+      this.pickups.clear(true, true);
+      this.player.clearTint().setAlpha(1).setPosition(360, 820).setVelocity(0);
+      this.player.body.enable = true;
+      this.updateHud();
+    }
+
+    startGame() {
+      this.resetState();
+      this.playing = true;
+      ui.overlay.hidden = true;
+      ui.pause.textContent = "일시정지";
+      this.showStatus("READY!", 0xfde68a);
+    }
+
+    togglePause(forcePause = false) {
+      if (!this.playing) return;
+      this.paused = forcePause ? true : !this.paused;
+      if (this.paused) {
+        this.physics.world.pause();
+        this.time.paused = true;
+        this.tweens.pauseAll();
+      } else {
+        this.physics.world.resume();
+        this.time.paused = false;
+        this.tweens.resumeAll();
+      }
+      if (this.paused) this.player.setVelocity(0);
+      ui.pause.textContent = this.paused ? "계속하기" : "일시정지";
+      this.statusText.setText(this.paused ? "PAUSED" : "").setAlpha(this.paused ? 1 : 0);
+    }
+
+    spawnPoop() {
+      const mega = this.dodged > 0 && this.dodged % 30 === 0 && !this.megaQueued;
+      if (mega) {
+        this.megaQueued = true;
+        const x = Phaser.Math.Between(80, 640);
+        const warn = this.add.image(x, 90, "warning").setDepth(12);
+        this.tweens.add({ targets: warn, alpha: .15, duration: 140, yoyo: true, repeat: 5 });
+        this.time.delayedCall(850, () => {
+          warn.destroy();
+          if (this.playing) this.activateHazard(x, -80, "megaPoop", 120 + this.level * 12, true);
+        });
+        this.time.delayedCall(1800, () => { this.megaQueued = false; });
+        return;
+      }
+
+      const fromSide = this.level >= 4 && Math.random() < .18;
+      if (fromSide) {
+        const left = Math.random() < .5;
+        const y = Phaser.Math.Between(180, 690);
+        const speed = 170 + this.level * 18 + Phaser.Math.Between(0, 70);
+        const hazard = this.activateHazard(left ? -45 : 765, y, "poop", 0, false);
+        hazard.setVelocity(left ? speed : -speed, Phaser.Math.Between(-25, 45));
+      } else {
+        this.activateHazard(Phaser.Math.Between(34, 686), -40, "poop", 185 + this.level * 22 + Phaser.Math.Between(0, 90), false);
+      }
+    }
+
+    activateHazard(x, y, key, velocityY, mega) {
+      let hazard = this.hazards.get(x, y, key);
+      if (!hazard) return null;
+      hazard.setTexture(key).setActive(true).setVisible(true).setPosition(x, y).setAlpha(1).clearTint().setDepth(6);
+      hazard.body.enable = true;
+      hazard.setVelocity(Phaser.Math.Between(-32, 32), velocityY).setAngularVelocity(Phaser.Math.Between(-110, 110));
+      hazard.setData({ scored: false, mega: Boolean(mega), wave: Math.random() * Math.PI * 2 });
+      if (mega) hazard.body.setCircle(39, 9, 10); else hazard.body.setCircle(20, 7, 8);
+      return hazard;
+    }
+
+    spawnPickup() {
+      const heart = this.lives < 3 && Math.random() < .28;
+      const pickup = this.pickups.get(Phaser.Math.Between(55, 665), -30, heart ? "heart" : "soap");
+      if (!pickup) return;
+      pickup.setTexture(heart ? "heart" : "soap").setActive(true).setVisible(true).setDepth(7).setData("type", heart ? "heart" : "soap");
+      pickup.body.enable = true;
+      pickup.body.setCircle(18, 5, 4);
+      pickup.setVelocity(Phaser.Math.Between(-18, 18), 135 + this.level * 7).setAngularVelocity(heart ? 0 : 75);
+    }
+
+    hitPlayer(player, hazard) {
+      const now = this.time.now;
+      if (!this.playing || now < this.invulnerableUntil) return;
+      this.recycle(hazard);
+      this.combo = 0;
+      if (this.shield > 0) {
+        this.shield -= 1;
+        this.invulnerableUntil = now + 700;
+        this.showStatus("보호막 방어!", 0x67e8f9);
+      } else {
+        this.lives -= 1;
+        this.invulnerableUntil = now + 1200;
+        this.cameras.main.shake(210, .014);
+        this.cameras.main.flash(180, 244, 63, 94, false);
+        this.showStatus("OUCH!", 0xfda4af);
+        this.tweens.add({ targets: player, alpha: .25, duration: 95, yoyo: true, repeat: 5 });
+        if (this.lives <= 0) this.endGame();
+      }
+      this.updateHud();
+    }
+
+    collectPickup(player, pickup) {
+      const type = pickup.getData("type");
+      this.recycle(pickup);
+      if (type === "heart") {
+        this.lives = Math.min(3, this.lives + 1);
+        this.showStatus("체력 회복!", 0xfda4af);
+      } else {
+        this.shield = 1;
+        this.showStatus("비누 보호막!", 0x67e8f9);
+      }
+      this.score += 150;
+      this.updateHud();
+    }
+
+    recycle(object) {
+      if (!object || !object.active) return;
+      object.body.stop();
+      object.body.enable = false;
+      object.setActive(false).setVisible(false);
+    }
+
+    performDash(dx, dy) {
+      const now = this.time.now;
+      if (now < this.dashReadyAt || this.paused) return;
+      let vector = new Phaser.Math.Vector2(dx, dy);
+      if (vector.lengthSq() === 0 && this.pointerTarget) vector.set(this.pointerTarget.x - this.player.x, this.pointerTarget.y - this.player.y);
+      if (vector.lengthSq() === 0) vector.set(0, -1);
+      vector.normalize();
+      this.player.setVelocity(vector.x * 690, vector.y * 690).setTint(0xfde68a);
+      this.dashUntil = now + 300;
+      this.invulnerableUntil = Math.max(this.invulnerableUntil, now + 360);
+      this.dashReadyAt = now + 1600;
+      this.cameras.main.shake(80, .004);
+      this.time.delayedCall(330, () => { if (this.player.active) this.player.clearTint(); });
+    }
+
+    showStatus(message, color) {
+      this.statusText.setText(message).setColor(`#${color.toString(16).padStart(6, "0")}`).setAlpha(1).setScale(.75);
+      this.tweens.killTweensOf(this.statusText);
+      this.tweens.add({ targets: this.statusText, alpha: 0, scale: 1.15, delay: 420, duration: 380 });
+    }
+
+    updateHud() {
+      ui.score.textContent = String(Math.floor(this.score));
+      ui.best.textContent = String(Math.max(storedBest, Math.floor(this.score)));
+      ui.life.textContent = "♥".repeat(Math.max(0, this.lives)) + "♡".repeat(Math.max(0, 3 - this.lives));
+      ui.combo.textContent = this.combo >= 20 ? `${this.combo} ×2` : String(this.combo);
+      ui.level.textContent = String(this.level);
+      this.player.setScale(this.shield ? 1.08 : 1);
+    }
+
+    endGame() {
+      this.playing = false;
+      this.physics.world.pause();
+      this.player.setVelocity(0).setTint(0x64748b);
+      const finalScore = Math.floor(this.score);
+      const newRecord = finalScore > storedBest;
+      if (newRecord) {
+        storedBest = finalScore;
+        try { localStorage.setItem("poopDodge2Best", String(storedBest)); } catch (_) {}
+      }
+      ui.best.textContent = String(storedBest);
+      ui.title.textContent = newRecord ? "새로운 최고 기록!" : "똥비에 맞았습니다";
+      ui.text.textContent = `점수 ${finalScore}점 · ${this.dodged}개 회피 · 최고 콤보를 다시 경신해 보세요.`;
+      ui.start.textContent = "다시 도전";
+      ui.overlay.hidden = false;
+    }
+
+    update(time, delta) {
+      if (!this.playing || this.paused) return;
+      const dt = Math.min(delta, 50);
+      this.elapsed += dt;
+      this.spawnClock += dt;
+      this.pickupClock += dt;
+      const newLevel = Math.min(10, 1 + Math.floor(this.elapsed / 15000));
+      if (newLevel !== this.level) {
+        this.level = newLevel;
+        this.showStatus(`LEVEL ${this.level}`, 0xc4b5fd);
+      }
+
+      const spawnEvery = Math.max(230, 760 - this.level * 54);
+      if (this.spawnClock >= spawnEvery) {
+        this.spawnClock = 0;
+        this.spawnPoop();
+        if (this.level >= 6 && Math.random() < .2) this.spawnPoop();
+      }
+      if (this.pickupClock >= this.nextPickup) {
+        this.pickupClock = 0;
+        this.nextPickup = Phaser.Math.Between(9000, 14000);
+        this.spawnPickup();
+      }
+
+      let dx = 0, dy = 0;
+      if (this.cursors.left.isDown || this.keys.A.isDown || touch.left) dx -= 1;
+      if (this.cursors.right.isDown || this.keys.D.isDown || touch.right) dx += 1;
+      if (this.cursors.up.isDown || this.keys.W.isDown || touch.up) dy -= 1;
+      if (this.cursors.down.isDown || this.keys.S.isDown || touch.down) dy += 1;
+
+      if (this.pointerTarget && dx === 0 && dy === 0) {
+        const pdx = this.pointerTarget.x - this.player.x;
+        const pdy = this.pointerTarget.y - this.player.y;
+        if (Math.hypot(pdx, pdy) > 12) { dx = pdx; dy = pdy; } else this.pointerTarget = null;
+      }
+
+      const dashPressed = Phaser.Input.Keyboard.JustDown(this.keys.SPACE) || Phaser.Input.Keyboard.JustDown(this.keys.SHIFT) || touch.dash;
+      if (dashPressed && !this.lastDashKey) this.performDash(dx, dy);
+      this.lastDashKey = dashPressed;
+      touch.dash = false;
+
+      if (time >= this.dashUntil) {
+        const movement = new Phaser.Math.Vector2(dx, dy);
+        if (movement.lengthSq() > 0) movement.normalize().scale(305 + this.level * 3);
+        this.player.setVelocity(movement.x, movement.y);
+      }
+
+      const dashRatio = Phaser.Math.Clamp(1 - Math.max(0, this.dashReadyAt - time) / 1600, 0, 1);
+      this.dashBar.setScale(dashRatio, 1);
+      this.dashBar.setFillStyle(dashRatio >= 1 ? 0xfbbf24 : 0x64748b, 1);
+
+      this.hazards.children.iterate((hazard) => {
+        if (!hazard || !hazard.active) return;
+        const wave = hazard.getData("wave") || 0;
+        if (!hazard.getData("mega") && Math.abs(hazard.body.velocity.y) > Math.abs(hazard.body.velocity.x)) {
+          hazard.body.velocity.x += Math.sin(this.elapsed * .002 + wave) * .45;
+        }
+        if (hazard.y > 1040 || hazard.x < -120 || hazard.x > 840) {
+          this.recycle(hazard);
+          this.dodged += 1;
+          this.combo += 1;
+          this.score += this.combo >= 20 ? 34 : 17;
+        }
+      });
+      this.pickups.children.iterate((pickup) => { if (pickup && pickup.active && pickup.y > 1030) this.recycle(pickup); });
+
+      this.score += dt * (this.combo >= 20 ? .024 : .012) * (1 + this.level * .06);
+      this.updateHud();
+    }
+  }
+
+  const config = {
+    type: Phaser.AUTO,
+    parent: "phaserGame",
+    width: 720,
+    height: 960,
+    backgroundColor: "#090612",
+    transparent: false,
+    antialias: true,
+    pixelArt: false,
+    physics: { default: "arcade", arcade: { gravity: { x: 0, y: 0 }, debug: false } },
+    scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH, width: 720, height: 960 },
+    scene: PoopDodge2
+  };
+
+  try {
+    new Phaser.Game(config);
+  } catch (error) {
+    ui.title.textContent = "게임을 불러오지 못했습니다";
+    ui.text.textContent = "네트워크 연결을 확인한 뒤 페이지를 새로고침해 주세요.";
+    ui.start.disabled = true;
+    console.error(error);
+  }
+
+  ui.start.addEventListener("click", () => { if (activeScene) activeScene.startGame(); });
+  ui.pause.addEventListener("click", () => { if (activeScene) activeScene.togglePause(); });
+  document.querySelectorAll("[data-control]").forEach((button) => {
+    const name = button.dataset.control;
+    const press = (event) => { event.preventDefault(); touch[name] = true; button.classList.add("is-active"); };
+    const release = (event) => { event.preventDefault(); if (name !== "dash") touch[name] = false; button.classList.remove("is-active"); };
+    button.addEventListener("pointerdown", press);
+    button.addEventListener("pointerup", release);
+    button.addEventListener("pointercancel", release);
+    button.addEventListener("pointerleave", release);
+  });
+  document.addEventListener("visibilitychange", () => { if (document.hidden && activeScene) activeScene.togglePause(true); });
+})();
+</script>
+</body>
+</html>
