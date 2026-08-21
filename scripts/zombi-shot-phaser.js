@@ -9,8 +9,6 @@
   const bestEl = el("bestEl");
   const waveEl = el("waveEl");
   const comboEl = el("comboEl");
-  const hpText = el("hpText");
-  const hpBar = el("hpBar");
   const statusEl = el("statusEl");
   const overlay = el("gameOverlay");
   const overlayTitle = el("overlayTitle");
@@ -27,7 +25,6 @@
   let player = null;
   let zombies = null;
   let bullets = null;
-  let pickups = null;
   let gameState = "idle";
   let score = 0;
   let best = Number(localStorage.getItem("zombiShotBest") || 0);
@@ -40,9 +37,9 @@
   let pointerHeld = false;
   let fireHeld = false;
   let nextShotAt = 0;
-  let aimX = W - 80;
-  let aimY = H / 2;
-  let invulnerableUntil = 0;
+  let targetX = W / 2;
+  let pointerControls = false;
+  const scrollingDecor = [];
   const heldKeys = {};
 
   function makeTextures(currentScene) {
@@ -76,22 +73,34 @@
     make("bullet-pistol", 10, 10, (g) => { g.fillStyle(0xfde68a, 1); g.fillCircle(5, 5, 4); });
     make("bullet-rifle", 10, 10, (g) => { g.fillStyle(0x86efac, 1); g.fillCircle(5, 5, 4); });
     make("bullet-shotgun", 10, 10, (g) => { g.fillStyle(0xfda4af, 1); g.fillCircle(5, 5, 4); });
-    make("medkit", 26, 26, (g) => {
-      g.fillStyle(0xf8fafc, 1); g.fillRoundedRect(2, 2, 22, 22, 4);
-      g.fillStyle(0xef4444, 1); g.fillRect(10, 5, 6, 16); g.fillRect(5, 10, 16, 6);
-    });
   }
 
   function drawArena(currentScene) {
     const background = currentScene.add.graphics().setDepth(-100);
     background.fillStyle(0x07110c, 1).fillRect(0, 0, W, H);
-    background.fillStyle(0x111c18, 1);
-    for (let x = 0; x < W; x += 80) background.fillRect(x + 2, 0, 3, H);
-    for (let y = 0; y < H; y += 80) background.fillRect(0, y + 2, W, 3);
-    background.lineStyle(2, 0x4ade80, 0.07);
-    for (let x = -H; x < W; x += 90) background.lineBetween(x, 0, x + H, H);
-    background.fillStyle(0xbe185d, 0.13);
-    for (let i = 0; i < 24; i += 1) background.fillRect((i * 137) % W, (i * 83) % H, 10 + (i % 4) * 5, 3);
+    background.fillStyle(0x111c18, 1).fillRect(48, 0, W - 96, H);
+    background.fillStyle(0x052e16, 0.72).fillRect(0, 0, 48, H).fillRect(W - 48, 0, 48, H);
+    background.lineStyle(3, 0x4ade80, 0.32).lineBetween(48, 0, 48, H).lineBetween(W - 48, 0, W - 48, H);
+    scrollingDecor.length = 0;
+    [W / 3, W * 2 / 3].forEach((x) => {
+      for (let y = -60; y < H + 80; y += 96) {
+        scrollingDecor.push(currentScene.add.rectangle(x, y, 5, 42, 0x94a3b8, 0.28).setDepth(-90).setData("speed", 150));
+      }
+    });
+    for (let i = 0; i < 18; i += 1) {
+      const x = 66 + ((i * 137) % (W - 132));
+      const y = (i * 71) % (H + 80) - 40;
+      scrollingDecor.push(currentScene.add.rectangle(x, y, 9 + (i % 3) * 5, 3, 0xbe185d, 0.24).setDepth(-91).setData("speed", 110));
+    }
+    background.fillStyle(0xef4444, 0.22).fillRect(0, H - 12, W, 12);
+    background.lineStyle(2, 0xf87171, 0.85).lineBetween(0, H - 12, W, H - 12);
+  }
+
+  function updateScrollingArena(delta) {
+    scrollingDecor.forEach((item) => {
+      item.y += item.getData("speed") * delta / 1000;
+      if (item.y > H + 28) item.y = -60;
+    });
   }
 
   function create() {
@@ -101,18 +110,16 @@
 
     zombies = this.physics.add.group({ maxSize: 40 });
     bullets = this.physics.add.group({ maxSize: 90 });
-    pickups = this.physics.add.group({ maxSize: 12 });
-    player = this.physics.add.image(W / 2, H / 2, "survivor").setDepth(10).setCollideWorldBounds(true);
+    player = this.physics.add.image(W / 2, H - 42, "survivor").setDepth(10).setCollideWorldBounds(true);
     player.body.setCircle(14, 6, 6);
-    player.setData("hp", 100);
+    player.rotation = -Math.PI / 2;
 
     this.physics.add.overlap(bullets, zombies, onBulletHit, null, this);
     this.physics.add.overlap(player, zombies, onPlayerHit, null, this);
-    this.physics.add.overlap(player, pickups, onPickup, null, this);
 
-    this.input.on("pointermove", (pointer) => { aimX = pointer.worldX; aimY = pointer.worldY; });
+    this.input.on("pointermove", (pointer) => { targetX = clamp(pointer.worldX, 20, W - 20); pointerControls = true; });
     this.input.on("pointerdown", (pointer) => {
-      aimX = pointer.worldX; aimY = pointer.worldY; pointerHeld = true;
+      targetX = clamp(pointer.worldX, 20, W - 20); pointerControls = true; pointerHeld = true;
       if (gameState === "idle" || gameState === "over") startGame();
     });
     this.input.on("pointerup", () => { pointerHeld = false; });
@@ -123,6 +130,7 @@
   function update(time, delta) {
     if (gameState !== "running") return;
     const dt = Math.min(delta, 50);
+    updateScrollingArena(dt);
     updatePlayer(time);
     updateZombies();
     cleanupObjects(time);
@@ -148,21 +156,34 @@
 
   function updatePlayer(time) {
     const x = (heldKeys.ArrowRight || heldKeys.KeyD ? 1 : 0) - (heldKeys.ArrowLeft || heldKeys.KeyA ? 1 : 0);
-    const y = (heldKeys.ArrowDown || heldKeys.KeyS ? 1 : 0) - (heldKeys.ArrowUp || heldKeys.KeyW ? 1 : 0);
-    const movement = new Phaser.Math.Vector2(x, y);
-    if (movement.lengthSq() > 0) movement.normalize().scale(230);
-    player.setVelocity(movement.x, movement.y);
-    player.rotation = Phaser.Math.Angle.Between(player.x, player.y, aimX, aimY);
-    player.setAlpha(time < invulnerableUntil && Math.floor(time / 70) % 2 ? 0.35 : 1);
+    if (x !== 0) {
+      player.setVelocityX(x * 230);
+      targetX = player.x;
+      pointerControls = false;
+    } else if (pointerControls) {
+      const distance = targetX - player.x;
+      player.setVelocityX(Math.abs(distance) < 3 ? 0 : clamp(distance * 8, -230, 230));
+    } else player.setVelocityX(0);
+    player.setVelocityY(0);
+    player.y = H - 42;
+    player.rotation = -Math.PI / 2;
     if ((pointerHeld || fireHeld || heldKeys.Space) && time >= nextShotAt) fireWeapon(time);
   }
 
   function updateZombies() {
     zombies.children.iterate((zombie) => {
       if (!zombie || !zombie.active) return;
-      const speed = zombie.getData("speed");
-      scene.physics.moveToObject(zombie, player, speed);
-      zombie.rotation = Phaser.Math.Angle.Between(zombie.x, zombie.y, player.x, player.y);
+      let drift = zombie.getData("drift");
+      if ((zombie.x < 18 && drift < 0) || (zombie.x > W - 18 && drift > 0)) {
+        drift *= -1;
+        zombie.setData("drift", drift);
+      }
+      zombie.setVelocity(drift, zombie.getData("speed"));
+      zombie.rotation = Math.PI / 2;
+      if (zombie.y >= H - 8) {
+        zombie.destroy();
+        endGame("좀비가 방어선을 통과했습니다.");
+      }
     });
   }
 
@@ -171,19 +192,10 @@
       if (!bullet || !bullet.active) return;
       if (bullet.x < -24 || bullet.x > W + 24 || bullet.y < -24 || bullet.y > H + 24 || time > bullet.getData("expires")) bullet.destroy();
     });
-    pickups.children.iterate((pickup) => {
-      if (!pickup || !pickup.active) return;
-      pickup.rotation += 0.02;
-      if (time > pickup.getData("expires")) pickup.destroy();
-    });
   }
 
   function spawnPoint() {
-    const edge = Phaser.Math.Between(0, 3);
-    if (edge === 0) return { x: Phaser.Math.Between(10, W - 10), y: -24 };
-    if (edge === 1) return { x: W + 24, y: Phaser.Math.Between(10, H - 10) };
-    if (edge === 2) return { x: Phaser.Math.Between(10, W - 10), y: H + 24 };
-    return { x: -24, y: Phaser.Math.Between(10, H - 10) };
+    return { x: Phaser.Math.Between(28, W - 28), y: -42 };
   }
 
   function spawnZombie(forcedKind) {
@@ -191,20 +203,20 @@
     const roll = Math.random();
     const kind = forcedKind || (roll < 0.58 ? "walker" : roll < 0.86 ? "runner" : "brute");
     const settings = {
-      walker: { texture: "zombie-walker", hp: 42, speed: 52, reward: 100, radius: 15 },
-      runner: { texture: "zombie-runner", hp: 27, speed: 92, reward: 140, radius: 12 },
-      brute: { texture: "zombie-brute", hp: 125, speed: 34, reward: 260, radius: 20 },
-      boss: { texture: "zombie-boss", hp: 600 + wave * 85, speed: 27, reward: 1800, radius: 34 }
+      walker: { texture: "zombie-walker", hp: 42, speed: 52, reward: 100, radius: 15, drift: 0 },
+      runner: { texture: "zombie-runner", hp: 27, speed: 92, reward: 140, radius: 12, drift: Phaser.Math.Between(-35, 35) },
+      brute: { texture: "zombie-brute", hp: 125, speed: 34, reward: 260, radius: 20, drift: 0 },
+      boss: { texture: "zombie-boss", hp: 600 + wave * 85, speed: 27, reward: 1800, radius: 34, drift: Phaser.Math.Between(-18, 18) }
     }[kind];
     const point = spawnPoint();
     const zombie = zombies.create(point.x, point.y, settings.texture).setDepth(5);
     zombie.body.setCircle(settings.radius, zombie.width / 2 - settings.radius, zombie.height / 2 - settings.radius);
-    zombie.setData({ kind, hp: settings.hp + (kind === "boss" ? 0 : wave * 4), speed: settings.speed + Math.min(45, wave * 2.5), reward: settings.reward });
+    zombie.setData({ kind, hp: settings.hp + (kind === "boss" ? 0 : wave * 4), speed: settings.speed + Math.min(45, wave * 2.5), reward: settings.reward, drift: settings.drift });
   }
 
   function fireWeapon(time) {
     const weapon = weapons[selectedWeapon];
-    const baseAngle = Phaser.Math.Angle.Between(player.x, player.y, aimX, aimY);
+    const baseAngle = -Math.PI / 2;
     for (let i = 0; i < weapon.pellets; i += 1) {
       const offset = weapon.pellets === 1
         ? Phaser.Math.FloatBetween(-weapon.spread, weapon.spread)
@@ -230,40 +242,20 @@
   function destroyZombie(zombie) {
     if (!zombie.active) return;
     const kind = zombie.getData("kind");
-    const dropX = zombie.x;
-    const dropY = zombie.y;
     combo += 1;
     comboElapsed = 2400;
     score += Math.round(zombie.getData("reward") * (1 + Math.min(20, combo) * 0.08));
     zombie.destroy();
-    if (Math.random() < 0.08 && kind !== "boss") {
-      const medkit = pickups.create(dropX, dropY, "medkit").setDepth(4);
-      medkit.setData("expires", scene.time.now + 10000);
-    }
     if (kind === "boss") statusEl.textContent = `웨이브 ${wave} 보스 격파!`;
     syncUi();
   }
 
   function onPlayerHit(currentPlayer, zombie) {
-    if (scene.time.now < invulnerableUntil || gameState !== "running" || !zombie.active) return;
-    const damage = zombie.getData("kind") === "boss" ? 24 : 12;
-    const hp = Math.max(0, currentPlayer.getData("hp") - damage);
-    currentPlayer.setData("hp", hp);
-    invulnerableUntil = scene.time.now + 850;
+    if (gameState !== "running" || !zombie.active) return;
     combo = 0;
     scene.cameras.main.shake(220, 0.012);
-    statusEl.textContent = `좀비에게 공격받았습니다. 체력 -${damage}`;
-    if (zombie.getData("kind") !== "boss") zombie.destroy();
-    if (hp <= 0) endGame();
-    syncUi();
-  }
-
-  function onPickup(currentPlayer, pickup) {
-    if (!pickup.active) return;
-    currentPlayer.setData("hp", Math.min(100, currentPlayer.getData("hp") + 25));
-    pickup.destroy();
-    statusEl.textContent = "의료 키트 획득 · 체력 +25";
-    syncUi();
+    zombie.destroy();
+    endGame("좀비가 군인과 충돌했습니다.");
   }
 
   function clearGroup(group) {
@@ -274,8 +266,8 @@
     if (!scene || !player) return;
     clearGroup(zombies);
     clearGroup(bullets);
-    clearGroup(pickups);
-    player.setPosition(W / 2, H / 2).setVelocity(0, 0).setAlpha(1).setData("hp", 100);
+    player.setPosition(W / 2, H - 42).setVelocity(0, 0).setAlpha(1);
+    player.rotation = -Math.PI / 2;
     score = 0;
     wave = 1;
     waveElapsed = 0;
@@ -283,9 +275,8 @@
     combo = 0;
     comboElapsed = 0;
     nextShotAt = 0;
-    invulnerableUntil = 0;
-    aimX = W - 80;
-    aimY = H / 2;
+    targetX = W / 2;
+    pointerControls = false;
     gameState = "idle";
     scene.physics.world.resume();
     syncUi("대기 중");
@@ -314,14 +305,14 @@
     } else if (gameState === "paused") startGame();
   }
 
-  function endGame() {
+  function endGame(reason = "도시 방어에 실패했습니다.") {
     if (gameState === "over") return;
     gameState = "over";
     player.setVelocity(0, 0);
     scene.physics.world.pause();
     if (score > best) { best = score; localStorage.setItem("zombiShotBest", String(best)); }
     overlayTitle.textContent = "도시가 함락됐습니다";
-    overlayText.textContent = `최종 ${score}점 · 웨이브 ${wave} · 최고 ${best}점. 무기를 바꿔 다시 도전하세요.`;
+    overlayText.textContent = `${reason} 최종 ${score}점 · 웨이브 ${wave} · 최고 ${best}점. 다시 방어해 보세요.`;
     overlayStartBtn.textContent = "다시 시작";
     overlay.classList.remove("hidden");
     syncUi("게임 오버");
@@ -339,21 +330,18 @@
     bestEl.textContent = String(Math.max(best, score));
     waveEl.textContent = String(wave);
     comboEl.textContent = String(combo);
-    const hp = player ? player.getData("hp") : 100;
-    hpText.textContent = `${hp} / 100`;
-    hpBar.style.width = `${clamp(hp, 0, 100)}%`;
     if (message) statusEl.textContent = message;
   }
 
   document.addEventListener("keydown", (event) => {
     heldKeys[event.code] = true;
-    if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Space"].includes(event.code)) event.preventDefault();
+    if (["ArrowLeft", "ArrowRight", "Space"].includes(event.code)) event.preventDefault();
     if (event.code === "Digit1") selectWeapon("pistol");
     if (event.code === "Digit2") selectWeapon("rifle");
     if (event.code === "Digit3") selectWeapon("shotgun");
     if (event.code === "KeyP") togglePause();
     if (event.code === "KeyF") toggleFullscreen();
-    if ((event.code === "Space" || event.code.startsWith("Arrow")) && (gameState === "idle" || gameState === "over")) startGame();
+    if ((event.code === "Space" || event.code === "ArrowLeft" || event.code === "ArrowRight") && (gameState === "idle" || gameState === "over")) startGame();
   });
   document.addEventListener("keyup", (event) => { heldKeys[event.code] = false; });
 
@@ -377,7 +365,7 @@
     if (gameState === "paused") scene.scene.resume();
     resetGame();
     overlayTitle.textContent = "도시 최후의 생존자";
-    overlayText.textContent = "WASD로 이동하고 마우스로 조준한 뒤 클릭해 사격하세요. 모바일에서는 방향 버튼과 사격 버튼을 사용합니다.";
+    overlayText.textContent = "도로와 적이 계속 내려옵니다. A/D 또는 좌우 방향키로 아래쪽 군인을 움직이고 클릭이나 Space로 사격하세요.";
     overlayStartBtn.textContent = "게임 시작";
     overlay.classList.remove("hidden");
   });
