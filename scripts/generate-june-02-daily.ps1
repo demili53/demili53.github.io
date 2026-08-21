@@ -7,7 +7,6 @@ $sitemapPath = Join-Path $root "sitemap.xml"
 $blogSitemapPath = Join-Path $root "blog\sitemap-longform.xml"
 $aiPath = Join-Path $root "ai-ranking\index.html"
 $gamePath = Join-Path $root "game-ranking\index.html"
-$fruitPath = Join-Path $root "fruit-ranking\index.html"
 $webtoonPath = Join-Path $root "webtoon-ranking\index.html"
 $date = "2026-06-02"
 $iso = "2026-06-02T10:30:00+09:00"
@@ -136,7 +135,6 @@ function Update-MainPageDate {
 }
 
 Update-MainPageDate $aiPath
-Update-MainPageDate $fruitPath
 Update-MainPageDate $webtoonPath
 
 $gameRaw = Get-Content -Raw -Path $gamePath
@@ -149,7 +147,7 @@ if ($gameRaw -notmatch '"2026-06-02"') {
 Set-Content -Path $gamePath -Value $gameRaw -Encoding utf8
 
 $sitemapRaw = Get-Content -Raw -Path $sitemapPath
-foreach ($mainUrl in @("https://partygame.pe.kr/blog/","https://partygame.pe.kr/ai-ranking/","https://partygame.pe.kr/game-ranking/","https://partygame.pe.kr/fruit-ranking/","https://partygame.pe.kr/webtoon-ranking/")) {
+foreach ($mainUrl in @("https://partygame.pe.kr/blog/","https://partygame.pe.kr/ai-ranking/","https://partygame.pe.kr/game-ranking/","https://partygame.pe.kr/webtoon-ranking/")) {
   $escaped = [regex]::Escape($mainUrl)
   $sitemapRaw = [regex]::Replace($sitemapRaw, "(?s)(<loc>$escaped</loc>\s*<lastmod>)([^<]+)(</lastmod>)", { param($m) $m.Groups[1].Value + $iso + $m.Groups[3].Value })
 }

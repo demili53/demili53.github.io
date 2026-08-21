@@ -111,7 +111,7 @@ if ($newIndexEntries.Count -gt 0) {
   Set-Content -Path $indexPath -Value ($indexRaw.TrimEnd() + "`r`n") -Encoding utf8
 }
 
-foreach ($relativePath in @("ai-ranking\index.html", "fruit-ranking\index.html", "webtoon-ranking\index.html")) {
+foreach ($relativePath in @("ai-ranking\index.html", "webtoon-ranking\index.html")) {
   $path = Join-Path $root $relativePath
   $raw = Get-Content -Raw -Path $path
   $raw = $raw -replace '업데이트: 2026-\d{2}-\d{2}', "업데이트: $date"
@@ -132,7 +132,7 @@ if ($gameRaw -notmatch '"2026-06-30"') {
 Set-Content -Path $gamePath -Value ($gameRaw.TrimEnd() + "`r`n") -Encoding utf8
 
 $sitemapRaw = Get-Content -Raw -Path $sitemapPath
-foreach ($mainUrl in @("https://partygame.pe.kr/blog/", "https://partygame.pe.kr/ai-ranking/", "https://partygame.pe.kr/game-ranking/", "https://partygame.pe.kr/fruit-ranking/", "https://partygame.pe.kr/webtoon-ranking/")) {
+foreach ($mainUrl in @("https://partygame.pe.kr/blog/", "https://partygame.pe.kr/ai-ranking/", "https://partygame.pe.kr/game-ranking/", "https://partygame.pe.kr/webtoon-ranking/")) {
   $escaped = [regex]::Escape($mainUrl)
   $sitemapRaw = [regex]::Replace($sitemapRaw, "(?s)(<loc>$escaped</loc>\s*<lastmod>)([^<]+)(</lastmod>)", { param($m) $m.Groups[1].Value + $iso + $m.Groups[3].Value })
 }

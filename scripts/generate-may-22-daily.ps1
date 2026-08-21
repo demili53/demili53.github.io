@@ -7,7 +7,6 @@ $sitemapPath = Join-Path $root "sitemap.xml"
 $blogSitemapPath = Join-Path $root "blog\sitemap-longform.xml"
 $aiPath = Join-Path $root "ai-ranking\index.html"
 $gamePath = Join-Path $root "game-ranking\index.html"
-$fruitPath = Join-Path $root "fruit-ranking\index.html"
 $date = "2026-05-22"
 $iso = "2026-05-22T10:30:00+09:00"
 
@@ -271,7 +270,7 @@ $sitemapRaw = [regex]::Replace(
   '(?s)(<loc>https://partygame.pe.kr/blog/</loc>\s*<lastmod>)([^<]+)(</lastmod>)',
   { param($m) $m.Groups[1].Value + $iso + $m.Groups[3].Value }
 )
-foreach ($mainUrl in @("https://partygame.pe.kr/ai-ranking/", "https://partygame.pe.kr/game-ranking/", "https://partygame.pe.kr/fruit-ranking/")) {
+foreach ($mainUrl in @("https://partygame.pe.kr/ai-ranking/", "https://partygame.pe.kr/game-ranking/")) {
   $escaped = [regex]::Escape($mainUrl)
   $sitemapRaw = [regex]::Replace(
     $sitemapRaw,
@@ -357,11 +356,3 @@ if ($gameRaw -notmatch '"2026-05-22"') {
   $gameRaw = $gameRaw -replace 'const rankingByDate = \{\r?\n', $rankingInsertion
 }
 Set-Content -Path $gamePath -Value $gameRaw -Encoding utf8
-
-$fruitRaw = Get-Content -Raw -Path $fruitPath
-$fruitRaw = $fruitRaw -replace '업데이트: 2026-\d{2}-\d{2}', "업데이트: $date"
-$fruitRaw = $fruitRaw -replace '항산화 성분\(안토시아닌\)이 풍부해 노화 스트레스 관리에 도움\.', '안토시아닌 등 폴리페놀을 챙기기 좋아 베리류 섭취를 늘릴 때 우선 고려하기 좋음.'
-$fruitRaw = $fruitRaw -replace '펙틴 식이섬유가 장 건강과 혈당 완만화에 도움\.', '껍질째 먹으면 펙틴과 식물성 화합물을 함께 챙기기 좋은 일상 과일.'
-$fruitRaw = $fruitRaw -replace '비타민 C 밀도가 높고 소화 효소\(액티니딘\) 함유\.', '비타민 C 밀도가 높고 식후 과일로 활용하기 쉬운 새콤한 과일.'
-$fruitRaw = $fruitRaw -replace '비타민 C와 수분 보충에 좋아 피로 관리에 활용하기 쉬움\.', '비타민 C와 수분을 함께 보충하기 쉬운 대표 감귤류 과일.'
-Set-Content -Path $fruitPath -Value $fruitRaw -Encoding utf8

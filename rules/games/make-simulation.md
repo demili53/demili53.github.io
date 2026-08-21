@@ -13,17 +13,18 @@
    - 톤: 따뜻한 판타지 모험 테마. 낮/노을/밤/설원 등 바이옴별 색을 달리하고, 액센트는 에메랄드/앰버 계열 권장.
 
 2. **엔진/기술 규칙 (필수)**
-   - 반드시 **Excalibur.js**로 제작한다. (액터/씬/게임루프/카메라/충돌 시스템 활용)
-     - CDN: `https://cdn.jsdelivr.net/npm/excalibur@0.30.3/build/dist/excalibur.min.js` (전역 `ex`)
-   - 캔버스 id는 `gameCanvas`, `displayMode: ex.DisplayMode.FitContainer`, `pointerScope: ex.PointerScope.Canvas`.
+   - 반드시 **Phaser**로 제작한다. (Scene/게임루프/입력/카메라/Arcade Physics 활용)
+     - 공식 문서: `https://phaser.io/tools/phaser-docs`
+     - CDN: `https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js` (전역 `Phaser`)
+   - 캔버스 id는 `gameCanvas`, `scale.mode: Phaser.Scale.FIT`, `scale.autoCenter: Phaser.Scale.CENTER_BOTH`로 설정한다.
    - 내부 해상도 권장: 가로형 여행에 맞춰 `640 x 480`(가로) 또는 `480 x 640`(세로 스크롤 여행) 중 하나로 고정하고 컨테이너 `aspect`를 일치시킨다.
    - 게임 영역에 Fullscreen API 기반 전체화면 버튼을 제공한다. `F` 키로 진입/해제할 수 있어야 하며, 전체화면에서도 게임 비율을 유지하고 종료 버튼이 보여야 한다.
-   - 충돌은 Excalibur 충돌 그룹/이벤트를 사용한다.
+   - 충돌은 Phaser Arcade Physics의 Group과 `collider`/`overlap` 콜백을 사용한다.
      - 그룹: `player`, `playerAttack`, `monster`, `monsterAttack`, `item`
      - 규칙: `playerAttack↔monster`, `player↔monster`, `player↔monsterAttack`, `player↔item`만 충돌하도록 collisionGroup을 구성한다. (같은 진영끼리는 충돌하지 않음)
-   - 무한 맵/오브젝트는 화면 밖으로 벗어난 청크·몬스터·아이템·투사체를 `kill()`(또는 풀 재사용)로 정리해 메모리와 프레임을 유지한다.
+   - 무한 맵/오브젝트는 화면 밖으로 벗어난 청크·몬스터·아이템·투사체를 `destroy()`(또는 Group 풀 재사용)로 정리해 메모리와 프레임을 유지한다.
    - 성능: 몬스터/아이템/투사체/파티클 수에 상한을 두고 오프스크린 정리로 저사양·모바일 프레임을 지킨다.
-   - 사이드바 "조작 방법" 하단에 `Powered by Excalibur.js`(https://excaliburjs.com/) 표기.
+   - 사이드바 "조작 방법" 하단에 `Powered by Phaser`(`https://phaser.io/tools/phaser-docs`) 표기.
 
 3. **맵 / 월드 생성 규칙 (무한 랜덤)**
    - 맵은 **절차적(procedural)으로 무한 생성**한다. 여행이 진행되는 방향으로 새 지형을 계속 이어 붙이고, 지나온 지형은 정리한다.
@@ -42,7 +43,7 @@
      - 착용 시 캐릭터 스프라이트에 무기/방어구가 눈에 보이게 반영되면 가산점. (최소한 색·아이콘 변화)
    - 이동: 포인터(마우스/터치)·키보드로 소년을 좌우(또는 상하)로 움직여 몬스터·함정을 피하고 아이템을 줍는다. 화면 경계 안으로 clamp.
    - 전투: 기본 자동 공격(전방/근처 몬스터 대상, 쿨다운). 무기 종류에 따라 근접 베기·원거리 투사체·범위 공격 등으로 구분한다.
-   - 피격: 몬스터 접촉/몬스터 공격에 맞으면 HP 감소 + 짧은 무적 깜빡임 + 화면 흔들림(`camera.shake`). HP가 0이 되면 게임오버.
+   - 피격: 몬스터 접촉/몬스터 공격에 맞으면 HP 감소 + 짧은 무적 깜빡임 + 화면 흔들림(`cameras.main.shake`). HP가 0이 되면 게임오버.
 
 5. **몬스터 / 전투 규칙**
    - 몬스터는 맵 진행에 따라 **랜덤으로 등장**한다. 최소 3종 이상 정의한다. (예)
@@ -96,7 +97,7 @@
      - 기존 게임 페이지 3-카드 상호 링크에도 노출.
 
 12. **검수 체크리스트**
-   - Excalibur CDN이 게임 스크립트보다 먼저 로드되는지 확인
+   - Phaser CDN이 게임 스크립트보다 먼저 로드되는지 확인
    - 맵이 무한·랜덤(시드 기반)으로 이어지고 오프스크린 청크가 정리되는지 확인
    - 바이옴 3종 이상 전환과 거리 기반 난이도 상승 확인
    - 소년 이동/자동 전투, 레벨업 성장, HP·EXP·스탯 HUD 반영 확인
@@ -107,6 +108,6 @@
    - 점수/거리 집계, 최고 기록 저장, 게임오버·다시하기(새 시드) 확인
    - 마우스/터치/키보드 조작 확인, 모바일 레이아웃·터치 하드닝 확인
    - 전체화면 버튼/`F` 키로 진입·해제되고 게임 비율과 종료 버튼이 유지되는지 확인
-   - `Powered by Excalibur.js` 표기, `/arcade/` 타일 + `sitemap.xml` 등록 확인
+   - `Powered by Phaser` 표기, `/arcade/` 타일 + `sitemap.xml` 등록 확인
    - SEO 태그(`title`, `description`, `canonical`, `og:*`) 확인
    - 배포 전: 인라인 스크립트 구문 검사 + (가능 시) 엔진으로 초기화/수 프레임 런타임 확인

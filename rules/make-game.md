@@ -1,20 +1,21 @@
 ## 아케이드 게임 페이지 작성 가이드
 
-- 버전: `2026-07-31`
+- 버전: `2026-08-21`
 - 기준: `/arcade/` 하위 브라우저 미니게임 (단일 HTML)
 
 1. **엔진 규칙 (필수)**
-   - 새 게임은 반드시 **Matter.js** 또는 **Excalibur.js** 게임 엔진을 사용해 제작한다.
+   - 새 게임은 반드시 **Matter.js** 또는 **Phaser** 게임 엔진을 사용해 제작한다.
      - **Matter.js**: 물리/충돌/래그돌 기반 게임 (예: 사람 계단 굴리기, 자동차 사고 시뮬레이션)
        - CDN: `https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.20.0/matter.min.js` (전역 `Matter`)
-     - **Excalibur.js**: 액터/씬/게임루프 기반 아케이드·액션 게임 (예: 똥피하기, 배그 에임연습)
-       - CDN: `https://cdn.jsdelivr.net/npm/excalibur@0.30.3/build/dist/excalibur.min.js` (전역 `ex`)
+     - **Phaser**: Scene/게임루프/입력/Arcade Physics 기반 아케이드·액션 게임
+       - 공식 문서: `https://phaser.io/tools/phaser-docs`
+       - CDN: `https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js` (전역 `Phaser`)
    - 두 엔진을 함께 사용해도 되지만, 최소 한 개 이상 반드시 포함한다.
    - 순수 `requestAnimationFrame` 루프나 수동 캔버스 렌더만으로 신규 게임을 만들지 않는다.
    - 엔진 스크립트는 인라인 게임 스크립트보다 **먼저** 로드한다 (`defer` 없이 동기 로드).
    - 사이드바 "조작 방법" 섹션 하단에 `Powered by <엔진명>` 링크를 표기한다.
      - Matter.js → `https://brm.io/matter-js/`
-     - Excalibur.js → `https://excaliburjs.com/`
+     - Phaser → `https://phaser.io/tools/phaser-docs`
 
 2. **기본 위치 및 구조**
    - 페이지 경로는 `/arcade/<game-slug>.html`을 사용한다. (예: `/arcade/car-crash.html`)
@@ -39,7 +40,7 @@
 5. **캔버스/게임 규칙**
    - 캔버스 id는 `gameCanvas`로 고정한다. (엔진에 이 캔버스를 연결)
    - 고정 내부 해상도를 정하고, 컨테이너에 맞춰 스케일링한다.
-     - Excalibur: `displayMode: ex.DisplayMode.FitContainer`, `pointerScope: ex.PointerScope.Canvas`
+     - Phaser: `scale.mode: Phaser.Scale.FIT`, `scale.autoCenter: Phaser.Scale.CENTER_BOTH`, `canvas: document.getElementById("gameCanvas")`
      - Matter: `Render` `options.pixelRatio: 1`, 컨테이너 aspect를 캔버스 `width/height` 비율과 일치시킨다.
    - `cursor`/`touch-action` 등 조작에 맞는 스타일을 캔버스에 적용한다. (`touch-action:none`)
    - 마우스와 터치 입력을 모두 지원한다.
@@ -64,7 +65,7 @@
    - 기존 게임 페이지의 3-카드 상호 링크에도 가능하면 새 게임을 노출한다.
 
 9. **검수 체크리스트**
-   - 엔진(Matter.js/Excalibur.js) CDN이 게임 스크립트보다 먼저 로드되는지 확인
+   - 엔진(Matter.js/Phaser) CDN이 게임 스크립트보다 먼저 로드되는지 확인
    - `/arcade/<game-slug>.html` 접근 및 게임 실행 확인
    - 마우스/터치 조작, 점수 집계, 최고 기록 저장, 다시하기 동작 확인
    - `Powered by <엔진>` 표기 확인
@@ -76,7 +77,7 @@
 10. **Firebase 앱 연동 규칙 (필수)**
    - 신규 `/arcade/` 게임 페이지에는 아래 Firebase Web SDK 모듈 스크립트를 한 번만 추가한다.
    - `initializeApp(firebaseConfig)` 호출은 페이지당 한 번만 실행하고, 반환된 앱으로 Analytics를 초기화한다.
-   - Firebase 모듈 스크립트는 일반 인라인 게임 스크립트와 분리한다. 게임 엔진의 전역 객체(`ex`, `Matter`) 초기화 순서에 영향을 주지 않도록 `<head>` 또는 게임 스크립트 앞에 배치한다.
+   - Firebase 모듈 스크립트는 일반 인라인 게임 스크립트와 분리한다. 게임 엔진의 전역 객체(`Phaser`, `Matter`) 초기화 순서에 영향을 주지 않도록 `<head>` 또는 게임 스크립트 앞에 배치한다.
    - 로컬 `file://` 실행 결과만으로 Analytics 성공 여부를 판단하지 않는다. Analytics는 배포된 HTTPS 주소에서 최종 확인한다.
    - 아래 웹 설정값은 Firebase 클라이언트 식별 정보다. Firebase Admin SDK 키, 서비스 계정 JSON, 개인키 등 서버 비밀정보는 HTML이나 저장소에 절대 추가하지 않는다.
    - 회원가입·로그인은 공용 `/account.html`에서 처리한다. 게임 페이지에서 별도 가입 폼을 중복 구현하지 말고 공통 네비게이션에 `회원 계정` 링크를 제공한다.

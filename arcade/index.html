@@ -11,21 +11,21 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="stylesheet" href="/styles/site-theme.css">
 <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="PC와 모바일 브라우저에서 바로 즐기는 온라인 게임 모음. Phaser 똥피하기 게임 2, 카드 오토배틀러, 우주 슈팅, 물리 게임과 에임연습을 설치 없이 플레이하세요.">
-  <meta name="keywords" content="온라인 PC게임, 똥피하기 게임 2, Phaser 게임, 판타지 카드게임, 오토배틀러, 우주 슈팅 게임, 다마고치 키우기, 자동차 충돌 게임, 래그돌 물리 게임, 지렁이 게임, 에임연습, 브라우저 게임, partygame">
+  <meta name="description" content="PC와 모바일 브라우저에서 바로 즐기는 무료 슈팅 게임 모음. 우주 비행기 슈팅과 좀비 생존 슈팅을 설치 없이 플레이하세요.">
+  <meta name="keywords" content="온라인 PC게임,우주 슈팅 게임,비행기 게임,좀비 슈팅,생존 게임,브라우저 게임,partygame">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#0f172a">
   <link rel="canonical" href="https://partygame.pe.kr/arcade/">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="PartyGame">
-  <meta property="og:title" content="온라인 PC게임 | 브라우저 게임 모음">
-  <meta property="og:description" content="카드 오토배틀러와 다양한 미니게임을 PC 브라우저에서 바로 플레이하세요.">
+  <meta property="og:title" content="온라인 PC게임 | 무료 슈팅 게임">
+  <meta property="og:description" content="설치 없이 즐기는 우주 비행기·좀비 생존 슈팅 게임입니다.">
   <meta property="og:url" content="https://partygame.pe.kr/arcade/">
   <meta property="og:image" content="https://partygame.pe.kr/site-share.png">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="온라인 PC게임 | 브라우저 게임 모음">
-  <meta name="twitter:description" content="설치 없이 즐기는 카드 전략 게임과 브라우저 미니게임">
+  <meta name="twitter:title" content="온라인 PC게임 | 무료 슈팅 게임">
+  <meta name="twitter:description" content="설치 없이 즐기는 우주 비행기·좀비 생존 슈팅 게임">
   <meta name="twitter:image" content="https://partygame.pe.kr/site-share.png">
   <meta name="google-adsense-account" content="ca-pub-1087435977438565">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565" crossorigin="anonymous"></script>
@@ -39,21 +39,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     .game-tile::after{content:"";position:absolute;right:-3rem;top:-4rem;width:11rem;height:11rem;border-radius:999px;background:rgba(255,255,255,.08)}
     .game-tile:hover::before{opacity:1;transform:scale(1.02)}
     .game-tile:hover .play-cta{transform:translateX(.25rem);background:#f8fafc;color:#0f172a}
-    .snake-tile::before{background:linear-gradient(135deg,rgba(8,145,178,.34),rgba(16,185,129,.16) 52%,rgba(15,23,42,.08))}
-    .aim-tile::before{background:linear-gradient(135deg,rgba(220,38,38,.30),rgba(245,158,11,.13) 52%,rgba(15,23,42,.08))}
-    .poop-tile::before{background:linear-gradient(135deg,rgba(217,119,6,.34),rgba(180,83,9,.16) 52%,rgba(15,23,42,.08))}
-    .poop2-tile::before{background:linear-gradient(135deg,rgba(245,158,11,.42),rgba(124,58,237,.25) 55%,rgba(15,23,42,.08))}
-    .physics-tile::before{background:linear-gradient(135deg,rgba(139,92,246,.34),rgba(99,102,241,.16) 52%,rgba(15,23,42,.08))}
-    .crash-tile::before{background:linear-gradient(135deg,rgba(249,115,22,.34),rgba(220,38,38,.16) 52%,rgba(15,23,42,.08))}
-    .raise-tile::before{background:linear-gradient(135deg,rgba(20,184,166,.34),rgba(16,185,129,.16) 52%,rgba(15,23,42,.08))}
     .shot-tile::before{background:linear-gradient(135deg,rgba(34,211,238,.34),rgba(79,70,229,.16) 52%,rgba(15,23,42,.08))}
-    .card-tile::before{background:linear-gradient(135deg,rgba(147,51,234,.38),rgba(236,72,153,.17) 52%,rgba(15,23,42,.08))}
+    .zombi-shot-tile::before{background:linear-gradient(135deg,rgba(22,163,74,.38),rgba(127,29,29,.22) 55%,rgba(15,23,42,.08))}
     .tile-inner{position:relative;z-index:1}
     .tile-icon{display:inline-flex;width:3rem;height:3rem;align-items:center;justify-content:center;border-radius:1rem;border:1px solid rgba(255,255,255,.16);background:rgba(2,6,23,.42);font-size:1.55rem;box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
     .play-cta{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;border-radius:.85rem;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.1);padding:.78rem 1rem;font-size:.9rem;font-weight:800;color:#f8fafc;transition:transform .2s ease,background .2s ease,color .2s ease}
     .feature-chip{border-radius:.75rem;border:1px solid rgba(255,255,255,.12);background:rgba(2,6,23,.38);padding:.55rem .7rem;text-align:center}
   </style>
-  <title>온라인 PC게임 | 브라우저 게임 모음</title>
+  <title>온라인 PC게임 | 무료 슈팅 게임</title>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-950 via-zinc-900 to-emerald-950 text-slate-50">
 <!-- Google Tag Manager (noscript) -->
@@ -69,7 +62,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <a href="/arcade/" aria-current="page" class="px-3 py-2 rounded-full border border-cyan-200/70 bg-white/10 text-cyan-100">온라인 PC게임</a>
         <a href="/ai-ranking/" class="px-3 py-2 rounded-full border border-emerald-200/60 text-emerald-100 hover:bg-white/10 transition">AI 순위</a>
         <a href="/game-ranking/" class="px-3 py-2 rounded-full border border-amber-200/60 text-amber-100 hover:bg-white/10 transition">게임 순위</a>
-        <a href="/fruit-ranking/" class="px-3 py-2 rounded-full border border-lime-200/60 text-lime-100 hover:bg-white/10 transition">과일 순위</a>
         <a href="/webtoon-ranking/" class="px-3 py-2 rounded-full border border-rose-200/60 text-rose-100 hover:bg-white/10 transition">웹툰 순위</a>
         <a href="/account.html" class="px-3 py-2 rounded-full border border-cyan-200/50 text-cyan-100 hover:bg-white/10 transition">회원 계정</a>
         <a href="/contact.html" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">문의하기</a>
@@ -77,48 +69,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-2xl md:p-8">
         <p class="text-xs uppercase tracking-[0.28em] text-cyan-200">Online PC Games</p>
         <h1 class="mt-2 text-3xl font-bold md:text-4xl">온라인 PC게임</h1>
-        <p class="mt-3 max-w-2xl text-sm leading-relaxed text-slate-300">설치 없이 PC 브라우저에서 바로 플레이할 수 있는 게임 모음입니다. 카드 전략 오토배틀러, 우주 슈팅, 다마고치 키우기, 물리 시뮬레이션과 점수 경쟁 게임을 한곳에서 즐길 수 있습니다.</p>
+        <p class="mt-3 max-w-2xl text-sm leading-relaxed text-slate-300">설치 없이 PC와 모바일 브라우저에서 바로 플레이할 수 있는 우주 비행기 슈팅과 좀비 생존 슈팅 게임입니다.</p>
       </div>
     </header>
 
-    <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      <a href="/arcade/poop-dodge-2.html" class="game-tile poop2-tile flex flex-col justify-between border border-amber-200/60 bg-white/5 p-5 transition">
+    <section class="grid gap-4 md:grid-cols-2">
+      <a href="/arcade/zombi-shot.html" class="game-tile zombi-shot-tile flex flex-col justify-between border border-green-200/50 bg-white/5 p-5 transition">
         <div class="tile-inner">
           <div class="flex items-center justify-between gap-3">
-            <span class="tile-icon" aria-hidden="true">🏃</span>
-            <span class="rounded-full border border-amber-200/50 px-2 py-1 text-xs text-amber-100">NEW · PC·모바일</span>
+            <span class="tile-icon" aria-hidden="true">🧟</span>
+            <span class="rounded-full border border-green-200/50 px-2 py-1 text-xs text-green-100">NEW · PC·모바일</span>
           </div>
-          <div class="mt-5 text-xs font-semibold uppercase tracking-widest text-amber-100">Phaser Survival</div>
-          <h2 class="mt-4 text-2xl font-bold text-white">똥피하기 게임 2</h2>
-          <p class="mt-3 text-sm leading-relaxed text-slate-300">대시 무적과 비누 보호막을 활용해 단계별 똥비를 피하고 콤보 점수를 쌓는 Phaser 생존 게임입니다.</p>
+          <div class="mt-5 text-xs font-semibold uppercase tracking-widest text-green-100">Survival Shooter</div>
+          <h2 class="mt-4 text-2xl font-bold text-white">좀비 슈팅: 라스트 시티</h2>
+          <p class="mt-3 text-sm leading-relaxed text-slate-300">세 가지 무기를 바꿔가며 폐허가 된 도시를 포위한 좀비 웨이브와 거대 변종을 막는 생존 게임입니다.</p>
         </div>
         <div class="tile-inner mt-6 space-y-4">
           <div class="grid grid-cols-3 gap-2 text-xs text-slate-300">
-            <span class="feature-chip">대시</span>
-            <span class="feature-chip">보호막</span>
-            <span class="feature-chip">콤보</span>
+            <span class="feature-chip">3종 무기</span>
+            <span class="feature-chip">웨이브</span>
+            <span class="feature-chip">보스전</span>
           </div>
-          <span class="play-cta w-full">똥피하기 2 플레이 <span aria-hidden="true">→</span></span>
-        </div>
-      </a>
-
-      <a href="/arcade/fantagia-card.html" class="game-tile card-tile flex flex-col justify-between border border-purple-200/40 bg-white/5 p-5 transition">
-        <div class="tile-inner">
-          <div class="flex items-center justify-between gap-3">
-            <span class="tile-icon" aria-hidden="true">🔮</span>
-            <span class="rounded-full border border-purple-200/40 px-2 py-1 text-xs text-purple-100">PC·모바일</span>
-          </div>
-          <div class="mt-5 text-xs font-semibold uppercase tracking-widest text-purple-100">Card Strategy</div>
-          <h2 class="mt-4 text-2xl font-bold text-white">Fantagia Card</h2>
-          <p class="mt-3 text-sm leading-relaxed text-slate-300">판타지 카드를 영입하고 3×2 진형과 세력 공명을 완성해 7명의 AI와 겨루는 오토배틀러입니다.</p>
-        </div>
-        <div class="tile-inner mt-6 space-y-4">
-          <div class="grid grid-cols-3 gap-2 text-xs text-slate-300">
-            <span class="feature-chip">카드영입</span>
-            <span class="feature-chip">자동전투</span>
-            <span class="feature-chip">8인지휘관</span>
-          </div>
-          <span class="play-cta w-full">Fantagia Card 플레이 <span aria-hidden="true">→</span></span>
+          <span class="play-cta w-full">좀비 슈팅 플레이 <span aria-hidden="true">→</span></span>
         </div>
       </a>
 
@@ -142,125 +114,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
       </a>
 
-      <a href="/arcade/tamagotchi.html" class="game-tile raise-tile flex flex-col justify-between border border-teal-200/40 bg-white/5 p-5 transition">
-        <div class="tile-inner">
-          <div class="flex items-center justify-between gap-3">
-            <span class="tile-icon" aria-hidden="true">🥚</span>
-            <span class="rounded-full border border-teal-200/40 px-2 py-1 text-xs text-teal-100">PC·모바일</span>
-          </div>
-          <div class="mt-5 text-xs font-semibold uppercase tracking-widest text-teal-100">Raising</div>
-          <h2 class="mt-4 text-2xl font-bold text-white">다마고치 키우기</h2>
-          <p class="mt-3 text-sm leading-relaxed text-slate-300">밥 주고 놀아주고 씻겨서 알에서 어른까지 펫을 건강하게 키우는 Excalibur.js 육성 게임입니다.</p>
-        </div>
-        <div class="tile-inner mt-6 space-y-4">
-          <div class="grid grid-cols-3 gap-2 text-xs text-slate-300">
-            <span class="feature-chip">육성</span>
-            <span class="feature-chip">돌보기</span>
-            <span class="feature-chip">성장단계</span>
-          </div>
-          <span class="play-cta w-full">다마고치 키우기 플레이 <span aria-hidden="true">→</span></span>
-        </div>
-      </a>
-
-      <a href="/arcade/car-crash.html" class="game-tile crash-tile flex flex-col justify-between border border-orange-200/40 bg-white/5 p-5 transition">
-        <div class="tile-inner">
-          <div class="flex items-center justify-between gap-3">
-            <span class="tile-icon" aria-hidden="true">🚗</span>
-            <span class="rounded-full border border-orange-200/40 px-2 py-1 text-xs text-orange-100">PC·모바일</span>
-          </div>
-          <div class="mt-5 text-xs font-semibold uppercase tracking-widest text-orange-100">Crash</div>
-          <h2 class="mt-4 text-2xl font-bold text-white">자동차 사고 시뮬레이션</h2>
-          <p class="mt-3 text-sm leading-relaxed text-slate-300">차종과 속도를 설정하고 벽에 충돌시켜 지붕과 운전자를 날려버리는 Matter.js 물리 크래시 게임입니다.</p>
-        </div>
-        <div class="tile-inner mt-6 space-y-4">
-          <div class="grid grid-cols-3 gap-2 text-xs text-slate-300">
-            <span class="feature-chip">물리엔진</span>
-            <span class="feature-chip">충돌</span>
-            <span class="feature-chip">차종설정</span>
-          </div>
-          <span class="play-cta w-full">사고 시뮬레이션 플레이 <span aria-hidden="true">→</span></span>
-        </div>
-      </a>
-
-      <a href="/arcade/stair-tumble.html" class="game-tile physics-tile flex flex-col justify-between border border-violet-200/40 bg-white/5 p-5 transition">
-        <div class="tile-inner">
-          <div class="flex items-center justify-between gap-3">
-            <span class="tile-icon" aria-hidden="true">🪜</span>
-            <span class="rounded-full border border-violet-200/40 px-2 py-1 text-xs text-violet-100">PC·모바일</span>
-          </div>
-          <div class="mt-5 text-xs font-semibold uppercase tracking-widest text-violet-100">Physics</div>
-          <h2 class="mt-4 text-2xl font-bold text-white">사람 계단 굴리기</h2>
-          <p class="mt-3 text-sm leading-relaxed text-slate-300">래그돌 인형을 잡아 계단 아래로 던지고 멀리·많이 굴러떨어뜨리는 Matter.js 물리 게임입니다.</p>
-        </div>
-        <div class="tile-inner mt-6 space-y-4">
-          <div class="grid grid-cols-3 gap-2 text-xs text-slate-300">
-            <span class="feature-chip">물리엔진</span>
-            <span class="feature-chip">래그돌</span>
-            <span class="feature-chip">점수경쟁</span>
-          </div>
-          <span class="play-cta w-full">계단 굴리기 플레이 <span aria-hidden="true">→</span></span>
-        </div>
-      </a>
-
-      <a href="/arcade/poop-dodge.html" class="game-tile poop-tile flex flex-col justify-between border border-amber-200/40 bg-white/5 p-5 transition">
-        <div class="tile-inner">
-          <div class="flex items-center justify-between gap-3">
-            <span class="tile-icon" aria-hidden="true">💩</span>
-            <span class="rounded-full border border-amber-200/40 px-2 py-1 text-xs text-amber-100">PC·모바일</span>
-          </div>
-          <div class="mt-5 text-xs font-semibold uppercase tracking-widest text-amber-100">Dodge</div>
-          <h2 class="mt-4 text-2xl font-bold text-white">똥피하기 게임</h2>
-          <p class="mt-3 text-sm leading-relaxed text-slate-300">마우스나 터치로 캐릭터를 움직여 사방에서 날아오는 똥을 피하는 회피 게임입니다.</p>
-        </div>
-        <div class="tile-inner mt-6 space-y-4">
-          <div class="grid grid-cols-3 gap-2 text-xs text-slate-300">
-            <span class="feature-chip">마우스</span>
-            <span class="feature-chip">회피</span>
-            <span class="feature-chip">생존시간</span>
-          </div>
-          <span class="play-cta w-full">똥피하기 플레이 <span aria-hidden="true">→</span></span>
-        </div>
-      </a>
-
-      <a href="/arcade/snake-game.html" class="game-tile snake-tile flex flex-col justify-between border border-cyan-200/40 bg-white/5 p-5 transition">
-        <div class="tile-inner">
-          <div class="flex items-center justify-between gap-3">
-            <span class="tile-icon" aria-hidden="true">↗</span>
-            <span class="rounded-full border border-cyan-200/40 px-2 py-1 text-xs text-cyan-100">PC 브라우저</span>
-          </div>
-          <div class="mt-5 text-xs font-semibold uppercase tracking-widest text-cyan-100">Classic</div>
-          <h2 class="mt-4 text-2xl font-bold text-white">지렁이 게임</h2>
-          <p class="mt-3 text-sm leading-relaxed text-slate-300">방향키와 WASD로 먹이를 먹고 몸을 길게 늘리는 클래식 점수 경쟁 게임입니다.</p>
-        </div>
-        <div class="tile-inner mt-6 space-y-4">
-          <div class="grid grid-cols-3 gap-2 text-xs text-slate-300">
-            <span class="feature-chip">방향키</span>
-            <span class="feature-chip">WASD</span>
-            <span class="feature-chip">최고점수</span>
-          </div>
-          <span class="play-cta w-full">지렁이 게임 플레이 <span aria-hidden="true">→</span></span>
-        </div>
-      </a>
-
-      <a href="/arcade/recoil-aim-trainer.html" class="game-tile aim-tile flex flex-col justify-between border border-red-200/40 bg-white/5 p-5 transition">
-        <div class="tile-inner">
-          <div class="flex items-center justify-between gap-3">
-            <span class="tile-icon" aria-hidden="true">◎</span>
-            <span class="rounded-full border border-red-200/40 px-2 py-1 text-xs text-red-100">PC 브라우저</span>
-          </div>
-          <div class="mt-5 text-xs font-semibold uppercase tracking-widest text-red-100">Shooter</div>
-          <h2 class="mt-4 text-2xl font-bold text-white">배그 에임연습</h2>
-          <p class="mt-3 text-sm leading-relaxed text-slate-300">연사 반동을 마우스로 제어하며 표적을 맞히는 팬 메이드 슈팅 훈련 게임입니다.</p>
-        </div>
-        <div class="tile-inner mt-6 space-y-4">
-          <div class="grid grid-cols-3 gap-2 text-xs text-slate-300">
-            <span class="feature-chip">마우스</span>
-            <span class="feature-chip">반동제어</span>
-            <span class="feature-chip">스테이지</span>
-          </div>
-          <span class="play-cta w-full">배그 에임연습 플레이 <span aria-hidden="true">→</span></span>
-        </div>
-      </a>
     </section>
 
     <footer class="mt-6 border-t border-white/10 pt-5 text-sm text-slate-300">

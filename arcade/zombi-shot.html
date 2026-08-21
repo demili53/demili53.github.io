@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-T2KDKBN8');</script>
+<!-- End Google Tag Manager -->
+  <link rel="stylesheet" href="/styles/site-theme.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="폐허가 된 도시에서 몰려오는 좀비를 처치하는 무료 브라우저 슈팅 게임. PC와 모바일에서 이동하고 조준해 웨이브와 보스전에 도전하세요.">
+  <meta name="keywords" content="좀비 게임,좀비 슈팅,총게임,생존 게임,브라우저 게임,온라인 PC게임,모바일 게임,Phaser">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#07130d">
+  <link rel="canonical" href="https://partygame.pe.kr/arcade/zombi-shot.html">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="PartyGame">
+  <meta property="og:title" content="좀비 슈팅: 라스트 시티 | 무료 브라우저 게임">
+  <meta property="og:description" content="무기를 바꿔가며 몰려오는 좀비 웨이브와 보스를 막는 탑다운 생존 슈팅 게임입니다.">
+  <meta property="og:url" content="https://partygame.pe.kr/arcade/zombi-shot.html">
+  <meta property="og:image" content="https://partygame.pe.kr/site-share.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="좀비 슈팅: 라스트 시티">
+  <meta name="twitter:description" content="PC와 모바일에서 바로 플레이하는 좀비 생존 슈팅 게임">
+  <meta name="twitter:image" content="https://partygame.pe.kr/site-share.png">
+  <meta name="google-adsense-account" content="ca-pub-1087435977438565">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565" crossorigin="anonymous"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-analytics.js";
+    const firebaseConfig = {
+      apiKey: "AIzaSyCtCAly3XVVZTu0szIHAoQwYu0QaaXoNRM",
+      authDomain: "gitpage-93dfb.firebaseapp.com",
+      projectId: "gitpage-93dfb",
+      storageBucket: "gitpage-93dfb.firebasestorage.app",
+      messagingSenderId: "590509724278",
+      appId: "1:590509724278:web:cb26ed63e8733ffa240557",
+      measurementId: "G-0JPQ9J5Y18"
+    };
+    const app = initializeApp(firebaseConfig);
+    getAnalytics(app);
+  </script>
+  <style>
+    .skip-link{position:absolute;left:-999px;top:1rem;z-index:50;border-radius:.75rem;background:#f8fafc;color:#0f172a;padding:.75rem 1rem;font-weight:700}
+    .skip-link:focus{left:1rem}
+    :focus-visible{outline:2px solid rgba(74,222,128,.95);outline-offset:3px}
+    .arcade-board{touch-action:none;cursor:crosshair;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+    #gameViewport{overscroll-behavior:contain}
+    .weapon-btn[aria-pressed="true"]{border-color:#4ade80;background:rgba(22,101,52,.38);color:#dcfce7}
+    .mobile-key{touch-action:none;user-select:none;min-width:3rem;min-height:3rem}
+    #gameShell:fullscreen{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100vw;height:100vh;max-width:none;border:0;border-radius:0;background:#020807;padding:.5rem}
+    #gameShell:fullscreen #gameViewport{width:min(calc(100vw - 1rem),calc((100vh - 8rem) * 1.5));max-width:none}
+    #gameShell:fullscreen #gameControls{width:min(calc(100vw - 1rem),calc((100vh - 8rem) * 1.5))}
+  </style>
+  <title>좀비 슈팅: 라스트 시티 | 무료 브라우저 게임</title>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-950 via-emerald-950 to-zinc-950 text-slate-50">
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T2KDKBN8"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<a href="#mainContent" class="skip-link">본문 바로가기</a>
+  <main id="mainContent" class="mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-6 sm:px-6 lg:py-8">
+    <header class="mb-5 space-y-4">
+      <nav class="flex flex-wrap gap-2 text-sm" aria-label="주요 메뉴">
+        <a href="/" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">홈</a>
+        <a href="/blog/" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">블로그</a>
+        <a href="/arcade/" class="px-3 py-2 rounded-full border border-green-200/70 text-green-100 hover:bg-white/10 transition">온라인 PC게임</a>
+        <a href="/ai-ranking/" class="px-3 py-2 rounded-full border border-emerald-200/60 text-emerald-100 hover:bg-white/10 transition">AI 순위</a>
+        <a href="/game-ranking/" class="px-3 py-2 rounded-full border border-amber-200/60 text-amber-100 hover:bg-white/10 transition">게임 순위</a>
+        <a href="/webtoon-ranking/" class="px-3 py-2 rounded-full border border-rose-200/60 text-rose-100 hover:bg-white/10 transition">웹툰 순위</a>
+        <a href="/account.html" class="px-3 py-2 rounded-full border border-green-200/50 text-green-100 hover:bg-white/10 transition">회원 계정</a>
+        <a href="/contact.html" class="px-3 py-2 rounded-full border border-white/20 hover:bg-white/10 transition">문의하기</a>
+      </nav>
+      <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-[0.28em] text-green-300">Top-down Survival Shooter</p>
+          <h1 class="mt-2 text-3xl font-black md:text-4xl">좀비 슈팅: 라스트 시티</h1>
+          <p class="mt-2 max-w-3xl text-sm leading-relaxed text-slate-300">폐허가 된 도시에서 몰려오는 좀비를 처치하세요. 세 가지 무기를 바꾸고 회복 키트를 챙기며 최대한 오래 생존하면 됩니다.</p>
+        </div>
+        <div class="flex flex-wrap gap-2 text-sm">
+          <button id="startBtn" type="button" class="rounded-lg border border-green-200/60 px-4 py-2 font-semibold text-green-100 hover:bg-white/10 transition">시작</button>
+          <button id="pauseBtn" type="button" class="rounded-lg border border-white/20 px-4 py-2 text-slate-100 hover:bg-white/10 transition">일시정지</button>
+          <button id="resetBtn" type="button" class="rounded-lg border border-rose-200/50 px-4 py-2 text-rose-100 hover:bg-white/10 transition">다시하기</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="mb-5 grid gap-3 md:grid-cols-2">
+      <a href="/arcade/zombi-shot.html" aria-current="page" class="block rounded-2xl border border-green-200/50 bg-green-500/10 p-4 hover:bg-white/10 transition">
+        <div class="text-xs font-semibold uppercase tracking-widest text-green-200">Survival</div>
+        <h2 class="mt-2 text-xl font-bold text-white">좀비 슈팅: 라스트 시티</h2>
+        <p class="mt-2 text-sm text-slate-300">도시를 포위한 좀비 웨이브를 막는 탑다운 슈팅</p>
+      </a>
+      <a href="/arcade/space-shooter.html" class="block rounded-2xl border border-cyan-200/40 bg-white/5 p-4 hover:bg-white/10 transition">
+        <div class="text-xs font-semibold uppercase tracking-widest text-cyan-100">Shooter</div>
+        <h2 class="mt-2 text-xl font-bold text-white">우주 슈팅 게임</h2>
+        <p class="mt-2 text-sm text-slate-300">기체를 조종해 적과 보스를 돌파하는 세로 스크롤 슈팅</p>
+      </a>
+    </section>
+
+    <section class="grid flex-1 gap-5 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+      <div id="gameShell" class="rounded-2xl border border-green-200/20 bg-black/40 p-3 shadow-2xl sm:p-4">
+        <div id="gameViewport" class="relative mx-auto aspect-[3/2] w-full max-w-[min(94vw,720px)] overflow-hidden rounded-xl border border-green-200/20 bg-slate-950">
+          <canvas id="gameCanvas" width="720" height="480" class="arcade-board h-full w-full"></canvas>
+          <div id="gameOverlay" class="absolute inset-0 flex items-center justify-center bg-slate-950/85 p-6 text-center">
+            <div class="max-w-md space-y-3">
+              <p class="text-xs font-semibold uppercase tracking-[0.25em] text-green-300">Last City Emergency</p>
+              <h2 id="overlayTitle" class="text-2xl font-black text-green-100">도시 최후의 생존자</h2>
+              <p id="overlayText" class="text-sm leading-relaxed text-slate-200">WASD로 이동하고 마우스로 조준한 뒤 클릭해 사격하세요. 모바일에서는 방향 버튼과 사격 버튼을 사용합니다.</p>
+              <button id="overlayStartBtn" type="button" class="rounded-lg bg-green-300 px-6 py-2 font-black text-slate-950 hover:bg-green-200 transition">게임 시작</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="gameControls" class="mt-3 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 text-sm">
+            <div class="flex flex-wrap gap-2" aria-label="무기 선택">
+              <button type="button" class="weapon-btn rounded-lg border border-white/20 px-3 py-2" data-weapon="pistol" aria-pressed="true">1 권총</button>
+              <button type="button" class="weapon-btn rounded-lg border border-white/20 px-3 py-2" data-weapon="rifle" aria-pressed="false">2 소총</button>
+              <button type="button" class="weapon-btn rounded-lg border border-white/20 px-3 py-2" data-weapon="shotgun" aria-pressed="false">3 산탄총</button>
+            </div>
+            <button id="fullscreenBtn" type="button" class="rounded-lg border border-green-200/50 px-4 py-2 font-semibold text-green-100" aria-pressed="false">⛶ 전체화면 (F)</button>
+          </div>
+          <div class="flex items-center justify-between gap-4 md:hidden" aria-label="모바일 게임 조작">
+            <div class="grid grid-cols-3 gap-1">
+              <span></span><button type="button" class="mobile-key rounded-lg border border-white/20 bg-white/5" data-key="ArrowUp" aria-label="위로 이동">▲</button><span></span>
+              <button type="button" class="mobile-key rounded-lg border border-white/20 bg-white/5" data-key="ArrowLeft" aria-label="왼쪽 이동">◀</button><button type="button" class="mobile-key rounded-lg border border-white/20 bg-white/5" data-key="ArrowDown" aria-label="아래로 이동">▼</button><button type="button" class="mobile-key rounded-lg border border-white/20 bg-white/5" data-key="ArrowRight" aria-label="오른쪽 이동">▶</button>
+            </div>
+            <button id="mobileFireBtn" type="button" class="mobile-key h-20 w-20 rounded-full border-2 border-rose-300/70 bg-rose-500/20 font-black text-rose-100">FIRE</button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="grid gap-4">
+        <section class="rounded-2xl border border-white/10 bg-white/5 p-5">
+          <h2 class="text-lg font-semibold text-green-100">생존 기록</h2>
+          <div class="mt-4 grid grid-cols-2 gap-2 text-center">
+            <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3"><p class="text-xs text-slate-400">점수</p><p id="scoreEl" class="mt-1 text-2xl font-bold">0</p></div>
+            <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3"><p class="text-xs text-slate-400">최고</p><p id="bestEl" class="mt-1 text-2xl font-bold">0</p></div>
+            <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3"><p class="text-xs text-slate-400">웨이브</p><p id="waveEl" class="mt-1 text-2xl font-bold">1</p></div>
+            <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3"><p class="text-xs text-slate-400">콤보</p><p id="comboEl" class="mt-1 text-2xl font-bold">0</p></div>
+          </div>
+          <div class="mt-3 rounded-xl border border-white/10 bg-slate-950/40 p-3">
+            <div class="flex items-center justify-between text-xs"><span>체력</span><strong id="hpText">100 / 100</strong></div>
+            <div class="mt-2 h-2 overflow-hidden rounded-full bg-slate-800"><div id="hpBar" class="h-full w-full bg-gradient-to-r from-rose-500 to-green-400 transition-all"></div></div>
+          </div>
+          <p id="statusEl" class="mt-3 rounded-xl border border-white/10 bg-slate-950/40 px-3 py-2 text-sm text-slate-200" aria-live="polite">대기 중</p>
+        </section>
+
+        <section class="rounded-2xl border border-white/10 bg-white/5 p-5">
+          <h2 class="text-lg font-semibold text-green-100">조작 방법</h2>
+          <div class="mt-4 grid gap-2 text-sm text-slate-300">
+            <p>WASD·방향키: 생존자 이동</p>
+            <p>마우스 이동: 조준 · 클릭/Space: 사격</p>
+            <p>1·2·3: 권총·소총·산탄총 변경</p>
+            <p>P: 일시정지 · F: 전체화면</p>
+            <p>모바일: 방향 버튼 + FIRE, 화면 터치 조준</p>
+            <p>의료 키트를 획득하면 체력이 25 회복됩니다.</p>
+          </div>
+          <p class="mt-4 text-xs text-slate-500">Powered by <a href="https://phaser.io/tools/phaser-docs" target="_blank" rel="noopener noreferrer" class="text-green-200/80 underline">Phaser</a> 게임 엔진</p>
+        </section>
+      </aside>
+    </section>
+
+    <footer class="mt-6 border-t border-white/10 pt-5 text-sm text-slate-300">
+      <div class="flex flex-wrap gap-3">
+        <a href="/" class="hover:text-green-100">홈</a>
+        <a href="/blog/" class="hover:text-green-100">블로그</a>
+        <a href="/arcade/" class="hover:text-green-100">온라인 PC게임</a>
+        <a href="/game-ranking/" class="hover:text-green-100">게임 순위</a>
+        <a href="/contact.html" class="hover:text-green-100">문의하기</a>
+      </div>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
+  <script src="/scripts/zombi-shot-phaser.js"></script>
+</body>
+</html>

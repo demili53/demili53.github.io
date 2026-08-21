@@ -11,16 +11,17 @@
    - 톤: 우주/네온 다크 테마. 액센트 색은 시안/인디고 계열 권장.
 
 2. **엔진/기술 규칙 (필수)**
-   - 반드시 **Excalibur.js**로 제작한다. (액터/씬/게임루프/충돌 시스템 활용)
-     - CDN: `https://cdn.jsdelivr.net/npm/excalibur@0.30.3/build/dist/excalibur.min.js` (전역 `ex`)
-   - 캔버스 id는 `gameCanvas`, `displayMode: ex.DisplayMode.FitContainer`, `pointerScope: ex.PointerScope.Canvas`.
+   - 반드시 **Phaser**로 제작한다. (Scene/게임루프/입력/Arcade Physics 활용)
+     - 공식 문서: `https://phaser.io/tools/phaser-docs`
+     - CDN: `https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js` (전역 `Phaser`)
+   - 캔버스 id는 `gameCanvas`, `scale.mode: Phaser.Scale.FIT`, `scale.autoCenter: Phaser.Scale.CENTER_BOTH`로 설정한다.
    - 내부 해상도 권장: `480 x 640`(세로), 컨테이너는 `aspect-[3/4]`.
    - 게임 영역에 Fullscreen API 기반 전체화면 버튼을 제공한다. `F` 키로 진입/해제할 수 있어야 하며, 전체화면에서도 3:4 비율을 유지하고 종료 버튼이 보여야 한다.
-   - 충돌은 Excalibur 충돌 그룹/이벤트를 사용한다.
+   - 충돌은 Phaser Arcade Physics의 Group과 `collider`/`overlap` 콜백을 사용한다.
      - 그룹: `player`, `playerBullet`, `enemy`, `enemyBullet`, `item`
      - 규칙: `playerBullet↔enemy`, `player↔enemy`, `player↔enemyBullet`, `player↔item`만 충돌하도록 collisionGroup을 구성한다. (같은 진영끼리는 충돌하지 않음)
-   - 총알/적은 액터 풀(재사용) 또는 화면 밖 `kill()`로 정리한다.
-   - 사이드바 "조작 방법" 하단에 `Powered by Excalibur.js`(https://excaliburjs.com/) 표기.
+   - 총알/적은 Group 풀(재사용) 또는 화면 밖 `destroy()`로 정리한다.
+   - 사이드바 "조작 방법" 하단에 `Powered by Phaser`(`https://phaser.io/tools/phaser-docs`) 표기.
 
 3. **플레이어 규칙**
    - 첫 게임 시작 전에 플레이어 기체를 선택하게 한다. 최소 `파워형`, `균형형`, `스피드형` 3종을 제공하고 선택 결과가 외형과 실제 능력치에 반영되어야 한다.
@@ -31,7 +32,7 @@
    - 화면 하단 중앙에서 시작한다. 체력(HP) 또는 목숨(라이프) 중 하나로 생존을 관리한다. (권장: 라이프 3 + 피격 시 짧은 무적)
    - 이동: 포인터(마우스/터치)를 따라 기체가 부드럽게 이동. 화면 경계 안으로 clamp.
    - 사격: 기본 자동 연사(발사 간격 쿨다운). 스페이스/클릭 유지로도 발사 가능.
-   - 피격: 적 또는 적 탄에 맞으면 라이프 감소 + 무적 깜빡임 + 화면 흔들림(`camera.shake`).
+   - 피격: 적 또는 적 탄에 맞으면 라이프 감소 + 무적 깜빡임 + 화면 흔들림(`cameras.main.shake`).
    - 무기는 최소 4종을 제공하고 **집중형**과 **확산형** 두 타입으로 명확히 구분한다.
      - 집중형: 전방의 좁은 범위에 화력을 모아 보스·고체력 적에게 유리하다. (예: 펄스, 관통 레이저)
      - 확산형: 좌우 넓은 범위를 공격해 다수의 일반 적 처리에 유리하다. (예: 스프레드, 광역 플라즈마)
@@ -88,7 +89,7 @@
      - 기존 게임 페이지 3-카드 상호 링크에도 노출.
 
 11. **검수 체크리스트**
-   - Excalibur CDN이 게임 스크립트보다 먼저 로드되는지 확인
+   - Phaser CDN이 게임 스크립트보다 먼저 로드되는지 확인
    - 파워형·균형형·스피드형 기체 선택과 외형·능력치 차이 확인
    - 이동/자동연사, 서로 다른 4종 이상 무기, 8단계 이상 강화, 3종 이상 적, 웨이브 점증, 보스 등장 확인
    - 보스 위협 단계별 외형 진화와 부채꼴·유도·파동·회전 탄막의 순차 해금 확인
@@ -96,6 +97,6 @@
    - 파워업/라이프, 점수·콤보·최고 점수 저장, 게임오버·다시하기 확인
    - 마우스/터치/키보드 조작 확인, 모바일 레이아웃 확인
    - 전체화면 버튼/`F` 키로 진입·해제되고 3:4 게임 비율과 종료 버튼이 유지되는지 확인
-   - `Powered by Excalibur.js` 표기, `/arcade/` 타일 + `sitemap.xml` 등록 확인
+   - `Powered by Phaser` 표기, `/arcade/` 타일 + `sitemap.xml` 등록 확인
    - SEO 태그(`title`, `description`, `canonical`, `og:*`) 확인
    - 배포 전: 인라인 스크립트 구문 검사 + (가능 시) 엔진으로 초기화/수 프레임 런타임 확인

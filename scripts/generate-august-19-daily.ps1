@@ -85,7 +85,7 @@ $entries = foreach ($item in $items) {
 $indexRaw = $indexRaw -replace '(const posts = \[\r?\n)', ('$1' + (($entries -join ",`r`n") + ",`r`n"))
 Write-Utf8 $indexPath ($indexRaw.TrimEnd() + "`r`n")
 
-foreach ($relativePath in @("ai-ranking\index.html", "fruit-ranking\index.html", "webtoon-ranking\index.html")) {
+foreach ($relativePath in @("ai-ranking\index.html", "webtoon-ranking\index.html")) {
   $path = Join-Path $root $relativePath
   $raw = Get-Content -Raw -Encoding UTF8 $path
   $raw = $raw -replace '업데이트: 2026-\d{2}-\d{2}', "업데이트: $date"
@@ -107,7 +107,7 @@ Write-Utf8 $gamePath ($gameRaw.TrimEnd() + "`r`n")
 
 function Update-Sitemap($path, $priority) {
   $raw = Get-Content -Raw -Encoding UTF8 $path
-  foreach ($mainUrl in @("https://partygame.pe.kr/blog/", "https://partygame.pe.kr/ai-ranking/", "https://partygame.pe.kr/game-ranking/", "https://partygame.pe.kr/fruit-ranking/", "https://partygame.pe.kr/webtoon-ranking/")) {
+  foreach ($mainUrl in @("https://partygame.pe.kr/blog/", "https://partygame.pe.kr/ai-ranking/", "https://partygame.pe.kr/game-ranking/", "https://partygame.pe.kr/webtoon-ranking/")) {
     $escaped = [regex]::Escape($mainUrl)
     $raw = [regex]::Replace($raw, "(?s)(<loc>$escaped</loc>\s*<lastmod>)([^<]+)(</lastmod>)", { param($m) $m.Groups[1].Value + $iso + $m.Groups[3].Value })
   }
