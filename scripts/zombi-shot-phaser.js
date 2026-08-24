@@ -1,8 +1,8 @@
 (() => {
   "use strict";
 
-  const W = 720;
-  const H = 480;
+  const W = 480;
+  const H = 720;
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
   const el = (id) => document.getElementById(id);
   const scoreEl = el("scoreEl");
@@ -58,17 +58,41 @@
       g.fillStyle(0xe2e8f0, 1); g.fillRect(24, 17, 16, 6);
     });
 
-    const zombieTexture = (key, size, color, eyes, boss = false) => make(key, size, size, (g) => {
-      g.fillStyle(0x000000, 0.35); g.fillEllipse(size / 2 + 2, size * 0.78, size * 0.72, size * 0.22);
-      g.fillStyle(color, 1); g.fillCircle(size / 2, size / 2, size * 0.39);
-      g.fillStyle(eyes, 1); g.fillCircle(size * 0.39, size * 0.43, Math.max(2, size * 0.045)); g.fillCircle(size * 0.61, size * 0.43, Math.max(2, size * 0.045));
-      g.lineStyle(Math.max(2, size * 0.04), 0x1c1917, 1); g.lineBetween(size * 0.36, size * 0.62, size * 0.64, size * 0.59);
-      if (boss) { g.fillStyle(0xf97316, 1); g.fillRect(size * 0.12, size * 0.08, size * 0.76, 7); }
-    });
-    zombieTexture("zombie-walker", 38, 0x65a30d, 0xd9f99d);
-    zombieTexture("zombie-runner", 32, 0xeab308, 0xfef9c3);
-    zombieTexture("zombie-brute", 50, 0x15803d, 0xbbf7d0);
-    zombieTexture("zombie-boss", 82, 0x7f1d1d, 0xfecaca, true);
+    const zombieFrames = (key, width, height, skin, clothes, eyes, boss = false) => {
+      const poses = [-1, 0, 1, 0];
+      poses.forEach((pose, frame) => make(`${key}-${frame}`, width, height, (g) => {
+        const cx = width / 2;
+        const line = Math.max(3, width * 0.09);
+        const hipY = height * 0.68;
+        const footY = height * 0.94;
+        const swing = pose * width * 0.16;
+
+        g.fillStyle(0x000000, 0.3); g.fillEllipse(cx, height * 0.94, width * 0.72, height * 0.1);
+        g.lineStyle(line, skin, 1);
+        g.lineBetween(cx - width * 0.1, hipY, cx - width * 0.15 + swing, footY);
+        g.lineBetween(cx + width * 0.1, hipY, cx + width * 0.15 - swing, footY);
+        g.lineStyle(line * 0.86, skin, 1);
+        g.lineBetween(width * 0.28, height * 0.42, width * 0.12 - swing * 0.45, height * 0.68);
+        g.lineBetween(width * 0.72, height * 0.42, width * 0.88 + swing * 0.45, height * 0.68);
+
+        g.fillStyle(clothes, 1); g.fillRoundedRect(width * 0.24, height * 0.34, width * 0.52, height * 0.4, width * 0.11);
+        g.fillStyle(skin, 1); g.fillCircle(cx, height * 0.23, width * 0.23);
+        g.fillStyle(eyes, 1);
+        g.fillCircle(width * 0.42, height * 0.21, Math.max(2, width * 0.035));
+        g.fillCircle(width * 0.58, height * 0.21, Math.max(2, width * 0.035));
+        g.lineStyle(Math.max(2, width * 0.035), 0x1c1917, 1);
+        g.lineBetween(width * 0.39, height * 0.29, width * 0.61, height * 0.29);
+        g.fillStyle(0x7f1d1d, 0.75); g.fillRect(width * 0.3, height * 0.48, width * 0.18, height * 0.06);
+        if (boss) {
+          g.fillStyle(0xf97316, 1); g.fillRect(width * 0.2, height * 0.08, width * 0.6, Math.max(5, height * 0.055));
+          g.fillStyle(0xfbbf24, 0.7); g.fillCircle(cx, height * 0.52, width * 0.08);
+        }
+      }));
+    };
+    zombieFrames("zombie-walker", 42, 58, 0x84cc16, 0x365314, 0xd9f99d);
+    zombieFrames("zombie-runner", 36, 50, 0xeab308, 0x92400e, 0xfef9c3);
+    zombieFrames("zombie-brute", 54, 72, 0x22c55e, 0x14532d, 0xbbf7d0);
+    zombieFrames("zombie-boss", 86, 112, 0x991b1b, 0x450a0a, 0xfecaca, true);
 
     make("bullet-pistol", 10, 10, (g) => { g.fillStyle(0xfde68a, 1); g.fillCircle(5, 5, 4); });
     make("bullet-rifle", 10, 10, (g) => { g.fillStyle(0x86efac, 1); g.fillCircle(5, 5, 4); });
@@ -110,16 +134,16 @@
 
     zombies = this.physics.add.group({ maxSize: 40 });
     bullets = this.physics.add.group({ maxSize: 90 });
-    player = this.physics.add.image(W / 2, H - 42, "survivor").setDepth(10).setCollideWorldBounds(true);
+    player = this.physics.add.image(W / 2, H - 48, "survivor").setDepth(10).setCollideWorldBounds(true);
     player.body.setCircle(14, 6, 6);
     player.rotation = -Math.PI / 2;
 
     this.physics.add.overlap(bullets, zombies, onBulletHit, null, this);
     this.physics.add.overlap(player, zombies, onPlayerHit, null, this);
 
-    this.input.on("pointermove", (pointer) => { targetX = clamp(pointer.worldX, 20, W - 20); pointerControls = true; });
+    this.input.on("pointermove", (pointer) => { targetX = clamp(pointer.worldX, 60, W - 60); pointerControls = true; });
     this.input.on("pointerdown", (pointer) => {
-      targetX = clamp(pointer.worldX, 20, W - 20); pointerControls = true; pointerHeld = true;
+      targetX = clamp(pointer.worldX, 60, W - 60); pointerControls = true; pointerHeld = true;
       if (gameState === "idle" || gameState === "over") startGame();
     });
     this.input.on("pointerup", () => { pointerHeld = false; });
@@ -132,7 +156,7 @@
     const dt = Math.min(delta, 50);
     updateScrollingArena(dt);
     updatePlayer(time);
-    updateZombies();
+    updateZombies(time);
     cleanupObjects(time);
 
     waveElapsed += dt;
@@ -165,21 +189,28 @@
       player.setVelocityX(Math.abs(distance) < 3 ? 0 : clamp(distance * 8, -230, 230));
     } else player.setVelocityX(0);
     player.setVelocityY(0);
-    player.y = H - 42;
+    player.x = clamp(player.x, 60, W - 60);
+    player.y = H - 48;
     player.rotation = -Math.PI / 2;
     if ((pointerHeld || fireHeld || heldKeys.Space) && time >= nextShotAt) fireWeapon(time);
   }
 
-  function updateZombies() {
+  function updateZombies(time) {
     zombies.children.iterate((zombie) => {
       if (!zombie || !zombie.active) return;
       let drift = zombie.getData("drift");
-      if ((zombie.x < 18 && drift < 0) || (zombie.x > W - 18 && drift > 0)) {
+      if ((zombie.x < 62 && drift < 0) || (zombie.x > W - 62 && drift > 0)) {
         drift *= -1;
         zombie.setData("drift", drift);
       }
       zombie.setVelocity(drift, zombie.getData("speed"));
-      zombie.rotation = Math.PI / 2;
+      const frameDuration = zombie.getData("kind") === "runner" ? 85 : zombie.getData("kind") === "boss" ? 180 : 125;
+      const frame = Math.floor((time + zombie.getData("walkOffset")) / frameDuration) % 4;
+      if (frame !== zombie.getData("walkFrame")) {
+        zombie.setTexture(`${zombie.getData("textureBase")}-${frame}`);
+        zombie.setData("walkFrame", frame);
+      }
+      zombie.rotation = Math.sin((time + zombie.getData("walkOffset")) / frameDuration) * 0.035;
       if (zombie.y >= H - 8) {
         zombie.destroy();
         endGame("좀비가 방어선을 통과했습니다.");
@@ -195,7 +226,7 @@
   }
 
   function spawnPoint() {
-    return { x: Phaser.Math.Between(28, W - 28), y: -42 };
+    return { x: Phaser.Math.Between(66, W - 66), y: -70 };
   }
 
   function spawnZombie(forcedKind) {
@@ -203,15 +234,24 @@
     const roll = Math.random();
     const kind = forcedKind || (roll < 0.58 ? "walker" : roll < 0.86 ? "runner" : "brute");
     const settings = {
-      walker: { texture: "zombie-walker", hp: 42, speed: 52, reward: 100, radius: 15, drift: 0 },
-      runner: { texture: "zombie-runner", hp: 27, speed: 92, reward: 140, radius: 12, drift: Phaser.Math.Between(-35, 35) },
-      brute: { texture: "zombie-brute", hp: 125, speed: 34, reward: 260, radius: 20, drift: 0 },
-      boss: { texture: "zombie-boss", hp: 600 + wave * 85, speed: 27, reward: 1800, radius: 34, drift: Phaser.Math.Between(-18, 18) }
+      walker: { texture: "zombie-walker", hp: 42, speed: 52, reward: 100, drift: 0 },
+      runner: { texture: "zombie-runner", hp: 27, speed: 92, reward: 140, drift: Phaser.Math.Between(-35, 35) },
+      brute: { texture: "zombie-brute", hp: 125, speed: 34, reward: 260, drift: 0 },
+      boss: { texture: "zombie-boss", hp: 600 + wave * 85, speed: 27, reward: 1800, drift: Phaser.Math.Between(-18, 18) }
     }[kind];
     const point = spawnPoint();
-    const zombie = zombies.create(point.x, point.y, settings.texture).setDepth(5);
-    zombie.body.setCircle(settings.radius, zombie.width / 2 - settings.radius, zombie.height / 2 - settings.radius);
-    zombie.setData({ kind, hp: settings.hp + (kind === "boss" ? 0 : wave * 4), speed: settings.speed + Math.min(45, wave * 2.5), reward: settings.reward, drift: settings.drift });
+    const zombie = zombies.create(point.x, point.y, `${settings.texture}-0`).setDepth(5);
+    zombie.body.setSize(zombie.width * 0.62, zombie.height * 0.78, true);
+    zombie.setData({
+      kind,
+      hp: settings.hp + (kind === "boss" ? 0 : wave * 4),
+      speed: settings.speed + Math.min(45, wave * 2.5),
+      reward: settings.reward,
+      drift: settings.drift,
+      textureBase: settings.texture,
+      walkFrame: 0,
+      walkOffset: Phaser.Math.Between(0, 500)
+    });
   }
 
   function fireWeapon(time) {
@@ -266,7 +306,7 @@
     if (!scene || !player) return;
     clearGroup(zombies);
     clearGroup(bullets);
-    player.setPosition(W / 2, H - 42).setVelocity(0, 0).setAlpha(1);
+    player.setPosition(W / 2, H - 48).setVelocity(0, 0).setAlpha(1);
     player.rotation = -Math.PI / 2;
     score = 0;
     wave = 1;
