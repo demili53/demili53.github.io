@@ -31,7 +31,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565" crossorigin="anonymous"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script type="module">
-    import { initializeGameRanking } from "/scripts/firebase-game-ranking.js";
+    import { initializeGameRanking } from "/scripts/firebase-game-ranking.js?v=20260824-2";
     initializeGameRanking({ gameId: "space-shooter", gameName: "우주 슈팅" });
   </script>
   <style>
@@ -200,6 +200,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
     const rand = (a, b) => a + Math.random() * (b - a);
+    const ART = {};
+    const loadGraphic = (key, src) => {
+      const image = new Image();
+      image.decoding = "async";
+      image.src = src;
+      ART[key] = image;
+    };
+    const graphicReady = (key) => ART[key]?.complete && ART[key].naturalWidth > 0;
+    loadGraphic("players", "/assets/games/space-shooter/player-ships-v2.png?v=20260824");
+    loadGraphic("enemies", "/assets/games/space-shooter/enemy-ships-v2.png?v=20260824");
+    loadGraphic("background", "/assets/games/space-shooter/space-nebula-v2.png?v=20260824");
 
     let best = Number(localStorage.getItem("spaceShooterBest") || "0");
     let state = "idle";           // idle | playing | paused | over
@@ -207,6 +218,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     let player, pBullets, enemies, eBullets, items, particles, stars;
     let score, wave, waveTimer, spawnTimer, combo, comboTimer, bombs, bossActive;
+    let pointerControlEnabled = false;
     const keys = {};
 
     const WAVE_LEN = 12;          // seconds per wave
@@ -266,6 +278,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (!stars) initStars();
       score = 0; wave = 1; waveTimer = 0; spawnTimer = 0.6;
       combo = 0; comboTimer = 0; bombs = 2; bossActive = false;
+      pointerControlEnabled = false;
       state = "idle";
       syncUi("대기 중");
     }
@@ -285,6 +298,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (state === "over") resetGame();
       if (state === "playing") return;
       state = "playing";
+      pointerControlEnabled = false;
       shipChoicePanel.classList.add("hidden");
       overlay.classList.add("hidden");
       syncUi(`${SHIPS[player.ship].name} 출격!`);
@@ -533,7 +547,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const sp = SHIPS[player.ship].speed;
         player.x += ((kbRight ? 1 : 0) - (kbLeft ? 1 : 0)) * sp * dt;
         player.y += ((kbDown ? 1 : 0) - (kbUp ? 1 : 0)) * sp * dt;
-      } else {
+      } else if (pointerControlEnabled) {
         const wp = game.input.pointers.primary.lastWorldPos;
         if (wp) {
           player.x += (clamp(wp.x, 0, W) - player.x) * Math.min(1, dt * 12);
@@ -675,13 +689,39 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     });
 
     game.input.pointers.primary.on("down", () => {
-      if (state === "idle" || state === "over") startGame();
+      if (state === "playing") pointerControlEnabled = true;
+    });
+    el("gameCanvas").addEventListener("pointermove", () => {
+      if (state === "playing") pointerControlEnabled = true;
     });
 
     // ---- rendering ----
     function drawShip(x, y, blink) {
       if (blink) return;
       const ship = SHIPS[player.ship];
+      if (graphicReady("players")) {
+        const order = { power: 0, balanced: 1, speed: 2 };
+        const index = order[player.ship];
+        const sourceWidth = ART.players.naturalWidth / 3;
+        const size = player.ship === "power" ? 70 : player.ship === "balanced" ? 64 : 58;
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.globalCompositeOperation = "lighter";
+        ctx.globalAlpha = 0.32 + Math.sin(nowMs / 55) * 0.08;
+        ctx.fillStyle = ship.thruster;
+        ctx.shadowColor = ship.thruster;
+        ctx.shadowBlur = 16;
+        ctx.beginPath();
+        ctx.ellipse(0, size * 0.42, size * 0.12, size * 0.3, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalCompositeOperation = "source-over";
+        ctx.globalAlpha = 1;
+        ctx.shadowColor = ship.accent;
+        ctx.shadowBlur = 8;
+        ctx.drawImage(ART.players, index * sourceWidth, 0, sourceWidth, ART.players.naturalHeight, -size / 2, -size / 2, size, size);
+        ctx.restore();
+        return;
+      }
       ctx.save();
       ctx.translate(x, y);
       // thruster
@@ -708,6 +748,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     function drawEnemy(e) {
       ctx.save();
       ctx.translate(e.x, e.y);
+      if (graphicReady("enemies")) {
+        const source = {
+          grunt: { x: 70, y: 120, w: 380, h: 390, dw: 52, dh: 52 },
+          shooter: { x: 500, y: 25, w: 520, h: 555, dw: 62, dh: 64 },
+          rusher: { x: 15, y: 690, w: 410, h: 600, dw: 48, dh: 66 },
+          boss: { x: 390, y: 570, w: 634, h: 955, dw: e.w * 1.35, dh: e.h * 1.8 }
+        }[e.type];
+        ctx.shadowColor = e.type === "boss" ? "#f43fef" : e.type === "shooter" ? "#c084fc" : e.type === "rusher" ? "#fb923c" : "#f87171";
+        ctx.shadowBlur = e.type === "boss" ? 18 : 9;
+        ctx.drawImage(ART.enemies, source.x, source.y, source.w, source.h, -source.dw / 2, -source.dh / 2, source.dw, source.dh);
+        if (e.type === "boss") {
+          const tier = e.tier || 1;
+          ctx.globalCompositeOperation = "lighter";
+          ctx.globalAlpha = 0.22 + Math.sin(nowMs / 120) * 0.08;
+          ctx.strokeStyle = tier >= 4 ? "#fb7185" : "#c084fc";
+          ctx.lineWidth = 2 + Math.min(4, tier);
+          ctx.beginPath();
+          ctx.ellipse(0, 0, source.dw * 0.46 + tier * 2, source.dh * 0.43 + tier, nowMs / 1800, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+        ctx.restore();
+        return;
+      }
       if (e.type === "grunt") {
         ctx.fillStyle = "#f87171";
         ctx.beginPath();
@@ -761,6 +824,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const g = ctx.createLinearGradient(0, 0, 0, H);
       g.addColorStop(0, "#0b1026"); g.addColorStop(1, "#05060f");
       ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+      if (graphicReady("background")) {
+        const drift = Math.sin(nowMs / 11000) * 9;
+        ctx.globalAlpha = 0.78;
+        ctx.drawImage(ART.background, -18, -24 + drift, W + 36, H + 48);
+        ctx.globalAlpha = 1;
+        const vignette = ctx.createRadialGradient(W / 2, H / 2, 90, W / 2, H / 2, H * 0.72);
+        vignette.addColorStop(0, "rgba(2,6,23,0.08)");
+        vignette.addColorStop(1, "rgba(2,6,23,0.48)");
+        ctx.fillStyle = vignette;
+        ctx.fillRect(0, 0, W, H);
+      }
       if (stars) stars.forEach((s) => {
         ctx.fillStyle = s.size >= 3 ? "rgba(165,243,252,0.9)" : "rgba(148,163,184,0.6)";
         ctx.fillRect(s.x, s.y, s.size, s.size);
@@ -828,7 +902,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         ctx.save();
         ctx.globalAlpha = clamp(p.life * 2, 0, 1);
         ctx.fillStyle = p.color;
-        ctx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = p.size * 3;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
         ctx.restore();
       });
 

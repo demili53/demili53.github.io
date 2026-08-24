@@ -4,13 +4,14 @@ import { browserLocalPersistence, getAuth, onAuthStateChanged, setPersistence } 
 import {
   collection,
   doc,
-  getFirestore,
+  getDoc,
+  getDocs,
+  initializeFirestore,
   limit,
-  onSnapshot,
   orderBy,
   query,
-  runTransaction,
-  serverTimestamp
+  serverTimestamp,
+  setDoc
 } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -29,7 +30,9 @@ isAnalyticsSupported().then((supported) => {
 }).catch(() => {});
 
 const auth = getAuth(app);
-const db = getFirestore(app);
+const db = initializeFirestore(app, {
+  experimentalAutoDetectLongPolling: true
+});
 setPersistence(auth, browserLocalPersistence).catch(() => {});
 
 function safeName(user) {
@@ -45,6 +48,19 @@ function setRankingStatus(element, message, tone = "normal") {
     : tone === "success"
       ? "border-emerald-200/30 bg-emerald-500/10 text-emerald-100"
       : "border-white/10 bg-slate-950/40 text-slate-300"}`;
+}
+
+function withTimeout(promise, timeoutMs = 8000) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      window.setTimeout(() => {
+        const error = new Error("Firebase 요청 시간이 초과됐습니다.");
+        error.code = "firestore-timeout";
+        reject(error);
+      }, timeoutMs);
+    })
+  ]);
 }
 
 function renderRanking(list, snapshot, currentUid) {
@@ -91,18 +107,26 @@ export function initializeGameRanking({ gameId, gameName }) {
     limit(10)
   );
 
-  const unsubscribeRanking = onSnapshot(rankingQuery, (snapshot) => {
-    renderRanking(list, snapshot, currentUser?.uid || "");
-  }, (error) => {
-    console.error(`[${gameId}] 순위를 불러오지 못했습니다.`, error);
-    if (list) {
-      const item = document.createElement("li");
-      item.className = "rounded-lg border border-rose-200/30 bg-rose-500/10 px-3 py-4 text-center text-sm text-rose-100";
-      item.textContent = "Firebase 순위를 불러올 수 없습니다.";
-      list.replaceChildren(item);
+  async function refreshRanking() {
+    try {
+      const snapshot = await withTimeout(getDocs(rankingQuery));
+      renderRanking(list, snapshot, currentUser?.uid || "");
+    } catch (error) {
+      console.error(`[${gameId}] 순위를 불러오지 못했습니다.`, error);
+      if (list) {
+        const item = document.createElement("li");
+        item.className = "rounded-lg border border-rose-200/30 bg-rose-500/10 px-3 py-4 text-center text-sm text-rose-100";
+        item.textContent = error.code === "firestore-timeout"
+          ? "Cloud Firestore 연결을 확인해 주세요."
+          : "Firebase 순위를 불러올 수 없습니다.";
+        list.replaceChildren(item);
+      }
+      setRankingStatus(status, error.code === "firestore-timeout"
+        ? "Cloud Firestore API 또는 보안 규칙을 확인해 주세요."
+        : "Firebase 순위를 불러올 수 없습니다. 보안 규칙을 확인해 주세요.", "error");
     }
-    setRankingStatus(status, "Firebase 순위를 불러올 수 없습니다.", "error");
-  });
+  }
+  refreshRanking();
 
   async function saveBestScore(result) {
     latestScore = result;
@@ -116,26 +140,27 @@ export function initializeGameRanking({ gameId, gameName }) {
     if (normalizedScore <= 0) return;
 
     try {
-      let updated = false;
+      await withTimeout(currentUser.getIdToken());
       const playerRef = doc(db, "gameRankings", gameId, "players", currentUser.uid);
-      await runTransaction(db, async (transaction) => {
-        const previous = await transaction.get(playerRef);
-        if (previous.exists() && Number(previous.data().score || 0) >= normalizedScore) return;
-        transaction.set(playerRef, {
-          displayName: safeName(currentUser),
-          gameId,
-          score: normalizedScore,
-          wave: normalizedWave,
-          updatedAt: serverTimestamp()
-        });
-        updated = true;
-      });
-      setRankingStatus(status, updated
-        ? `${gameName} 최고 점수 ${normalizedScore.toLocaleString("ko-KR")}점이 저장됐습니다.`
-        : "Firebase에 저장된 최고 점수가 더 높습니다.", updated ? "success" : "normal");
+      const previous = await withTimeout(getDoc(playerRef));
+      if (previous.exists() && Number(previous.data().score || 0) >= normalizedScore) {
+        setRankingStatus(status, "Firebase에 저장된 최고 점수가 더 높습니다.");
+        return;
+      }
+      await withTimeout(setDoc(playerRef, {
+        displayName: safeName(currentUser),
+        gameId,
+        score: normalizedScore,
+        wave: normalizedWave,
+        updatedAt: serverTimestamp()
+      }));
+      setRankingStatus(status, `${gameName} 최고 점수 ${normalizedScore.toLocaleString("ko-KR")}점이 저장됐습니다.`, "success");
+      await refreshRanking();
     } catch (error) {
       console.error(`[${gameId}] 점수를 저장하지 못했습니다.`, error);
-      setRankingStatus(status, "점수를 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.", "error");
+      setRankingStatus(status, error.code === "firestore-timeout"
+        ? "Cloud Firestore 연결 시간이 초과됐습니다. API 활성화 상태를 확인해 주세요."
+        : "점수를 저장하지 못했습니다. Firebase 보안 규칙을 확인해 주세요.", "error");
     }
   }
 
@@ -154,7 +179,6 @@ export function initializeGameRanking({ gameId, gameName }) {
   });
 
   window.addEventListener("pagehide", () => {
-    unsubscribeRanking();
     window.removeEventListener("partygame:score", scoreHandler);
   }, { once: true });
 }
