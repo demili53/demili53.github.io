@@ -47,6 +47,11 @@
 
 6. **점수/기록 규칙**
    - 최고 기록은 `localStorage`에 게임별 고유 키로 저장/복원한다. (예: `carCrashBest`)
+   - 모든 점수형 게임은 `/scripts/firebase-game-ranking.js`의 `initializeGameRanking()`을 호출하고 게임별 고유 `gameId`를 사용한다.
+   - 사이드바에 해당 게임의 Firebase `TOP 10` 순위를 표시한다.
+   - 게임 종료 시 `partygame:score` 이벤트에 `gameId`, `score`, `wave`를 담아 전달한다.
+   - 비로그인 사용자는 순위를 열람하고 로컬 최고 기록을 유지하며, 로그인 회원의 최고 점수만 Firebase에 저장한다.
+   - Firebase에는 회원별·게임별 최고 점수 문서 하나만 유지하고 낮은 점수로 기존 기록을 덮어쓰지 않는다.
    - 결과/게임오버 시 오버레이로 결과를 표시하고 다시하기 흐름을 제공한다.
    - 시작/일시정지/다시하기 등 상태 전이를 명확한 상태값으로 관리한다. (`idle`/`running`/`over` 등)
 
@@ -72,6 +77,7 @@
    - `/arcade/` 타일 추가 및 `sitemap.xml` 등록 확인
    - SEO 태그(`title`, `description`, `canonical`, `og:title`, `og:description`) 확인
    - Firebase 앱이 한 번만 초기화되고 배포된 HTTPS 페이지에서 Analytics 요청 오류가 없는지 확인
+   - 게임별 TOP 10 조회, 로그인 회원의 최고 점수 저장, 낮은 점수 덮어쓰기 방지를 확인
    - 배포 전 검증: 인라인 스크립트 구문 검사 + (가능 시) 실제 엔진 라이브러리로 초기화/1프레임 이상 런타임 확인
 
 10. **Firebase 앱 연동 규칙 (필수)**
@@ -83,6 +89,7 @@
    - 회원가입·로그인은 공용 `/account.html`에서 처리한다. 게임 페이지에서 별도 가입 폼을 중복 구현하지 말고 공통 네비게이션에 `회원 계정` 링크를 제공한다.
    - 인증이 필요한 기능은 `onAuthStateChanged`로 초기 인증 확인이 끝난 다음 노출한다. `auth.currentUser`를 페이지 로드 직후 바로 신뢰하지 않는다.
    - 비밀번호를 `localStorage`, 쿠키, 게임 저장 데이터 또는 로그에 기록하지 않는다.
+   - 공개 점수 쓰기는 허용하지 않는다. 저장소의 `firestore.rules`를 Firebase 프로젝트에 배포해 로그인한 회원이 자신의 게임별 문서만 갱신하도록 제한한다.
 
 ```html
 <script type="module">

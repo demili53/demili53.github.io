@@ -311,6 +311,7 @@
     player.setVelocity(0, 0);
     scene.physics.world.pause();
     if (score > best) { best = score; localStorage.setItem("zombiShotBest", String(best)); }
+    window.dispatchEvent(new CustomEvent("partygame:score", { detail: { gameId: "zombi-shot", score, wave } }));
     overlayTitle.textContent = "도시가 함락됐습니다";
     overlayText.textContent = `${reason} 최종 ${score}점 · 웨이브 ${wave} · 최고 ${best}점. 다시 방어해 보세요.`;
     overlayStartBtn.textContent = "다시 시작";

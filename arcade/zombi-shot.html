@@ -31,19 +31,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565" crossorigin="anonymous"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-analytics.js";
-    const firebaseConfig = {
-      apiKey: "AIzaSyCtCAly3XVVZTu0szIHAoQwYu0QaaXoNRM",
-      authDomain: "gitpage-93dfb.firebaseapp.com",
-      projectId: "gitpage-93dfb",
-      storageBucket: "gitpage-93dfb.firebasestorage.app",
-      messagingSenderId: "590509724278",
-      appId: "1:590509724278:web:cb26ed63e8733ffa240557",
-      measurementId: "G-0JPQ9J5Y18"
-    };
-    const app = initializeApp(firebaseConfig);
-    getAnalytics(app);
+    import { initializeGameRanking } from "/scripts/firebase-game-ranking.js";
+    initializeGameRanking({ gameId: "zombi-shot", gameName: "좀비 슈팅" });
   </script>
   <style>
     .skip-link{position:absolute;left:-999px;top:1rem;z-index:50;border-radius:.75rem;background:#f8fafc;color:#0f172a;padding:.75rem 1rem;font-weight:700}
@@ -160,6 +149,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <p>좀비와 닿거나 방어선을 통과시키면 즉시 게임오버</p>
           </div>
           <p class="mt-4 text-xs text-slate-500">Powered by <a href="https://phaser.io/tools/phaser-docs" target="_blank" rel="noopener noreferrer" class="text-green-200/80 underline">Phaser</a> 게임 엔진</p>
+        </section>
+
+        <section class="rounded-2xl border border-amber-200/20 bg-white/5 p-5">
+          <div class="flex items-center justify-between gap-3">
+            <h2 class="text-lg font-semibold text-amber-100">좀비 슈팅 TOP 10</h2>
+            <a href="/account.html" class="text-xs text-amber-200 underline">로그인</a>
+          </div>
+          <ol id="firebaseRankingList" class="mt-4 grid gap-2" aria-label="좀비 슈팅 점수 순위">
+            <li class="rounded-lg border border-white/10 bg-slate-950/40 px-3 py-4 text-center text-sm text-slate-400">Firebase 순위를 불러오는 중…</li>
+          </ol>
+          <p id="firebaseRankingStatus" class="mt-3 rounded-lg border border-white/10 bg-slate-950/40 px-3 py-2 text-xs text-slate-300" aria-live="polite">로그인 상태를 확인하는 중…</p>
         </section>
       </aside>
     </section>

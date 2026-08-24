@@ -30,6 +30,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <meta name="google-adsense-account" content="ca-pub-1087435977438565">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565" crossorigin="anonymous"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module">
+    import { initializeGameRanking } from "/scripts/firebase-game-ranking.js";
+    initializeGameRanking({ gameId: "space-shooter", gameName: "우주 슈팅" });
+  </script>
   <style>
     .skip-link{position:absolute;left:-999px;top:1rem;z-index:50;border-radius:.75rem;background:#f8fafc;color:#0f172a;padding:.75rem 1rem;font-weight:700}
     .skip-link:focus{left:1rem}
@@ -157,6 +161,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <p>♥ 라이프 회복 · B 아이템/키로 봄을 사용하세요.</p>
           </div>
           <p class="mt-4 text-xs text-slate-500">Powered by <a href="https://excaliburjs.com/" target="_blank" rel="noopener noreferrer" class="text-cyan-200/80 underline">Excalibur.js</a> 게임 엔진</p>
+        </section>
+
+        <section class="rounded-2xl border border-amber-200/20 bg-white/5 p-5">
+          <div class="flex items-center justify-between gap-3">
+            <h2 class="text-lg font-semibold text-amber-100">우주 슈팅 TOP 10</h2>
+            <a href="/account.html" class="text-xs text-amber-200 underline">로그인</a>
+          </div>
+          <ol id="firebaseRankingList" class="mt-4 grid gap-2" aria-label="우주 슈팅 점수 순위">
+            <li class="rounded-lg border border-white/10 bg-slate-950/40 px-3 py-4 text-center text-sm text-slate-400">Firebase 순위를 불러오는 중…</li>
+          </ol>
+          <p id="firebaseRankingStatus" class="mt-3 rounded-lg border border-white/10 bg-slate-950/40 px-3 py-2 text-xs text-slate-300" aria-live="polite">로그인 상태를 확인하는 중…</p>
         </section>
       </aside>
     </section>
@@ -289,6 +304,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     function gameOver() {
       state = "over";
       if (score > best) { best = score; localStorage.setItem("spaceShooterBest", String(best)); }
+      window.dispatchEvent(new CustomEvent("partygame:score", { detail: { gameId: "space-shooter", score, wave } }));
       overlayTitle.textContent = "게임 오버";
       overlayText.textContent = `점수 ${score}점 · 웨이브 ${wave}까지 도달. 다시 도전해 최고 점수를 갱신하세요.`;
       overlayStartBtn.textContent = "다시 시작";

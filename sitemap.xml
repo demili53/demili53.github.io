@@ -36,6 +36,12 @@
         <priority>0.8</priority>
       </url>
   <url>
+        <loc>https://partygame.pe.kr/send-volume-calculator.html</loc>
+        <lastmod>2026-08-21T15:00:00+09:00</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+      </url>
+  <url>
         <loc>https://partygame.pe.kr/privacy.html</loc>
         <changefreq>yearly</changefreq>
         <priority>0.5</priority>
