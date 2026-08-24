@@ -267,6 +267,17 @@
     });
   }
 
+  function preload() {
+    this.load.spritesheet("survivor-hd", "/assets/games/zombi-shot/soldier-walk-v2.png", {
+      frameWidth: 618,
+      frameHeight: 636
+    });
+    this.load.spritesheet("zombie-hd", "/assets/games/zombi-shot/zombie-walk-v2.png", {
+      frameWidth: 617,
+      frameHeight: 637
+    });
+  }
+
   function create() {
     scene = this;
     makeTextures(this);
@@ -275,9 +286,10 @@
     zombies = this.physics.add.group({ maxSize: 40 });
     bullets = this.physics.add.group({ maxSize: 90 });
     pickups = this.physics.add.group({ maxSize: 12 });
-    player = this.physics.add.image(W / 2, H - 48, "survivor").setDepth(10).setCollideWorldBounds(true);
-    player.body.setCircle(14, 6, 6);
-    player.rotation = -Math.PI / 2;
+    player = this.physics.add.image(W / 2, H - 48, "survivor-hd", 0).setDepth(10).setCollideWorldBounds(true);
+    player.setDisplaySize(92, 96);
+    player.body.setCircle(player.width * 0.18, player.width * 0.32, player.height * 0.32);
+    player.rotation = 0;
 
     this.physics.add.overlap(bullets, zombies, onBulletHit, null, this);
     this.physics.add.overlap(player, zombies, onPlayerHit, isPlayerContact, this);
@@ -394,7 +406,8 @@
     player.setVelocityY(0);
     player.x = clamp(player.x, 60, W - 60);
     player.y = H - 48;
-    player.rotation = -Math.PI / 2;
+    player.rotation = 0;
+    player.setFrame(Math.abs(player.body.velocity.x) > 8 ? Math.floor(time / 110) % 4 : 0);
     if ((pointerHeld || fireHeld || heldKeys.Space) && time >= nextShotAt) fireWeapon(time);
   }
 
@@ -424,15 +437,15 @@
       const frameDuration = kind === "runner" || kind === "mini" ? 85 : kind === "boss" ? 180 : 125;
       const frame = Math.floor((time + zombie.getData("walkOffset")) / frameDuration) % 4;
       if (frame !== zombie.getData("walkFrame")) {
-        zombie.setTexture(`${zombie.getData("textureBase")}-${frame}`);
+        zombie.setFrame(frame);
         zombie.setData("walkFrame", frame);
       }
       zombie.rotation = Math.sin((time + zombie.getData("walkOffset")) / frameDuration) * 0.035;
       const badge = zombie.getData("badge");
-      if (badge?.active) badge.setPosition(zombie.x, zombie.y - zombie.height * 0.32);
+      if (badge?.active) badge.setPosition(zombie.x, zombie.y - zombie.displayHeight * 0.32);
       const weakSpot = zombie.getData("weakSpot");
       if (weakSpot?.active) {
-        weakSpot.setPosition(zombie.x + Math.sin(time / 430) * zombie.width * 0.28, zombie.y + zombie.height * 0.08);
+        weakSpot.setPosition(zombie.x + Math.sin(time / 430) * zombie.displayWidth * 0.28, zombie.y + zombie.displayHeight * 0.08);
         weakSpot.setAlpha(0.55 + Math.sin(time / 90) * 0.2);
       }
       if (zombie.y > H + zombie.displayHeight / 2) {
@@ -470,14 +483,14 @@
     const roll = Math.random();
     const kind = forcedKind || (roll < 0.58 ? "walker" : roll < 0.86 ? "runner" : "brute");
     const settings = {
-      walker: { texture: "zombie-walker", hp: 42, speed: 52, reward: 100, drift: 0 },
-      runner: { texture: "zombie-runner", hp: 27, speed: 92, reward: 140, drift: Phaser.Math.Between(-35, 35) },
-      brute: { texture: "zombie-brute", hp: 125, speed: 34, reward: 260, drift: 0 },
-      zigzag: { texture: "zombie-zigzag", hp: 50, speed: 58, reward: 190, drift: 0 },
-      splitter: { texture: "zombie-splitter", hp: 82, speed: 42, reward: 240, drift: 0 },
-      carrier: { texture: "zombie-carrier", hp: 58, speed: 48, reward: 210, drift: Phaser.Math.Between(-18, 18) },
-      mini: { texture: "zombie-mini", hp: 18, speed: 86, reward: 60, drift: Phaser.Math.Between(-25, 25) },
-      boss: { texture: "zombie-boss", hp: 600 + wave * 85, speed: 27, reward: 1800, drift: 0 }
+      walker: { hp: 42, speed: 52, reward: 100, drift: 0, size: 84, tint: 0xffffff },
+      runner: { hp: 27, speed: 92, reward: 140, drift: Phaser.Math.Between(-35, 35), size: 72, tint: 0xffd27a },
+      brute: { hp: 125, speed: 34, reward: 260, drift: 0, size: 104, tint: 0x95d5a6 },
+      zigzag: { hp: 50, speed: 58, reward: 190, drift: 0, size: 82, tint: 0x83d5ff },
+      splitter: { hp: 82, speed: 42, reward: 240, drift: 0, size: 94, tint: 0xd8a7ff },
+      carrier: { hp: 58, speed: 48, reward: 210, drift: Phaser.Math.Between(-18, 18), size: 88, tint: 0x86ffe5 },
+      mini: { hp: 18, speed: 86, reward: 60, drift: Phaser.Math.Between(-25, 25), size: 56, tint: 0xc9ff7a },
+      boss: { hp: 600 + wave * 85, speed: 27, reward: 1800, drift: 0, size: 164, tint: 0xff8585 }
     }[kind];
     const point = spawnPoint();
     point.x = fixedX ?? point.x;
@@ -486,7 +499,9 @@
       showLaneWarning(point.x, 650, () => spawnZombie("runner", point.x, true, point.y));
       return;
     }
-    const zombie = zombies.create(point.x, point.y, `${settings.texture}-0`).setDepth(kind === "boss" ? 6 : 5);
+    const zombie = zombies.create(point.x, point.y, "zombie-hd", 0).setDepth(kind === "boss" ? 6 : 5);
+    zombie.setDisplaySize(settings.size, settings.size);
+    zombie.setTint(settings.tint);
     zombie.body.setSize(zombie.width * 0.62, zombie.height * 0.78, true);
     const adjustedHp = settings.hp + (["boss", "mini"].includes(kind) ? 0 : wave * 4);
     zombie.setData({
@@ -496,14 +511,14 @@
       speed: settings.speed + Math.min(45, wave * 2.5),
       reward: settings.reward,
       drift: settings.drift,
-      textureBase: settings.texture,
+      baseTint: settings.tint,
       walkFrame: 0,
       walkOffset: Phaser.Math.Between(0, 500),
       summonAt: scene.time.now + 3200,
       contactGraceUntil: kind === "mini" ? scene.time.now + 450 : 0
     });
     if (kind === "carrier") {
-      const badge = scene.add.rectangle(point.x, point.y - zombie.height * 0.3, 20, 14, 0xfbbf24, 1).setDepth(8);
+      const badge = scene.add.rectangle(point.x, point.y - zombie.displayHeight * 0.3, 20, 14, 0xfbbf24, 1).setDepth(8);
       zombie.setData("badge", badge);
     }
     if (kind === "boss") {
@@ -520,7 +535,8 @@
         ? Phaser.Math.FloatBetween(-weapon.spread, weapon.spread)
         : -weapon.spread / 2 + weapon.spread * (i / (weapon.pellets - 1));
       const angle = baseAngle + offset;
-      const bullet = bullets.create(player.x + Math.cos(angle) * 22, player.y + Math.sin(angle) * 22, weapon.texture).setDepth(8);
+      const muzzleDistance = player.displayHeight * 0.43;
+      const bullet = bullets.create(player.x + Math.cos(angle) * muzzleDistance, player.y + Math.sin(angle) * muzzleDistance, weapon.texture).setDepth(8);
       const pistolMultiplier = selectedWeapon === "pistol" ? 1 + upgradeLevels.pistolPower * 0.15 : 1;
       const bulletScale = 1 + upgradeLevels.bulletSize * 0.2;
       bullet.setScale(bulletScale);
@@ -557,7 +573,7 @@
     zombie.setTintFill(0xffffff);
     burst(bullet.x, bullet.y, weakHit ? 0xfde047 : 0xffffff, weakHit ? 6 : 3);
     if (weakHit) playTone(940, 0.04, 0.018, "square");
-    scene.time.delayedCall(45, () => { if (zombie.active) zombie.clearTint(); });
+    scene.time.delayedCall(45, () => restoreZombieTint(zombie));
     if (hp <= 0) destroyZombie(zombie);
   }
 
@@ -592,6 +608,12 @@
       playTone(880, 0.4, 0.06, "triangle");
     }
     syncUi();
+  }
+
+  function restoreZombieTint(zombie) {
+    if (!zombie.active) return;
+    zombie.clearTint();
+    zombie.setTint(zombie.getData("baseTint") || 0xffffff);
   }
 
   function destroyZombieSprite(zombie) {
@@ -655,7 +677,7 @@
       zombie.setData("hp", zombie.getData("hp") - damage);
       zombie.setTintFill(0xfb923c);
       if (zombie.getData("hp") <= 0) destroyZombie(zombie, false);
-      else scene.time.delayedCall(90, () => { if (zombie.active) zombie.clearTint(); });
+      else scene.time.delayedCall(90, () => restoreZombieTint(zombie));
     });
     scene.cameras.main.flash(220, 249, 115, 22, false);
     scene.cameras.main.shake(240, 0.009);
@@ -744,7 +766,8 @@
     clearGroup(bullets);
     clearGroup(pickups);
     player.setPosition(W / 2, H - 48).setVelocity(0, 0).setAlpha(1);
-    player.rotation = -Math.PI / 2;
+    player.rotation = 0;
+    player.setFrame(0);
     score = 0;
     wave = 1;
     waveElapsed = 0;
@@ -903,6 +926,6 @@
     physics: { default: "arcade", arcade: { debug: false } },
     input: { activePointers: 3 },
     scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-    scene: { create, update }
+    scene: { preload, create, update }
   });
 })();
