@@ -441,6 +441,8 @@
         zombie.setData("walkFrame", frame);
       }
       zombie.rotation = Math.sin((time + zombie.getData("walkOffset")) / frameDuration) * 0.035;
+      const healthText = zombie.getData("healthText");
+      if (healthText?.active) healthText.setPosition(zombie.x, zombie.y - zombie.displayHeight * 0.43);
       const badge = zombie.getData("badge");
       if (badge?.active) badge.setPosition(zombie.x, zombie.y - zombie.displayHeight * 0.32);
       const weakSpot = zombie.getData("weakSpot");
@@ -517,6 +519,15 @@
       summonAt: scene.time.now + 3200,
       contactGraceUntil: kind === "mini" ? scene.time.now + 450 : 0
     });
+    const healthText = scene.add.text(point.x, point.y - zombie.displayHeight * 0.43, String(Math.ceil(adjustedHp)), {
+      fontFamily: "system-ui, sans-serif",
+      fontSize: kind === "boss" ? "18px" : kind === "mini" ? "11px" : "14px",
+      fontStyle: "bold",
+      color: "#86efac",
+      stroke: "#020617",
+      strokeThickness: kind === "boss" ? 5 : 4
+    }).setOrigin(0.5).setDepth(11);
+    zombie.setData("healthText", healthText);
     if (kind === "carrier") {
       const badge = scene.add.rectangle(point.x, point.y - zombie.displayHeight * 0.3, 20, 14, 0xfbbf24, 1).setDepth(8);
       zombie.setData("badge", badge);
@@ -565,11 +576,12 @@
     const weakSpot = zombie.getData("weakSpot");
     const weakHit = weakSpot?.active && Phaser.Math.Distance.Between(bullet.x, bullet.y, weakSpot.x, weakSpot.y) <= 18;
     const damage = bullet.getData("damage") * (weakHit ? 1.8 : 1);
-    const hp = zombie.getData("hp") - damage;
+    const hp = Math.max(0, zombie.getData("hp") - damage);
     const remainingPierce = bullet.getData("remainingPierce");
     if (remainingPierce > 0) bullet.setData("remainingPierce", remainingPierce - 1);
     else bullet.destroy();
     zombie.setData("hp", hp);
+    updateZombieHealthLabel(zombie);
     zombie.setTintFill(0xffffff);
     burst(bullet.x, bullet.y, weakHit ? 0xfde047 : 0xffffff, weakHit ? 6 : 3);
     if (weakHit) playTone(940, 0.04, 0.018, "square");
@@ -616,7 +628,18 @@
     zombie.setTint(zombie.getData("baseTint") || 0xffffff);
   }
 
+  function updateZombieHealthLabel(zombie) {
+    const healthText = zombie.getData("healthText");
+    if (!healthText?.active) return;
+    const hp = Math.max(0, zombie.getData("hp"));
+    const ratio = hp / Math.max(1, zombie.getData("maxHp"));
+    healthText.setText(String(Math.ceil(hp)));
+    healthText.setColor(ratio > 0.5 ? "#86efac" : ratio > 0.25 ? "#fde047" : "#fb7185");
+  }
+
   function destroyZombieSprite(zombie) {
+    const healthText = zombie.getData("healthText");
+    if (healthText?.active) healthText.destroy();
     const badge = zombie.getData("badge");
     if (badge?.active) badge.destroy();
     const weakSpot = zombie.getData("weakSpot");
@@ -674,7 +697,8 @@
     const targets = zombies.getChildren().filter((zombie) => zombie.active);
     targets.forEach((zombie) => {
       const damage = zombie.getData("kind") === "boss" ? 65 : 110;
-      zombie.setData("hp", zombie.getData("hp") - damage);
+      zombie.setData("hp", Math.max(0, zombie.getData("hp") - damage));
+      updateZombieHealthLabel(zombie);
       zombie.setTintFill(0xfb923c);
       if (zombie.getData("hp") <= 0) destroyZombie(zombie, false);
       else scene.time.delayedCall(90, () => restoreZombieTint(zombie));
@@ -751,6 +775,8 @@
   function clearZombies() {
     if (!zombies) return;
     zombies.children.iterate((zombie) => {
+      const healthText = zombie?.getData?.("healthText");
+      if (healthText?.active) healthText.destroy();
       const badge = zombie?.getData?.("badge");
       if (badge?.active) badge.destroy();
       const weakSpot = zombie?.getData?.("weakSpot");
