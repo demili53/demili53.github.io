@@ -2,6 +2,31 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    match /duoPosts/{userId} {
+      function validPositions(items) {
+        return items is list
+          && items.size() >= 1 && items.size() <= 5
+          && items.toSet().size() == items.size()
+          && items.hasOnly(['상관없음', '탑', '정글', '미드', '원딜', '서포터'])
+          && (!items.hasAny(['상관없음']) || items.size() == 1);
+      }
+      function validPost() {
+        let data = request.resource.data;
+        return data.keys().hasAll(['riotId', 'tier', 'positions', 'wantedPositions', 'mode', 'note', 'updatedAt'])
+          && data.keys().hasOnly(['riotId', 'tier', 'positions', 'wantedPositions', 'mode', 'note', 'updatedAt'])
+          && data.riotId is string && data.riotId.size() >= 3 && data.riotId.size() <= 40
+          && data.riotId.matches('^[^# ].*#[^# ]+$')
+          && data.riotId.split('#').size() == 2
+          && data.tier in ['언랭크', '아이언', '브론즈', '실버', '골드', '플래티넘', '에메랄드', '다이아몬드', '마스터', '그랜드마스터', '챌린저']
+          && data.mode in ['솔로/듀오 랭크', '자유랭크', '칼바람 나락']
+          && validPositions(data.positions) && validPositions(data.wantedPositions)
+          && data.note is string && data.note.size() <= 100
+          && data.updatedAt == request.time;
+      }
+      allow read: if true;
+      allow create, update: if request.auth != null && request.auth.uid == userId && validPost();
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
     match /gameRankings/{gameId}/players/{userId} {
       function validGame() {
         return gameId in ['space-shooter', 'zombi-shot', 'vampire-survival'];
