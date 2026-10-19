@@ -43,7 +43,17 @@
     posts.forEach(post => {
       const article = element('article', undefined, 'duo-post');
       const heading = element('div', undefined, 'post-heading');
-      heading.append(element('h3', post.riotId), element('span', post.mode, 'post-mode'));
+      const name = element('h3');
+      const profile = element('a', post.riotId, 'opgg-profile');
+      const [gameName, tagLine] = post.riotId.split('#');
+      profile.href = `https://op.gg/ko/lol/summoners/kr/${encodeURIComponent(gameName)}-${encodeURIComponent(tagLine)}`;
+      profile.target = '_blank';
+      profile.rel = 'noopener noreferrer';
+      profile.setAttribute('aria-label', `${post.riotId} OP.GG 전적 검색 (한국 서버, 새 탭)`);
+      profile.title = 'OP.GG 전적 검색 · 한국 서버 (새 탭)';
+      profile.append(element('small', 'OP.GG ↗'));
+      name.append(profile);
+      heading.append(name, element('span', post.mode, 'post-mode'));
       article.append(heading, element('p', `티어 · ${post.tier}`, 'post-tier'));
       for (const [label, positions] of [['주 포지션', post.positions], ['원하는 듀오', post.wantedPositions]]) {
         const row = element('div', undefined, 'post-positions');

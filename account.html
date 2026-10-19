@@ -113,6 +113,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <li>이메일과 닉네임으로 가입합니다.</li>
           <li>비밀번호는 Firebase가 안전하게 처리합니다.</li>
           <li>인증 메일을 통해 이메일을 확인할 수 있습니다.</li>
+          <li>인증 메일이 스팸으로 분류될 수 있습니다. 메일이 보이지 않으면 스팸함도 확인해 주세요.</li>
           <li>현재 게임 기록은 기존처럼 브라우저에 저장됩니다.</li>
         </ul>
       </aside>
@@ -125,6 +126,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <h2 id="memberName" class="mt-2 text-3xl font-black">회원님</h2>
           <p id="memberEmail" class="mt-2 text-slate-300"></p>
           <span id="verifyBadge" class="mt-3 inline-flex rounded-full border px-3 py-1 text-xs"></span>
+          <p id="verifyEmailHint" class="mt-3 text-sm leading-6 text-amber-100">인증 메일이 스팸으로 분류될 수 있습니다. 받은편지함에 메일이 보이지 않으면 스팸함도 확인해 주세요.</p>
         </div>
         <div class="flex flex-wrap gap-2">
           <button id="verifyEmailBtn" type="button" class="rounded-xl border border-cyan-200/50 px-4 py-3 text-sm font-bold text-cyan-100 hover:bg-white/10">인증 메일 다시 보내기</button>
@@ -228,6 +230,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       badge.textContent = user.emailVerified ? "이메일 인증 완료" : "이메일 인증 필요";
       badge.className = `mt-3 inline-flex rounded-full border px-3 py-1 text-xs ${user.emailVerified ? "border-emerald-200/40 bg-emerald-500/10 text-emerald-100" : "border-amber-200/40 bg-amber-500/10 text-amber-100"}`;
       el("verifyEmailBtn").classList.toggle("hidden", user.emailVerified);
+      el("verifyEmailHint").classList.toggle("hidden", user.emailVerified);
     }
     function switchTab(tab) {
       const signup = tab === "signup";
@@ -259,7 +262,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         await updateProfile(credential.user, { displayName: name });
         try { await sendEmailVerification(credential.user); } catch (error) {}
         renderMember(credential.user);
-        showMessage(el("memberMessage"), "회원가입이 완료되었습니다. 이메일 인증 메일을 확인해 주세요.", "success");
+        showMessage(el("memberMessage"), "회원가입이 완료되었습니다. 이메일 인증 메일을 확인해 주세요. 인증 메일이 스팸으로 분류될 수 있으니, 메일이 보이지 않으면 스팸함도 확인해 주세요.", "success");
       } catch (error) {
         showMessage(el("authMessage"), authErrorMessage(error), "error");
       } finally {
@@ -307,7 +310,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       setBusy(button, true, "메일 보내는 중…", "인증 메일 다시 보내기");
       try {
         await sendEmailVerification(currentUser);
-        showMessage(el("memberMessage"), "인증 메일을 다시 보냈습니다.", "success");
+        showMessage(el("memberMessage"), "인증 메일을 다시 보냈습니다. 스팸으로 분류될 수 있으니, 메일이 보이지 않으면 스팸함도 확인해 주세요.", "success");
       } catch (error) {
         showMessage(el("memberMessage"), authErrorMessage(error), "error");
       } finally {
