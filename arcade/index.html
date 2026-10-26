@@ -11,8 +11,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="stylesheet" href="/styles/site-theme.css">
 <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="PC와 모바일 브라우저에서 바로 즐기는 무료 게임 모음. 우주 슈팅, 좀비 슈팅, 뱀파이어 생존 게임을 설치 없이 플레이하세요.">
-  <meta name="keywords" content="온라인 PC게임,우주 슈팅 게임,비행기 게임,좀비 슈팅,뱀파이어 서바이벌,생존 게임,PixiJS,브라우저 게임,partygame">
+  <meta name="description" content="PC와 모바일 브라우저에서 바로 즐기는 무료 게임 모음. 타워 건설 생존, 우주 슈팅, 좀비 슈팅, 뱀파이어 생존 게임을 설치 없이 플레이하세요.">
+  <meta name="keywords" content="타워 디펜스,타워 건설,온라인 PC게임,우주 슈팅 게임,비행기 게임,좀비 슈팅,뱀파이어 서바이벌,생존 게임,PixiJS,브라우저 게임,partygame">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#0f172a">
   <link rel="canonical" href="https://partygame.pe.kr/arcade/">
@@ -20,7 +20,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="PartyGame">
   <meta property="og:title" content="온라인 PC게임 | 무료 슈팅·생존 게임">
-  <meta property="og:description" content="설치 없이 즐기는 우주·좀비 슈팅과 뱀파이어 아레나 생존 게임입니다.">
+  <meta property="og:description" content="설치 없이 즐기는 타워 건설 생존과 우주·좀비 슈팅, 뱀파이어 아레나 생존 게임입니다.">
   <meta property="og:url" content="https://partygame.pe.kr/arcade/">
   <meta property="og:image" content="https://partygame.pe.kr/site-share.png">
   <meta name="twitter:card" content="summary_large_image">
@@ -39,6 +39,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     .game-tile::after{content:"";position:absolute;right:-3rem;top:-4rem;width:11rem;height:11rem;border-radius:999px;background:rgba(255,255,255,.08)}
     .game-tile:hover::before{opacity:1;transform:scale(1.02)}
     .game-tile:hover .play-cta{transform:translateX(.25rem);background:#f8fafc;color:#0f172a}
+    .dawn-bastion-tile::before{background:linear-gradient(135deg,rgba(64,140,116,.5),rgba(216,163,77,.22) 55%,rgba(15,23,42,.08))}
     .shot-tile::before{background:linear-gradient(135deg,rgba(34,211,238,.34),rgba(79,70,229,.16) 52%,rgba(15,23,42,.08))}
     .zombi-shot-tile::before{background:linear-gradient(135deg,rgba(22,163,74,.38),rgba(127,29,29,.22) 55%,rgba(15,23,42,.08))}
     .vampire-survival-tile::before{background:linear-gradient(135deg,rgba(124,58,237,.48),rgba(190,24,93,.2) 55%,rgba(15,23,42,.08))}
@@ -70,11 +71,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-2xl md:p-8">
         <p class="text-xs uppercase tracking-[0.28em] text-cyan-200">Online PC Games</p>
         <h1 class="mt-2 text-3xl font-bold md:text-4xl">온라인 PC게임</h1>
-        <p class="mt-3 max-w-2xl text-sm leading-relaxed text-slate-300">설치 없이 PC와 모바일 브라우저에서 바로 플레이할 수 있는 우주·좀비 슈팅과 뱀파이어 아레나 생존 게임입니다.</p>
+        <p class="mt-3 max-w-2xl text-sm leading-relaxed text-slate-300">설치 없이 PC와 모바일 브라우저에서 바로 플레이할 수 있는 타워 건설 생존과 우주·좀비 슈팅, 뱀파이어 아레나 생존 게임입니다.</p>
       </div>
     </header>
 
-    <section class="grid gap-4 md:grid-cols-3">
+    <section class="grid gap-4 md:grid-cols-2">
+      <a href="/arcade/dawn-bastion.html" class="game-tile dawn-bastion-tile flex flex-col justify-between border border-amber-200/50 bg-white/5 p-5 transition">
+        <div class="tile-inner"><div class="flex items-center justify-between gap-3"><span class="tile-icon" aria-hidden="true">🏰</span><span class="rounded-full border border-amber-200/50 px-2 py-1 text-xs text-amber-100">NEW · PC·모바일</span></div><div class="mt-5 text-xs font-semibold uppercase tracking-widest text-amber-100">Survival × Tower Defense</div><h2 class="mt-4 text-2xl font-bold text-white">새벽의 요새</h2><p class="mt-3 text-sm leading-relaxed text-slate-300">사방에서 밀려오는 괴물을 처치해 타워를 건설하고 강화하세요. 10개의 웨이브에서 마지막 수정을 지켜내세요.</p></div>
+        <div class="tile-inner mt-6 space-y-4"><div class="grid grid-cols-3 gap-2 text-xs text-slate-300"><span class="feature-chip">자동 공격</span><span class="feature-chip">타워 건설·강화</span><span class="feature-chip">보스 방어</span></div><span class="play-cta w-full">새벽의 요새 플레이 <span aria-hidden="true">→</span></span></div>
+      </a>
       <a href="/arcade/vampire-survival.html" class="game-tile vampire-survival-tile flex flex-col justify-between border border-violet-200/50 bg-white/5 p-5 transition">
         <div class="tile-inner"><div class="flex items-center justify-between gap-3"><span class="tile-icon" aria-hidden="true">🧛</span><span class="rounded-full border border-violet-200/50 px-2 py-1 text-xs text-violet-100">NEW · PC·모바일</span></div><div class="mt-5 text-xs font-semibold uppercase tracking-widest text-violet-100">Arena Survival</div><h2 class="mt-4 text-2xl font-bold text-white">밤의 생존자</h2><p class="mt-3 text-sm leading-relaxed text-slate-300">사방에서 몰려오는 괴물을 자동 공격하고 레벨업 능력을 선택해 자신만의 생존 빌드를 완성하세요.</p></div>
         <div class="tile-inner mt-6 space-y-4"><div class="grid grid-cols-3 gap-2 text-xs text-slate-300"><span class="feature-chip">자동 공격</span><span class="feature-chip">레벨업</span><span class="feature-chip">보스전</span></div><span class="play-cta w-full">밤의 생존자 플레이 <span aria-hidden="true">→</span></span></div>

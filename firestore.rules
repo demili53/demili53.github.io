@@ -2,77 +2,9 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /duoPosts/{userId} {
-      function owner() { return request.auth != null && request.auth.uid == userId; }
-      function validPositions(items) {
-        return items is list && items.size() >= 1 && items.size() <= 5
-          && items.toSet().size() == items.size()
-          && items.hasOnly(['상관없음', '탑', '정글', '미드', '원딜', '서포터'])
-          && (!items.hasAny(['상관없음']) || items.size() == 1);
-      }
-      function validPost() {
-        let d = request.resource.data;
-        return d.keys().hasAll(['riotId','tier','division','positions','wantedPositions','mode','note','mic','style','availability','duration','status','updatedAt','modifiedAt'])
-          && d.keys().hasOnly(['riotId','tier','division','positions','wantedPositions','mode','note','mic','style','availability','duration','status','updatedAt','modifiedAt'])
-          && d.riotId is string && d.riotId.size() >= 3 && d.riotId.size() <= 40
-          && d.riotId.matches('^[^# ].*#[^# ]+$') && d.riotId.split('#').size() == 2
-          && d.tier in ['언랭크','아이언','브론즈','실버','골드','플래티넘','에메랄드','다이아몬드','마스터','그랜드마스터','챌린저']
-          && d.division in ['', 'IV','III','II','I']
-          && (!(d.tier in ['언랭크','마스터','그랜드마스터','챌린저']) || d.division == '')
-          && d.mode in ['솔로/듀오 랭크','자유랭크','칼바람 나락']
-          && validPositions(d.positions) && validPositions(d.wantedPositions)
-          && d.mic in ['상관없음','가능','불가']
-          && d.style in ['상관없음','즐겜','랭크 집중','초보 환영','차분한 소통']
-          && d.availability in ['협의','지금 가능','오늘 저녁','주말']
-          && d.duration in ['협의','1~2판','1시간','2시간 이상']
-          && d.note is string && d.note.size() <= 100
-          && d.status in ['open','closed'] && d.updatedAt is timestamp
-          && d.modifiedAt == request.time;
-      }
-      function validTransition() {
-        let d = request.resource.data;
-        let oldStatus = resource.data.get('status','open');
-        // Editing does not renew or reopen a post. Renewing always has a server-enforced cooldown.
-        return (d.updatedAt == resource.data.updatedAt && oldStatus != 'deleted'
-            && (d.status == oldStatus || d.status == 'closed'))
-          || (d.updatedAt == request.time && d.status == 'open'
-            && request.time >= resource.data.updatedAt + duration.value(5,'m'));
-      }
-      function deletedPost() {
-        let d = request.resource.data;
-        return d.keys().hasAll(['status','updatedAt','modifiedAt'])
-          && d.keys().hasOnly(['status','updatedAt','modifiedAt'])
-          && d.status == 'deleted' && d.updatedAt == resource.data.updatedAt
-          && d.modifiedAt == request.time;
-      }
-      allow read: if true;
-      allow create: if owner() && validPost() && request.resource.data.status == 'open' && request.resource.data.updatedAt == request.time;
-      allow update: if owner() && ((validPost() && validTransition()) || deletedPost());
-      // Retain only timestamps after deletion so delete/recreate cannot bypass the cooldown.
-      allow delete: if false;
-    }
-    match /duoReports/{targetId}/reporters/{reporterId} {
-      function validReport() {
-        let d = request.resource.data;
-        return request.auth != null && request.auth.uid == reporterId && reporterId != targetId
-          && exists(/databases/$(database)/documents/duoPosts/$(targetId))
-          && get(/databases/$(database)/documents/duoPosts/$(targetId)).data.get('status','open') != 'deleted'
-          && d.keys().hasAll(['reason','details','createdAt','riotId','note'])
-          && d.keys().hasOnly(['reason','details','createdAt','riotId','note'])
-          && d.reason in ['광고·도배','욕설·괴롭힘','허위 정보','기타']
-          && d.details is string && d.details.size() <= 300
-          && d.riotId == get(/databases/$(database)/documents/duoPosts/$(targetId)).data.riotId
-          && d.note == get(/databases/$(database)/documents/duoPosts/$(targetId)).data.note
-          && d.createdAt == request.time;
-      }
-      allow create: if validReport();
-      allow update: if validReport() && request.time >= resource.data.createdAt + duration.value(24,'h');
-      allow read: if request.auth != null && request.auth.uid == reporterId;
-      allow delete: if false;
-    }
     match /gameRankings/{gameId}/players/{userId} {
       function validGame() {
-        return gameId in ['space-shooter', 'zombi-shot', 'vampire-survival'];
+        return gameId in ['space-shooter', 'zombi-shot', 'vampire-survival', 'dawn-bastion'];
       }
 
       function validScore() {
