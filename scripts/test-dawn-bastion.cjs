@@ -46,3 +46,76 @@ g=fresh();g.state='building';g.gold=10000;for(let i=0;i<8;i++){g.build(i,['arrow
 for(let i=0;i<12000&&g.state==='running';i++){g.step(.05);assert.ok(g.enemies.length<=150);assert.ok(g.shots.length<=180);assert.ok(g.effects.length<=100);assert.ok(Number.isFinite(g.player.x));}
 assert.ok(g.wave>1);
 console.log('PASS: building economy, upgrades, repair, pause, movement, combat rewards, AoE, slow, waves, bosses, win/loss, bounds');
+
+// Visual effects regression checks.
+{
+const Game = context.Game;
+const game = new Game(() => .5);
+game.state = 'running';
+game.spawnClock = 100;
+game.player.cd = 100;
+game.spawn();
+const enemy = game.enemies[0];
+enemy.x = 400;
+enemy.y = 360;
+game.damage(enemy, 1);
+assert.equal(enemy.hit, .12);
+assert.equal(game.effects.at(-1).kind, 'hit');
+game.damage(enemy, 1000);
+assert.equal(game.kills, 1);
+assert.equal(game.effects.at(-1).kind, 'death');
+game.damage(enemy, 1000);
+assert.equal(game.kills, 1, 'Dead enemies cannot grant duplicate rewards');
+
+game.coreHit = .35;
+for (const state of ['building', 'paused']) {
+  game.state = state;
+  const before = JSON.stringify(game);
+  game.step(.05);
+  assert.equal(JSON.stringify(game), before, 'Effects and combat freeze together');
+}
+game.state = 'running';
+game.step(.05);
+assert(game.coreHit < .35);
+for (let i = 0; i < 300; i++) game.emit('hit', 1, 1, 1, 0xffffff, .1);
+assert.equal(game.effects.length, 100);
+for (let i = 0; i < 3; i++) game.step(.05);
+assert.equal(game.effects.length, 0);
+assert.equal(game.effectPool.length, 100);
+for (let i = 0; i < 300; i++) game.emit('hit', 1, 1, 1, 0xffffff, .1);
+assert.equal(game.effects.length + game.effectPool.length, 100, 'Effect storage remains bounded');
+
+for (const type of ['arrow', 'cannon', 'frost']) {
+  const g = new Game(() => .5);
+  g.state = 'building';
+  assert(g.build(0, type));
+  g.state = 'running';
+  g.spawnClock = 100;
+  g.player.cd = 100;
+  g.spawn();
+  Object.assign(g.enemies[0], { x: g.slots[0].x + 25, y: g.slots[0].y, hp: 1000, maxHp: 1000 });
+  g.step(.05);
+  if (type === 'frost') {
+    assert(g.effects.some(f => f.kind === 'frost'));
+    assert(g.enemies[0].slow > 0);
+  } else {
+    assert(g.effects.some(f => f.kind === 'muzzle'));
+    for (let i = 0; i < 5; i++) g.step(.05);
+    if (type === 'cannon') assert(g.effects.some(f => f.kind === 'explosion'));
+  }
+}
+const core = new Game(() => .5);
+core.state = 'running';
+core.spawnClock = 100;
+core.player.x = 600;
+core.player.y = 600;
+core.spawn();
+Object.assign(core.enemies[0], { x: 360, y: 360 });
+core.step(.05);
+assert.equal(core.core, 293);
+assert.equal(core.coreHit, .35);
+const fresh = new Game();
+assert.equal(fresh.effects.length, 0);
+assert.equal(fresh.coreHit, 0);
+console.log('PASS: hit/death rewards, pause/build freeze, effect pool cap/reuse, three tower effects, core damage and reset');
+}
