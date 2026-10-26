@@ -119,3 +119,40 @@ assert.equal(fresh.effects.length, 0);
 assert.equal(fresh.coreHit, 0);
 console.log('PASS: hit/death rewards, pause/build freeze, effect pool cap/reuse, three tower effects, core damage and reset');
 }
+
+// Aim updates between shots, while recoil and facing share the combat clock.
+for (const type of ['arrow', 'cannon']) {
+  const model = fresh();
+  model.state = 'building'; model.gold = 500; model.build(0, type);
+  const slot = model.slots[0], tower = slot.tower;
+  model.state = 'running'; model.spawnClock = 100; model.player.cd = 100;
+  model.spawn();
+  const target = model.enemies[0];
+  Object.assign(target, { x: slot.x + 100, y: slot.y, hp: 10000, speed: 0 });
+  model.step(.05);
+  assert.equal(tower.angle, 0);
+  assert.equal(tower.recoil, .16);
+  assert.equal(model.shots[0].x, slot.x + 21, 'Projectile simulation origin/speed are unchanged');
+  const flash = model.effects.find(f => f.kind === 'muzzle');
+  assert.equal(flash.x, slot.x + (type === 'cannon' ? 22 : 27));
+  const count = model.shots.length;
+  target.x = slot.x; target.y = slot.y + 100;
+  model.step(.05);
+  assert.equal(tower.angle, Math.PI / 2, 'Tracking continues during cooldown');
+  assert(tower.recoil < .16);
+  assert.equal(model.shots.length, count, 'Tracking does not create extra attacks');
+  for (const state of ['building', 'paused']) {
+    model.state = state;
+    const snapshot = JSON.stringify(model);
+    model.step(.05);
+    assert.equal(JSON.stringify(model), snapshot);
+  }
+  model.state = 'running'; model.enemies = []; model.spawnClock = 100;
+  for (let i = 0; i < 5; i++) model.step(.05);
+  assert.equal(tower.recoil, 0);
+  assert.equal(tower.angle, Math.PI / 2, 'No target retains the last direction');
+  model.state = 'building'; model.sell(0); model.build(0, type);
+  assert.equal(slot.tower.recoil, 0);
+  assert.equal(slot.tower.angle, -Math.PI / 2);
+}
+console.log('PASS: tracking during cooldown, recoil/reset, muzzle alignment, unchanged projectile travel, pause/build freeze');
