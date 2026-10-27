@@ -14,7 +14,7 @@ assert.equal(g.build(0, 'cannon'), false);
 assert.equal(g.build(1, 'cannon'), false);
 assert.equal(g.upgrade(0), true);
 assert.equal(g.gold, 0);
-g.step(1); assert.equal(g.time, 0);
+g.step(1); assert.equal(g.time, .05);
 g.gold = 120; assert.equal(g.upgrade(0), true);
 assert.equal(g.upgrade(0), false);
 assert.equal(g.sell(0), true); assert.equal(g.gold, 144);
@@ -69,7 +69,7 @@ game.damage(enemy, 1000);
 assert.equal(game.kills, 1, 'Dead enemies cannot grant duplicate rewards');
 
 game.coreHit = .35;
-for (const state of ['building', 'paused']) {
+for (const state of ['paused', 'reward']) {
   game.state = state;
   const before = JSON.stringify(game);
   game.step(.05);
@@ -118,7 +118,7 @@ assert.equal(core.coreHit, .35);
 const fresh = new Game();
 assert.equal(fresh.effects.length, 0);
 assert.equal(fresh.coreHit, 0);
-console.log('PASS: hit/death rewards, pause/build freeze, effect pool cap/reuse, three tower effects, core damage and reset');
+console.log('PASS: hit/death rewards, pause/reward freeze, effect pool cap/reuse, three tower effects, core damage and reset');
 }
 
 // Aim updates between shots, while recoil and facing share the combat clock.
@@ -142,7 +142,7 @@ for (const type of ['arrow', 'cannon']) {
   assert.equal(tower.angle, Math.PI / 2, 'Tracking continues during cooldown');
   assert(tower.recoil < .16);
   assert.equal(model.shots.length, count, 'Tracking does not create extra attacks');
-  for (const state of ['building', 'paused']) {
+  for (const state of ['paused', 'reward']) {
     model.state = state;
     const snapshot = JSON.stringify(model);
     model.step(.05);
@@ -156,14 +156,14 @@ for (const type of ['arrow', 'cannon']) {
   assert.equal(slot.tower.recoil, 0);
   assert.equal(slot.tower.angle, -Math.PI / 2);
 }
-console.log('PASS: tracking during cooldown, recoil/reset, muzzle alignment, unchanged projectile travel, pause/build freeze');
+console.log('PASS: tracking during cooldown, recoil/reset, muzzle alignment, unchanged projectile travel, pause/reward freeze');
 
 // Reward choices are unique, pause combat, apply once, and respect stack limits.
 {
  const model=fresh();model.state='running';model.spawned=model.spawnLimit;model.waveTime=28;model.step(.05);
  assert.equal(model.state,'reward');assert.equal(new Set(model.offers).size,3);
  const before=JSON.stringify(model);model.step(.05);assert.equal(JSON.stringify(model),before);
- assert.equal(model.chooseReward('invalid'),false);const id=model.offers[0];assert(model.chooseReward(id));assert.equal(model.state,'building');assert.equal(model.perks[id],1);assert.equal(model.chooseReward(id),false);
+ assert.equal(model.chooseReward('invalid'),false);const id=model.offers[0];assert(model.chooseReward(id));assert.equal(model.state,'running');assert.equal(model.perks[id],1);assert.equal(model.chooseReward(id),false);
  for(const perk of ['power','haste','range','guardian'])model.perks[perk]=3;
  model.offerReward();assert(model.offers.every(x=>['supply','restore'].includes(x)));assert(model.chooseReward('supply'));assert.equal(model.gold,250);
  model.core=250;model.player.hp=90;model.offerReward();assert(model.chooseReward('restore'));assert.equal(model.core,300);assert.equal(model.player.hp,100);
@@ -174,7 +174,7 @@ console.log('PASS: tracking during cooldown, recoil/reset, muzzle alignment, unc
  const killed=[];for(let i=0;i<5;i++){const e={hp:1,x:0,y:0,r:12};killed.push(e);model.damage(e,1);}
  assert.equal(model.combo,5);assert.equal(model.bestCombo,5);assert.equal(model.gold,172);
  model.damage(killed[4],100);assert.equal(model.gold,172);
- model.state='building';model.step(.05);assert.equal(model.comboLeft,3);model.state='paused';model.step(.05);assert.equal(model.comboLeft,3);
+ model.state='building';model.step(.05);assert.equal(model.comboLeft,2.95);model.state='paused';model.step(.05);assert.equal(model.comboLeft,2.95);
  model.state='running';for(let i=0;i<61;i++)model.step(.05);assert.equal(model.combo,0);
  model.damage({hp:1,x:0,y:0,r:12},1);assert.equal(model.combo,1);assert.equal(model.bestCombo,5);
  assert.equal(fresh().bestCombo,0);assert.equal(fresh().perks.power,0);
@@ -232,7 +232,7 @@ for(const mode of ['classic','rush','siege']){
  assert.equal(boss.hp,460);assert.equal(boss.x,518);assert.equal(edge.hp,160);assert.equal(outside.hp,200);
  assert.equal(m.kills,1);assert.equal(m.shockwaveCd,18);assert(m.effects.some(f=>f.kind==='shockwave'));
  assert.equal(m.castShockwave(),false);assert.equal(m.kills,1);
- for(const state of ['idle','building','paused','reward','won','lost']){m.state=state;const before=JSON.stringify(m);assert.equal(m.castShockwave(),false);m.step(.05);assert.equal(JSON.stringify(m),before);}
+ for(const state of ['idle','paused','reward','won','lost']){m.state=state;const before=JSON.stringify(m);assert.equal(m.castShockwave(),false);m.step(.05);assert.equal(JSON.stringify(m),before);}
  m.state='running';m.enemies=[];m.spawnClock=100;for(let i=0;i<361;i++)m.step(.05);assert.equal(m.shockwaveCd,0);
  assert.equal(new context.Game(()=>.5,mode).shockwaveCd,0);
 }
@@ -302,7 +302,7 @@ console.log('PASS: damage popup values, enemy pose pause, unique effect identifi
  const flame=setup('flame');flame.enemies=[target(1,450,215),target(2,460,240),target(3,460,295),target(4,520,215)];flame.step(.05);
  assert.deepEqual(hp(flame),[992,992,1000,1000]);assert.equal(flame.enemies[0].burnTime,2);assert(flame.effects.some(f=>f.kind==='flame'));
  flame.slots[0].tower.cd=100;
- for(const state of ['paused','building','reward']){flame.state=state;const before=JSON.stringify(flame);flame.step(.05);assert.equal(JSON.stringify(flame),before);}
+ for(const state of ['paused','reward']){flame.state=state;const before=JSON.stringify(flame);flame.step(.05);assert.equal(JSON.stringify(flame),before);}
  flame.state='running';for(let i=0;i<40;i++)flame.step(.05);assert.equal(flame.enemies[0].hp,976);assert.equal(flame.enemies[0].burnTime,0);
  for(let i=0;i<20;i++)flame.step(.05);assert.equal(flame.enemies[0].hp,976,'Burn expires after four half-second ticks');
  const refresh=setup('flame');refresh.enemies=[target(1,450,215)];refresh.step(.05);for(let i=0;i<7;i++)refresh.step(.05);assert(refresh.enemies[0].burnTick<.2,'Repeated hits preserve the pending burn tick');
@@ -323,3 +323,7 @@ console.log('PASS: laser penetration/width, chain limits/falloff/gap, flame cone
  m.state='building';m.sell(0);m.slots[1].tower.cd=0;m.state='running';m.step(.05);assert.equal(m.enemies[0].burnDamage,4);
 }
 console.log('PASS: mixed-level flame stacking and expired-burn strength reset');
+
+// Construction remains a live combat state, including burn damage, movement and abilities.
+{const m=fresh();m.state='building';m.gold=1000;m.build(0,'flame');m.spawnClock=100;m.spawn();Object.assign(m.enemies[0],{x:420,y:360,hp:1000,maxHp:1000,speed:10});const y=m.enemies[0].y,x=m.player.x;m.step(.05,{x:1,y:0});assert.equal(m.time,.05);assert(m.player.x>x);assert(m.castShockwave());assert(m.shockwaveCd>0);m.state='paused';assert.equal(m.build(1,'arrow'),false);const before=JSON.stringify(m);m.step(.05);assert.equal(JSON.stringify(m),before);}
+console.log('PASS: live construction clock, movement, shockwave and paused action guards');
