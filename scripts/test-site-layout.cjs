@@ -10,7 +10,7 @@ function walk(dir) {
     if (entry.isDirectory()) { walk(file); continue; }
     if (!file.endsWith('.html')) continue;
     const html = fs.readFileSync(file, 'utf8');
-    if (!/<body\b/i.test(html)) continue; // Verification files are not site pages.
+    if (!/<body\b/i.test(html) || /http-equiv="refresh"/.test(html)) continue; // Verification files are not site pages.
     const label = path.relative(root, file);
     assert.equal((html.match(/src="\/scripts\/site-layout\.js"/g) || []).length, 1, label);
     assert.equal((html.match(/<site-header>/g) || []).length, 1, label);

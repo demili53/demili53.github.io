@@ -1,11 +1,6 @@
 // Shared site header, navigation, account status and footer. Page content stays in <main>.
 (() => {
-  const menus = [
-    ['/', '홈'], ['/arcade/', '온라인 게임'], ['/blog/', '블로그'],
-    ['/ai-ranking/', 'AI 순위'], ['/game-ranking/', '게임 순위'],
-    ['/webtoon-ranking/', '웹툰 순위'], ['/send-volume-calculator.html', '발송량 계산기'],
-    ['/ffmpeg-video-joiner.html', '영상 도구'], ['/contact.html', '문의하기']
-  ];
+  const menus = [['/', '디펜스 게임'], ['/arcade/space-shooter.html', '옵션 · 비행기 게임']];
   const currentPath = location.pathname.replace(/index\.html$/, '');
   const active = href => href === '/' ? currentPath === '/' : href.endsWith('/')
     ? currentPath.startsWith(href) : currentPath === href;
@@ -111,7 +106,7 @@
       this.attachShadow({ mode: 'open' }).innerHTML = `<style>${base}
         :host{display:block;width:100%;margin-top:28px;border-top:1px solid #334254;background:#101925;font-size:12px;color:#a9bdcb}
         footer{padding-top:22px!important;padding-bottom:24px!important}nav{display:flex;gap:12px 22px;flex-wrap:wrap}p{margin:16px 0 0;line-height:1.6}
-      </style><footer class="wrap"><nav aria-label="사이트 안내"><a href="/privacy.html">개인정보처리방침</a><a href="/terms.html">이용약관</a><a href="/contact.html">문의하기</a><a href="/account.html">회원 계정</a><a href="/blog/longform.html">긴 글 모음</a></nav><p>© ${new Date().getFullYear()} PartyGame. 함께해서 더 즐거운 게임.</p></footer>`;
+      </style><footer class="wrap"><nav aria-label="사이트 안내"><a href="/privacy.html">개인정보처리방침</a><a href="/terms.html">이용약관</a><a href="/contact.html">문의하기</a><a href="/account.html">회원 계정</a><a href="/">새벽의 요새</a></nav><p>© ${new Date().getFullYear()} PartyGame. 새벽의 요새 · 무료 타워 디펜스 게임.</p></footer>`;
     }
   }
   customElements.define('site-header', SiteHeader);

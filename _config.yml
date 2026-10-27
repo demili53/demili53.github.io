@@ -1,0 +1,12 @@
+title: "새벽의 요새 · PartyGame"
+description: "무료 타워 디펜스 게임 새벽의 요새와 비행기 슈팅 게임"
+url: "https://partygame.pe.kr"
+baseurl: ""
+exclude:
+  - rules
+  - config
+  - test-results
+  - scripts/test-dawn-bastion.cjs
+  - scripts/test-dawn-bastion-browser.cjs
+  - scripts/test-site-layout.cjs
+  - scripts/test-site-seo.cjs

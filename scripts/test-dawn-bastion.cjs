@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const vm = require('node:vm');
 const assert = require('node:assert/strict');
-const html = fs.readFileSync(require('node:path').join(__dirname, '../arcade/dawn-bastion.html'), 'utf8');
+const html = fs.readFileSync(require('node:path').join(__dirname, '../index.html'), 'utf8');
 const source = html.match(/<script id="gameLogic">([\s\S]*?)<\/script>/)[1];
 const context = vm.createContext({});
 vm.runInContext(source + '\nthis.Game = BastionGame;', context);
