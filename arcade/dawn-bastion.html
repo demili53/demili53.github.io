@@ -18,6 +18,7 @@
   <style>
     html{background:#10191e!important}body:not(.text-slate-900){background:radial-gradient(ellipse at 20% 0%,#203b36,transparent 65%),#10191e!important;color:#e7eeeb!important}body:not(.text-slate-900)::before{display:none}.layout>section{align-self:start}.heading h1{text-shadow:none;color:#f1e8d7}body{margin:0;background:#10191e!important;color:#e7eeeb;font-family:system-ui,sans-serif}*{box-sizing:border-box}button,a{touch-action:manipulation}button{cursor:pointer}button:disabled{opacity:.4;cursor:not-allowed}button:focus-visible,a:focus-visible,canvas:focus-visible{outline:2px solid #f8ca7b;outline-offset:4px}[hidden]{display:none!important}
     .shell{max-width:1220px;margin:auto;padding:24px}.nav{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:#a9bbb5}.nav a:hover{color:#f8ca7b}.heading{display:flex;align-items:end;justify-content:space-between;gap:20px;margin:32px 0 22px}.eyebrow{font-size:11px;letter-spacing:.24em;color:#e6bc76;font-weight:700}.heading h1{font-size:clamp(30px,4vw,46px);font-weight:850;letter-spacing:-.05em;margin:6px 0}.muted{color:#9fb1ac;font-size:13px;line-height:1.7}.tag{border:1px solid #41504d;border-radius:30px;padding:8px 14px;font-size:12px;color:#d6c79f;white-space:nowrap}.layout{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:20px}.panel{background:#17252a;border:1px solid #314148;border-radius:15px;overflow:hidden}.hud{display:grid;grid-template-columns:repeat(4,1fr);padding:14px 16px;gap:10px;border-bottom:1px solid #314148}.hud small{display:block;font-size:10px;color:#a2b4ae;letter-spacing:.1em}.hud strong{font-size:20px;display:block;margin-top:3px;font-variant-numeric:tabular-nums}.gold{color:#ffd08a}.stage{position:relative;aspect-ratio:1;overflow:hidden;background:#122327}.stage canvas{width:100%!important;height:100%!important;display:block;touch-action:none;user-select:none}.overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#061318b8;backdrop-filter:blur(4px);padding:22px;text-align:center}.overlay-card{max-width:350px}.overlay h2{font-size:30px;font-weight:800;margin:12px 0}.overlay p{font-size:14px;color:#b9c9c3;line-height:1.8;margin-bottom:22px}.btn{border:1px solid #4c605e;background:#263b3e;color:#ecf4ed;border-radius:8px;padding:11px 16px;font-weight:700;font-size:13px}.btn:hover:not(:disabled){background:#365053}.btn.primary{background:#e9bb73;border-color:#e9bb73;color:#192828}.toolbar{display:flex;justify-content:space-between;align-items:center;padding:12px;gap:8px;flex-wrap:wrap}.toolbar>div{display:flex;gap:8px}.status{min-height:36px;padding:0 14px 12px;font-size:12px;color:#bed0c9}.aside{display:grid;align-content:start;gap:16px}.side-card{padding:18px}.side-card h2{font-weight:750;font-size:16px;margin-bottom:12px}.side-card p{font-size:12px;color:#adc1b8;line-height:1.8}.health{display:flex;justify-content:space-between;font-size:12px;margin:12px 0 5px}.meter{height:5px;border-radius:5px;background:#0a171e;overflow:hidden}.meter span{height:100%;display:block;transition:width .15s;background:#7dcbb7}.meter.rose span{background:#e89397}.slot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:12px 0}.slot-grid button{height:40px;border:1px solid #405a59;background:#203235;border-radius:7px;font-size:12px}.slot-grid button[aria-pressed=true]{border-color:#ffd08a;color:#ffd08a;background:#514534}.choice{display:block;width:100%;text-align:left;margin:8px 0;border:1px solid #425651;background:#203336;border-radius:9px;padding:12px}.choice b{font-size:13px;display:flex;justify-content:space-between}.choice small{font-size:11px;color:#adc1b8;display:block;margin-top:4px}.crosslinks{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0}.crosslinks a{font-size:12px;border:1px solid #364948;padding:10px 14px;border-radius:8px;color:#b6c7c0}.skip{position:absolute;left:-9999px}.skip:focus{left:12px;top:12px;z-index:10;background:#fff;color:#000;padding:12px}footer{border-top:1px solid #314148;padding:20px 0;font-size:12px;color:#8fa49d}
+    .boss-panel{padding:12px 14px;background:#291e36;border-bottom:1px solid #69507d}.boss-panel>div:first-child{display:flex;justify-content:space-between;gap:12px;font-size:13px;color:#ead0ff}.boss-panel .meter{margin-top:8px;height:6px;background:#140e20}.boss-panel .meter span{background:#c899f1;transition:none}
     .ability-bar{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid #314148;background:#152b2d}.ability-bar .btn{flex-shrink:0;min-height:44px;border-color:#78bdb3;color:#c3fff1}.ability-bar p{font-size:12px;color:#b7ccc6;line-height:1.6}.ability-meter{height:4px;background:#293f40;margin-top:5px;border-radius:3px;overflow:hidden}.ability-meter span{height:100%;display:block;background:#83dfca}.ability-info{flex:1;min-width:0}.toolbar>div{flex-wrap:wrap}.reward-bonus{margin-top:8px;color:#ffe2a4!important;font-weight:700}@media(max-width:440px){.ability-bar{align-items:stretch;flex-direction:column}.ability-bar .btn{width:100%}}
     .mode-select{margin-bottom:18px;border:1px solid #425651;border-radius:12px;padding:14px}.mode-select legend{padding:0 8px;font-size:13px;color:#e9bb73;font-weight:700}.mode-options{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.mode-options label{padding:12px;background:#172a2c;border:1px solid #425651;border-radius:9px;cursor:pointer}.mode-options label:has(input:checked){border-color:#f1c77e;background:#344236}.mode-options input{accent-color:#e9bb73;margin-right:6px}.mode-options small{display:block;color:#b8cac2;font-size:12px;margin-top:6px}.mode-select:disabled{opacity:.7}.mode-select:disabled label{cursor:default}#modeHelp{margin-top:10px;font-size:13px;line-height:1.7;color:#c2d2c8}@media(max-width:540px){.mode-options{grid-template-columns:1fr}.mode-options label{padding:10px}.mode-options small{margin-top:3px}}
     .run-strip{padding:10px 14px;background:#122125;border-bottom:1px solid #314148;font-size:12px;color:#b9cec4;display:flex;gap:8px 18px;flex-wrap:wrap}.run-strip strong{color:#ffd08a}.combo-track{display:inline-block;width:60px;height:4px;margin-left:7px;background:#30413e;vertical-align:middle}.combo-track span{display:block;height:100%;background:#e9bb73}.reward-panel{padding:20px;background:linear-gradient(135deg,#2e3e35,#182b30);border-bottom:1px solid #b7925b}.reward-panel h2{font-size:22px;font-weight:800;color:#ffe0a2;margin:6px 0}.reward-panel p{font-size:13px;color:#b9cec4;line-height:1.6}.reward-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}.reward-card{padding:15px;text-align:left;border:1px solid #72876e;border-radius:10px;background:#182b2a;color:#eff7ed;min-height:115px}.reward-card:hover{border-color:#f4cb85;background:#30483d}.reward-card strong,.reward-card small{display:block}.reward-card strong{font-size:15px;color:#ffe0a2;margin-bottom:8px}.reward-card small{font-size:12px;line-height:1.6}.reward-card:focus-visible{outline:3px solid #ffe0a2;outline-offset:2px}@media(max-width:540px){.reward-grid{grid-template-columns:1fr}.reward-card{min-height:0;padding:12px}.reward-card strong{margin-bottom:4px}.reward-panel{padding:14px}}
@@ -41,6 +42,7 @@
       <div class="run-strip"><span><strong id="comboText">연속 처치 대기</strong><span class="combo-track" aria-hidden="true"><span id="comboBar" style="width:0%"></span></span></span><span id="comboBest">최고 콤보 0</span><span>3초 안에 이어서 처치 · 5콤보마다 +12 에테르</span></div>
       <section id="rewardPanel" class="reward-panel" aria-labelledby="rewardTitle" hidden><div class="eyebrow">WAVE CLEAR · CHOOSE YOUR UPGRADE</div><h2 id="rewardTitle">이번 전투의 보상</h2><p>하나를 선택하세요. 강화는 이번 도전 동안 유지됩니다. 선택 후 건설을 정비하고 다음 웨이브를 시작하세요.</p><p id="rewardBonus" class="reward-bonus"></p><div id="rewardChoices" class="reward-grid"></div></section>
       <div id="coreWarning" class="core-warning" role="status" aria-live="polite" hidden>⚠ 수정 위험 · 건설 모드에서 수리하세요.</div>
+      <div class="boss-panel" id="bossPanel" hidden><div><strong id="bossName">그림자 군주</strong><span id="bossHealth"></span></div><div class="meter"><span id="bossHealthBar" style="width:100%"></span></div></div>
       <div class="stage"><canvas id="gameCanvas" tabindex="0" aria-label="새벽의 요새 전장. WASD 또는 방향키로 이동, B로 건설, P로 일시정지."></canvas><div class="overlay" id="overlay"><div class="overlay-card"><div class="eyebrow" id="overlayLabel">HOLD UNTIL DAWN</div><h2 id="overlayTitle">마지막 불빛을 지켜라</h2><p id="overlayText">자동 공격으로 괴물을 처치하고 에테르를 모으세요.<br>건설 모드에서 타워를 배치·강화할 수 있습니다.<br>수정이나 내 체력이 0이 되면 패배합니다.</p><button class="btn primary" id="start" disabled>전장 준비 중…</button><button class="btn" id="changeMode" style="margin-top:10px" hidden>전투 종료 · 모드 선택</button></div></div></div>
       <div class="ability-bar"><button id="shockwave" class="btn" type="button" disabled aria-describedby="shockwaveHelp">수정 충격파 Q</button><div class="ability-info"><p id="shockwaveHelp">수정 반경 220에 피해·밀쳐내기·2초 둔화 · 재사용 18초</p><div class="ability-meter" aria-hidden="true"><span id="shockwaveBar" style="width:100%"></span></div><p id="perfectStatus">수정 무피해 도전 · 웨이브 성공 시 +25 에테르</p></div></div>
       <div class="toolbar"><span class="muted" id="controlHint">이동 WASD / 드래그 · 자동 공격</span><div><button class="btn primary" id="build" disabled>건설 / 강화 B</button><button class="btn" id="pause" disabled>일시정지 P</button></div></div>
@@ -82,7 +84,7 @@ const PERKS={
 };
 const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 class BastionGame {
-  constructor(random=Math.random,mode='classic'){this.random=random;this.mode=Object.hasOwn(MODES,mode)?mode:'classic';this.rules=MODES[this.mode];this.state='idle';this.shockwaveCd=0;this.waveCoreDamage=0;this.perfectWaves=0;this.lastWavePerfect=false;this.perks={power:0,haste:0,range:0,guardian:0,restore:0,supply:0};this.offers=[];this.combo=0;this.comboLeft=0;this.bestCombo=0;this.time=0;this.wave=1;this.waveTime=0;this.spawnClock=0;this.spawned=0;this.spawnLimit=this.rules.spawnBase+this.rules.spawnGrowth;this.gold=this.rules.gold;this.kills=0;this.score=0;this.level=1;this.nextLevel=8;this.core=300;this.player={x:360,y:420,hp:100,cd:0,inv:0,attack:0,aim:0};this.enemies=[];this.shots=[];this.effects=[];this.effectPool=[];this.coreHit=0;this.nextId=0;this.slots=Array.from({length:8},(_,i)=>({x:360+Math.cos(i*Math.PI/4-Math.PI/2)*145,y:360+Math.sin(i*Math.PI/4-Math.PI/2)*145,tower:null}));}
+  constructor(random=Math.random,mode='classic'){this.random=random;this.mode=Object.hasOwn(MODES,mode)?mode:'classic';this.rules=MODES[this.mode];this.state='idle';this.shockwaveCd=0;this.waveCoreDamage=0;this.perfectWaves=0;this.lastWavePerfect=false;this.perks={power:0,haste:0,range:0,guardian:0,restore:0,supply:0};this.offers=[];this.combo=0;this.comboLeft=0;this.bestCombo=0;this.time=0;this.wave=1;this.waveTime=0;this.spawnClock=0;this.spawned=0;this.spawnLimit=this.rules.spawnBase+this.rules.spawnGrowth;this.gold=this.rules.gold;this.kills=0;this.score=0;this.level=1;this.nextLevel=8;this.core=300;this.player={x:360,y:420,hp:100,cd:0,inv:0,attack:0,aim:0};this.enemies=[];this.shots=[];this.effects=[];this.effectPool=[];this.coreHit=0;this.nextId=0;this.nextFxId=0;this.slots=Array.from({length:8},(_,i)=>({x:360+Math.cos(i*Math.PI/4-Math.PI/2)*145,y:360+Math.sin(i*Math.PI/4-Math.PI/2)*145,tower:null}));}
   castShockwave(){
     if(this.state!=='running'||this.shockwaveCd>0)return false;
     const core={x:CENTER,y:CENTER};
@@ -120,13 +122,13 @@ class BastionGame {
   // Visual effects use combat time and never consume the gameplay random source.
   emit(kind,x,y,r,color,life,angle=0){
     const effect=this.effectPool.pop()||(this.effects.length>=100?this.effects.shift():{});
-    Object.assign(effect,{kind,x,y,r,color,life,max:life,angle});this.effects.push(effect);
+    Object.assign(effect,{kind,x,y,r,color,life,max:life,angle,serial:++this.nextFxId});this.effects.push(effect);
   }
-  damage(enemy,amount){if(enemy.hp<=0)return;enemy.hp-=amount;enemy.hit=.12;this.emit("hit",enemy.x,enemy.y,enemy.r,0xffefbb,.16);if(enemy.hp>0)return;this.kills++;this.combo=this.comboLeft>0?this.combo+1:1;this.comboLeft=3;this.bestCombo=Math.max(this.bestCombo,this.combo);if(this.combo%5===0)this.gold+=12;this.gold+=enemy.boss?65:8;this.score+=enemy.boss?500:25;this.emit(enemy.boss?'bossDeath':'death',enemy.x,enemy.y,enemy.r,enemy.boss?0xc4a2ef:0xe8be80,enemy.boss?.8:.4);if(this.kills>=this.nextLevel){this.level++;this.nextLevel+=8+this.level*3;this.player.hp=Math.min(100,this.player.hp+25);this.emit('levelup',this.rules.mobile?this.player.x:CENTER,this.rules.mobile?this.player.y:CENTER,34,0xffdf8d,.7);}}
+  damage(enemy,amount){if(enemy.hp<=0)return;const dealt=Math.min(enemy.hp,amount);this.emit('damageText',enemy.x,enemy.y-14,Math.ceil(dealt),enemy.boss?0xe2c3ff:0xffe2a1,.55);enemy.hp-=amount;enemy.hit=.12;this.emit("hit",enemy.x,enemy.y,enemy.r,0xffefbb,.16);if(enemy.hp>0)return;this.kills++;this.combo=this.comboLeft>0?this.combo+1:1;this.comboLeft=3;this.bestCombo=Math.max(this.bestCombo,this.combo);if(this.combo%5===0)this.gold+=12;this.gold+=enemy.boss?65:8;this.score+=enemy.boss?500:25;this.emit(enemy.boss?'bossDeath':'death',enemy.x,enemy.y,enemy.r,enemy.boss?0xc4a2ef:0xe8be80,enemy.boss?.8:.4);if(this.kills>=this.nextLevel){this.level++;this.nextLevel+=8+this.level*3;this.player.hp=Math.min(100,this.player.hp+25);this.emit('levelup',this.rules.mobile?this.player.x:CENTER,this.rules.mobile?this.player.y:CENTER,34,0xffdf8d,.7);}}
   fire(from,target,damage,color,splash=0){if(this.shots.length>=180)return;const angle=Math.atan2(target.y-from.y,target.x-from.x);if(from===this.player){from.attack=.15;from.aim=angle;}this.shots.push({x:from.x,y:from.y,target,damage,color,splash,angle,life:2});const muzzle=from.tower?(splash?22:27):9;this.emit("muzzle",from.x+Math.cos(angle)*muzzle,from.y+Math.sin(angle)*muzzle,splash?14:9,color,.13,angle);return true;}
   step(dt,input={x:0,y:0}){
     if(this.state!=='running')return;
-    dt=Math.min(.05,Math.max(0,dt));this.time+=dt;this.shockwaveCd=Math.max(0,this.shockwaveCd-dt);this.comboLeft=Math.max(0,this.comboLeft-dt);if(this.comboLeft===0)this.combo=0;this.waveTime+=dt;this.spawnClock-=dt;this.coreHit=Math.max(0,this.coreHit-dt);for(const e of this.enemies)e.hit=Math.max(0,(e.hit||0)-dt);
+    dt=Math.min(.05,Math.max(0,dt));this.time+=dt;this.shockwaveCd=Math.max(0,this.shockwaveCd-dt);this.comboLeft=Math.max(0,this.comboLeft-dt);if(this.comboLeft===0)this.combo=0;this.waveTime+=dt;this.spawnClock-=dt;this.coreHit=Math.max(0,this.coreHit-dt);for(const e of this.enemies){e.hit=Math.max(0,(e.hit||0)-dt);e.attack=Math.max(0,(e.attack||0)-dt);}
     if(this.spawned<this.spawnLimit&&this.spawnClock<=0&&this.enemies.length<150){this.spawn(this.spawned===this.spawnLimit-1&&this.rules.bosses.includes(this.wave));this.spawned++;this.spawnClock=Math.max(this.rules.spawnFloor,this.rules.spawnRate-this.wave*.1);}
     const p=this.player,len=Math.hypot(input.x,input.y)||1;
     p.x=Math.max(18,Math.min(702,p.x+input.x/Math.max(1,len)*this.rules.moveSpeed*dt));p.y=Math.max(18,Math.min(702,p.y+input.y/Math.max(1,len)*this.rules.moveSpeed*dt));p.cd-=dt;p.inv-=dt;p.attack=Math.max(0,p.attack-dt);
@@ -143,7 +145,7 @@ class BastionGame {
       else if(this.fire(slot,target,damage,spec.color,t.type==='cannon'?65+(t.level-1)*10:0))t.recoil=.16;
     }
     for(const shot of this.shots){shot.life-=dt;const e=shot.target;if(e.hp<=0){shot.life=0;continue;}const d=distance(shot,e),travel=420*dt;shot.angle=Math.atan2(e.y-shot.y,e.x-shot.x);if(d<=travel+e.r){if(shot.splash){for(const other of living)if(distance(other,e)<=shot.splash)this.damage(other,shot.damage);this.emit("explosion",e.x,e.y,shot.splash,shot.color,.4);}else this.damage(e,shot.damage);shot.life=0;}else{shot.x+=(e.x-shot.x)/d*travel;shot.y+=(e.y-shot.y)/d*travel;}}
-    for(const e of living){if(e.hp<=0)continue;e.slow-=dt;e.cd-=dt;const hunts=this.rules.mobile&&distance(e,p)<105;const target=hunts?p:{x:360,y:360},d=distance(e,target),stop=hunts?e.r+11:e.r+24;if(d>stop){const speed=e.speed*(e.slow>0?.5:1);e.x+=(target.x-e.x)/d*speed*dt;e.y+=(target.y-e.y)/d*speed*dt;}else if(e.cd<=0){e.cd=1;if(hunts){if(p.inv<=0){p.hp=Math.max(0,p.hp-(e.boss?20:10));p.inv=.45;this.emit('hurt',p.x,p.y,22,0xffa197,.3);}}else {const taken=Math.min(this.core,e.boss?22:7);this.core-=taken;this.waveCoreDamage+=taken;this.coreHit=.35;}}}
+    for(const e of living){if(e.hp<=0)continue;e.slow-=dt;e.cd-=dt;const hunts=this.rules.mobile&&distance(e,p)<105;const target=hunts?p:{x:360,y:360},d=distance(e,target),stop=hunts?e.r+11:e.r+24;if(d>stop){const speed=e.speed*(e.slow>0?.5:1);e.x+=(target.x-e.x)/d*speed*dt;e.y+=(target.y-e.y)/d*speed*dt;}else if(e.cd<=0){e.cd=1;e.attack=.18;if(hunts){if(p.inv<=0){p.hp=Math.max(0,p.hp-(e.boss?20:10));p.inv=.45;this.emit('hurt',p.x,p.y,22,0xffa197,.3);}}else {const taken=Math.min(this.core,e.boss?22:7);this.core-=taken;this.waveCoreDamage+=taken;this.coreHit=.35;}}}
     this.enemies=this.enemies.filter(e=>e.hp>0);this.shots=this.shots.filter(s=>s.life>0);let active=0;for(const effect of this.effects){effect.life-=dt;if(effect.life>0)this.effects[active++]=effect;else this.effectPool.push(effect);}this.effects.length=active;
     if(p.hp<=0||this.core<=0){this.state='lost';return;}
     // Clear every wave before advancing; combat time never elapses while building.
@@ -191,6 +193,8 @@ function sync(){const p=game.player;$('wave').textContent=String(game.wave).padS
  $('shockwaveBar').style.width=(1-game.shockwaveCd/SHOCKWAVE.cooldown)*100+'%';
  $('perfectStatus').textContent=(game.waveCoreDamage===0?'수정 무피해 도전 · 성공 시 +25 에테르':'이번 웨이브 수정 피해 '+game.waveCoreDamage+' · 다음 웨이브에 재도전')+' · 완벽 방어 '+game.perfectWaves+'회';
  const danger=game.core>0&&game.core<=90&&['running','building','paused'].includes(game.state);
+ const boss=game.enemies.find(e=>e.boss&&e.hp>0);$('bossPanel').hidden=!boss;
+ if(boss){$('bossName').textContent=game.wave===game.rules.waves?'최후의 군주':'그림자 군주';$('bossHealth').textContent=Math.ceil(boss.hp)+' / '+boss.maxHp;$('bossHealthBar').style.width=Math.max(0,boss.hp/boss.maxHp)*100+'%';}
  $('coreWarning').hidden=!danger;$('coreBar').style.backgroundColor=danger?'#f28880':'#7dcbb7';
  $('modeSelect').disabled=!['idle','won','lost'].includes(game.state);
  $('modeBadge').textContent=game.rules.name+' · '+game.rules.waves+' WAVES';$('modeHelp').textContent=game.rules.description;
@@ -242,11 +246,11 @@ function drawCombatEffects(front,model,reducedMotion,back=front){
       const r=f.r*(.7+travel*.5);g.lineStyle(2,f.color,life);g.strokeCircle(f.x,f.y,r);
       g.fillStyle(f.color,life*.85);g.fillPoints(points([f.x,f.y-15,f.x+10,f.y,f.x,f.y+15,f.x-10,f.y]),true);
     }else if(f.kind==='explosion'){
-      const r=f.r*(.2+.8*(reducedMotion?.7:age));
-      g.fillStyle(0xf5a14c,life*.16);g.fillCircle(f.x,f.y,r);
-      g.lineStyle(2.5,f.color,life*.8);g.strokeCircle(f.x,f.y,r);
-      g.fillStyle(0xffe0a0,life*.65);g.fillCircle(f.x,f.y,Math.max(0,f.r*.28*life));
-      for(let i=0;i<7;i++){const a=i*Math.PI*2/7;g.fillStyle(0xffc376,life);g.fillCircle(f.x+Math.cos(a)*r*.8,f.y+Math.sin(a)*r*.8,1+life*2);}
+      const r=f.r*(.2+.8*(reducedMotion?.7:travel));
+      g.fillStyle(0x101923,life*.18);g.fillCircle(f.x,f.y,r*.88);
+      g.lineStyle(3,f.color,life*.65);g.strokeCircle(f.x,f.y,r);
+      for(let i=0;i<8;i++){const a=i*Math.PI/4,px=f.x+Math.cos(a)*r*.65,py=f.y+Math.sin(a)*r*.65,size=(5+i%3*2)*life;g.fillStyle(i%2?0xffb75c:0xffe0a0,life*.8);g.fillPoints(points([px,py-size*1.6,px+size,py,px,py+size,px-size,py]),true);line(px,py,px+Math.cos(a)*10*life,py+Math.sin(a)*10*life,2,0xffc376,life);}
+      g.fillStyle(0xfff4d2,life*.7);g.fillCircle(f.x,f.y,Math.max(0,f.r*.21*life));
     }else if(f.kind==='shockwave'){
       const radius=f.r*(reducedMotion?.85:Math.min(1,age*1.8));
       // The thin outer boundary shows the actual hit area immediately.
@@ -258,7 +262,7 @@ function drawCombatEffects(front,model,reducedMotion,back=front){
       const r=f.r*(.15+.85*(reducedMotion?.8:age));
       g.lineStyle(2,0x8ecbfa,life*.8);g.strokeCircle(f.x,f.y,r);
       g.lineStyle(1,0xd8f4ff,life*.4);g.strokeCircle(f.x,f.y,r*.8);
-      for(let i=0;i<8;i++){const a=i*Math.PI/4,x=f.x+Math.cos(a)*r,y=f.y+Math.sin(a)*r;line(x-3,y,x+3,y,1,0xc8efff,life);line(x,y-3,x,y+3,1,0xc8efff,life);}
+      for(let i=0;i<8;i++){const a=i*Math.PI/4,x=f.x+Math.cos(a)*r,y=f.y+Math.sin(a)*r;g.fillStyle(0xc8efff,life*.8);g.fillPoints(points([x,y-6*life,x+3*life,y,x,y+6*life,x-3*life,y]),true);}
     }
   }
 }
@@ -326,7 +330,7 @@ function createCharacterTextures(scene){
        poly([32,34,32,49,25,41],0x8453b0,0xa078bc);
        rect(9,38,6,7,0xcbb4d9,2);rect(50,38,6,7,0xcbb4d9,2);
      }
-     const key='bastion-character-'+type+'-'+frame;g.generateTexture(key,64,64);g.destroy();textures[type].push(key);
+     const key='bastion-character-'+type+'-'+frame;g.generateTexture(key,64,64);g.destroy();textures[type].push({key});
    }
  }
  return textures;
@@ -377,6 +381,7 @@ function init(){
  if(!window.Phaser)throw Error("Phaser 엔진을 불러오지 못했습니다.");
  class BastionScene extends Phaser.Scene {
   constructor(){super('Bastion');}
+  preload(){this.load.atlas('bastion-painted','/assets/games/dawn-bastion/characters-v2.png','/assets/games/dawn-bastion/characters-v2.json');}
   create(){try{
  const bg=this.add.graphics();bg.fillStyle(0x122327);bg.fillRect(0,0,720,720);
  for(let y=0;y<720;y+=40)for(let x=0;x<720;x+=40){bg.fillStyle((x+y)%80?0x172b2e:0x192e30);bg.fillRect(x+1,y+1,38,38);if((x*3+y)%160===0){bg.beginPath();bg.moveTo(x+8,y+30);bg.lineTo(x+13,y+19);bg.lineTo(x+17,y+30);bg.lineStyle(1, 0x335045, 1);bg.strokePath();}}
@@ -392,21 +397,28 @@ function init(){
  const motionPreference=matchMedia('(prefers-reduced-motion: reduce)');
  for(let i=0;i<8;i++){const slot=game.slots[i];this.add.text(slot.x,slot.y+38,String(i+1),{fontFamily:"system-ui",fontSize:"12px",color:"#bed2ba"}).setOrigin(.5);}
  const textures=createCharacterTextures(this);
+ // Optional painted artwork replaces the cached fallback without blocking gameplay on a failed image load.
+ if(this.textures.exists('bastion-painted')){
+   ['player','enemy','runner','boss'].forEach(type=>{textures[type]=[0,1,2,3].map(frame=>({key:'bastion-painted',frame:type+'-'+frame}));});
+ }
+ const damageLabels=Array.from({length:24},()=>this.add.text(0,0,'',{fontFamily:'system-ui',fontSize:'13px',fontStyle:'bold',color:'#ffe2a1',stroke:'#101c26',strokeThickness:3}).setOrigin(.5).setDepth(7).setVisible(false));
  let visualGame=game,visualDelta=0,visualTime=game.time;
- const sprite=(id,type,x,y)=>{
-   let s=sprites.get(id);if(!s){s=this.add.sprite(x,y,textures[type][0]).setOrigin(.5);entities.add(s);s.pose={x,y,walk:0,frame:0,bob:0,face:1};sprites.set(id,s);}
+ const sprite=(id,type,x,y,actor)=>{
+   let s=sprites.get(id);if(!s){s=this.add.sprite(x,y,textures[type][0].key,textures[type][0].frame).setOrigin(.5);entities.add(s);s.pose={x,y,walk:0,frame:0,bob:0,face:1};sprites.set(id,s);}
    const pose=s.pose,travel=Math.hypot(x-pose.x,y-pose.y),moving=travel>.02;
    if(visualDelta>0){
      if(Math.abs(x-pose.x)>.1)pose.face=x>pose.x?1:-1;
      pose.walk+=Math.min(travel,20)*.22;
-     pose.frame=!motionPreference.matches&&moving?1+Math.floor(pose.walk)%3:0;
+     pose.frame=!motionPreference.matches&&moving?1+Math.floor(pose.walk)%2:0;
      pose.bob=!motionPreference.matches&&moving?Math.sin(pose.walk*2)*(type==='runner'?1.5:type==='boss'?1:1.1):0;
    }
    pose.x=x;pose.y=y;
    if(type==='player'&&game.player.attack>0)pose.face=Math.cos(game.player.aim)>=0?1:-1;
-   const size={player:42,enemy:36,runner:34,boss:68}[type];
-   const recoil=type==='player'&&!motionPreference.matches?game.player.attack/.15*2:0;
-   s.setTexture(textures[type][pose.frame]).setDisplaySize(size,size).setFlipX(pose.face<0).setPosition(x-recoil*pose.face,y+pose.bob);
+   const size={player:58,enemy:50,runner:48,boss:92}[type];
+   const attacking=actor?.attack>0;
+   const frame=textures[type][attacking?3:pose.frame];
+   const recoil=motionPreference.matches?0:type==='player'?game.player.attack/.15*2:attacking?-Math.min(3,actor.attack/.18*3):0;
+   s.setTexture(frame.key,frame.frame);s.setDisplaySize(size*s.frame.width/s.frame.height,size).setFlipX(pose.face<0).setPosition(x-recoil*pose.face,y+pose.bob);
    if(type!=='player'||game.rules.mobile){shadows.fillStyle(0x020b10,.35);shadows.fillEllipse(x,y+size*.31,size*.66,size*.2);}
    return s;
  };
@@ -424,20 +436,22 @@ function init(){
  if(building&&i===selected){const range=t?TYPES[t.type].range+(t.level-1)*22+game.perks.range*15:175;ground.fillStyle(0x91cab0, .04);ground.fillCircle(s.x,s.y,range);ground.lineStyle(1, 0x91cab0, .3);ground.strokeCircle(s.x,s.y,range);}});
  ground.fillStyle(0x223f40);ground.fillCircle(360,360,40);ground.lineStyle(2, 0x76b6a2, 1);ground.strokeCircle(360,360,40);ground.lineStyle(2, 0x95e7ce, .3);ground.strokeCircle(360,360,30+Math.sin(game.time*2)*2);ground.fillStyle(0x7ed7c0);ground.fillPoints(points([360,333,376,358,360,382,344,358]),true);ground.fillStyle(0x4c9d92);ground.fillPoints(points([360,333,360,382,344,358]),true);
  health.fillStyle(0x0c181c);health.fillRoundedRect(330,397,60,5,2);health.fillStyle(0x7ed7c0);health.fillRoundedRect(330,397,60*game.core/300,5,2);
- const live=new Set(['player']);const ps=sprite('player','player',game.player.x,game.player.y);ps.setVisible(game.rules.mobile);
+ const live=new Set(['player']);const ps=sprite('player','player',game.player.x,game.player.y,game.player);ps.setVisible(game.rules.mobile);
  ps.alpha=game.player.inv>0?(motionPreference.matches?.75:Math.floor(game.time*8)%2?.5:1):1;
  if(game.rules.mobile){
    underFx.lineStyle(1.5,0xeed193,.6);underFx.strokeEllipse(game.player.x,game.player.y+16,25,12);
-   health.fillStyle(0x0c181c);health.fillRect(game.player.x-17,ps.y-25,34,4);health.fillStyle(0xe89397);health.fillRect(game.player.x-17,ps.y-25,34*game.player.hp/100,4);
+   health.fillStyle(0x0c181c);health.fillRect(game.player.x-17,ps.y-30,34,4);health.fillStyle(0xe89397);health.fillRect(game.player.x-17,ps.y-30,34*game.player.hp/100,4);
  }
  for(const e of game.enemies){
-   const id='e'+e.id;live.add(id);const body=sprite(id,e.boss?'boss':e.runner?'runner':'enemy',e.x,e.y);
+   const id='e'+e.id;live.add(id);const body=sprite(id,e.boss?'boss':e.runner?'runner':'enemy',e.x,e.y,e);
    if(e.boss){underFx.lineStyle(2,0xbe92ed,.4);underFx.strokeEllipse(e.x,e.y+19,56,22);}
    if(e.hit>0){fx.fillStyle(0xfff4db,.4*e.hit/.12);fx.fillCircle(e.x,body.y-3,e.boss?10:5);}
-   if(e.hp<e.maxHp||e.boss){const width=e.boss?56:28,y=body.y-(e.boss?36:23);health.fillStyle(0x0b141e);health.fillRect(e.x-width/2-1,y-1,width+2,6);health.fillStyle(e.boss?0xcaa6f2:0xe199a0);health.fillRect(e.x-width/2,y,width*Math.max(0,e.hp/e.maxHp),4);}
+   if(e.hp<e.maxHp||e.boss){const width=e.boss?56:28,y=body.y-(e.boss?47:27);health.fillStyle(0x0b141e);health.fillRect(e.x-width/2-1,y-1,width+2,6);health.fillStyle(e.boss?0xcaa6f2:0xe199a0);health.fillRect(e.x-width/2,y,width*Math.max(0,e.hp/e.maxHp),4);}
    if(e.slow>0){underFx.lineStyle(1.5,0x8ecbfa,.8);underFx.strokeEllipse(e.x,e.y+11,e.r*2+8,12);fx.lineStyle(1,0xc5edff,.6);fx.beginPath();fx.moveTo(e.x-5,body.y-7);fx.lineTo(e.x+5,body.y+3);fx.moveTo(e.x+5,body.y-7);fx.lineTo(e.x-5,body.y+3);fx.strokePath();}
  }
  for(const [id,s]of sprites)if(!live.has(id)){s.destroy();sprites.delete(id);}drawCombatEffects(fx,game,motionPreference.matches,underFx);
+ const numbers=game.effects.filter(e=>e.kind==='damageText').slice(-damageLabels.length);
+ damageLabels.forEach((label,i)=>{const effect=numbers[i];label.setVisible(!!effect);if(effect){const life=effect.life/effect.max;label.setText(String(effect.r)).setColor('#'+effect.color.toString(16).padStart(6,'0')).setAlpha(life).setPosition(effect.x+((effect.serial%3)-1)*8,effect.y-(motionPreference.matches?0:(1-life)*23));}});
  const danger=game.core>0&&game.core<=90;
  if(danger||game.coreHit>0){
    const pulse=motionPreference.matches?.5:.5+.5*Math.sin(game.time*Math.PI);

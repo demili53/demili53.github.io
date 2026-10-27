@@ -265,3 +265,25 @@ console.log('PASS: shockwave radius/damage/knockback, boss resistance, state gua
  const siege=new context.Game(()=>.5,'siege');siege.kills=siege.nextLevel-1;siege.damage({hp:1,x:100,y:100,r:12},1);const levelup=siege.effects.find(f=>f.kind==='levelup');assert.equal(levelup.x,360);assert.equal(levelup.y,360);
 }
 console.log('PASS: character attack feedback timing, boss death and level-up effects, no duplicate rewards and mode-aware feedback reset');
+
+// Damage popups report actual health removed, and enemy attack poses obey pause.
+{
+ const model=fresh();const enemy={hp:7,x:200,y:200,r:12};model.damage(enemy,100);
+ assert.equal(model.effects.find(f=>f.kind==='damageText').r,7);
+ const count=model.effects.length;model.damage(enemy,100);assert.equal(model.effects.length,count);
+ assert.equal(new Set(model.effects.map(f=>f.serial)).size,model.effects.length);
+ model.state='running';model.spawnClock=100;model.player.cd=100;model.spawn();Object.assign(model.enemies[0],{x:model.player.x,y:model.player.y,hp:500});model.step(.05);assert.equal(model.enemies[0].attack,.18);
+ model.state='paused';const before=JSON.stringify(model);model.step(.05);assert.equal(JSON.stringify(model),before);
+}
+// Atlas frames must fit the unmodified PNG and contain all four poses for every role.
+{
+ const path=require('node:path'),dir=path.join(__dirname,'../assets/games/dawn-bastion');
+ const atlas=JSON.parse(fs.readFileSync(path.join(dir,'characters-v2.json'),'utf8'));
+ const png=fs.readFileSync(path.join(dir,'characters-v2.png'));
+ const width=png.readUInt32BE(16),height=png.readUInt32BE(20);
+ for(const type of ['player','enemy','runner','boss'])for(let pose=0;pose<4;pose++){
+   const f=atlas.frames[type+'-'+pose].frame;assert(f.w>0&&f.h>0);assert(f.x>=0&&f.y>=0&&f.x+f.w<=width&&f.y+f.h<=height);
+ }
+ assert.equal(Object.keys(atlas.frames).length,16);
+}
+console.log('PASS: damage popup values, enemy pose pause, unique effect identifiers, 16 atlas frames within PNG bounds');
