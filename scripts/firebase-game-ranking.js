@@ -1,6 +1,4 @@
-import { getApp, getApps, initializeApp } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
-import { getAnalytics, isSupported as isAnalyticsSupported } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-analytics.js";
-import { browserLocalPersistence, getAuth, onAuthStateChanged, setPersistence } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-auth.js";
+import { app, auth, authReady, onAuthStateChanged } from "/scripts/firebase-client.js";
 import {
   collection,
   doc,
@@ -14,26 +12,8 @@ import {
   setDoc
 } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCtCAly3XVVZTu0szIHAoQwYu0QaaXoNRM",
-  authDomain: "gitpage-93dfb.firebaseapp.com",
-  projectId: "gitpage-93dfb",
-  storageBucket: "gitpage-93dfb.firebasestorage.app",
-  messagingSenderId: "590509724278",
-  appId: "1:590509724278:web:cb26ed63e8733ffa240557",
-  measurementId: "G-0JPQ9J5Y18"
-};
-
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-isAnalyticsSupported().then((supported) => {
-  if (supported) getAnalytics(app);
-}).catch(() => {});
-
-const auth = getAuth(app);
-const db = initializeFirestore(app, {
-  experimentalAutoDetectLongPolling: true
-});
-setPersistence(auth, browserLocalPersistence).catch(() => {});
+await authReady;
+const db = initializeFirestore(app, { experimentalAutoDetectLongPolling: true });
 
 function safeName(user) {
   const displayName = (user?.displayName || "").trim().replace(/\s+/g, " ").slice(0, 20);

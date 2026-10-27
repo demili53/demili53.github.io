@@ -38,21 +38,17 @@
     input[type=number]{appearance:textfield;-moz-appearance:textfield}
   </style>
   <title>발송량 소요 시간 계산기 | TPS·총 발송량 계산</title>
+  <script src="/scripts/site-layout.js" defer></script>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-cyan-950 text-slate-50">
+  <site-header></site-header>
   <!-- Google Tag Manager (noscript) -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T2KDKBN8" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
-  <a href="#mainContent" class="skip-link">본문 바로가기</a>
 
-  <main id="mainContent" class="mx-auto max-w-5xl px-5 py-8 md:px-8 md:py-12">
-    <nav aria-label="주요 메뉴" class="flex flex-wrap gap-2 text-sm">
-      <a href="/" class="rounded-full border border-white/20 px-4 py-2 hover:bg-white/10">홈</a>
-      <a href="/send-volume-calculator.html" aria-current="page" class="rounded-full border border-cyan-200/70 bg-white/10 px-4 py-2 text-cyan-100">발송량 계산기</a>
-      <a href="/arcade/" class="rounded-full border border-white/20 px-4 py-2 hover:bg-white/10">온라인 PC게임</a>
-      <a href="/blog/" class="rounded-full border border-white/20 px-4 py-2 hover:bg-white/10">블로그</a>
-      <a href="/contact.html" class="rounded-full border border-white/20 px-4 py-2 hover:bg-white/10">문의하기</a>
-    </nav>
+
+  <main id="mainContent" class="mx-auto max-w-5xl px-5 py-8 md:px-8 md:py-12" tabindex="-1">
+
 
     <header class="mt-8 rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl md:p-9">
       <p class="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-200">Send Time Calculator</p>
@@ -60,7 +56,7 @@
       <p class="mt-4 max-w-3xl leading-7 text-slate-300">초당 처리할 수 있는 발송 건수와 전체 발송량을 입력하면 모든 발송이 끝날 때까지 걸리는 시간을 계산합니다.</p>
     </header>
 
-    <section class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
+    <section class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]">
       <form id="calculatorForm" class="rounded-3xl border border-white/10 bg-white/5 p-6 md:p-8" novalidate>
         <h2 class="text-xl font-bold text-cyan-100">발송 조건 입력</h2>
 
@@ -120,15 +116,7 @@
       </article>
     </section>
 
-    <footer class="mt-10 border-t border-white/10 pt-6 text-sm text-slate-400">
-      <div class="flex flex-wrap gap-x-5 gap-y-2">
-        <a href="/" class="hover:text-cyan-100">홈</a>
-        <a href="/arcade/" class="hover:text-cyan-100">온라인 PC게임</a>
-        <a href="/blog/" class="hover:text-cyan-100">블로그</a>
-        <a href="/privacy.html" class="hover:text-cyan-100">개인정보처리방침</a>
-        <a href="/contact.html" class="hover:text-cyan-100">문의하기</a>
-      </div>
-    </footer>
+
   </main>
 
   <script>
@@ -230,5 +218,6 @@
       calculate();
     })();
   </script>
+  <site-footer></site-footer>
 </body>
 </html>

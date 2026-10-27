@@ -23,10 +23,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             font-family: 'Arial', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            display: block;
+            padding: 0;
         }
 
         .game-container {
@@ -214,31 +212,33 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                 gap: 8px;
                 padding: 8px;
             }
-            
+
             .tile {
                 font-size: 28px;
             }
-            
+
             .tile-128, .tile-256, .tile-512 {
                 font-size: 24px;
             }
-            
+
             .tile-1024, .tile-2048 {
                 font-size: 20px;
             }
-            
+
             .game-title {
                 font-size: 36px;
             }
         }
     </style>
+  <script src="/scripts/site-layout.js" defer></script>
 </head>
 <body>
+  <site-header></site-header>
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T2KDKBN8"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
-<div class="game-container">
+<main id="mainContent" tabindex="-1" class="game-container" style="margin:32px auto;width:calc(100% - 32px)">
         <div class="game-header">
             <h1 class="game-title">2048</h1>
             <div class="score-container">
@@ -252,21 +252,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </div>
             </div>
         </div>
-        
+
         <div class="game-board" id="gameBoard"></div>
-        
+
         <div class="controls">
             <button class="btn" onclick="game.restart()">New Game</button>
             <button class="btn" onclick="game.undo()">Undo</button>
         </div>
-        
+
         <div class="instructions">
             <strong>HOW TO PLAY:</strong> Use arrow keys to move tiles.<br>
             When two tiles with the same number touch, they merge into one!<br>
             Join the tiles to get to <strong>2048!</strong>
         </div>
-    </div>
-
+    </main>
     <div class="game-over-overlay" id="gameOverOverlay">
         <div class="game-over-content">
             <div class="game-over-title" id="gameOverTitle">Game Over!</div>
@@ -288,7 +287,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 this.gameOverOverlay = document.getElementById('gameOverOverlay');
                 this.gameOverTitle = document.getElementById('gameOverTitle');
                 this.gameOverScore = document.getElementById('gameOverScore');
-                
+
                 this.init();
                 this.setupEventListeners();
             }
@@ -369,7 +368,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     this.addNewTile();
                     this.render();
                     this.updateScore();
-                    
+
                     if (this.isGameOver()) {
                         this.showGameOver();
                     } else if (this.hasWon()) {
@@ -430,7 +429,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     for (let row = 0; row < 4; row++) {
                         column.push(this.board[row][col]);
                     }
-                    
+
                     let newColumn = column.filter(val => val !== 0);
                     for (let i = 0; i < newColumn.length - 1; i++) {
                         if (newColumn[i] === newColumn[i + 1]) {
@@ -442,7 +441,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     while (newColumn.length < 4) {
                         newColumn.push(0);
                     }
-                    
+
                     for (let row = 0; row < 4; row++) {
                         if (this.board[row][col] !== newColumn[row]) {
                             moved = true;
@@ -460,7 +459,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     for (let row = 0; row < 4; row++) {
                         column.push(this.board[row][col]);
                     }
-                    
+
                     let newColumn = column.filter(val => val !== 0);
                     for (let i = newColumn.length - 1; i > 0; i--) {
                         if (newColumn[i] === newColumn[i - 1]) {
@@ -473,7 +472,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     while (newColumn.length < 4) {
                         newColumn.unshift(0);
                     }
-                    
+
                     for (let row = 0; row < 4; row++) {
                         if (this.board[row][col] !== newColumn[row]) {
                             moved = true;
@@ -493,7 +492,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         }
                     }
                 }
-                
+
                 if (emptyCells.length > 0) {
                     let randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
                     this.board[randomCell.row][randomCell.col] = Math.random() < 0.9 ? 2 : 4;
@@ -533,7 +532,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         if (this.board[row][col] === 0) return false;
                     }
                 }
-                
+
                 // Check for possible merges
                 for (let row = 0; row < 4; row++) {
                     for (let col = 0; col < 4; col++) {
@@ -544,7 +543,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         }
                     }
                 }
-                
+
                 return true;
             }
 
@@ -594,5 +593,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         const game = new Game2048();
     </script>
+  <site-footer></site-footer>
 </body>
 </html>

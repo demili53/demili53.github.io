@@ -29,12 +29,14 @@
   <style>
     *{box-sizing:border-box}body{margin:0;color:#e2e8f0;line-height:1.85}main{max-width:900px;margin:auto;padding:32px 20px 56px}a{color:#c7d2fe;text-underline-offset:4px}a:focus-visible{outline:2px solid #c7d2fe;outline-offset:4px}.site-nav,footer{display:flex;flex-wrap:wrap;gap:12px}.site-nav a,footer a{display:inline-flex;align-items:center;min-height:44px;padding:8px 16px;border:1px solid #ffffff30;border-radius:999px;text-decoration:none}article{margin-top:24px;padding:clamp(20px,5vw,48px);border:1px solid #ffffff20;border-radius:24px;background:#ffffff08}h1{font-size:clamp(1.8rem,5vw,2.6rem);line-height:1.35;color:#f8fafc}h2{font-size:1.45rem;line-height:1.5;color:#c7d2fe}h3{font-size:1.12rem;color:#e0e7ff}section{margin-top:40px;scroll-margin-top:24px}p{margin:16px 0;overflow-wrap:anywhere}strong{color:#f8fafc}li{margin:8px 0}ul,ol{padding-left:24px}.meta{font-size:.9rem;color:#cbd5e1}.callout,.toc{padding:16px 20px;border:1px solid #a5b4fc40;border-radius:16px;background:#818cf810}.toc a{display:inline-block;padding:8px 0;min-height:44px}.toc li{margin:0}.flow li{padding:8px 12px;border-bottom:1px solid #ffffff15}.skip-link{position:absolute;left:-9999px}.skip-link:focus{left:16px;top:8px;background:#0f172a;padding:12px;z-index:10}footer{margin-top:28px}
   </style>
+  <script src="/scripts/site-layout.js" defer></script>
 </head>
 <body>
+  <site-header></site-header>
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T2KDKBN8" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-  <a class="skip-link" href="#main-content">본문 바로가기</a>
-  <main id="main-content">
-    <nav class="site-nav" aria-label="주요 메뉴"><a href="/">홈</a><a href="/blog/">블로그</a><a href="/game-ranking/">게임 순위</a></nav>
+  <a class="skip-link" href="#mainContent">본문 바로가기</a>
+  <main id="mainContent" tabindex="-1">
+
     <article>
       <header>
         <p class="meta">게임 · POE2 · 룬 탐구자</p>
@@ -127,7 +129,8 @@
         <p>0.5.5 기준으로 진행할 때는 <strong>액트 4 룬 탐구자 퀘스트</strong>를 출발점으로 잡아 주세요. 지도 조각 수집과 제출, 탐험 이벤트 완료, 패로우 대화, 실제 방어구 재련까지 차례대로 확인하면 어디에서 진행이 멈췄는지 찾기 수월합니다.</p>
       </section>
     </article>
-    <footer><a href="/blog/">블로그 목록으로</a><a href="/">홈으로</a><a href="/contact.html">문의하기</a></footer>
+
   </main>
+  <site-footer></site-footer>
 </body>
 </html>

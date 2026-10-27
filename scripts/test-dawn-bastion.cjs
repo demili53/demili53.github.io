@@ -249,3 +249,19 @@ for(const mode of ['classic','rush','siege']){
  assert.equal(fresh().perfectWaves,0);assert.equal(fresh().waveCoreDamage,0);
 }
 console.log('PASS: shockwave radius/damage/knockback, boss resistance, state guards, cooldown freeze/reset and perfect-defense rewards');
+
+// Character feedback shares combat time, resets on a new run, and cannot duplicate combat rewards.
+{
+ const model=fresh();model.state='running';model.spawnClock=100;
+ model.spawn();const target=model.enemies[0];Object.assign(target,{x:450,y:420,hp:1000,maxHp:1000,speed:0});
+ model.fire(model.player,target,10,0xffe6b3);assert.equal(model.player.attack,.15);assert.equal(model.player.aim,0);
+ model.step(.05);assert(model.player.attack>0&&model.player.attack<=.15);
+ model.state='paused';const attack=model.player.attack;model.step(.05);assert.equal(model.player.attack,attack);
+ model.state='running';model.player.cd=100;for(let i=0;i<4;i++)model.step(.05);assert.equal(model.player.attack,0);
+ const boss={hp:1,x:100,y:100,r:23,boss:true};const before=model.score;model.damage(boss,1);assert.equal(model.score,before+500);assert(model.effects.some(f=>f.kind==='bossDeath'));
+ model.damage(boss,1);assert.equal(model.score,before+500);
+ model.kills=model.nextLevel-1;model.damage({hp:1,x:100,y:100,r:12},1);assert(model.effects.some(f=>f.kind==='levelup'));
+ assert.equal(fresh().player.attack,0);assert.equal(fresh().player.aim,0);
+ const siege=new context.Game(()=>.5,'siege');siege.kills=siege.nextLevel-1;siege.damage({hp:1,x:100,y:100,r:12},1);const levelup=siege.effects.find(f=>f.kind==='levelup');assert.equal(levelup.x,360);assert.equal(levelup.y,360);
+}
+console.log('PASS: character attack feedback timing, boss death and level-up effects, no duplicate rewards and mode-aware feedback reset');

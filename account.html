@@ -34,21 +34,17 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     .field::placeholder{color:#64748b}
   </style>
   <title>회원가입·로그인 | PartyGame</title>
+  <script src="/scripts/site-layout.js" defer></script>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-950 via-cyan-950 to-slate-950 text-slate-50">
+  <site-header></site-header>
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T2KDKBN8"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
-  <a href="#mainContent" class="skip-link">본문 바로가기</a>
-  <main id="mainContent" class="mx-auto min-h-screen max-w-5xl px-5 py-8 md:px-8 md:py-12">
-    <nav class="mb-8 flex flex-wrap gap-2 text-sm" aria-label="주요 메뉴">
-      <a href="/" class="rounded-full border border-white/20 px-4 py-2 hover:bg-white/10">홈</a>
-      <a href="/arcade/" class="rounded-full border border-white/20 px-4 py-2 hover:bg-white/10">온라인 PC게임</a>
-      <a href="/blog/" class="rounded-full border border-white/20 px-4 py-2 hover:bg-white/10">블로그</a>
-      <a href="/account.html" aria-current="page" class="rounded-full border border-cyan-200/70 bg-white/10 px-4 py-2 text-cyan-100">회원 계정</a>
-      <a href="/contact.html" class="rounded-full border border-white/20 px-4 py-2 hover:bg-white/10">문의하기</a>
-    </nav>
+
+  <main id="mainContent" class="mx-auto min-h-screen max-w-5xl px-5 py-8 md:px-8 md:py-12" tabindex="-1">
+
 
     <header class="mb-8">
       <p class="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-200">PartyGame Account</p>
@@ -148,22 +144,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <p id="memberMessage" class="mt-5 hidden rounded-xl border px-4 py-3 text-sm" role="status" aria-live="polite"></p>
     </section>
 
-    <footer class="mt-10 border-t border-white/10 pt-6 text-sm text-slate-400">
-      <div class="flex flex-wrap gap-4">
-        <a href="/privacy.html" class="hover:text-cyan-100">개인정보처리방침</a>
-        <a href="/terms.html" class="hover:text-cyan-100">이용약관</a>
-        <a href="/contact.html" class="hover:text-cyan-100">문의하기</a>
-      </div>
-    </footer>
+
   </main>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
-    import { getAnalytics, isSupported as isAnalyticsSupported } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-analytics.js";
+    import { auth, authReady } from "/scripts/firebase-client.js";
     import {
-      getAuth,
-      setPersistence,
-      browserLocalPersistence,
       createUserWithEmailAndPassword,
       signInWithEmailAndPassword,
       signOut,
@@ -173,22 +159,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       sendPasswordResetEmail
     } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-auth.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCtCAly3XVVZTu0szIHAoQwYu0QaaXoNRM",
-      authDomain: "gitpage-93dfb.firebaseapp.com",
-      projectId: "gitpage-93dfb",
-      storageBucket: "gitpage-93dfb.firebasestorage.app",
-      messagingSenderId: "590509724278",
-      appId: "1:590509724278:web:cb26ed63e8733ffa240557",
-      measurementId: "G-0JPQ9J5Y18"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    isAnalyticsSupported().then((supported) => {
-      if (supported) getAnalytics(app);
-    }).catch(() => {});
-    const auth = getAuth(app);
-    setPersistence(auth, browserLocalPersistence).catch(() => {});
+    await authReady;
 
     const el = (id) => document.getElementById(id);
     const loadingPanel = el("loadingPanel");
@@ -260,6 +231,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       try {
         const credential = await createUserWithEmailAndPassword(auth, email, password);
         await updateProfile(credential.user, { displayName: name });
+        window.dispatchEvent(new Event("partygame:profile"));
         try { await sendEmailVerification(credential.user); } catch (error) {}
         renderMember(credential.user);
         showMessage(el("memberMessage"), "회원가입이 완료되었습니다. 이메일 인증 메일을 확인해 주세요. 인증 메일이 스팸으로 분류될 수 있으니, 메일이 보이지 않으면 스팸함도 확인해 주세요.", "success");
@@ -327,5 +299,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       renderMember(user);
     });
   </script>
+  <site-footer></site-footer>
 </body>
 </html>

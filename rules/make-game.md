@@ -27,6 +27,7 @@
    - `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565" crossorigin="anonymous"></script>`
 
 4. **페이지 레이아웃 규칙**
+   - [공통 페이지 구조](site-layout.md)를 적용한다. 상단 메뉴·로그인 정보·공통 푸터는 페이지에 직접 복사하지 않는다.
    - 다른 아케이드 게임과 동일한 구조를 사용한다.
      - 상단 공통 네비게이션(홈/블로그/온라인 PC게임/각종 순위/문의하기)
      - 헤더: 카테고리 라벨 + `h1` 게임명 + 한 줄 설명 + 게임 조작 버튼

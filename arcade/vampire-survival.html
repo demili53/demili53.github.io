@@ -36,15 +36,15 @@
     @media(max-width:767px){#gameViewport{width:min(94vw,calc((100svh - 8.5rem) * .6667))}#gameShell{padding:.5rem}}
   </style>
   <title>밤의 생존자 | 무료 뱀파이어 서바이벌 게임</title>
+  <script src="/scripts/site-layout.js" defer></script>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-950 via-violet-950 to-zinc-950 text-slate-50">
+  <site-header></site-header>
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T2KDKBN8" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<a href="#mainContent" class="skip-link">본문 바로가기</a>
-<main id="mainContent" class="mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-6 sm:px-6 lg:py-8">
+
+<main id="mainContent" class="mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-6 sm:px-6 lg:py-8" tabindex="-1">
   <header class="mb-5 space-y-4">
-    <nav class="flex flex-wrap gap-2 text-sm" aria-label="주요 메뉴">
-      <a href="/" class="rounded-full border border-white/20 px-3 py-2 hover:bg-white/10">홈</a><a href="/blog/" class="rounded-full border border-white/20 px-3 py-2 hover:bg-white/10">블로그</a><a href="/arcade/" class="rounded-full border border-violet-200/70 px-3 py-2 text-violet-100 hover:bg-white/10">온라인 PC게임</a><a href="/game-ranking/" class="rounded-full border border-amber-200/60 px-3 py-2 text-amber-100 hover:bg-white/10">게임 순위</a><a href="/account.html" class="rounded-full border border-violet-200/50 px-3 py-2 text-violet-100 hover:bg-white/10">회원 계정</a><a href="/contact.html" class="rounded-full border border-white/20 px-3 py-2 hover:bg-white/10">문의하기</a>
-    </nav>
+
     <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
       <div><p class="text-xs uppercase tracking-[.28em] text-violet-300">Gothic Arena Survival</p><h1 class="mt-2 text-3xl font-black md:text-4xl">밤의 생존자</h1><p class="mt-2 max-w-3xl text-sm leading-relaxed text-slate-300">사방에서 몰려오는 밤의 괴물을 자동 공격하고, 매 레벨 새로운 능력을 골라 자신만의 생존 빌드를 완성하세요.</p></div>
       <div class="flex gap-2 text-sm"><button id="startBtn" class="rounded-lg border border-violet-200/60 px-4 py-2 font-bold text-violet-100 hover:bg-white/10">시작</button><button id="pauseBtn" class="rounded-lg border border-white/20 px-4 py-2 hover:bg-white/10">일시정지</button><button id="resetBtn" class="rounded-lg border border-rose-200/50 px-4 py-2 text-rose-100 hover:bg-white/10">다시하기</button></div>
@@ -74,9 +74,10 @@
       <section class="rounded-2xl border border-amber-200/20 bg-white/5 p-5"><div class="flex justify-between"><h2 class="text-lg font-bold text-amber-100">밤의 생존자 TOP 10</h2><a href="/account.html" class="text-xs text-amber-200 underline">로그인</a></div><ol id="firebaseRankingList" class="mt-4 grid gap-2" aria-label="밤의 생존자 점수 순위"><li class="rounded-lg border border-white/10 bg-slate-950/40 px-3 py-4 text-center text-sm text-slate-400">Firebase 순위를 불러오는 중…</li></ol><p id="firebaseRankingStatus" class="mt-3 rounded-lg border border-white/10 bg-slate-950/40 px-3 py-2 text-xs text-slate-300" aria-live="polite">로그인 상태를 확인하는 중…</p></section>
     </aside>
   </section>
-  <footer class="mt-6 border-t border-white/10 pt-5 text-sm text-slate-300"><div class="flex flex-wrap gap-3"><a href="/">홈</a><a href="/blog/">블로그</a><a href="/arcade/">온라인 PC게임</a><a href="/game-ranking/">게임 순위</a><a href="/contact.html">문의하기</a></div><a href="/arcade/dawn-bastion.html" class="inline-block mt-3 text-amber-200 underline">새 게임: 새벽의 요새 · 타워 건설 생존 →</a></footer>
+
 </main>
 <script src="https://cdn.jsdelivr.net/npm/pixi.js@8.20.0/dist/pixi.min.js"></script>
 <script src="/scripts/vampire-survival-pixi.js?v=20260826-1"></script>
+  <site-footer></site-footer>
 </body>
 </html>
