@@ -78,12 +78,12 @@ for (const state of ['building', 'paused']) {
 game.state = 'running';
 game.step(.05);
 assert(game.coreHit < .35);
-for (let i = 0; i < 300; i++) game.emit('hit', 1, 1, 1, 0xffffff, .1);
+for (let i = 0; i < 300; i++) game.emit('muzzle', 1, 1, 1, 0xffffff, .1);
 assert.equal(game.effects.length, 100);
 for (let i = 0; i < 3; i++) game.step(.05);
 assert.equal(game.effects.length, 0);
 assert.equal(game.effectPool.length, 100);
-for (let i = 0; i < 300; i++) game.emit('hit', 1, 1, 1, 0xffffff, .1);
+for (let i = 0; i < 300; i++) game.emit('muzzle', 1, 1, 1, 0xffffff, .1);
 assert.equal(game.effects.length + game.effectPool.length, 100, 'Effect storage remains bounded');
 
 for (const type of ['arrow', 'cannon', 'frost']) {
@@ -100,7 +100,7 @@ for (const type of ['arrow', 'cannon', 'frost']) {
     assert(g.effects.some(f => f.kind === 'frost'));
     assert(g.enemies[0].slow > 0);
   } else {
-    assert(g.effects.some(f => f.kind === 'muzzle'));
+    assert(g.effects.some(f => f.kind === (type==='cannon'?'cannonMuzzle':'muzzle')));
     for (let i = 0; i < 5; i++) g.step(.05);
     if (type === 'cannon') assert(g.effects.some(f => f.kind === 'explosion'));
   }
@@ -134,7 +134,7 @@ for (const type of ['arrow', 'cannon']) {
   assert.equal(tower.angle, 0);
   assert.equal(tower.recoil, .16);
   assert.equal(model.shots[0].x, slot.x + 21, 'Projectile simulation origin/speed are unchanged');
-  const flash = model.effects.find(f => f.kind === 'muzzle');
+  const flash = model.effects.find(f => f.kind === (type==='cannon'?'cannonMuzzle':'muzzle'));
   assert.equal(flash.x, slot.x + (type === 'cannon' ? 22 : 27));
   const count = model.shots.length;
   target.x = slot.x; target.y = slot.y + 100;
@@ -287,3 +287,39 @@ console.log('PASS: character attack feedback timing, boss death and level-up eff
  assert.equal(Object.keys(atlas.frames).length,16);
 }
 console.log('PASS: damage popup values, enemy pose pause, unique effect identifiers, 16 atlas frames within PNG bounds');
+
+// New weapons use distinct geometric damage rules; cosmetic effects do not replace real hits.
+{
+ const setup=(type,level=1)=>{const m=fresh();m.state='building';m.gold=10000;m.build(0,type);while(m.slots[0].tower.level<level)m.upgrade(0);m.state='running';m.spawnClock=100;m.player.x=650;m.player.y=650;m.player.cd=100;return m;};
+ const target=(id,x,y,hp=1000)=>({id,x,y,hp,maxHp:hp,r:12,boss:false,speed:0,slow:0,cd:100,attack:0,hit:0});
+ const hp=m=>m.enemies.map(e=>e.hp);
+ const laser=setup('laser');laser.enemies=[target(1,460,215),target(2,530,215),target(3,510,255),target(4,160,215)];laser.step(.05);
+ assert.deepEqual(hp(laser),[958,958,1000,1000]);assert(laser.effects.some(f=>f.kind==='laser'));assert.equal(laser.shots.length,0);
+ const wide=setup('laser',3);wide.enemies=[target(1,460,215),target(2,510,234)];wide.step(.05);assert(wide.enemies[1].hp<1000);
+ const narrow=setup('laser');narrow.enemies=[target(1,460,215),target(2,510,234)];narrow.step(.05);assert.equal(narrow.enemies[1].hp,1000);
+ for(const level of [1,3]){const chain=setup('tesla',level);chain.enemies=Array.from({length:5},(_,i)=>target(i+1,430+i*70,215));chain.step(.05);const limit=2+level;for(let i=0;i<5;i++)assert(Math.abs(chain.enemies[i].hp-(i<limit?1000-24*(1+(level-1)*.65)*Math.pow(.75,i):1000))<1e-8);assert.equal(chain.effects.filter(f=>f.kind==='lightning').length,limit);}
+ const isolated=setup('tesla');isolated.enemies=[target(1,440,215),target(2,560,215)];isolated.step(.05);assert.equal(isolated.enemies[1].hp,1000,'Chain cannot bridge a gap greater than 110');
+ const flame=setup('flame');flame.enemies=[target(1,450,215),target(2,460,240),target(3,460,295),target(4,520,215)];flame.step(.05);
+ assert.deepEqual(hp(flame),[992,992,1000,1000]);assert.equal(flame.enemies[0].burnTime,2);assert(flame.effects.some(f=>f.kind==='flame'));
+ flame.slots[0].tower.cd=100;
+ for(const state of ['paused','building','reward']){flame.state=state;const before=JSON.stringify(flame);flame.step(.05);assert.equal(JSON.stringify(flame),before);}
+ flame.state='running';for(let i=0;i<40;i++)flame.step(.05);assert.equal(flame.enemies[0].hp,976);assert.equal(flame.enemies[0].burnTime,0);
+ for(let i=0;i<20;i++)flame.step(.05);assert.equal(flame.enemies[0].hp,976,'Burn expires after four half-second ticks');
+ const refresh=setup('flame');refresh.enemies=[target(1,450,215)];refresh.step(.05);for(let i=0;i<7;i++)refresh.step(.05);assert(refresh.enemies[0].burnTick<.2,'Repeated hits preserve the pending burn tick');
+ const kills=setup('tesla');kills.enemies=[target(1,430,215,1),target(2,500,215,1),target(3,570,215,1)];kills.step(.05);assert.equal(kills.kills,3);kills.step(.05);assert.equal(kills.kills,3);
+ for(const type of ['laser','tesla','flame'])for(const mode of ['classic','rush','siege']){const m=new context.Game(()=>.5,mode);m.state='building';m.gold=1000;assert(m.build(0,type));assert(m.upgrade(0));assert(m.upgrade(0));assert.equal(m.upgrade(0),false);assert(m.sell(0));assert.equal(m.slots[0].tower,null);}
+ const budget=fresh();for(let i=0;i<100;i++)budget.damage(target(i,100,100),1);budget.emit('laser',100,100,200,0xff739f,.3);assert(budget.effects.filter(f=>f.kind==='damageText').length<=18);assert(budget.effects.some(f=>f.kind==='laser'));assert(budget.effects.length<=100);
+ const stress=fresh();stress.state='building';stress.gold=10000;for(let i=0;i<8;i++){stress.build(i,['arrow','cannon','frost','laser','tesla','flame'][i%6]);stress.upgrade(i);stress.upgrade(i);}stress.state='running';
+ for(let i=0;i<12000&&!['won','lost'].includes(stress.state);i++){if(stress.state==='reward'){stress.chooseReward(stress.offers[0]);stress.state='running';}stress.step(.05);assert(stress.effects.length<=100);assert(stress.shots.length<=180);for(const e of stress.enemies)assert(Number.isFinite(e.hp)&&Number.isFinite(e.x)&&Number.isFinite(e.y));}
+ assert(stress.wave>1);
+}
+console.log('PASS: laser penetration/width, chain limits/falloff/gap, flame cone/burn/refresh/freeze, upgrades/economy, no duplicate kills and mixed-weapon bounds');
+
+// A weaker flame cannot erase an active stronger burn, but expired burns do not retain old strength.
+{
+ const m=fresh();m.state='building';m.gold=5000;m.build(0,'flame');m.upgrade(0);m.upgrade(0);m.build(1,'flame');m.state='running';m.spawnClock=100;m.player.x=650;m.player.y=650;m.player.cd=100;
+ m.enemies=[{id:1,x:430,y:240,hp:10000,maxHp:10000,r:12,speed:0,slow:0,cd:100}];m.step(.05);assert(Math.abs(m.enemies[0].burnDamage-9.2)<1e-8);
+ for(const s of m.slots)if(s.tower)s.tower.cd=100;for(let i=0;i<40;i++)m.step(.05);assert.equal(m.enemies[0].burnTime,0);
+ m.state='building';m.sell(0);m.slots[1].tower.cd=0;m.state='running';m.step(.05);assert.equal(m.enemies[0].burnDamage,4);
+}
+console.log('PASS: mixed-level flame stacking and expired-burn strength reset');

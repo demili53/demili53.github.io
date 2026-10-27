@@ -30,7 +30,8 @@ const root = path.resolve(__dirname, '..');
     assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), 'https://partygame.pe.kr/');
     assert.equal(await page.locator('site-header nav a').count(), 2);
     await page.click('#start'); await page.click('#build');
-    await page.getByRole('button', { name: /연사탑 · 60 에테르/ }).click();
+    assert.equal(await page.locator('[data-weapon]').count(),6);
+    await page.locator('[data-weapon="arrow"]').click();
     assert.equal(await page.locator('#gold').textContent(), '60');
     await page.getByRole('button', { name: /강화 → Lv.2/ }).click();
     assert.equal(await page.locator('#gold').textContent(), '0');
@@ -53,10 +54,36 @@ const root = path.resolve(__dirname, '..');
     assert.equal(await page.evaluate(() => window.result.gameId), 'dawn-bastion');
     assert.equal(await page.evaluate(() => Number(localStorage.getItem('dawnBastionBest'))), 3150);
     await page.click('#start'); await page.click('#build');
-    await page.evaluate(() => {game.gold=500;game.build(0,'arrow');game.build(1,'cannon');game.build(2,'frost');for(const [x,y,kind] of [[230,280,'enemy'],[470,330,'runner'],[300,490,'boss']]){game.spawn(kind==='boss');Object.assign(game.enemies.at(-1),{x,y,runner:kind==='runner',hp:500,maxHp:600,speed:0});}game.effects=[];renderShop();sync();});
+    await page.evaluate(() => {
+      game.gold=5000;['arrow','cannon','frost','laser','tesla','flame'].forEach((type,i)=>{game.build(i,type);game.upgrade(i);});game.enemies=[];game.spawnClock=100;game.player.cd=100;
+      for(const [x,y] of [[450,200],[550,300],[600,360],[600,460],[450,520],[530,530],[180,460],[130,480],[300,490]]){game.spawn();Object.assign(game.enemies.at(-1),{x,y,hp:3000,maxHp:3000,speed:0,cd:100});}
+      game.effects=[];game.state='running';for(let i=0;i<3;i++)game.step(.05);setState('building');renderShop();sync();
+    });
+    assert.equal(await page.evaluate(()=>Object.keys(app.textures.list).filter(k=>k.startsWith('tower-base-')).length),6);
+    for(const kind of ['laser','lightning','flame'])assert(await page.evaluate(kind=>game.effects.some(e=>e.kind===kind),kind),kind);
+    const frozen=await page.evaluate(()=>JSON.stringify(game));await page.waitForTimeout(80);assert.equal(await page.evaluate(()=>JSON.stringify(game)),frozen);
+    await page.setViewportSize({width:1360,height:1000});
+    await page.waitForTimeout(80);
+    const pausedFrame=await page.locator('#gameCanvas').screenshot();
+    await page.waitForTimeout(100);
+    assert.ok(pausedFrame.equals(await page.locator('#gameCanvas').screenshot()),'Charge sigils and weapon spectacle must freeze with gameplay');
+    if(process.env.FX_SCREENSHOT)await page.locator('#gameCanvas').screenshot({path:process.env.FX_SCREENSHOT});
+    const combatEffects=await page.evaluate(()=>game.effects);
+    await page.evaluate(()=>{
+      game.emit('explosion',180,220,65,0xf3ba77,.6,0,3);
+      game.emit('bossDeath',530,180,30,0xc69cff,.8,0,3);
+      game.emit('frost',200,530,120,0x8ecbfa,.7,0,3);
+      game.emit('shockwave',360,360,220,0xa5ffe6,.7);
+      game.emit('cannonMuzzle',150,240,18,0xf3ba77,.16,0,3);
+      for(const f of game.effects){f.life=f.max*.6;}
+    });
+    await page.waitForTimeout(80);
+    if(process.env.FX_SCREENSHOT)await page.locator('#gameCanvas').screenshot({path:process.env.FX_SCREENSHOT.replace('.png','-burst.png')});
+    await page.locator('#reducedEffects').check();assert.equal(await page.evaluate(()=>localStorage.getItem('dawnBastionReducedEffects')),'1');await page.locator('#reducedEffects').uncheck();
+    await page.evaluate(effects=>{game.effects=effects;},combatEffects);
     await page.waitForTimeout(80);
     if (process.env.UPDATE_SHARE_IMAGES === '1') {
-      await makeShare(browser, await page.locator('#gameCanvas').screenshot(), path.join(root,'site-share.png'), '새벽의 요새', '무료 타워 디펜스', '방어전 · 돌격전 · 요새전', '타워 건설 / 강화 카드 / 보스 방어');
+      await makeShare(browser, await page.locator('#gameCanvas').screenshot(), path.join(root,'site-share.png'), '새벽의 요새', '무료 타워 디펜스', '방어전 · 돌격전 · 요새전', '6종 무기 / 전용 이펙트 / 보스 방어');
     }
     for(const old of ['/arcade/dawn-bastion.html','/arcade/']){await page.goto(base+old);await page.waitForURL(base+'/');await page.waitForFunction(()=>ready);}
     const missing=await page.goto(base+'/blog/posts/removed.html');assert.equal(missing.status(),404);assert.equal(await page.locator('meta[name="robots"]').getAttribute('content'),'noindex, follow');
