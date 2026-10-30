@@ -1,6 +1,6 @@
 // Shared site header, navigation, account status and footer. Page content stays in <main>.
 (() => {
-  const menus = [['/', '디펜스 게임'], ['/arcade/space-shooter.html', '옵션 · 비행기 게임']];
+  const menus = [['/', '새벽의 요새'], ['/arcade/space-shooter.html', '비행기 슈팅']];
   const currentPath = location.pathname.replace(/index\.html$/, '');
   const active = href => href === '/' ? currentPath === '/' : href.endsWith('/')
     ? currentPath.startsWith(href) : currentPath === href;
@@ -35,9 +35,16 @@
         .skip{position:absolute;left:-9999px;top:5px;background:#fff;color:#14232b;padding:12px;border-radius:6px;z-index:1}.skip:focus{left:12px}
         @media(max-width:540px){.top{gap:8px;min-height:70px}.brand{font-size:15px}.account{gap:6px;font-size:12px}.account a,.account button{padding:7px 8px}.identity{max-width:40vw}#name,#detail{max-width:100%}#logout{font-size:11px}nav a{padding:10px;font-size:12px}}
         @media(max-width:380px){.top{flex-wrap:wrap}.account{width:100%;justify-content:space-between}.identity{max-width:55vw;text-align:left}}
+
+        :host{background:#101722f5;border-bottom:1px solid #293448;box-shadow:none;backdrop-filter:blur(16px)}
+        .wrap{max-width:1280px;padding-left:28px;padding-right:28px}.top{min-height:72px;padding-top:14px;padding-bottom:12px}.brand{display:flex;align-items:center;gap:0;font-size:18px;letter-spacing:.035em}.brand>span:not(.brand-icon){color:#ffad66}.brand .brand-icon{display:inline-grid;place-items:center;margin-right:11px;background:#ffad66;color:#231a14;width:30px;height:32px;border-radius:8px;font-size:22px}.brand small{font-size:8px;letter-spacing:.13em;font-weight:500;color:#8294af;max-width:80px;line-height:1.6;margin-left:16px;padding-left:16px;border-left:1px solid #354257}
+        .account{gap:12px}#name{color:#c6d3e6;font-size:11px;font-weight:500}#detail{color:#7f93af;font-size:10px}.account a,.account button{background:#1b2639;border:1px solid #35455d;border-radius:7px;color:#d9e3f2;min-height:36px;padding:9px 13px;font-size:11px}.account a:hover,.account button:hover{background:#2a3950;color:#fff}
+        nav{gap:24px;padding-top:0;padding-bottom:0;border-top:1px solid #202c3e;overflow:visible}nav a{font-size:12px;min-height:44px;padding:13px 0;border-radius:0;border-bottom:2px solid transparent;color:#8fa2be}nav a[aria-current]{color:#ffc18b;background:transparent;border-color:#ffad66;font-weight:650}nav a:hover{background:transparent;color:#fff}
+        @media(min-width:1000px){header{position:relative}.top{padding-bottom:16px}nav{border-top:0;position:absolute;top:14px;left:50%;transform:translateX(-50%);padding:0;width:auto}.top{min-height:74px}nav a{padding:13px 4px}.brand small{display:none}.identity{max-width:225px}}
+        @media(max-width:540px){.wrap{padding-left:14px;padding-right:14px}.top{min-height:65px;gap:8px}.brand{font-size:14px}.brand .brand-icon{width:25px;height:28px;margin-right:8px;font-size:20px}.brand small{display:none}.identity{display:none}.account a,.account button{padding:8px 9px;font-size:10px;min-height:34px}nav{gap:22px}nav a{font-size:11px;padding:11px 0;min-height:40px}.account{width:auto}.top{flex-wrap:nowrap}}
       </style><header>
         <a class="skip" href="#mainContent">본문 바로가기</a>
-        <div class="wrap top"><a class="brand" href="/">PARTY<span>GAME</span></a>
+        <div class="wrap top"><a class="brand" href="/" aria-label="PartyGame 홈"><span class="brand-icon" aria-hidden="true">✦</span>PARTY<span>GAME</span><small>PLAY IN YOUR BROWSER</small></a>
           <div class="account" aria-label="로그인 정보"><div class="identity" role="status" aria-live="polite"><span id="name">로그인 확인 중…</span><span id="detail">계정 상태를 확인하고 있습니다.</span></div>
             <a id="accountLink" href="/account.html">회원 계정</a><button id="logout" type="button" hidden>로그아웃</button>
           </div>
@@ -106,6 +113,8 @@
       this.attachShadow({ mode: 'open' }).innerHTML = `<style>${base}
         :host{display:block;width:100%;margin-top:28px;border-top:1px solid #334254;background:#101925;font-size:12px;color:#a9bdcb}
         footer{padding-top:22px!important;padding-bottom:24px!important}nav{display:flex;gap:12px 22px;flex-wrap:wrap}p{margin:16px 0 0;line-height:1.6}
+
+        :host{margin-top:42px;background:#101722;border-color:#293448;color:#8396b2}footer{display:flex;justify-content:space-between;gap:24px;align-items:center;min-height:100px}nav{gap:10px 20px}nav a{font-size:11px;color:#a5b6cf}nav a:hover{color:#ffbf8a}p{font-size:10px;line-height:1.8;margin:0;max-width:245px;text-align:right}@media(max-width:650px){footer{align-items:start;flex-direction:column;gap:18px;padding-top:24px!important;padding-bottom:24px!important}p{text-align:left;max-width:none}nav{gap:10px 18px}}
       </style><footer class="wrap"><nav aria-label="사이트 안내"><a href="/privacy.html">개인정보처리방침</a><a href="/terms.html">이용약관</a><a href="/contact.html">문의하기</a><a href="/account.html">회원 계정</a><a href="/">새벽의 요새</a></nav><p>© ${new Date().getFullYear()} PartyGame. 새벽의 요새 · 무료 타워 디펜스 게임.</p></footer>`;
     }
   }
