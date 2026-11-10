@@ -1,6 +1,6 @@
 // Shared site header, navigation, account status and footer. Page content stays in <main>.
 (() => {
-  const menus = [['/', '새벽의 요새'], ['/arcade/space-shooter.html', '비행기 슈팅']];
+  const menus = [['/', '새벽의 요새'], ['/arcade/space-shooter.html', '비행기 슈팅'], ['/exaone/', 'EXAONE Agent']];
   const currentPath = location.pathname.replace(/index\.html$/, '');
   const active = href => href === '/' ? currentPath === '/' : href.endsWith('/')
     ? currentPath.startsWith(href) : currentPath === href;
