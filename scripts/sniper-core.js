@@ -120,6 +120,8 @@ function sniperActorPose(a,time){
   pose.left={x:-14,y:-40};pose.right={x:14,y:-40};pose.bob=3;pose.lean=-.08*pose.facing;
  }else if(a.action==='look'){
   pose.right={x:12,y:-30};pose.lean=Math.sin(t*1.4)*.04;
+ }else if(a.action==='rest'){
+  pose.left={x:-8,y:-16};pose.right={x:8,y:-16};pose.lean=.1;pose.bob=1+Math.sin(t*2.6)*.7;
  }
  if(a.motion&&!['travel','flee','return'].includes(a.motion.state))pose.bob+=Math.sin(t*1.8)*.35;
  // Blend changes of posture while keeping the authoritative ground position exact.
@@ -141,14 +143,18 @@ class SniperGame {
         state:'activity',timer:1+this.random()*4,pace:14+this.random()*11,
         courage:this.random(),stationary,goal:{x:a.origin,y:a.originY},blend:1,fromPose:null,
         reaction:null,escapeLeft:0,stuck:0,route:[],replans:0,fear:0,socialCooldown:3+this.random()*5,partner:null,
-        yielding:0,runBlend:0,gaze:a.id%2?1:-1,vigilance:0,alarmCount:0,progressDistance:Infinity};
+        yielding:0,runBlend:0,gaze:a.id%2?1:-1,vigilance:0,alarmCount:0,progressDistance:Infinity,
+        fatigue:0,visit:null,visitCooldown:2+(a.id%4),lastVisit:null};
       // Some initial crowd slots border a prop. Resolve before the first visible frame.
       this.constrainActor(a);
       a.origin=a.motion.x;a.originY=a.motion.y;
     }
+    this.interests=this.actors.filter(a=>['play','paint','cook','snowman'].includes(a.homeAction))
+      .map(a=>({id:a.id,x:a.origin,y:a.originY,kind:a.homeAction}));
   }
   setBehavior(a,state,action,seconds){
     const b=a.motion;if(state!=='social'&&b.partner!==null){const partner=this.actors.find(n=>n.id===b.partner);b.partner=null;b.socialCooldown=8;if(partner?.motion.partner===a.id){partner.motion.partner=null;partner.motion.timer=0;}}
+    if(b.visit&&!['travel','visiting'].includes(state)){b.lastVisit=b.visit.id;b.visit=null;b.visitCooldown=7;}
     b.state=state;b.timer=seconds;b.stuck=0;
     if(a.action!==action){b.fromPose=a.pose;b.blend=0;a.action=action;}
   }
@@ -184,6 +190,29 @@ class SniperGame {
     const b=a.motion,route=sniperRoute(b,goal,this.obstacles,this.config.theme==='harbor'?235:178);
     if(!route.length)return false;b.goal={...goal};b.route=route;b.progressDistance=Math.hypot(route[0].x-b.x,route[0].y-b.y);return true;
   }
+  chooseInterest(a){
+    const b=a.motion;if(b.stationary||b.fear>.2||b.vigilance>0||b.visitCooldown>0||a.hidden)return false;
+    const candidates=[];
+    for(const spot of this.interests){
+      const host=this.actors.find(n=>n.id===spot.id);
+      if(spot.id===a.id||!host||host.dead||host.hidden||!['activity','observe'].includes(host.motion.state))continue;
+      for(const slot of [-1,1]){
+        const goal={x:spot.x+slot*48,y:spot.y+12};
+        if(goal.x<48||goal.x>912||goal.y>498||Math.abs(goal.x-a.origin)>120||Math.abs(goal.y-a.originY)>60)continue;
+        if(this.actors.some(n=>!n.dead&&n.id!==a.id&&(n.motion.visit?.id===spot.id&&n.motion.visit.slot===slot||Math.hypot(n.x-goal.x,n.y-goal.y)<24)))continue;
+        if(!sniperClearPath(goal,goal,this.obstacles))continue;
+        const distance=Math.hypot(goal.x-b.x,goal.y-b.y);
+        const preference=a.camera?25:spot.kind==='play'?18:8;
+        candidates.push({spot,slot,goal,score:preference-distance*.2-(b.lastVisit===spot.id?25:0)+this.random()*8});
+      }
+    }
+    candidates.sort((a,b)=>b.score-a.score);
+    for(const c of candidates){if(!this.planRoute(a,c.goal))continue;
+      b.visit={id:c.spot.id,slot:c.slot,focus:{x:c.spot.x,y:c.spot.y},action:a.camera?'photo':c.spot.kind==='play'?'clap':'look'};b.replans=0;
+      this.setBehavior(a,'travel','walk',12);return true;
+    }
+    return false;
+  }
   tryConversation(a){
     const b=a.motion;if(a.hidden||b.stationary||b.fear>.2||b.socialCooldown>0||b.reaction||b.vigilance>0)return false;
     const partner=this.actors.filter(n=>n.id!==a.id&&!n.dead&&!n.hidden&&!n.motion.stationary&&!n.motion.reaction&&n.motion.fear<.2&&n.motion.socialCooldown<=0&&['activity','observe'].includes(n.motion.state))
@@ -205,6 +234,8 @@ class SniperGame {
     for(const a of this.actors){
       if(a.dead){a.fallTime=Math.min(1.2,a.fallTime+dt);continue;}
       const b=a.motion;b.timer-=dt;b.blend=Math.min(1,b.blend+dt*4);b.fear=Math.max(0,b.fear-dt*.055);b.socialCooldown=Math.max(0,b.socialCooldown-dt);
+      b.visitCooldown=Math.max(0,b.visitCooldown-dt);
+      if(b.visit){const host=this.actors.find(n=>n.id===b.visit.id);if(!host||host.dead||host.hidden||!['activity','observe'].includes(host.motion.state))this.setBehavior(a,'observe','look',.8);}
       b.yielding=Math.max(0,b.yielding-dt);b.vigilance=Math.max(0,b.vigilance-dt);if(b.vigilance===0)b.alarmCount=0;
       if(b.state==='social'){const partner=this.actors.find(n=>n.id===b.partner);if(a.hidden||!partner||partner.dead||partner.hidden)b.timer=0;}
       if(b.reaction){b.reaction.delay-=dt;if(b.reaction.delay<=0){
@@ -216,8 +247,11 @@ class SniperGame {
         this.setBehavior(a,'flee','walk',b.escapeLeft);
       }else if(b.state==='social'&&b.timer<=0){
         this.setBehavior(a,'observe','look',1);
+      }else if(['visiting','resting'].includes(b.state)&&b.timer<=0){
+        this.setBehavior(a,'observe','look',.8);
       }else if(b.state==='activity'&&b.timer<=0){
-        if(!this.tryConversation(a)){
+        if(b.fatigue>.68&&b.vigilance===0)this.setBehavior(a,'resting','rest',3+this.random()*2);
+        else if(!this.tryConversation(a)&&!this.chooseInterest(a)){
           if(b.stationary){this.setBehavior(a,'observe','look',.8+this.random()*1.4);}
           else if(this.chooseDestination(a)){this.setBehavior(a,'travel',['carry','ski','skate'].includes(a.homeAction)?a.homeAction:'walk',7);}
           else this.setBehavior(a,'observe','look',1);
@@ -235,10 +269,11 @@ class SniperGame {
       const waypoint=b.route[0]||b.goal,dx=waypoint.x-b.x,dy=waypoint.y-b.y,dist=Math.hypot(b.goal.x-b.x,b.goal.y-b.y),wayDistance=Math.hypot(dx,dy);
       if(moving&&(dist<4||b.timer<=0||b.stuck>1.4)&&(b.state!=='flee'||b.timer<b.escapeLeft-.4)){
         if(b.state==='flee')this.setBehavior(a,'recover','look',1.2+this.random()*1.5);
+        else if(b.visit&&dist<4){b.facing=b.visit.focus.x>b.x?1:-1;this.setBehavior(a,'visiting',b.visit.action,2.5+this.random()*2);}
         else if(b.state==='return'||b.stationary)this.setBehavior(a,'activity',a.homeAction,2+this.random()*3);
         else this.setBehavior(a,'observe',this.random()<.45?'wave':'look',.8+this.random()*1.8);
       }
-      const walking=['travel','flee','return'].includes(b.state),speed=b.pace*(b.state==='flee'?1.5+b.fear*.4:1+b.fear*.15)*(a.homeAction==='ski'||a.homeAction==='skate'?1.25:1);
+      const walking=['travel','flee','return'].includes(b.state),speed=b.pace*(b.state==='flee'?1.5+b.fear*.4:1+b.fear*.15)*(a.homeAction==='ski'||a.homeAction==='skate'?1.25:1)*(1-b.fatigue*.22);
       let vx=walking?dx/Math.max(1,wayDistance)*Math.min(speed,wayDistance*2):0,vy=walking?dy/Math.max(1,wayDistance)*Math.min(speed,wayDistance*2):0;
       if(walking){
         // Predict the closest approach; one walker yields while the other keeps priority.
@@ -266,6 +301,7 @@ class SniperGame {
       const smooth=1-Math.exp(-dt*(b.state==='flee'?7:4));b.vx+=(vx-b.vx)*smooth;b.vy+=(vy-b.vy)*smooth;
       const oldX=b.x,oldY=b.y;b.x+=b.vx*dt;b.y+=b.vy*dt;this.constrainActor(a);
       const traveled=Math.hypot(b.x-oldX,b.y-oldY);b.gait+=traveled*.28;
+      const effort=traveled/Math.max(dt,.001);b.fatigue=sniperClamp(b.fatigue+dt*(effort>28?.085:effort>4?.012:b.state==='resting'?-.12:-.055),0,1);
       // Detect circling as well as complete stops, using progress toward the next waypoint.
       const progress=Math.hypot(waypoint.x-b.x,waypoint.y-b.y);
       if(!walking||progress<b.progressDistance-.3){b.stuck=0;b.progressDistance=progress;}

@@ -18,7 +18,7 @@ const root = path.resolve(__dirname, '..');
   const base = 'http://127.0.0.1:' + server.address().port;
   let browser;
   try {
-    browser = await chromium.launch({ headless: true });
+    browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_EXECUTABLE_PATH ? { executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH } : {}) });
     const page = await browser.newPage({ viewport: { width: 1360, height: 1000 }, hasTouch: true });
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
@@ -28,9 +28,9 @@ const root = path.resolve(__dirname, '..');
     await page.goto(base + '/');
     await page.waitForFunction(() => ready);
     assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), 'https://partygame.pe.kr/');
-    assert.equal(await page.locator('site-header nav a').count(), 2);
+    assert.equal(await page.locator('site-header nav a').count(), 5);
     await page.click('#start'); await page.click('#build');
-    assert.equal(await page.locator('[data-weapon]').count(),6);
+    assert.equal(await page.locator('[data-weapon]').count(),9);
     await page.locator('[data-weapon="arrow"]').click();
     assert.equal(await page.locator('#gold').textContent(), '60');
     await page.getByRole('button', { name: /강화 → Lv.2/ }).click();
@@ -78,7 +78,7 @@ const root = path.resolve(__dirname, '..');
       for(const [x,y] of [[450,200],[550,300],[600,360],[600,460],[450,520],[530,530],[180,460],[130,480],[300,490]]){game.spawn();Object.assign(game.enemies.at(-1),{x,y,hp:3000,maxHp:3000,speed:0,cd:100});}
       game.effects=[];game.state='running';for(let i=0;i<3;i++)game.step(.05);setState('paused');renderShop();sync();
     });
-    assert.equal(await page.evaluate(()=>Object.keys(app.textures.list).filter(k=>k.startsWith('tower-base-')).length),6);
+    assert.equal(await page.evaluate(()=>Object.keys(app.textures.list).filter(k=>k.startsWith('tower-base-')).length),9);
     for(const kind of ['laser','lightning','flame'])assert(await page.evaluate(kind=>game.effects.some(e=>e.kind===kind),kind),kind);
     const frozen=await page.evaluate(()=>JSON.stringify(game));await page.waitForTimeout(80);assert.equal(await page.evaluate(()=>JSON.stringify(game)),frozen);
     await page.setViewportSize({width:1360,height:1000});
@@ -102,7 +102,20 @@ const root = path.resolve(__dirname, '..');
     await page.evaluate(effects=>{game.effects=effects;},combatEffects);
     await page.waitForTimeout(80);
     if (process.env.UPDATE_SHARE_IMAGES === '1') {
-      await makeShare(browser, await page.locator('#gameCanvas').screenshot(), path.join(root,'site-share.png'), '새벽의 요새', '무료 타워 디펜스', '방어전 · 돌격전 · 요새전', '6종 무기 / 전용 이펙트 / 보스 방어');
+      await makeShare(browser, await page.locator('#gameCanvas').screenshot(), path.join(root,'site-share.png'), '새벽의 요새', '무료 타워 디펜스', '방어전 · 돌격전 · 요새전', '9종 무기 / 전용 이펙트 / 보스 방어');
+    }
+
+    for(const map of ['grove','canyon','glacier']){
+      await page.evaluate(map=>{
+        selectedMap=map;resetMode('classic');game.state='building';game.gold=10000;
+        const types=Object.keys(TYPES);game.slots.forEach((s,i)=>game.build(i,types[i]));
+        game.enemies=['armored','regenerator','splitter','shard','grunt'].map((kind,i)=>({id:i+1,kind,x:180+i*85,y:100,hp:90,maxHp:100,r:12,speed:0,slow:0,cd:100,runner:kind==='shard'}));
+        game.enemies.push({id:6,x:360,y:560,hp:700,maxHp:800,r:23,boss:true,kind:'grunt',speed:0,slow:0,cd:100});
+        game.time=3;setState('paused');$('overlay').style.display='none';
+      },map);
+      await page.waitForTimeout(100);
+      await page.locator('#gameCanvas').screenshot({path:path.join(root,'test-results/bastion-graphics-'+map+'.png')});
+      const frame=await page.locator('#gameCanvas').screenshot();await page.waitForTimeout(120);assert(frame.equals(await page.locator('#gameCanvas').screenshot()),'Scenery freezes on '+map);
     }
     for(const old of ['/arcade/dawn-bastion.html','/arcade/']){await page.goto(base+old);await page.waitForURL(base+'/');await page.waitForFunction(()=>ready);}
     const missing=await page.goto(base+'/blog/posts/removed.html');assert.equal(missing.status(),404);assert.equal(await page.locator('meta[name="robots"]').getAttribute('content'),'noindex, follow');
@@ -112,7 +125,7 @@ const root = path.resolve(__dirname, '..');
     await page.click('#pauseBtn');assert((await page.locator('#statusEl').textContent()).includes('일시정지'));
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
     assert.deepEqual(errors,[]);
-    console.log('PASS: real Phaser defense at /, build/upgrade, pause, touch, victory/records, legacy redirects, removed-content 404, two-game navigation and airplane gameplay');
+    console.log('PASS: real Phaser defense at /, build/upgrade, pause, touch, victory/records, legacy redirects, removed-content 404, three-game navigation and airplane gameplay');
   } finally { if(browser)await browser.close();server.close(); }
 })().catch(error => {console.error(error);process.exitCode=1;});
 async function makeShare(browser, png, output, title, subtitle, modes, detail){

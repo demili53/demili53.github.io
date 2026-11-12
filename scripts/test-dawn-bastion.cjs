@@ -327,3 +327,23 @@ console.log('PASS: mixed-level flame stacking and expired-burn strength reset');
 // Construction remains a live combat state, including burn damage, movement and abilities.
 {const m=fresh();m.state='building';m.gold=1000;m.build(0,'flame');m.spawnClock=100;m.spawn();Object.assign(m.enemies[0],{x:420,y:360,hp:1000,maxHp:1000,speed:10});const y=m.enemies[0].y,x=m.player.x;m.step(.05,{x:1,y:0});assert.equal(m.time,.05);assert(m.player.x>x);assert(m.castShockwave());assert(m.shockwaveCd>0);m.state='paused';assert.equal(m.build(1,'arrow'),false);const before=JSON.stringify(m);m.step(.05);assert.equal(JSON.stringify(m),before);}
 console.log('PASS: live construction clock, movement, shockwave and paused action guards');
+
+// Map geometry, spawn lanes and all combinations of the expanded arsenal.
+for(const map of ['grove','canyon','glacier'])for(const mode of ['classic','rush','siege']){
+ const m=new context.Game(()=>.5,mode,map);assert.equal(m.map,map);assert.equal(m.slots.length,8);
+ if(map==='canyon')assert.equal(m.slots[2].x,570);if(map==='glacier')assert.equal(m.slots[0].y,150);
+ m.spawn();if(map==='canyon')assert([-18,738].includes(m.enemies[0].x));if(map==='glacier')assert([-18,738].includes(m.enemies[0].y));
+ for(const type of ['sniper','venom','gravity']){m.state='building';m.gold=10000;assert(m.build(0,type));assert(m.upgrade(0));assert(m.upgrade(0));assert(m.sell(0));}
+}
+assert.equal(new context.Game(()=>.5,'classic','bad').map,'grove');
+{
+ const setup=type=>{const m=fresh();m.state='building';m.gold=1000;m.build(0,type);m.state='running';m.spawnClock=100;m.player.cd=100;return m;};
+ const enemy=(id,x,hp=500,kind='grunt')=>({id,x,y:215,hp,maxHp:hp,r:12,speed:0,slow:0,cd:100,kind});
+ const sniper=setup('sniper');sniper.enemies=[enemy(1,400,100),enemy(2,550,1000)];sniper.step(.05);assert.equal(sniper.enemies[0].hp,100);assert.equal(sniper.enemies[1].hp,900);
+ const poison=setup('venom');poison.enemies=[enemy(1,420,500,'regenerator'),enemy(2,440),enemy(3,500)];poison.step(.05);assert.equal(poison.enemies[0].poisonTime,3);assert.equal(poison.enemies[1].hp,495);assert.equal(poison.enemies[2].hp,500);poison.slots[0].tower.cd=100;
+ poison.state='paused';const frozen=JSON.stringify(poison);poison.step(.05);assert.equal(JSON.stringify(poison),frozen);poison.state='running';for(let i=0;i<60;i++)poison.step(.05);assert.equal(poison.enemies[0].hp,465);poison.step(.05);assert(poison.enemies[0].hp>465);
+ const gravity=setup('gravity');gravity.enemies=[enemy(1,450),{...enemy(2,450),boss:true},enemy(3,600)];gravity.step(.05);assert.equal(gravity.enemies[0].x,412);assert.equal(gravity.enemies[1].x,442);assert.equal(gravity.enemies[2].x,600);
+ const split=fresh();split.enemies=[enemy(1,100,1,'splitter')];split.nextId=1;split.damage(split.enemies[0],10);assert.equal(split.enemies.filter(e=>e.kind==='shard').length,2);split.damage(split.enemies[0],10);assert.equal(split.enemies.length,3);
+ const armor=new context.Game(()=>.5);armor.wave=3;armor.spawn();assert.equal(armor.enemies[0].kind,'armored');assert.equal(armor.enemies[0].hp,98);
+}
+console.log('PASS: three maps, spawn lanes, nine mode/map combinations, new weapon economy, priority shots, poison/regen/freeze, gravity resistance, split-once and armored health');

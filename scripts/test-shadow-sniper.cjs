@@ -98,4 +98,17 @@ g=new box.Game(seeded(74));g.mission=1;g.loadMission();g.start();g.actors=g.acto
 Object.assign(runner.motion,{x:400,y:300,vx:38,vy:0,state:'flee',pace:24,timer:3,escapeLeft:3,fear:1,goal:{x:500,y:300},route:[]});
 g.step(.05);assert(runner.motion.runBlend>0&&runner.motion.runBlend<.4);advance(g,.5);assert(runner.motion.runBlend>.6);
 g.pause();const runSnapshot=JSON.stringify(runner);advance(g,1);assert.equal(JSON.stringify(runner),runSnapshot);
-console.log('PASS: predictive yielding, repeated-shot vigilance, blended running, obstacle detours, conversations, movement, hit alignment, pause/flight freeze and campaign mechanics');
+// Two distinct visitor places can be reserved; a third visitor must choose elsewhere.
+g=new box.Game(seeded(81));g.mission=1;g.loadMission();g.start();g.actors=g.actors.slice(0,4);g.obstacles=[];
+g.actors.forEach((a,i)=>{const x=[400,330,470,400][i],y=[300,350,350,365][i];Object.assign(a,{x,y,origin:x,originY:y,hidden:false,camera:i===1});Object.assign(a.motion,{x,y,vx:0,vy:0,stationary:i===0,state:i===0?'activity':'observe',timer:100,visitCooldown:0});});
+g.interests=[{id:g.actors[0].id,x:400,y:300,kind:'play'}];
+assert(g.chooseInterest(g.actors[1]));assert(g.chooseInterest(g.actors[2]));assert.notEqual(g.actors[1].motion.visit.slot,g.actors[2].motion.visit.slot);assert.equal(g.chooseInterest(g.actors[3]),false);
+let visited=false;for(let i=0;i<240;i++){g.step(.05);if(g.actors[1].motion.state==='visiting'){assert.equal(g.actors[1].action,'photo');visited=true;break;}}
+assert(visited,'reserved destination should be reached before photography starts');
+g.pause();const visitSnapshot=JSON.stringify(g.actors);advance(g,1);assert.equal(JSON.stringify(g.actors),visitSnapshot);g.pause();
+g.alertCrowd(400,300);advance(g,1.5);assert(g.actors.every(a=>a.motion.visit===null),'danger releases all visitor reservations');
+// Fatigue recovers through a real resting state and does not advance while paused.
+g=new box.Game(seeded(82));g.mission=1;g.loadMission();g.start();g.actors=g.actors.slice(0,1);g.interests=[];
+const tired=g.actors[0];Object.assign(tired.motion,{fatigue:.9,state:'activity',timer:.01,vx:0,vy:0});g.step(.05);assert.equal(tired.motion.state,'resting');assert.equal(tired.action,'rest');
+g.pause();const fatigue=tired.motion.fatigue;advance(g,1);assert.equal(tired.motion.fatigue,fatigue);g.pause();advance(g,4);assert(tired.motion.fatigue<.5);
+console.log('PASS: purposeful visits, reservation capacity/release, photography, fatigue/rest, predictive yielding, vigilance, routes, conversations, hit alignment, pause/flight freeze and campaign');

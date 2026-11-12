@@ -12,6 +12,13 @@ function walk(dir) {
     const html = fs.readFileSync(file, 'utf8');
     if (!/<body\b/i.test(html) || /http-equiv="refresh"/.test(html)) continue; // Verification files are not site pages.
     const label = path.relative(root, file);
+    // The EXAONE download page intentionally owns its standalone promotional layout.
+    if (label.replace(/\\/g, '/') === 'exaone/index.html') {
+      for (const tag of ['header', 'main', 'footer']) assert.equal((html.match(new RegExp(`<${tag}\\b`, 'g')) || []).length, 1, label);
+      assert.match(html, /rel="canonical" href="https:\/\/partygame\.pe\.kr\/exaone\/"/, label);
+      assert.match(html, /href="\/"/, `${label}: return to games`);
+      continue;
+    }
     assert.equal((html.match(/src="\/scripts\/site-layout\.js"/g) || []).length, 1, label);
     assert.equal((html.match(/<site-header>/g) || []).length, 1, label);
     assert.equal((html.match(/<site-footer>/g) || []).length, 1, label);

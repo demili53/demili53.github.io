@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const root = path.resolve(__dirname, '..');
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 const origin = 'https://partygame.pe.kr';
-const games = [['index.html', '/'], ['arcade/space-shooter.html', '/arcade/space-shooter.html']];
+const games = [['arcade/rift-blade.html', '/arcade/rift-blade.html'], ['index.html', '/'], ['arcade/space-shooter.html', '/arcade/space-shooter.html'], ['arcade/shadow-sniper.html', '/arcade/shadow-sniper.html']];
 for (const [file, url] of games) {
   const html = read(file);
   assert(html.includes(`rel="canonical" href="${origin}${url}"`), file);
@@ -25,12 +25,12 @@ for (const file of ['arcade/index.html', 'arcade/dawn-bastion.html']) {
   assert(read(file).includes(`rel="canonical" href="${origin}/"`));
 }
 const urls = [...read('sitemap.xml').matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1]);
-assert.deepEqual(urls.sort(), games.map(([, url]) => origin + url).sort());
+assert.deepEqual(urls.sort(), [...games.map(([, url]) => origin + url), origin + '/exaone/'].sort());
 assert(!read('robots.txt').includes('blog'));
 assert.match(read('404.html'), /noindex, follow/);
 for (const dir of ['blog', 'ai-ranking', 'game-ranking', 'webtoon-ranking', 'downloads']) assert(!fs.existsSync(path.join(root, dir)), dir);
 for (const file of ['2048.html', 'send-volume-calculator.html', 'ffmpeg-video-joiner.html', 'arcade/zombi-shot.html', 'arcade/vampire-survival.html']) assert(!fs.existsSync(path.join(root, file)), file);
-for (const file of ['index.html', 'arcade/space-shooter.html', 'account.html', 'privacy.html', 'terms.html', 'contact.html', '404.html']) {
+for (const file of ['arcade/rift-blade.html', 'index.html', 'arcade/space-shooter.html', 'arcade/shadow-sniper.html', 'account.html', 'privacy.html', 'terms.html', 'contact.html', '404.html']) {
   const html = read(file);
   for (const match of html.matchAll(/(?:href|src)="(\/[^"#?]*)[^\"]*"/g)) {
     const url = match[1];
@@ -40,4 +40,4 @@ for (const file of ['index.html', 'arcade/space-shooter.html', 'account.html', '
 }
 const shell = read('scripts/site-layout.js');
 assert(!/\/blog\/|\/ai-ranking\/|\/webtoon-ranking\//.test(shell));
-console.log('PASS: playable defense homepage, two-game sitemap, metadata/schema, legacy redirects, removed content, local links and 404');
+console.log('PASS: playable defense homepage, three-game sitemap, metadata/schema, legacy redirects, removed content, local links and 404');

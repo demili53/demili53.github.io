@@ -45,6 +45,7 @@
 <main class="shell" id="mainContent" tabindex="-1">
 
   <header class="heading"><div><div class="eyebrow">SURVIVAL × TOWER DEFENSE</div><h1>새벽의 요새 <span style="display:block;font-size:.42em;font-weight:600;margin-top:8px;color:#b2c9be">무료 타워 디펜스 게임</span></h1><p class="muted">밤은 사방에서 다가온다. 쓰러뜨리고, 쌓아 올리고, 새벽까지 지켜내세요.</p></div><span class="tag" id="modeBadge">방어전 · 10 WAVES</span></header>
+  <fieldset id="mapSelect" class="mode-select"><legend>전장 선택 · 전투 중 변경 불가</legend><div class="mode-options"><label><input type="radio" name="map" value="grove" checked>새벽 숲<small>사방 진입 · 원형 방어</small></label><label><input type="radio" name="map" value="canyon">잿빛 협곡<small>동서 진입 · 넓은 방어선</small></label><label><input type="radio" name="map" value="glacier">빙하 관문<small>남북 진입 · 긴 방어선</small></label></div><p>전장별 최고 기록 저장 · 온라인 순위는 새벽 숲 방어전</p></fieldset>
   <fieldset id="modeSelect" class="mode-select"><legend>플레이 방식 선택 · 전투 중 변경 불가</legend><div class="mode-options"><label><input type="radio" name="mode" value="classic" checked>방어전<small>10웨이브 · 이동과 타워를 함께 활용</small></label><label><input type="radio" name="mode" value="rush">돌격전<small>6웨이브 · 빠른 이동과 몰아치는 적</small></label><label><input type="radio" name="mode" value="siege">요새전<small>8웨이브 · 이동 없이 타워로 방어</small></label></div><p id="modeHelp"></p></fieldset>
   <div class="layout">
     <section class="panel" aria-label="게임 화면">
@@ -63,17 +64,18 @@
       <section class="panel side-card"><div class="eyebrow">BASTION STATUS</div><h2>수호자의 기록</h2><div class="health"><span>새벽 수정</span><b id="coreText">300 / 300</b></div><div class="meter"><span id="coreBar" style="width:100%"></span></div><div class="health"><span>내 체력</span><b id="hpText">100 / 100</b></div><div class="meter rose"><span id="hpBar" style="width:100%"></span></div><p style="margin-top:16px">점수 <b id="score">0</b> · 이 브라우저 최고 <b id="best">0</b><br>수호자 레벨 <b id="level">1</b> · <span id="xp">다음 성장까지 8 처치</span></p><p>처치로 자동 성장: 공격력·연사력 강화 + 체력 회복. 웨이브를 넘기면 에테르와 회복을 얻습니다.</p></section>
       <section class="panel side-card"><h2>이번 도전의 강화</h2><p id="perkSummary">웨이브를 클리어하면 강화 카드 중 1장을 선택합니다.</p></section>
       <section class="panel side-card"><h2>전장 안내</h2><p id="modeRules"></p><p>WASD / 방향키 · 이동<br>모바일 · 화면을 누른 채 드래그<br>지점 클릭 · 즉시 건설 / 강화<br>B · 건설 팝업 열기 / 닫기<br>P / Esc · 일시정지<br>Q / 충격파 버튼 · 수정 주변 적 밀쳐내기<br>수정 피해 없이 웨이브 클리어 · +25 에테르<br>타워는 파괴되지 않습니다.<br>웨이브 클리어: 강화 카드 1장 선택<br>3초 이내 연속 처치: 5콤보마다 +12 에테르<br>각 모드의 마지막 웨이브를 클리어하면 승리!</p><p style="margin-top:12px">Powered by <a href="https://docs.phaser.io/" target="_blank" rel="noopener noreferrer" style="text-decoration:underline">Phaser 4.2.1</a></p></section>
-      <section class="panel side-card"><h2>방어전 TOP 10</h2><p>온라인 순위는 방어전만 집계합니다. 돌격전·요새전 최고 기록은 이 브라우저에 모드별로 저장됩니다.</p><ol id="firebaseRankingList" aria-label="새벽의 요새 점수 순위"><li class="muted">순위를 불러오는 중…</li></ol><p id="firebaseRankingStatus" aria-live="polite">회원의 최고 점수는 로그인 후 저장됩니다.</p></section>
+      <section class="panel side-card"><h2>방어전 TOP 10</h2><p>온라인 순위는 새벽 숲 방어전만 집계합니다. 돌격전·요새전 최고 기록은 이 브라우저에 모드별로 저장됩니다.</p><ol id="firebaseRankingList" aria-label="새벽의 요새 점수 순위"><li class="muted">순위를 불러오는 중…</li></ol><p id="firebaseRankingStatus" aria-live="polite">회원의 최고 점수는 로그인 후 저장됩니다.</p></section>
     </aside>
   </div>
-  <nav class="crosslinks" aria-label="게임 선택"><a href="/" aria-current="page">메인 · 새벽의 요새</a><a href="/arcade/space-shooter.html">다른 게임 · 비행기 슈팅 ↗</a></nav>
+  <nav class="crosslinks" aria-label="게임 선택"><a href="/arcade/rift-blade.html">새 게임 · 균열의 검 RPG ↗</a><a href="/arcade/shadow-sniper.html">새 게임 · 윌리를 찾아서 저격해라 ↗</a><a href="/" aria-current="page">메인 · 새벽의 요새</a><a href="/arcade/space-shooter.html">다른 게임 · 비행기 슈팅 ↗</a></nav>
 
 
   <section id="gameGuide" class="game-guide" aria-labelledby="guideTitle">
     <p class="eyebrow">HOW TO PLAY</p><h2 id="guideTitle">새벽의 요새, 무료 타워 디펜스 게임</h2>
     <p>새벽의 요새는 몰려오는 괴물에게서 중앙의 수정을 지키는 싱글 플레이 브라우저 게임입니다. 적을 처치해 에테르를 모으고, 8개 건설 지점에 타워를 설치해 방어선을 만드세요. 설치나 다운로드 없이 PC와 모바일 브라우저에서 플레이할 수 있으며, 로그인 없이도 게임과 이 브라우저의 최고 기록을 이용할 수 있습니다.</p>
     <div class="guide-grid"><section><h3>방어전 · 10웨이브</h3><p>수호자를 직접 움직이며 가까운 적을 자동 공격합니다. 연사탑·폭발탑·냉기탑을 조합하고 4·7·10웨이브의 보스를 막으세요.</p></section><section><h3>돌격전 · 6웨이브</h3><p>생성 간격이 짧고 더 빠르게 접근하는 적을 상대합니다. 수호자의 빠른 이동을 활용해 전장을 돌파하고 3·6웨이브 보스에 도전하세요.</p></section><section><h3>요새전 · 8웨이브</h3><p>시작 에테르 300으로 타워를 준비하는 건설 중심 모드입니다. 수호자의 이동·개인 공격 없이 강화된 타워와 충격파로 수정을 지키세요.</p></section></div>
-    <h3>타워와 강화 카드를 조합하세요</h3><p>연사탑은 예광탄으로 단일 적을 집중 공격하고, 폭발탑은 포탄과 충격파로 밀집한 적을 처리합니다. 냉기탑은 얼음 파동과 둔화, 관통 광선탑은 직선 관통, 연쇄 번개탑은 여러 적을 잇는 전격, 화염 방사탑은 부채꼴 공격과 지속 연소를 제공합니다. 총 6종의 무기는 강화 단계에 따라 범위·연결 수·효과가 성장합니다. 전장의 설치 지점을 클릭하면 건설 팝업이 열립니다. 전투가 계속되는 동안 타워를 설치·강화·철거하거나 수정을 수리할 수 있습니다. 웨이브를 클리어하면 제시된 강화 카드 중 하나를 선택해 이번 도전의 전략을 완성합니다.</p>
+    <h3>전장과 몬스터</h3><p>새벽 숲·잿빛 협곡·빙하 관문은 진입 방향과 건설 배치가 다릅니다. 3웨이브부터 질주자와 체력이 높은 중갑병, 5웨이브부터 체력을 회복하는 재생술사와 처치 시 파편 2마리로 나뉘는 분열체가 등장합니다. 재생에는 맹독, 중갑에는 저격, 분열 무리에는 범위 공격을 활용하세요.</p>
+    <h3>타워와 강화 카드를 조합하세요</h3><p>연사탑은 예광탄으로 단일 적을 집중 공격하고, 폭발탑은 포탄과 충격파로 밀집한 적을 처리합니다. 냉기탑은 얼음 파동과 둔화, 관통 광선탑은 직선 관통, 연쇄 번개탑은 여러 적을 잇는 전격, 화염 방사탑은 부채꼴 공격과 지속 연소를 제공합니다. 저격탑은 강한 적 우선 조준, 맹독탑은 중독과 재생 차단, 중력탑은 적 끌어당기기를 제공합니다. 총 9종의 무기는 강화 단계에 따라 범위·연결 수·효과가 성장합니다. 전장의 설치 지점을 클릭하면 건설 팝업이 열립니다. 전투가 계속되는 동안 타워를 설치·강화·철거하거나 수정을 수리할 수 있습니다. 웨이브를 클리어하면 제시된 강화 카드 중 하나를 선택해 이번 도전의 전략을 완성합니다.</p>
     <h3>조작 방법</h3><p>PC에서는 WASD 또는 방향키로 이동하고 B로 건설·강화, P 또는 Esc로 일시정지합니다. Q는 수정 주변 적을 밀쳐내는 충격파입니다. 모바일에서는 전장을 드래그해 이동하고 화면의 버튼으로 건설·충격파를 사용합니다. 요새전은 타워 전용 모드이므로 이동하지 않습니다.</p>
     <h2>자주 묻는 질문</h2>
     <details><summary>무료로 플레이할 수 있나요?</summary><p>네. 게임은 무료이며 별도 프로그램 설치나 다운로드가 필요하지 않습니다. 인터넷 연결과 JavaScript를 지원하는 브라우저가 필요합니다.</p></details>
@@ -96,12 +98,16 @@ const MODES={
  rush:{name:'돌격전',waves:6,waveSeconds:12,gold:150,spawnBase:14,spawnGrowth:4,spawnRate:.8,spawnFloor:.22,enemySpeed:1.25,moveSpeed:185,towerPower:1,bosses:[3,6],mobile:true,description:'빠른 6웨이브 전투. 적 이동 속도 25% 증가, 생성 간격 단축, 내 이동 속도 185. 시작 에테르 150 · 모드별 로컬 기록.'},
  siege:{name:'요새전',waves:8,waveSeconds:22,gold:300,spawnBase:10,spawnGrowth:3,spawnRate:1.45,spawnFloor:.28,enemySpeed:1,moveSpeed:0,towerPower:1.25,bosses:[4,8],mobile:false,description:'타워만으로 수정을 지키세요. 이동·개인 공격 없음, 적은 수정만 공격. 시작 에테르 300, 타워 공격력 25% 증가. 건설 모드에서 시작 · 모드별 로컬 기록.'}
 };
+const MAPS={grove:{name:'새벽 숲',color:0x274b3b,lanes:[0,1,2,3],rx:145,ry:145},canyon:{name:'잿빛 협곡',color:0x70432d,lanes:[1,3],rx:210,ry:115},glacier:{name:'빙하 관문',color:0x285c79,lanes:[0,2],rx:115,ry:210}};
 const TYPES={
  arrow:{name:'연사탑',cost:60,color:0x8cdbb7,damage:15,range:175,rate:.55,desc:'예광탄 · 빠른 단일 공격',role:'단일 집중'},
  cannon:{name:'폭발탑',cost:90,color:0xf3ba77,damage:29,range:170,rate:1.6,desc:'폭발 반경 65 · 강화 시 반경 +10',role:'범위 폭발'},
  frost:{name:'냉기탑',cost:75,color:0x8ecbfa,damage:7,range:150,rate:1.1,desc:'얼음 파동 · 범위 내 적을 2초간 50% 둔화',role:'군중 제어'},
  laser:{name:'관통 광선탑',cost:125,color:0xff739f,damage:42,range:235,rate:1.6,desc:'직선 관통 · 강화 시 광선 폭 증가',role:'직선 관통'},
  tesla:{name:'연쇄 번개탑',cost:110,color:0xc69cff,damage:24,range:185,rate:1.6,desc:'3~5명 연쇄 · 110 거리 이내 연결 · 전이마다 피해 25% 감소',role:'연쇄 공격'},
+ sniper:{name:'저격탑',cost:140,color:0xffe3a1,damage:100,range:330,rate:2.8,desc:'최대 체력이 높은 적 우선 · 장거리 즉시 명중',role:'중갑·보스 사냥'},
+ venom:{name:'맹독탑',cost:95,color:0xa8ed72,damage:5,range:180,rate:1.2,desc:'반경 55 · 3초 중독 · 재생 차단',role:'독 확산'},
+ gravity:{name:'중력탑',cost:120,color:0x92a7ff,damage:12,range:165,rate:1.8,desc:'범위 내 적을 탑 쪽으로 당김 · 보스 이동 저항',role:'적 밀집'},
  flame:{name:'화염 방사탑',cost:100,color:0xff9455,damage:8,range:145,rate:.35,desc:'60~76° 부채꼴 · 적중 후 2초간 연소',role:'지속 화염'}
 };
 const lineHit=(from,enemy,angle,length,width)=>{
@@ -122,7 +128,7 @@ const PERKS={
 };
 const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 class BastionGame {
-  constructor(random=Math.random,mode='classic'){this.random=random;this.mode=Object.hasOwn(MODES,mode)?mode:'classic';this.rules=MODES[this.mode];this.state='idle';this.shockwaveCd=0;this.waveCoreDamage=0;this.perfectWaves=0;this.lastWavePerfect=false;this.perks={power:0,haste:0,range:0,guardian:0,restore:0,supply:0};this.offers=[];this.combo=0;this.comboLeft=0;this.bestCombo=0;this.time=0;this.wave=1;this.waveTime=0;this.spawnClock=0;this.spawned=0;this.spawnLimit=this.rules.spawnBase+this.rules.spawnGrowth;this.gold=this.rules.gold;this.kills=0;this.score=0;this.level=1;this.nextLevel=8;this.core=300;this.player={x:360,y:420,hp:100,cd:0,inv:0,attack:0,aim:0};this.enemies=[];this.shots=[];this.effects=[];this.effectPool=[];this.coreHit=0;this.nextId=0;this.nextFxId=0;this.slots=Array.from({length:8},(_,i)=>({x:360+Math.cos(i*Math.PI/4-Math.PI/2)*145,y:360+Math.sin(i*Math.PI/4-Math.PI/2)*145,tower:null}));}
+  constructor(random=Math.random,mode='classic',map='grove'){this.random=random;this.map=Object.hasOwn(MAPS,map)?map:'grove';this.terrain=MAPS[this.map];this.mode=Object.hasOwn(MODES,mode)?mode:'classic';this.rules=MODES[this.mode];this.state='idle';this.shockwaveCd=0;this.waveCoreDamage=0;this.perfectWaves=0;this.lastWavePerfect=false;this.perks={power:0,haste:0,range:0,guardian:0,restore:0,supply:0};this.offers=[];this.combo=0;this.comboLeft=0;this.bestCombo=0;this.time=0;this.wave=1;this.waveTime=0;this.spawnClock=0;this.spawned=0;this.spawnLimit=this.rules.spawnBase+this.rules.spawnGrowth;this.gold=this.rules.gold;this.kills=0;this.score=0;this.level=1;this.nextLevel=8;this.core=300;this.player={x:360,y:420,hp:100,cd:0,inv:0,attack:0,aim:0};this.enemies=[];this.shots=[];this.effects=[];this.effectPool=[];this.coreHit=0;this.nextId=0;this.nextFxId=0;this.slots=Array.from({length:8},(_,i)=>({x:360+Math.cos(i*Math.PI/4-Math.PI/2)*this.terrain.rx,y:360+Math.sin(i*Math.PI/4-Math.PI/2)*this.terrain.ry,tower:null}));}
   castShockwave(){
     if(!['running','building'].includes(this.state)||this.shockwaveCd>0)return false;
     const core={x:CENTER,y:CENTER};
@@ -156,7 +162,7 @@ class BastionGame {
   upgrade(index){const tower=this.slots[index]?.tower;if(this.state!=='building'||!tower||tower.level>=3)return false;const cost=TYPES[tower.type].cost*tower.level;if(this.gold<cost)return false;this.gold-=cost;tower.spent+=cost;tower.level++;return true;}
   sell(index){const slot=this.slots[index];if(this.state!=='building'||!slot?.tower)return false;this.gold+=Math.floor(slot.tower.spent*.6);slot.tower=null;return true;}
   repair(){if(this.state!=='building'||this.gold<60||this.core>=300)return false;this.gold-=60;this.core=Math.min(300,this.core+90);return true;}
-  spawn(boss=false){const side=Math.floor(this.random()*4),offset=25+this.random()*670;let x=offset,y=-18;if(side===1){x=738;y=offset;}if(side===2){x=offset;y=738;}if(side===3){x=-18;y=offset;}const runner=!boss&&this.wave>=3&&this.random()<.3;const hp=boss?260+this.wave*60:25+this.wave*8;this.enemies.push({id:++this.nextId,x,y,hp,maxHp:hp,boss,runner,r:boss?23:runner?9:12,speed:(boss?17:runner?46:24+this.wave)*this.rules.enemySpeed,slow:0,cd:0});if(boss)this.emit('bossArrival',Math.max(35,Math.min(685,x)),Math.max(35,Math.min(685,y)),32,0xc7a6fa,1.2);}
+  spawn(boss=false){const lanes=this.terrain.lanes,side=lanes[Math.floor(this.random()*lanes.length)],offset=this.map==='grove'?25+this.random()*670:280+this.random()*160;let x=offset,y=-18;if(side===1){x=738;y=offset;}if(side===2){x=offset;y=738;}if(side===3){x=-18;y=offset;}const runner=!boss&&this.wave>=3&&this.random()<.3;const kinds=this.wave<3?['grunt']:this.wave<5?['grunt','armored']:['grunt','armored','regenerator','splitter'];const kind=boss||runner?'grunt':kinds[Math.floor(this.random()*kinds.length)];const hp=boss?260+this.wave*60:(25+this.wave*8)*(kind==='armored'?2:1);this.enemies.push({id:++this.nextId,x,y,hp,maxHp:hp,boss,runner,kind,r:boss?23:runner?9:12,speed:(boss?17:runner?46:24+this.wave)*this.rules.enemySpeed*(kind==='armored'?.65:1),slow:0,cd:0});if(boss)this.emit('bossArrival',Math.max(35,Math.min(685,x)),Math.max(35,Math.min(685,y)),32,0xc7a6fa,1.2);}
   // Visual effects use combat time and never consume the gameplay random source.
   emit(kind,x,y,r,color,life,angle=0,power=1){
     // Keep popups from crowding out the weapon effects during large area hits.
@@ -171,13 +177,14 @@ class BastionGame {
     }
     Object.assign(effect,{kind,x,y,r,color,life,max:life,angle,power,serial:++this.nextFxId});this.effects.push(effect);
   }
-  damage(enemy,amount,color=0xffefbb,impact='hit'){if(enemy.hp<=0)return;const dealt=Math.min(enemy.hp,amount);this.emit('damageText',enemy.x,enemy.y-14,Math.ceil(dealt),color===0xffefbb?(enemy.boss?0xe2c3ff:0xffe2a1):color,.55);enemy.hp-=amount;enemy.hit=.12;this.emit(impact,enemy.x,enemy.y,enemy.r,color,.18);if(enemy.hp>0)return;this.kills++;this.combo=this.comboLeft>0?this.combo+1:1;this.comboLeft=3;this.bestCombo=Math.max(this.bestCombo,this.combo);if(this.combo%5===0)this.gold+=12;this.gold+=enemy.boss?65:8;this.score+=enemy.boss?500:25;this.emit(enemy.boss?'bossDeath':'death',enemy.x,enemy.y,enemy.r,enemy.boss?0xc4a2ef:0xe8be80,enemy.boss?.8:.4);if(this.kills>=this.nextLevel){this.level++;this.nextLevel+=8+this.level*3;this.player.hp=Math.min(100,this.player.hp+25);this.emit('levelup',this.rules.mobile?this.player.x:CENTER,this.rules.mobile?this.player.y:CENTER,34,0xffdf8d,.7);}}
+  damage(enemy,amount,color=0xffefbb,impact='hit'){if(enemy.hp<=0)return;const dealt=Math.min(enemy.hp,amount);this.emit('damageText',enemy.x,enemy.y-14,Math.ceil(dealt),color===0xffefbb?(enemy.boss?0xe2c3ff:0xffe2a1):color,.55);enemy.hp-=amount;enemy.hit=.12;this.emit(impact,enemy.x,enemy.y,enemy.r,color,.18);if(enemy.hp>0)return;if(enemy.kind==='splitter'&&this.enemies.length<=148){for(let i=0;i<2;i++)this.enemies.push({id:++this.nextId,x:enemy.x+(i?12:-12),y:enemy.y,hp:12+this.wave*2,maxHp:12+this.wave*2,kind:'shard',runner:true,r:7,speed:48*this.rules.enemySpeed,slow:0,cd:0});}this.kills++;this.combo=this.comboLeft>0?this.combo+1:1;this.comboLeft=3;this.bestCombo=Math.max(this.bestCombo,this.combo);if(this.combo%5===0)this.gold+=12;this.gold+=enemy.boss?65:8;this.score+=enemy.boss?500:25;this.emit(enemy.boss?'bossDeath':'death',enemy.x,enemy.y,enemy.r,enemy.boss?0xc4a2ef:0xe8be80,enemy.boss?.8:.4);if(this.kills>=this.nextLevel){this.level++;this.nextLevel+=8+this.level*3;this.player.hp=Math.min(100,this.player.hp+25);this.emit('levelup',this.rules.mobile?this.player.x:CENTER,this.rules.mobile?this.player.y:CENTER,34,0xffdf8d,.7);}}
   fire(from,target,damage,color,splash=0){if(this.shots.length>=180)return;const angle=Math.atan2(target.y-from.y,target.x-from.x);if(from===this.player){from.attack=.15;from.aim=angle;}this.shots.push({x:from.x,y:from.y,target,damage,color,splash,angle,weapon:from.tower?.type||'guardian',level:from.tower?.level||1,life:2});const muzzle=from.tower?(splash?22:27):9;this.emit(splash?"cannonMuzzle":"muzzle",from.x+Math.cos(angle)*muzzle,from.y+Math.sin(angle)*muzzle,splash?18:11,color,.16,angle,from.tower?.level||1);return true;}
   step(dt,input={x:0,y:0}){
     if(!['running','building'].includes(this.state))return;
     dt=Math.min(.05,Math.max(0,dt));this.time+=dt;this.shockwaveCd=Math.max(0,this.shockwaveCd-dt);this.comboLeft=Math.max(0,this.comboLeft-dt);if(this.comboLeft===0)this.combo=0;this.waveTime+=dt;this.spawnClock-=dt;this.coreHit=Math.max(0,this.coreHit-dt);for(const e of this.enemies){
       if(e.hp>0&&e.burnTime>0){const elapsed=Math.min(dt,e.burnTime);e.burnTime=Math.max(0,e.burnTime-dt);e.burnTick-=elapsed;if(e.burnTick<=1e-8){this.damage(e,e.burnDamage,0xff9455,'burnHit');e.burnTick+=.5;}}
-      e.hit=Math.max(0,(e.hit||0)-dt);e.attack=Math.max(0,(e.attack||0)-dt);}
+      if(e.hp>0&&e.poisonTime>0){const elapsed=Math.min(dt,e.poisonTime);e.poisonTime=Math.max(0,e.poisonTime-dt);if(e.poisonTime<1e-8)e.poisonTime=0;e.poisonTick-=elapsed;if(e.poisonTick<=1e-8){this.damage(e,e.poisonDamage,0xa8ed72);e.poisonTick+=.5;}}else if(e.hp>0&&e.kind==='regenerator')e.hp=Math.min(e.maxHp,e.hp+e.maxHp*.035*dt);
+ e.hit=Math.max(0,(e.hit||0)-dt);e.attack=Math.max(0,(e.attack||0)-dt);}
     if(this.spawned<this.spawnLimit&&this.spawnClock<=0&&this.enemies.length<150){this.spawn(this.spawned===this.spawnLimit-1&&this.rules.bosses.includes(this.wave));this.spawned++;this.spawnClock=Math.max(this.rules.spawnFloor,this.rules.spawnRate-this.wave*.1);}
     const p=this.player,len=Math.hypot(input.x,input.y)||1;
     p.x=Math.max(18,Math.min(702,p.x+input.x/Math.max(1,len)*this.rules.moveSpeed*dt));p.y=Math.max(18,Math.min(702,p.y+input.y/Math.max(1,len)*this.rules.moveSpeed*dt));p.cd-=dt;p.inv-=dt;p.attack=Math.max(0,p.attack-dt);
@@ -185,12 +192,18 @@ class BastionGame {
     const closest=(from,range)=>{let best=null,d=range;for(const e of living){const n=distance(from,e);if(e.hp>0&&n<d){best=e;d=n;}}return best;};
     if(this.rules.mobile&&p.cd<=0){const target=closest(p,230);if(target){this.fire(p,target,(18+this.level*4)*(1+.2*this.perks.guardian),0xf8e6b3);p.cd=Math.max(.18,.48-this.level*.025);}}
     for(const slot of this.slots){const t=slot.tower;if(!t)continue;const spec=TYPES[t.type];t.cd-=dt;t.recoil=Math.max(0,t.recoil-dt);
-      const range=spec.range+(t.level-1)*22+this.perks.range*15,target=closest(slot,range);
+      const range=spec.range+(t.level-1)*22+this.perks.range*15,target=t.type==='sniper'?living.filter(e=>e.hp>0&&distance(slot,e)<range).sort((a,b)=>b.maxHp-a.maxHp)[0]:closest(slot,range);
       // Aim during cooldown too; visuals never delay or change target selection.
       if(target)t.angle=Math.atan2(target.y-slot.y,target.x-slot.x);
       if(t.cd>0||!target)continue;
       const damage=spec.damage*(1+(t.level-1)*.65)*(1+.15*this.perks.power)*this.rules.towerPower;t.cd=spec.rate/(1+(t.level-1)*.16)*(1-.1*this.perks.haste);
-      if(t.type==='frost'){
+      if(t.type==='sniper'){
+ this.damage(target,damage,spec.color,'laserHit');this.emit('laser',slot.x,slot.y,distance(slot,target),spec.color,.22,t.angle,t.level);t.recoil=.16;
+ }else if(t.type==='venom'){
+ const center={x:target.x,y:target.y};for(const e of living)if(e.hp>0&&distance(center,e)<=55){this.damage(e,damage,spec.color);e.poisonDamage=e.poisonTime>0?Math.max(e.poisonDamage,damage):damage;e.poisonTime=3;e.poisonTick=e.poisonTick>0?e.poisonTick:.5;}this.emit('frost',center.x,center.y,55,spec.color,.5);
+ }else if(t.type==='gravity'){
+ for(const e of living)if(e.hp>0&&distance(slot,e)<range){const d=distance(slot,e),pull=Math.min(Math.max(0,d-28),e.boss?8:30+t.level*8);if(d>0){e.x+=(slot.x-e.x)/d*pull;e.y+=(slot.y-e.y)/d*pull;}this.damage(e,damage,spec.color);e.slow=Math.max(e.slow,.8);}this.emit('frost',slot.x,slot.y,range,spec.color,.6);
+ }else if(t.type==='frost'){
         for(const e of living)if(e.hp>0&&distance(slot,e)<range){e.slow=Math.max(e.slow,2);this.damage(e,damage,spec.color,'iceHit');}
         this.emit('frost',slot.x,slot.y,range,spec.color,.55,0,t.level);
       }else if(t.type==='laser'){
@@ -228,14 +241,16 @@ class BastionGame {
   }
 }
 </script>
+<script src="/scripts/bastion-graphics.js"></script>
 <script id="gameUI">
 const $=id=>document.getElementById(id),canvas=$('gameCanvas');let game=new BastionGame(),app,selected=0,lastState='',lastWave=0,best=0,ready=false;
-let selectedMode='classic';
-const bestKey=mode=>mode==='classic'?'dawnBastionBest':'dawnBastionBest:'+mode;
+let selectedMode='classic',selectedMap='grove';
+const bestKey=mode=>(mode==='classic'?'dawnBastionBest':'dawnBastionBest:'+mode)+(game.map==='grove'?'':':'+game.map);
 function loadBest(){best=0;try{best=Math.max(0,Number(localStorage.getItem(bestKey(game.mode)))||0);}catch{}$('best').textContent=best;}
 loadBest();
-function resetMode(mode){selectedMode=mode;game=new BastionGame(Math.random,mode);selected=0;lastWave=0;lastState='';clearInput();loadBest();sync();}
+function resetMode(mode){selectedMode=mode;game=new BastionGame(Math.random,mode,selectedMap);selected=0;lastWave=0;lastState='';clearInput();loadBest();sync();}
 for(const radio of document.querySelectorAll('input[name="mode"]'))radio.addEventListener('change',()=>{if(['idle','won','lost'].includes(game.state))resetMode(radio.value);});
+for(const radio of document.querySelectorAll('input[name="map"]'))radio.addEventListener('change',()=>{if(['idle','won','lost'].includes(game.state)){selectedMap=radio.value;resetMode(selectedMode);}});
 $('changeMode').onclick=()=>{if(!['paused','won','lost'].includes(game.state))return;resetMode(selectedMode);$('modeSelect').scrollIntoView({block:'nearest'});document.querySelector('input[name="mode"]:checked').focus({preventScroll:true});};
 let keys=new Set(),stick=null;const sprites=new Map();
 function message(text){$('status').textContent=text;}
@@ -260,7 +275,7 @@ document.addEventListener('pointerdown',e=>{if(game.state==='building'&&!$('buil
 function togglePause(){if(game.state==='running'||game.state==='building')setState('paused');else if(game.state==='paused')setState('running');}
 function shopButton(title,description,disabled,action){const b=document.createElement('button');b.className='choice';b.disabled=disabled;const strong=document.createElement('b');strong.textContent=title;const small=document.createElement('small');small.textContent=description;b.append(strong,small);b.onclick=()=>{if(action()){renderShop();sync();message('요새 갱신 완료 · 방어를 계속합니다.');}};return b;}
 function weaponUpgradeDescription(t){
- const next=Math.min(3,t.level+1),details={arrow:'예광탄과 총열 효과 강화',cannon:'폭발 반경 '+(65+(next-1)*10),frost:'더 큰 얼음 파동',laser:'광선 폭 '+(8+(next-1)*4)+' · 직선 관통',tesla:(2+next)+'명 연쇄 연결',flame:'화염 각도 '+(60+(next-1)*8)+'° · 연소 피해 증가'};
+ const next=Math.min(3,t.level+1),details={sniper:'강한 적 우선 조준 · 저격 피해 증가',venom:'중독 피해 증가 · 재생 차단',gravity:'끌어당기는 거리 '+(30+next*8),arrow:'예광탄과 총열 효과 강화',cannon:'폭발 반경 '+(65+(next-1)*10),frost:'더 큰 얼음 파동',laser:'광선 폭 '+(8+(next-1)*4)+' · 직선 관통',tesla:(2+next)+'명 연쇄 연결',flame:'화염 각도 '+(60+(next-1)*8)+'° · 연소 피해 증가'};
  return '기본 대비 공격력 +65% · 사거리 +22 · 연사력 증가 · '+details[t.type];
 }
 function renderShop(){const oldFocus=document.activeElement,focusIndex=Array.from($('buildChoices').children).indexOf(oldFocus);const slots=$('slots');slots.replaceChildren();game.slots.forEach((s,i)=>{const b=document.createElement('button');b.textContent=`${i+1}${s.tower?' ●':''}`;b.setAttribute('aria-label',`${i+1}번 ${s.tower?TYPES[s.tower.type].name:'빈 건설 지점'}`);b.setAttribute('aria-pressed',String(i===selected));b.onclick=()=>openBuild(i);slots.append(b);});const t=game.slots[selected].tower,box=$('buildChoices');box.replaceChildren();$('slotInfo').textContent=`${selected+1}번 지점 · ${t?TYPES[t.type].name+' Lv.'+t.level:'건설 가능'}`+(t?' · '+TYPES[t.type].role+' · '+TYPES[t.type].desc:'');
@@ -296,8 +311,9 @@ function sync(){const p=game.player;$('wave').textContent=String(game.wave).padS
  const boss=game.enemies.find(e=>e.boss&&e.hp>0);$('bossPanel').hidden=!boss;
  if(boss){$('bossName').textContent=game.wave===game.rules.waves?'최후의 군주':'그림자 군주';$('bossHealth').textContent=Math.ceil(boss.hp)+' / '+boss.maxHp;$('bossHealthBar').style.width=Math.max(0,boss.hp/boss.maxHp)*100+'%';}
  $('coreWarning').hidden=!danger;$('coreBar').style.backgroundColor=danger?'#f28880':'#7dcbb7';
+ $('mapSelect').disabled=!['idle','won','lost'].includes(game.state);
  $('modeSelect').disabled=!['idle','won','lost'].includes(game.state);
- $('modeBadge').textContent=game.rules.name+' · '+game.rules.waves+' WAVES';$('modeHelp').textContent=game.rules.description;
+ $('modeBadge').textContent=game.terrain.name+' · '+game.rules.name+' · '+game.rules.waves+' WAVES';$('modeHelp').textContent=game.rules.description;
  $('modeRules').textContent=game.rules.name+' · '+game.rules.waves+'웨이브 · 보스 '+game.rules.bosses.join('·')+'웨이브';
  $('controlHint').textContent=game.rules.mobile?'이동 WASD / 드래그 · 자동 공격':'타워 전용 방어 · 지점 클릭으로 건설';
  if(game.wave!==lastWave&&['running','building'].includes(game.state)){lastWave=game.wave;message(`웨이브 ${game.wave} / ${game.rules.waves}${game.rules.bosses.includes(game.wave)?' · 보스가 다가옵니다!':' · 사방을 경계하세요.'}`);}
@@ -306,9 +322,9 @@ function sync(){const p=game.player;$('wave').textContent=String(game.wave).padS
  $('changeMode').hidden=!['paused','won','lost'].includes(state);
  if(state==='idle'){$('overlayLabel').textContent='CHOOSE YOUR BATTLE';$('overlayTitle').textContent=game.rules.name+' 출전 준비';$('overlayText').textContent=game.rules.description;$('start').textContent=ready?'요새 지키기 시작':'전장 준비 중…';message('모드를 선택하고 시작하세요.');}
  if(state==='paused'){$('overlayLabel').textContent='PAUSED';$('overlayTitle').textContent='잠시 숨을 고르세요';$('overlayText').textContent='전투와 웨이브 시간이 멈춰 있습니다.';$('start').textContent='계속하기';}
- if(ended){best=Math.max(best,game.score);try{localStorage.setItem(bestKey(game.mode),String(best));}catch{}$('best').textContent=best;$('overlayLabel').textContent=state==='won'?'DAWN HAS ARRIVED':'THE LIGHT FADES';$('overlayTitle').textContent=state==='won'?'새벽을 지켜냈습니다':'요새가 어둠에 잠겼습니다';$('overlayText').textContent=`${game.score.toLocaleString()}점 · ${game.kills} 처치 · ${game.rules.name} · 웨이브 ${game.wave}/${game.rules.waves} · 완벽 방어 ${game.perfectWaves}회. ${state==='lost'?(game.core<=0?'수정이 파괴되었습니다.':'수호자가 쓰러졌습니다.'):'모든 적을 물리쳤습니다.'}`;$('start').textContent='다시 도전';message(state==='won'?'승리! 모든 웨이브를 방어했습니다.':'전투 종료. 타워 배치를 바꿔 다시 도전해 보세요.');if(game.mode==='classic')window.dispatchEvent(new CustomEvent('partygame:score',{detail:{gameId:'dawn-bastion',score:game.score,wave:game.wave}}));}
+ if(ended){best=Math.max(best,game.score);try{localStorage.setItem(bestKey(game.mode),String(best));}catch{}$('best').textContent=best;$('overlayLabel').textContent=state==='won'?'DAWN HAS ARRIVED':'THE LIGHT FADES';$('overlayTitle').textContent=state==='won'?'새벽을 지켜냈습니다':'요새가 어둠에 잠겼습니다';$('overlayText').textContent=`${game.score.toLocaleString()}점 · ${game.kills} 처치 · ${game.rules.name} · 웨이브 ${game.wave}/${game.rules.waves} · 완벽 방어 ${game.perfectWaves}회. ${state==='lost'?(game.core<=0?'수정이 파괴되었습니다.':'수호자가 쓰러졌습니다.'):'모든 적을 물리쳤습니다.'}`;$('start').textContent='다시 도전';message(state==='won'?'승리! 모든 웨이브를 방어했습니다.':'전투 종료. 타워 배치를 바꿔 다시 도전해 보세요.');if(game.mode==='classic'&&game.map==='grove')window.dispatchEvent(new CustomEvent('partygame:score',{detail:{gameId:'dawn-bastion',score:game.score,wave:game.wave}}));}
 }
-$('start').onclick=()=>{if(!ready||!['idle','paused','won','lost'].includes(game.state))return;if(game.state==='paused'){setState('running');return;}game=new BastionGame(Math.random,selectedMode);selected=0;lastWave=0;loadBest();setState(game.rules.mobile?'running':'building');if(!game.rules.mobile){renderShop();message('시작 에테르 300 · 전투 중 타워를 바로 건설하세요.');}canvas.focus({preventScroll:true});};$('build').onclick=toggleBuild;$('pause').onclick=togglePause;$('returnBattle').onclick=closeBuild;
+$('start').onclick=()=>{if(!ready||!['idle','paused','won','lost'].includes(game.state))return;if(game.state==='paused'){setState('running');return;}game=new BastionGame(Math.random,selectedMode,selectedMap);selected=0;lastWave=0;loadBest();setState(game.rules.mobile?'running':'building');if(!game.rules.mobile){renderShop();message('시작 에테르 300 · 전투 중 타워를 바로 건설하세요.');}canvas.focus({preventScroll:true});};$('build').onclick=toggleBuild;$('pause').onclick=togglePause;$('returnBattle').onclick=closeBuild;
 addEventListener('keydown',e=>{if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;const k=e.key.toLowerCase();if(['arrowup','arrowdown','arrowleft','arrowright','w','a','s','d','b','p','q','escape'].includes(k)){e.preventDefault();if(e.repeat)return;if(k==='q')useShockwave();else if(k==='b')toggleBuild();else if(k==='escape'&&game.state==='building')closeBuild();else if(k==='p'||k==='escape')togglePause();else keys.add(k);}});addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
 function suspend(){clearInput();if(game.state==='running'||game.state==='building')setState('paused');}addEventListener('blur',suspend);document.addEventListener('visibilitychange',()=>{if(document.hidden)suspend();});
 function point(e){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*SIZE,y:(e.clientY-r.top)/r.height*SIZE};}
@@ -552,7 +568,9 @@ function createTowerTextures(scene){
     if(type==='arrow'){
       g.fillRoundedRect(16,18,32,31,6);g.strokeRoundedRect(16,18,32,31,6);
       g.fillStyle(0x182e30);g.fillCircle(32,32,10);
-    }else if(type==='cannon'){
+    }else if(['sniper','venom','gravity'].includes(type)){
+ g.fillStyle(0x20343e);g.fillRoundedRect(16,16,32,32,7);g.lineStyle(2,c);g.strokeRoundedRect(16,16,32,32,7);g.fillStyle(c);if(type==='sniper'){g.fillRect(28,28,34,7);g.fillRect(35,21,12,4);}else if(type==='venom'){g.fillCircle(32,32,13);g.fillCircle(48,32,6);}else{g.lineStyle(3,c);g.strokeCircle(32,32,18);g.strokeCircle(32,32,9);g.fillCircle(32,32,4);}
+ }else if(type==='cannon'){
       g.fillPoints(points([12,24,22,14,42,14,52,24,52,40,42,50,22,50,12,40]),true);
       g.strokePoints(points([12,24,22,14,42,14,52,24,52,40,42,50,22,50,12,40]),true);
       g.fillStyle(0x172b30);g.fillCircle(32,32,14);
@@ -568,6 +586,7 @@ function createTowerTextures(scene){
       g.strokePoints(points([32,10,52,32,32,52,12,32]),true);
       g.lineStyle(1,c,.6);g.strokeCircle(32,32,23);
     }
+    g.lineStyle(1,0xe5f6f3,.22);g.lineBetween(19,17,44,17);g.fillStyle(0x060e1b,.4);g.fillRect(20,45,24,4);for(const x of [19,45])for(const y of [20,44]){g.fillStyle(0x06141c);g.fillCircle(x,y,2.8);g.fillStyle(0xa1b9bf);g.fillCircle(x-.5,y-.5,1.2);}
     g.generateTexture('tower-base-'+type,64,64);g.clear();
     if(type==='arrow'){
       g.fillStyle(0x183b36);g.fillPoints(points([20,23,37,27,37,37,20,41]),true);
@@ -575,7 +594,9 @@ function createTowerTextures(scene){
       g.fillStyle(0xe2fff0);g.fillRect(48,30,11,3);
       g.fillStyle(0x123029);g.fillRect(57,28,3,8);
       g.fillStyle(c);g.fillCircle(29,32,6);
-    }else if(type==='cannon'){
+    }else if(['sniper','venom','gravity'].includes(type)){
+ g.fillStyle(0x20343e);g.fillRoundedRect(16,16,32,32,7);g.lineStyle(2,c);g.strokeRoundedRect(16,16,32,32,7);g.fillStyle(c);if(type==='sniper'){g.fillRect(28,28,34,7);g.fillRect(35,21,12,4);}else if(type==='venom'){g.fillCircle(32,32,13);g.fillCircle(48,32,6);}else{g.lineStyle(3,c);g.strokeCircle(32,32,18);g.strokeCircle(32,32,9);g.fillCircle(32,32,4);}
+ }else if(type==='cannon'){
       g.fillStyle(c);g.fillRoundedRect(21,21,34,22,5);
       g.fillStyle(0x785c40);g.fillRect(39,22,5,20);
       g.fillStyle(0xffdd9b);g.fillRect(47,23,8,18);
@@ -593,6 +614,7 @@ function createTowerTextures(scene){
       g.lineStyle(1,0xe3f8ff);g.strokePoints(points([32,13,44,32,32,51,20,32]),true);
       g.fillStyle(0xe5faff);g.fillCircle(32,32,3);
     }
+    finishBastionWeapon(g,type,c);
     g.generateTexture('tower-weapon-'+type,64,64);g.destroy();
   }
 }
@@ -603,10 +625,7 @@ function init(){
   constructor(){super('Bastion');}
   preload(){this.load.atlas('bastion-painted','/assets/games/dawn-bastion/characters-v2.png','/assets/games/dawn-bastion/characters-v2.json');}
   create(){try{
- const bg=this.add.graphics();bg.fillStyle(0x122327);bg.fillRect(0,0,720,720);
- for(let y=0;y<720;y+=40)for(let x=0;x<720;x+=40){bg.fillStyle((x+y)%80?0x172b2e:0x192e30);bg.fillRect(x+1,y+1,38,38);if((x*3+y)%160===0){bg.beginPath();bg.moveTo(x+8,y+30);bg.lineTo(x+13,y+19);bg.lineTo(x+17,y+30);bg.lineStyle(1, 0x335045, 1);bg.strokePath();}}
- bg.lineStyle(2, 0x3d5750, .45);bg.strokeCircle(360,360,217);bg.lineStyle(1, 0x3d5750, .3);bg.strokeCircle(360,360,190);
- for(let i=0;i<16;i++){const a=i*Math.PI/8;bg.fillStyle(0x2d4140);bg.fillRoundedRect(360+Math.cos(a)*220-10,360+Math.sin(a)*220-8,20,16,3);bg.lineStyle(1, 0x53635a, 1);bg.strokeRoundedRect(360+Math.cos(a)*220-10,360+Math.sin(a)*220-8,20,16,3);}
+ const bg=this.add.graphics();drawBastionTerrain(bg,game.map);
  const ground=this.add.graphics(),towerLayer=this.add.container(),shadows=this.add.graphics(),underFx=this.add.graphics(),entities=this.add.container(),fx=this.add.graphics(),health=this.add.graphics().setDepth(8);
  createTowerTextures(this);
  const towerViews=game.slots.map(s=>{
@@ -618,7 +637,7 @@ function init(){
  const motionPreference={get matches(){return systemMotion.matches||$('reducedEffects').checked;}};
  try{$('reducedEffects').checked=localStorage.getItem('dawnBastionReducedEffects')==='1';}catch{}
  $('reducedEffects').addEventListener('change',()=>{try{localStorage.setItem('dawnBastionReducedEffects',$('reducedEffects').checked?'1':'0');}catch{}});
- for(let i=0;i<8;i++){const slot=game.slots[i];this.add.text(slot.x,slot.y+38,String(i+1),{fontFamily:"system-ui",fontSize:"12px",color:"#bed2ba"}).setOrigin(.5);}
+ const slotLabels=game.slots.map((slot,i)=>this.add.text(slot.x,slot.y+38,String(i+1),{fontFamily:"system-ui",fontSize:"12px",color:"#bed2ba"}).setOrigin(.5));
  const textures=createCharacterTextures(this);
  // Optional painted artwork replaces the cached fallback without blocking gameplay on a failed image load.
  if(this.textures.exists('bastion-painted')){
@@ -646,10 +665,10 @@ function init(){
    return s;
  };
  let hudClock=0;this.events.on("update",(time,delta)=>{const dt=Math.min(delta/1000,.05);let mx=Number(keys.has('d')||keys.has('arrowright'))-Number(keys.has('a')||keys.has('arrowleft')),my=Number(keys.has('s')||keys.has('arrowdown'))-Number(keys.has('w')||keys.has('arrowup'));if(stick){mx=(stick.current.x-stick.start.x)/45;my=(stick.current.y-stick.start.y)/45;}game.step(dt,{x:mx,y:my});hudClock+=dt;if(hudClock>.1||lastState!==game.state){sync();hudClock=0;}
- if(visualGame!==game){for(const s of sprites.values())s.destroy();sprites.clear();visualGame=game;visualTime=game.time;}
+ if(visualGame!==game){for(const s of sprites.values())s.destroy();sprites.clear();visualGame=game;visualTime=game.time;drawBastionTerrain(bg,game.map);}
  visualDelta=Math.max(0,Math.min(.05,game.time-visualTime));visualTime=game.time;
- ground.clear();shadows.clear();underFx.clear();fx.clear();health.clear();const building=game.state==='building';game.slots.forEach((s,i)=>{const t=s.tower;ground.fillStyle(0x213938);ground.fillCircle(s.x,s.y,26);ground.lineStyle(building&&i===selected?3:1, building&&i===selected?0xf8cc83:0x537165, 1);ground.strokeCircle(s.x,s.y,26);if(!t){ground.beginPath();ground.moveTo(s.x-7,s.y);ground.lineTo(s.x+7,s.y);ground.moveTo(s.x,s.y-7);ground.lineTo(s.x,s.y+7);ground.lineStyle(2, 0x6b8474, 1);ground.strokePath();}else{for(let l=0;l<t.level;l++){ground.fillStyle(0xffe6a8);ground.fillCircle(s.x-8+l*8,s.y+24,2);}}
- const view=towerViews[i];view.base.setVisible(!!t);view.weapon.setVisible(!!t);
+ ground.clear();shadows.clear();underFx.clear();fx.clear();health.clear();drawBastionAtmosphere(underFx,game,motionPreference.matches);const building=game.state==='building';game.slots.forEach((s,i)=>{const t=s.tower;ground.fillStyle(0x030b12,.5);ground.fillEllipse(s.x,s.y+8,62,48);ground.fillStyle(0x182c36);ground.fillCircle(s.x,s.y,28);ground.lineStyle(3,0x344d56);ground.strokeCircle(s.x,s.y,25);ground.fillStyle(0x213938);ground.fillCircle(s.x,s.y,21);ground.lineStyle(building&&i===selected?3:1, building&&i===selected?0xf8cc83:0x537165, 1);ground.strokeCircle(s.x,s.y,26);if(!t){ground.beginPath();ground.moveTo(s.x-7,s.y);ground.lineTo(s.x+7,s.y);ground.moveTo(s.x,s.y-7);ground.lineTo(s.x,s.y+7);ground.lineStyle(2, 0x6b8474, 1);ground.strokePath();}else{for(let l=0;l<t.level;l++){ground.fillStyle(0xffe6a8);ground.fillCircle(s.x-8+l*8,s.y+24,2);}}
+ const view=towerViews[i];view.base.setPosition(s.x,s.y);slotLabels[i].setPosition(s.x,s.y+38);view.base.setVisible(!!t);view.weapon.setVisible(!!t);
  if(t){
    if(view.type!==t.type){view.base.setTexture('tower-base-'+t.type);view.weapon.setTexture('tower-weapon-'+t.type);view.type=t.type;}
    const rotating=t.type==='frost'||t.type==='tesla',angle=rotating?(motionPreference.matches?0:game.time*.65):t.angle;
@@ -676,7 +695,10 @@ function init(){
  }
  for(const e of game.enemies){
    const id='e'+e.id;live.add(id);const body=sprite(id,e.boss?'boss':e.runner?'runner':'enemy',e.x,e.y,e);
-   if(e.boss){underFx.lineStyle(2,0xbe92ed,.4);underFx.strokeEllipse(e.x,e.y+19,56,22);}
+   drawBastionEnemyArmor(fx,e,body.y,game.time,motionPreference.matches);
+   body.setTint(({armored:0xa9b8d8,regenerator:0x94ffb0,splitter:0xeb9fff,shard:0xffb5e8})[e.kind]||0xffffff);
+ if(e.kind==='armored'){underFx.lineStyle(3,0xa9b8d8,.9);underFx.strokeCircle(e.x,e.y,22);}if(e.kind==='regenerator'){fx.lineStyle(2,0x94ffb0,.9);fx.lineBetween(e.x-5,e.y-31,e.x+5,e.y-31);fx.lineBetween(e.x,e.y-36,e.x,e.y-26);}if(e.kind==='splitter'){underFx.lineStyle(2,0xeb9fff,.8);underFx.strokeTriangle(e.x,e.y-26,e.x-22,e.y+17,e.x+22,e.y+17);}if(e.kind==='shard')body.setDisplaySize(body.displayWidth*.65,body.displayHeight*.65);if(e.poisonTime>0){fx.fillStyle(0xa8ed72,.9);fx.fillCircle(e.x-14,e.y-18,4);}
+ if(e.boss){underFx.lineStyle(2,0xbe92ed,.4);underFx.strokeEllipse(e.x,e.y+19,56,22);}
    if(e.hit>0){fx.fillStyle(0xfff4db,.4*e.hit/.12);fx.fillCircle(e.x,body.y-3,e.boss?10:5);}
    if(e.hp<e.maxHp||e.boss){const width=e.boss?56:28,y=body.y-(e.boss?47:27);health.fillStyle(0x0b141e);health.fillRect(e.x-width/2-1,y-1,width+2,6);health.fillStyle(e.boss?0xcaa6f2:0xe199a0);health.fillRect(e.x-width/2,y,width*Math.max(0,e.hp/e.maxHp),4);}
    if(e.burnTime>0){
