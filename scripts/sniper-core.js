@@ -175,17 +175,20 @@ class SniperGame {
   loadMission(){const m=SNIPER_MISSIONS[this.mission];this.elapsed=0;this.remaining=m.time;this.mag=3;this.reserve=9;this.reloadLeft=0;this.cooldown=0;this.alert=0;this.focus=100;this.holding=false;this.scoped=false;this.identification=0;this.inspected=null;this.identifyId=null;this.feedback='표적을 확인한 뒤 스코프를 켜고 사격하세요.';this.shotFlash=0;this.impact=null;this.shot=null;this.particles=[];this.pausedFrom='running';this.failure='';this.actors=[...m.targets,...m.extras].map((a,i)=>({...a,id:i,origin:a.x,originY:a.y,x:a.x,action:sniperActivity(a,m.theme),phase:i*1.3,speed:a.speed||.32,range:a.range||35,dead:false,hidden:false,fallTime:0,hitX:0,hitY:0}));const swap=1+Math.floor(this.random()*(this.actors.length-1)),target=this.actors[0],other=this.actors[swap];for(const k of ['origin','originY','x','y','phase']){const v=target[k];target[k]=other[k];other[k]=v;}this.initCrowd();for(const a of this.actors){a.pose=sniperActorPose(a,0);a.x=a.pose.x;a.y=a.pose.y;}this.aim={x:480,y:285};}
   initCrowd(){
     this.observations=new Set();this.identifyGrace=0;
+    this.steadiness=0;
+    this.requireObservation??=false;
+    this.autoReload??=false;
     this.report=null;this.missionHistory??=[];
     this.obstacles=sniperObstacles(this.config.theme);
     for(const a of this.actors){
       a.homeAction=a.action;
       const stationary=['paint','cook','repair','shop','snowman','shovel','play','water','fish','knead','drum'].includes(a.action);
       a.motion={x:a.origin,y:a.originY,vx:0,vy:0,gait:a.phase,facing:a.id%2?1:-1,
-        state:'activity',timer:1+this.random()*4,pace:14+this.random()*11,
+        state:'activity',timer:1+this.random()*4,pace:(14+this.random()*11)*({'운동선수':1.1,'우편배달부':1.08,'독서가':.85,'낚시꾼':.88,'정원사':.92}[a.role]||1),
         courage:this.random(),stationary,goal:{x:a.origin,y:a.originY},blend:1,fromPose:null,
         reaction:null,escapeLeft:0,stuck:0,route:[],replans:0,fear:0,socialCooldown:3+this.random()*5,partner:null,
         yielding:0,runBlend:0,gaze:a.id%2?1:-1,vigilance:0,alarmCount:0,progressDistance:Infinity,
-        fatigue:0,visit:null,visitCooldown:2+(a.id%4),lastVisit:null};
+        fatigue:0,fatigueRate:a.role==='운동선수'?.65:a.case?1.12:1,visit:null,visitCooldown:2+(a.id%4),lastVisit:null,recentVisits:[]};
       // Some initial crowd slots border a prop. Resolve before the first visible frame.
       this.constrainActor(a);
       a.origin=a.motion.x;a.originY=a.motion.y;
@@ -195,7 +198,11 @@ class SniperGame {
   }
   setBehavior(a,state,action,seconds){
     const b=a.motion;if(state!=='social'&&b.partner!==null){const partner=this.actors.find(n=>n.id===b.partner);b.partner=null;b.socialCooldown=8;if(partner?.motion.partner===a.id){partner.motion.partner=null;partner.motion.timer=0;}}
-    if(b.visit&&!['travel','visiting'].includes(state)){b.lastVisit=b.visit.id;b.visit=null;b.visitCooldown=7;}
+    if(b.visit&&!['travel','visiting'].includes(state)){
+      b.lastVisit=b.visit.id;
+      b.recentVisits=[{id:b.visit.id,until:this.elapsed+25},...b.recentVisits.filter(v=>v.id!==b.visit.id&&v.until>this.elapsed)].slice(0,3);
+      b.visit=null;b.visitCooldown=7;
+    }
     b.state=state;b.timer=seconds;b.stuck=0;
     if(a.action!==action){b.fromPose=a.pose;b.blend=0;a.action=action;}
   }
@@ -256,7 +263,7 @@ class SniperGame {
         if(!sniperClearPath(goal,goal,this.obstacles))continue;
         const distance=Math.hypot(goal.x-b.x,goal.y-b.y);
         const preference=a.camera?25:spot.kind==='play'?18:8;
-        candidates.push({spot,slot,goal,score:preference-distance*.2-(b.lastVisit===spot.id?25:0)+this.random()*8});
+        candidates.push({spot,slot,goal,score:preference-distance*.2-(b.recentVisits.some(v=>v.id===spot.id&&v.until>this.elapsed)?35:0)+this.random()*8});
       }
     }
     candidates.sort((a,b)=>b.score-a.score);
@@ -354,7 +361,7 @@ class SniperGame {
       const smooth=1-Math.exp(-dt*(b.state==='flee'?7:4));b.vx+=(vx-b.vx)*smooth;b.vy+=(vy-b.vy)*smooth;
       const oldX=b.x,oldY=b.y;b.x+=b.vx*dt;b.y+=b.vy*dt;this.constrainActor(a);
       const traveled=Math.hypot(b.x-oldX,b.y-oldY);b.gait+=traveled*.28;
-      const effort=traveled/Math.max(dt,.001);b.fatigue=sniperClamp(b.fatigue+dt*(effort>28?.085:effort>4?.012:b.state==='resting'?-.12:-.055),0,1);
+      const effort=traveled/Math.max(dt,.001);b.fatigue=sniperClamp(b.fatigue+dt*(effort>28?.085*b.fatigueRate:effort>4?.012*b.fatigueRate:b.state==='resting'?-.12:-.055),0,1);
       // Detect circling as well as complete stops, using progress toward the next waypoint.
       const progress=Math.hypot(waypoint.x-b.x,waypoint.y-b.y);
       if(!walking||progress<b.progressDistance-.3){b.stuck=0;b.progressDistance=progress;}
@@ -386,20 +393,31 @@ class SniperGame {
     }
     this.inspected=a;
   }
+  observationNotes(){
+    return [...this.observations].map(id=>this.actors.find(a=>a.id===id)).filter(Boolean).map((a,i)=>({number:i+1,description:a.desc}));
+  }
+  get campaignSummary(){
+    const completed=this.missionHistory.length,shots=this.missionHistory.reduce((n,r)=>n+r.shots,0);
+    return {completed,shots,accuracy:shots?Math.round(completed/shots*100):0,seconds:Math.round(this.missionHistory.reduce((n,r)=>n+r.seconds,0)*10)/10,perfect:this.missionHistory.filter(r=>r.grade==='S').length};
+  }
   get config(){return SNIPER_MISSIONS[this.mission];}
   get targetsLeft(){return this.actors.filter(a=>a.target&&!a.dead).length;}
   start(){if(this.state!=='briefing')return false;this.state='running';return true;}
   pause(){if(this.state==='running'||this.state==='shot'){this.pausedFrom=this.state;this.state='paused';this.holding=false;return true;}if(this.state==='paused'){this.state=this.pausedFrom;return true;}return false;}
   scope(){if(this.state!=='running')return false;this.scoped=!this.scoped;this.identification=0;this.holding=false;return true;}
   reload(){if(this.state!=='running'||this.reloadLeft>0||this.mag===3||this.reserve<=0)return false;this.reloadLeft=1.6;this.holding=false;this.feedback='재장전 중…';return true;}
+  maybeAutoReload(){return Boolean(this.autoReload&&this.mag===0&&this.reload());}
+  get reloadProgress(){return this.reloadLeft>0?sniperClamp(1-this.reloadLeft/1.6,0,1):0;}
   fail(reason){if(this.state!=='running')return;this.state='failed';this.failure=reason;this.holding=false;}
   retry(){if(this.state!=='failed')return false;Object.assign(this,{score:this.checkpoint.score,totalShots:this.checkpoint.shots,totalHits:this.checkpoint.hits});this.loadMission();this.state='briefing';return true;}
   next(){if(this.state!=='success'||this.mission>=SNIPER_MISSIONS.length-1)return false;this.mission++;this.checkpoint={score:this.score,shots:this.totalShots,hits:this.totalHits};this.loadMission();this.state='briefing';return true;}
-  sway(){const strength=this.holding&&this.focus>0?1.1:5.2;return{x:Math.sin(this.elapsed*2.3)*strength,y:Math.cos(this.elapsed*1.7)*strength*.65};}
+  sway(){const strength=5.2-4.1*this.steadiness;return{x:Math.sin(this.elapsed*2.3)*strength,y:Math.cos(this.elapsed*1.7)*strength*.65};}
   aimAt(x,y){if(!Number.isFinite(x)||!Number.isFinite(y))return false;this.aim.x=Math.max(25,Math.min(935,x));this.aim.y=Math.max(35,Math.min(510,y));return true;}
   step(dt){if(!Number.isFinite(dt)||dt<=0)return;dt=Math.min(.05,dt);if(this.state==='shot'){this.stepShot(dt);return;}if(this.state!=='running')return;this.updateParticles(dt);this.elapsed+=dt;this.remaining=Math.max(0,this.remaining-dt);this.cooldown=Math.max(0,this.cooldown-dt);this.shotFlash=Math.max(0,this.shotFlash-dt);if(this.impact)this.impact.life-=dt;
     if(this.reloadLeft>0){this.reloadLeft-=dt;if(this.reloadLeft<=0){this.reloadLeft=0;const n=Math.min(3-this.mag,this.reserve);this.mag+=n;this.reserve-=n;this.feedback='재장전 완료. 표적을 확인하세요.';}}
     if(this.holding&&this.scoped&&this.reloadLeft===0){this.focus=Math.max(0,this.focus-dt*32);if(this.focus===0)this.holding=false;}else this.focus=Math.min(100,this.focus+dt*18);
+    const steadyTarget=this.holding&&this.scoped&&this.focus>0&&this.reloadLeft===0?1:0;
+    this.steadiness+=(steadyTarget-this.steadiness)*(1-Math.exp(-dt*(steadyTarget?5:9)));
     this.stepCrowd(dt);
     const a=this.scoped?this.actorAt(this.aim.x,this.aim.y,true):null;
     this.updateObservation(a,dt);
@@ -415,6 +433,7 @@ class SniperGame {
         this.missionHistory.push({...this.report});
       }
       this.state=shot.outcome;this.feedback=shot.message;this.shot=null;this.cooldown=.15;
+      const message=this.feedback;if(this.maybeAutoReload())this.feedback=message+' 빈 탄창을 자동 재장전합니다.';
     }
   }
   skipShot(){
@@ -433,7 +452,17 @@ class SniperGame {
     if(shot.outcome==='running'&&this.mag===0&&this.reserve===0){shot.outcome='failed';this.failure='탄약을 모두 소진했습니다.';}
   }
   shoot(){if(this.state!=='running'||!this.scoped||this.cooldown>0||this.reloadLeft>0)return {kind:'blocked'};if(this.mag<=0){this.feedback=this.reserve?'탄창이 비었습니다. R 또는 재장전을 누르세요.':'남은 탄약이 없습니다.';return {kind:'empty'};}
-    this.mag--;this.totalShots++;this.shotFlash=.16;const drift=this.sway(),x=this.aim.x+drift.x/2.3,y=this.aim.y+drift.y/2.3;const a=this.actorAt(x,y);
+    const drift=this.sway(),x=this.aim.x+drift.x/2.3,y=this.aim.y+drift.y/2.3;const a=this.actorAt(x,y);
+    if(this.requireObservation&&(!a||!this.observations.has(a.id))){this.feedback='관찰을 완료한 인물에게만 발사할 수 있습니다. 스코프로 외형을 확인하세요.';return {kind:'unobserved'};}
+    this.mag--;this.totalShots++;this.shotFlash=.16;
     this.holding=false;this.shot={x,y,actor:a||null,clock:0,flight:1.05,duration:2.45,impacted:false,outcome:'running',message:'',startAim:{...this.aim}};this.state='shot';this.feedback='BULLET TIME · 총알이 날아갑니다…';return {kind:a?(a.target?'target':'protected'):'miss',actor:a,x,y};
   }
+}
+
+// Local records contain only validated mission results; ranking is grade, shots, then time.
+function sniperBestRecord(previous, candidate, mission){
+ const clean=r=>r&&r.mission===mission&&Number.isInteger(mission)&&mission>=0&&mission<SNIPER_MISSIONS.length&&['S','A','B'].includes(r.grade)&&Number.isInteger(r.shots)&&r.shots>=1&&r.shots<=12&&Number.isFinite(r.seconds)&&r.seconds>=0?{mission,grade:r.grade,shots:r.shots,seconds:r.seconds}:null;
+ const old=clean(previous),next=clean(candidate);if(!old)return next;if(!next)return old;
+ const rank={S:3,A:2,B:1};
+ return rank[next.grade]>rank[old.grade]||(next.grade===old.grade&&(next.shots<old.shots||(next.shots===old.shots&&next.seconds<old.seconds)))?next:old;
 }

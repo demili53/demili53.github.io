@@ -13,5 +13,6 @@ exclude:
   - scripts/test-shadow-sniper.cjs
   - scripts/test-shadow-sniper-browser.cjs
   - scripts/test-shadow-sniper-improvements.cjs
+  - scripts/test-shadow-sniper-improvements-2.cjs
   - scripts/test-rift-blade.cjs
   - scripts/test-rift-blade-browser.cjs

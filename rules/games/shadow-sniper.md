@@ -34,3 +34,6 @@
 - `node scripts/test-shadow-sniper.cjs`와 Playwright가 있는 NODE_PATH에서 `node scripts/test-shadow-sniper-browser.cjs`로 검증.
 - 설치된 Chromium을 지정하려면 `PLAYWRIGHT_EXECUTABLE_PATH` 사용. AI 검증은 여섯 장소 × 네 시드의 이동 경계·시설 충돌·자세 좌표·총성 반응·복귀 시뮬레이션과 8종 신규 행동을 포함. 브라우저 검증은 여섯 맵 캡처·일시정지·모바일 조작·전체 캠페인 승리를 확인.
 - 10회 추가 개선 기록은 `rules/games/shadow-sniper-iterations.md`, 누적 회귀 검사는 `node scripts/test-shadow-sniper-improvements.cjs`. 경로 단축·상호 대화·관람 해제·관찰 기억·연출 건너뛰기·미션 평가·배경 효과를 포함하고 설정·키보드·포커스는 브라우저 검사에 포함.
+
+- 추가 11~20회: 점진적 집중 안정화, 직업별 보행/피로, 최근 방문 3곳 기억, 관찰 메모, 선택형 관찰 후 사격/자동 재장전, 터치 감도, 재장전 진행률, 작전 기록, 미션별 최고 기록. `shadowSniperMissionBests`는 등급→발사 수→시간 순으로 개인 기록을 저장하며 온라인 점수에 영향을 주지 않음. 옵션과 감도도 로컬 저장.
+- 추가 검증: `node scripts/test-shadow-sniper-improvements-2.cjs`; 회차별 기록은 `rules/games/shadow-sniper-iterations-2.md`.
