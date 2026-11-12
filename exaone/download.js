@@ -1,7 +1,7 @@
 (() => {
-  const filename = 'EXAONE-Agent-2.3.0.exe';
-  const expectedSize = 185368156;
-  const expectedHash = '224ab0316cf384e67581ec90b13ae950c362f9f5206654dfe483f91600934294';
+  const filename = 'EXAONE-Agent-3.5.0.exe';
+  const expectedSize = 188588908;
+  const expectedHash = '4ef796e896b5eefc3802dce90cc730cf85bab3f5117f88c4096db6d97ea13906';
   const button = document.getElementById('download-button');
   const status = document.getElementById('download-status');
   const progress = document.getElementById('download-progress');
@@ -23,7 +23,7 @@
           const { done, value } = await reader.read(); if (done) break;
           chunks.push(value); received += value.byteLength; progress.value = received;
           if (received > expectedSize) { await reader.cancel(); throw new Error('파일 크기가 일치하지 않습니다.'); }
-          status.textContent = `다운로드 중 ${Math.floor(received / expectedSize * 100)}% · ${(received / 1048576).toFixed(1)} / 176.8 MiB`;
+          status.textContent = `다운로드 중 ${Math.floor(received / expectedSize * 100)}% · ${(received / 1048576).toFixed(1)} / 179.9 MiB`;
         }
       }
       if (received !== expectedSize) throw new Error('파일 크기가 일치하지 않습니다. 다시 시도해 주세요.');
