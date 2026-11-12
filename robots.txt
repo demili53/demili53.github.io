@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://partygame.pe.kr/sitemap.xml
-#DaumWebMasterTool:9ec94e272e82cdf4ad43e8071416bb6adf4b9416ae56e91e93d49c4bfd471006:yoPeIV5QL7Z1hL4c3KNBAg==
+#DaumWebMasterTool:a4a48e2ce586cf2040faca174b0ecdf5af221e6a784c07fbe96d978e072f839d:LJPampnqaffzNtkuALZiYQ==
