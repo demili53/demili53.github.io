@@ -14,10 +14,18 @@ function makeWillyCrowd(stage){
  {role:'스키어',coat:0xe7a7aa,visor:true,desc:'분홍 외투 · 초록 고글'},
  {role:'줄무늬 관광객',coat:0xca727a,stripes:true,hat:'sunhat',glasses:true,desc:'빨강 줄무늬 · 밀짚모자 · 안경'},
  {role:'빨간 모자 관광객',coat:0x7fa0b4,hat:'beanie',glasses:true,desc:'빨간 털모자 · 파란 옷 · 안경'},
- {role:'닮은 관광객',coat:0xd4656a,stripes:true,hat:'beanie',glasses:true,desc:'빨강 줄무늬 · 빨간 털모자 · 안경 · 가방과 스카프 없음'}];
- const cols=[9,11,13][stage],rows=[3,4,4][stage],gap=820/(cols-1),people=[];
+ {role:'닮은 관광객',coat:0xd4656a,stripes:true,hat:'beanie',glasses:true,desc:'빨강 줄무늬 · 빨간 털모자 · 안경 · 가방과 스카프 없음'},
+ {role:'정원사',coat:0x79a573,hat:'garden',desc:'초록 챙모자 · 멜빵 작업복'},
+ {role:'독서가',coat:0xb889ad,hat:'beret',glasses:true,desc:'자주색 외투 · 책 · 베레모'},
+ {role:'낚시꾼',coat:0xc6a16b,hat:'fisher',desc:'갈색 낚시 모자 · 낚싯대'},
+ {role:'풍선 상인',coat:0xeab27c,hat:'boater',desc:'리본 모자 · 색색의 풍선'},
+ {role:'과학자',coat:0xe0e9df,glasses:true,hat:'none',desc:'흰 실험 가운 · 확대경'},
+ {role:'운동선수',coat:0x65babc,hat:'headband',desc:'청록 운동복 · 흰 머리띠'},
+ {role:'드러머',coat:0xc78594,hat:'band',desc:'군악대 모자 · 작은 북'},
+ {role:'제빵사',coat:0xe3c8a4,hat:'baker',desc:'갈색 앞치마 · 둥근 제빵 모자'}];
+ const cols=[9,11,13,12,13,14][stage],rows=[3,4,4,4,4,4][stage],gap=820/(cols-1),people=[];
  for(let row=0;row<rows;row++)for(let col=0;col<cols;col++){const i=row*cols+col,role=roles[(i*5+stage*3)%roles.length];people.push({...role,x:70+col*gap+(i*11%17)-8,y:(stage===0?265+row*94:196+row*89)+(i*17%23)-11,range:4+(i*7%8),speed:.16+(i%4)*.05,skin:[0xe6c6a2,0xbe917a,0x947767,0xf2d4b5][i%4]});}
- const slot=people.splice([15,28,20][stage],1)[0];
+ const slot=people.splice([15,28,20,31,35,43][stage],1)[0];
  return {extras:people,position:slot};
 }
 const SNIPER_MISSIONS = [
@@ -25,20 +33,27 @@ const SNIPER_MISSIONS = [
  {name:'한밤의 별빛 축제',code:'02 / STARLIGHT FESTIVAL',theme:'festival',time:110,color:0x302b59,accent:0xe2b2ec,brief:'불빛과 공연으로 가득한 축제에서 윌리를 찾아보세요. 이번에는 줄무늬 옷과 빨간 털모자, 둥근 안경에 노란 스카프를 두르고 있습니다. 닮은 관광객에게 주의하세요.',clues:['빨강·흰 줄무늬 + 빨간 털모자','둥근 안경','노란 스카프'],targets:[],extras:[]},
  {name:'눈꽃 산장 마을',code:'03 / SNOWY VILLAGE',theme:'snow',time:120,color:0x9bb6cf,accent:0xb5e7e1,brief:'눈 내리는 산장 마을에 윌리가 숨어 있습니다. 빨간 줄무늬 옷과 털모자, 안경, 초록 스카프를 찾아보세요. 때때로 이동식 가림막 뒤에 숨으니 모습을 드러낼 때를 기다리세요.',clues:['빨강·흰 줄무늬 + 빨간 털모자','둥근 안경','초록 스카프 · 가림막 주의'],targets:[],extras:[]}
 ];
-SNIPER_MISSIONS.forEach((m,i)=>{const c=makeWillyCrowd(i);m.extras=c.extras;m.targets=[{...c.position,role:'윌리',coat:0xd85b61,stripes:true,hat:'beanie',glasses:true,case:i===0,scarf:i===1?0xf5d16a:i===2?0x6ed2a3:null,camera:false,instrument:false,visor:false,helmet:false,cap:false,cover:i===2,desc:i===0?'빨강 줄무늬 · 빨간 털모자 · 둥근 안경 · 검은 가방':i===1?'빨강 줄무늬 · 빨간 털모자 · 둥근 안경 · 노란 스카프':'빨강 줄무늬 · 빨간 털모자 · 둥근 안경 · 초록 스카프',target:true}];});
+SNIPER_MISSIONS.push(
+ {name:'햇살 가득 식물원',code:'04 / BOTANICAL GARDEN',theme:'garden',time:125,color:0xb2d4bb,accent:0xe5c583,brief:'온실과 화단 사이에서 윌리를 찾으세요. 정원사와 독서가, 나비를 관찰하는 과학자가 모였습니다. 파란 스카프를 확인하세요.',clues:['빨강·흰 줄무늬 + 빨간 털모자','둥근 안경','파란 스카프']},
+ {name:'노을빛 해변 산책로',code:'05 / SUNSET PIER',theme:'pier',time:130,color:0xe8b99e,accent:0xf2d38b,brief:'노을이 지는 해변 산책로에서 윌리를 찾으세요. 낚시와 풍선, 북 연주에 시선을 빼앗기지 마세요. 보라 스카프가 마지막 단서입니다.',clues:['빨강·흰 줄무늬 + 빨간 털모자','둥근 안경','보라 스카프']},
+ {name:'분주한 중앙역',code:'06 / CENTRAL STATION',theme:'station',time:140,color:0x9eafba,accent:0xe7bd72,brief:'열차가 도착한 중앙역에서 마지막 윌리를 찾으세요. 책을 읽는 승객과 빵을 만드는 상인 사이, 주황 스카프를 찾아보세요.',clues:['빨강·흰 줄무늬 + 빨간 털모자','둥근 안경','주황 스카프']}
+);
+SNIPER_MISSIONS.forEach((m,i)=>{const c=makeWillyCrowd(i);m.extras=c.extras;m.targets=[{...c.position,role:'윌리',coat:0xd85b61,stripes:true,hat:'beanie',glasses:true,case:i===0,scarf:[null,0xf5d16a,0x6ed2a3,0x6ba8e5,0xbc91d9,0xf1a261][i],camera:false,instrument:false,visor:false,helmet:false,cap:false,cover:i===2,desc:m.clues.join(' · '),target:true}];});
 // Activity poses drive both movement and rendering, so visible bodies and hit tests stay together.
 function sniperActivity(actor,theme){
  const byTheme={
   harbor:{'선원':'carry','요리사':'cook','화가':'paint','관광객':'photo','정비사':'repair','광대':'juggle','탐험가':'shop','음악가':'play','우편배달부':'walk','스키어':'sip','줄무늬 관광객':'photo','빨간 모자 관광객':'shop','닮은 관광객':'talk','윌리':'walk'},
   festival:{'선원':'clap','요리사':'serve','화가':'paint','관광객':'photo','정비사':'repair','광대':'juggle','탐험가':'dance','음악가':'play','우편배달부':'dance','스키어':'clap','줄무늬 관광객':'photo','빨간 모자 관광객':'sip','닮은 관광객':'wave','윌리':'dance'},
   snow:{'선원':'shovel','요리사':'serve','화가':'paint','관광객':'photo','정비사':'shovel','광대':'snowman','탐험가':'skate','음악가':'play','우편배달부':'walk','스키어':'ski','줄무늬 관광객':'snowman','빨간 모자 관광객':'sip','닮은 관광객':'wave','윌리':'walk'}
- };return byTheme[theme][actor.role]||'walk';
+ };const newRoles={'정원사':'water','독서가':'read','낚시꾼':'fish','풍선 상인':'balloon','과학자':'inspect','운동선수':'stretch','드러머':'drum','제빵사':'knead'};
+ return newRoles[actor.role]||(byTheme[theme]||byTheme[theme==='pier'?'harbor':'festival'])[actor.role]||'walk';
 }
 const sniperClamp=(n,min,max)=>Math.max(min,Math.min(max,n));
 // Ground footprints of the tables, planters and benches drawn by buildCity.
 function sniperObstacles(theme){
  if(theme==='harbor')return Array.from({length:5},(_,i)=>{const x=120+i*170,y=298+(i%2)*94;return[{x,y,rx:26,ry:14},{x:x+49,y,rx:13,ry:16}];}).flat();
  if(theme==='snow')return Array.from({length:4},(_,i)=>({x:140+i*215,y:222+(i%3)*89,rx:22,ry:14}));
+ if(['garden','pier','station'].includes(theme))return Array.from({length:4},(_,i)=>({x:150+i*220,y:245+(i%2)*160,rx:theme==='garden'?30:23,ry:theme==='garden'?19:12}));
  return [];
 }
 // Visibility graph paths go around inflated ground footprints, not through furniture.
@@ -120,6 +135,22 @@ function sniperActorPose(a,time){
   pose.left={x:-14,y:-40};pose.right={x:14,y:-40};pose.bob=3;pose.lean=-.08*pose.facing;
  }else if(a.action==='look'){
   pose.right={x:12,y:-30};pose.lean=Math.sin(t*1.4)*.04;
+ }else if(a.action==='water'){
+  pose.right={x:19+beat*2,y:-22};pose.left={x:4,y:-22};pose.lean=.1;pose.prop=(t%2)/2;
+ }else if(a.action==='read'){
+  pose.left={x:-8,y:-28};pose.right={x:8,y:-28+Math.sin(t*1.5)};pose.lean=.035;pose.prop=(t%5)/5;
+ }else if(a.action==='fish'){
+  pose.left={x:6,y:-26};pose.right={x:16,y:-30+Math.sin(t*1.8)*3};pose.lean=beat*.03;
+ }else if(a.action==='balloon'){
+  pose.left={x:-12,y:-25};pose.right={x:12,y:-32+beat*2};pose.prop=Math.sin(t*1.4);
+ }else if(a.action==='inspect'){
+  pose.right={x:10+beat*3,y:-39};pose.left={x:-9,y:-22};pose.lean=.08+beat*.03;
+ }else if(a.action==='stretch'){
+  pose.left={x:-13,y:-45-beat*7};pose.right={x:13,y:-45+beat*7};pose.lean=beat*.14;pose.legL.x=-8;pose.legR.x=8;
+ }else if(a.action==='drum'){
+  pose.left={x:-12,y:-23+beat*7};pose.right={x:12,y:-23-beat*7};pose.bob=-Math.abs(beat);
+ }else if(a.action==='knead'){
+  pose.left={x:12,y:-20+beat*3};pose.right={x:22,y:-20+beat*3};pose.lean=.1+Math.max(0,beat)*.1;
  }else if(a.action==='rest'){
   pose.left={x:-8,y:-16};pose.right={x:8,y:-16};pose.lean=.1;pose.bob=1+Math.sin(t*2.6)*.7;
  }
@@ -138,7 +169,7 @@ class SniperGame {
     this.obstacles=sniperObstacles(this.config.theme);
     for(const a of this.actors){
       a.homeAction=a.action;
-      const stationary=['paint','cook','repair','shop','snowman','shovel','play'].includes(a.action);
+      const stationary=['paint','cook','repair','shop','snowman','shovel','play','water','fish','knead','drum'].includes(a.action);
       a.motion={x:a.origin,y:a.originY,vx:0,vy:0,gait:a.phase,facing:a.id%2?1:-1,
         state:'activity',timer:1+this.random()*4,pace:14+this.random()*11,
         courage:this.random(),stationary,goal:{x:a.origin,y:a.originY},blend:1,fromPose:null,
@@ -149,7 +180,7 @@ class SniperGame {
       this.constrainActor(a);
       a.origin=a.motion.x;a.originY=a.motion.y;
     }
-    this.interests=this.actors.filter(a=>['play','paint','cook','snowman'].includes(a.homeAction))
+    this.interests=this.actors.filter(a=>['play','paint','cook','snowman','water','knead','drum'].includes(a.homeAction))
       .map(a=>({id:a.id,x:a.origin,y:a.originY,kind:a.homeAction}));
   }
   setBehavior(a,state,action,seconds){
@@ -208,7 +239,7 @@ class SniperGame {
     }
     candidates.sort((a,b)=>b.score-a.score);
     for(const c of candidates){if(!this.planRoute(a,c.goal))continue;
-      b.visit={id:c.spot.id,slot:c.slot,focus:{x:c.spot.x,y:c.spot.y},action:a.camera?'photo':c.spot.kind==='play'?'clap':'look'};b.replans=0;
+      b.visit={id:c.spot.id,slot:c.slot,focus:{x:c.spot.x,y:c.spot.y},action:a.camera?'photo':['play','drum'].includes(c.spot.kind)?'clap':'look'};b.replans=0;
       this.setBehavior(a,'travel','walk',12);return true;
     }
     return false;

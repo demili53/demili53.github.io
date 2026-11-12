@@ -7,15 +7,15 @@ let g=fresh();assert.equal(g.actors.length,27);g.start();const actor=g.actors[0]
 assert.equal(fire(g,actor).kind,'target');assert.equal(g.state,'shot');assert.equal(actor.dead,false);assert.equal(g.score,0);assert.equal(g.shoot().kind,'blocked');assert.equal(g.reload(),false);assert.equal(g.scope(),false);
 advance(g,.5);assert.equal(actor.dead,false);assert.equal(g.remaining,time);g.pause();const frozen=JSON.stringify(g.shot);advance(g,1);assert.equal(JSON.stringify(g.shot),frozen);g.pause();assert.equal(g.state,'shot');advance(g,.65);assert.equal(actor.dead,true);assert.equal(g.state,'shot');assert(g.particles.length>0);assert.equal(g.totalHits,1);
 g.pause();const fall=actor.fallTime,particles=JSON.stringify(g.particles);advance(g,.5);assert.equal(actor.fallTime,fall);assert.equal(JSON.stringify(g.particles),particles);g.pause();advance(g,1.5);assert.equal(g.state,'success');assert(actor.fallTime>=1);assert.equal(g.targetsLeft,0);const score=g.score;assert.equal(g.shoot().kind,'blocked');assert.equal(g.score,score);
-g.next();assert.equal(g.actors.length,44);g.start();hit(g,g.actors[0]);assert.equal(g.state,'success');g.next();assert.equal(g.actors.length,52);g.start();advance(g,1);assert(g.actors[0].hidden);const prior=g.score;assert.equal(hit(g,g.actors[0]).kind,'miss');assert.equal(g.score,prior);advance(g,3);assert.equal(g.actors[0].hidden,false);hit(g,g.actors[0]);assert.equal(g.state,'won');assert.equal(g.totalHits,3);
+g.next();assert.equal(g.actors.length,44);g.start();hit(g,g.actors[0]);assert.equal(g.state,'success');g.next();assert.equal(g.actors.length,52);g.start();advance(g,1);assert(g.actors[0].hidden);const prior=g.score;assert.equal(hit(g,g.actors[0]).kind,'miss');assert.equal(g.score,prior);advance(g,3);assert.equal(g.actors[0].hidden,false);hit(g,g.actors[0]);assert.equal(g.state,'success');for(let stage=3;stage<box.missions.length;stage++){g.next();g.start();hit(g,g.actors[0]);}assert.equal(g.state,'won');assert.equal(g.totalHits,box.missions.length);
 g=fresh();g.start();hit(g,g.actors.find(a=>!a.target));assert.equal(g.state,'failed');assert(g.failure.includes('오인'));assert(g.retry());assert.equal(g.score,0);assert.equal(g.mag,3);assert.equal(g.state,'briefing');
 g=fresh();g.start();hit(g,g.actors[0]);g.next();const checkpoint=g.score;g.start();hit(g,g.actors.find(a=>!a.target));g.retry();assert.equal(g.score,checkpoint);assert.equal(g.totalShots,1);assert.equal(g.totalHits,1);
 g=fresh();g.start();g.scoped=true;g.aimAt(30,40);for(let i=0;i<3;i++){g.cooldown=0;g.shoot();advance(g,2.6);}assert.equal(g.mag,0);assert.equal(g.alert,72);g.cooldown=0;assert.equal(g.shoot().kind,'empty');assert(g.reload());assert.equal(g.shoot().kind,'blocked');const remaining=g.remaining;g.pause();advance(g,2);assert.equal(g.reloadLeft,1.6);assert.equal(g.remaining,remaining);g.pause();advance(g,1.7);assert.equal(g.mag,3);assert.equal(g.reserve,6);for(let i=0;i<2;i++){g.cooldown=0;g.shoot();advance(g,2.6);}assert.equal(g.state,'failed');assert(g.failure.includes('노출'));
 g=fresh();g.start();g.scoped=true;g.holding=true;advance(g,4);assert.equal(g.holding,false);assert(g.focus<20);advance(g,5);assert(g.focus>75);g.remaining=.01;g.step(.05);assert.equal(g.state,'failed');
 g=fresh();g.start();g.scoped=true;for(let i=0;i<35;i++){const a=g.actors[0];g.aimAt(a.x,a.y-24);g.step(.05);}assert(g.identification>=1);assert(g.inspected.target);g.aimAt(-100,1000);assert.equal(g.aim.x,25);assert.equal(g.aim.y,510);
-for(const [i,m]of box.missions.entries()){const crowd=m.extras;assert(crowd.length>=26+i*10);assert(new Set(crowd.map(a=>a.role)).size>=10);assert.equal(m.targets.length,1);assert(m.targets[0].stripes&&m.targets[0].glasses&&m.targets[0].hat==='beanie');}
+for(const [i,m]of box.missions.entries()){const crowd=m.extras;assert.equal(crowd.length,[26,43,51,47,51,55][i]);assert(new Set(crowd.map(a=>a.role)).size>=10);assert.equal(m.targets.length,1);assert(m.targets[0].stripes&&m.targets[0].glasses&&m.targets[0].hat==='beanie');}
 g=fresh();g.start();for(let i=0;i<20;i++){g.mag=3;g.reserve=9;g.alert=0;g.cooldown=0;g.scoped=true;g.aimAt(30,40);g.shoot();advance(g,2.6);assert(g.particles.length<=18);}assert(g.actors.every(a=>Number.isFinite(a.x)));
-for(let stage=0;stage<3;stage++){
+for(let stage=0;stage<box.missions.length;stage++){
  const game=fresh();game.mission=stage;game.loadMission();game.start();
  assert(new Set(game.actors.map(a=>a.action)).size>=9);
  const initial=game.actors.map(a=>JSON.stringify(a.pose)),animated=new Set();
@@ -27,7 +27,7 @@ for(let stage=0;stage<3;stage++){
 }
 // Seeded crowd simulations cover long-running steering, reaction timing and recovery.
 function seeded(seed){return ()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};}
-for(let stage=0;stage<3;stage++)for(let seed=1;seed<=4;seed++){
+for(let stage=0;stage<box.missions.length;stage++)for(let seed=1;seed<=4;seed++){
  const game=new box.Game(seeded(seed));game.mission=stage;game.loadMission();game.start();
  const initial=game.actors.map(a=>({x:a.x,y:a.y})),traveled=new Set(),states=new Set();
  for(let frame=0;frame<1000;frame++){
@@ -111,4 +111,15 @@ g.alertCrowd(400,300);advance(g,1.5);assert(g.actors.every(a=>a.motion.visit===n
 g=new box.Game(seeded(82));g.mission=1;g.loadMission();g.start();g.actors=g.actors.slice(0,1);g.interests=[];
 const tired=g.actors[0];Object.assign(tired.motion,{fatigue:.9,state:'activity',timer:.01,vx:0,vy:0});g.step(.05);assert.equal(tired.motion.state,'resting');assert.equal(tired.action,'rest');
 g.pause();const fatigue=tired.motion.fatigue;advance(g,1);assert.equal(tired.motion.fatigue,fatigue);g.pause();advance(g,4);assert(tired.motion.fatigue<.5);
-console.log('PASS: purposeful visits, reservation capacity/release, photography, fatigue/rest, predictive yielding, vigilance, routes, conversations, hit alignment, pause/flight freeze and campaign');
+assert.equal(box.missions.length,6);assert.equal(new Set(box.missions.map(m=>m.theme)).size,6);
+const addedRoles=['정원사','독서가','낚시꾼','풍선 상인','과학자','운동선수','드러머','제빵사'];
+const addedActions=['water','read','fish','balloon','inspect','stretch','drum','knead'];
+for(let stage=0;stage<box.missions.length;stage++){
+ const game=new box.Game(seeded(100+stage));game.mission=stage;game.loadMission();game.start();
+ assert.equal(game.actors.length,[27,44,52,48,52,56][stage]);
+ for(let i=0;i<addedRoles.length;i++){const a=game.actors.find(a=>a.role===addedRoles[i]);assert(a,`${stage}: ${addedRoles[i]}`);assert.equal(a.homeAction,addedActions[i]);}
+ const poses=game.actors.filter(a=>addedRoles.includes(a.role)).map(a=>JSON.stringify(a.pose));advance(game,.5);
+ game.actors.filter(a=>addedRoles.includes(a.role)).forEach((a,i)=>assert.notEqual(JSON.stringify(a.pose),poses[i]));
+ assert.equal(game.actors.filter(a=>a.target).length,1);assert.equal(game.actors[0].desc,game.config.clues.join(' · '));
+}
+console.log('PASS: six-map campaign, 21 crowd roles, eight new animated activities, map bounds/obstacles, visits, fatigue, yielding, conversations, hit alignment and pause/flight freeze');

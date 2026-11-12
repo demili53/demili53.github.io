@@ -7,7 +7,7 @@ sniperEl('sniperBest').textContent=sniperBest.toLocaleString('ko-KR');
 function sniperMessage(text){if(lastMessage!==text){lastMessage=text;sniperEl('sniperStatus').textContent=text;}}
 function sniperClearInput(){aimKeys.clear();drag=null;sniper.holding=false;}
 function sniperSync(){
- const s=sniper,m=s.config;sniperEl('missionHud').textContent=String(s.mission+1).padStart(2,'0')+' / 03';sniperEl('timerHud').textContent=s.remaining.toFixed(1);sniperEl('ammoHud').textContent=s.reloadLeft>0?'장전 중':`${s.mag} / ${s.reserve}`;sniperEl('scoreHud').textContent=s.score.toLocaleString('ko-KR');sniperEl('focusText').textContent=Math.ceil(s.focus)+'%';sniperEl('focusBar').style.width=s.focus+'%';sniperEl('alertText').textContent=Math.round(s.alert)+'%';sniperEl('alertBar').style.width=s.alert+'%';sniperEl('targetProgress').textContent=`남은 표적 ${s.targetsLeft}명`;sniperEl('scopeBtn').setAttribute('aria-pressed',String(s.scoped));sniperEl('focusBtn').setAttribute('aria-pressed',String(s.holding));sniperEl('scopeLabel').textContent=s.scoped?' / SCOPE ×2.3':' / 관찰 모드';
+ const s=sniper,m=s.config;sniperEl('missionHud').textContent=String(s.mission+1).padStart(2,'0')+' / '+String(SNIPER_MISSIONS.length).padStart(2,'0');sniperEl('timerHud').textContent=s.remaining.toFixed(1);sniperEl('ammoHud').textContent=s.reloadLeft>0?'장전 중':`${s.mag} / ${s.reserve}`;sniperEl('scoreHud').textContent=s.score.toLocaleString('ko-KR');sniperEl('focusText').textContent=Math.ceil(s.focus)+'%';sniperEl('focusBar').style.width=s.focus+'%';sniperEl('alertText').textContent=Math.round(s.alert)+'%';sniperEl('alertBar').style.width=s.alert+'%';sniperEl('targetProgress').textContent=`남은 표적 ${s.targetsLeft}명`;sniperEl('scopeBtn').setAttribute('aria-pressed',String(s.scoped));sniperEl('focusBtn').setAttribute('aria-pressed',String(s.holding));sniperEl('scopeLabel').textContent=s.scoped?' / SCOPE ×2.3':' / 관찰 모드';
  const playing=s.state==='running';for(const id of ['scopeBtn','fireBtn','reloadBtn','focusBtn'])sniperEl(id).disabled=!playing;
  sniperEl('fireBtn').disabled=!playing||!s.scoped||s.cooldown>0||s.reloadLeft>0;
  sniperEl('reloadBtn').disabled=!playing||s.reloadLeft>0||s.mag===3||s.reserve===0;
@@ -20,7 +20,7 @@ function sniperSync(){
  if(renderedState===s.state)return;renderedState=s.state;sniperClearInput();sniperEl('missionOverlay').hidden=playing||s.state==='shot';sniperEl('restartCampaign').hidden=!['success','failed','won'].includes(s.state);const action=sniperEl('missionAction');action.disabled=!sniperReady;
  if(s.state==='briefing'){sniperEl('overlayCode').textContent=m.code;sniperEl('missionTitle').textContent=m.name;sniperEl('missionBrief').textContent=m.brief;sniperEl('overlayClues').textContent=m.clues.join(' / ');action.textContent='임무 시작';}
  else if(s.state==='paused'){sniperEl('overlayCode').textContent='OPERATION PAUSED';sniperEl('missionTitle').textContent='작전 일시정지';sniperEl('missionBrief').textContent='시간과 표적 이동이 멈췄습니다. 준비되면 임무를 계속하세요.';sniperEl('overlayClues').textContent='';action.textContent='계속하기';}
- else if(['success','failed','won'].includes(s.state)){const won=s.state==='won',success=s.state==='success';sniperEl('overlayCode').textContent=won?'ALL OPERATIONS COMPLETE':success?'TARGETS CONFIRMED':'OPERATION FAILED';sniperEl('missionTitle').textContent=won?'모든 임무를 완수했습니다':success?'임무 완수':'작전 중단';sniperEl('missionBrief').textContent=s.state==='failed'?s.failure:`누적 ${s.score.toLocaleString('ko-KR')}점 · 명중 ${s.totalHits}/${s.totalShots}발. ${won?'세 장소에서 윌리를 찾았습니다.':'다음 작전 브리핑을 확인하세요.'}`;sniperEl('overlayClues').textContent=s.state==='failed'?'재도전하면 현재 미션의 점수와 탄약이 초기화됩니다.':`정확도 ${s.totalShots?Math.round(s.totalHits/s.totalShots*100):0}% · 남은 시간 ${s.remaining.toFixed(1)}초`;action.textContent=won?'새 작전 시작':success?'다음 미션 브리핑':'이 미션 재도전';if(s.state!=='success'){sniperBest=Math.max(sniperBest,s.score);try{localStorage.setItem('shadowSniperBest',String(sniperBest));}catch{}sniperEl('sniperBest').textContent=sniperBest.toLocaleString('ko-KR');window.dispatchEvent(new CustomEvent('partygame:score',{detail:{gameId:'shadow-sniper',score:s.score,wave:s.mission+1}}));}}
+ else if(['success','failed','won'].includes(s.state)){const won=s.state==='won',success=s.state==='success';sniperEl('overlayCode').textContent=won?'ALL OPERATIONS COMPLETE':success?'TARGETS CONFIRMED':'OPERATION FAILED';sniperEl('missionTitle').textContent=won?'모든 임무를 완수했습니다':success?'임무 완수':'작전 중단';sniperEl('missionBrief').textContent=s.state==='failed'?s.failure:`누적 ${s.score.toLocaleString('ko-KR')}점 · 명중 ${s.totalHits}/${s.totalShots}발. ${won?'모든 장소에서 윌리를 찾았습니다.':'다음 작전 브리핑을 확인하세요.'}`;sniperEl('overlayClues').textContent=s.state==='failed'?'재도전하면 현재 미션의 점수와 탄약이 초기화됩니다.':`정확도 ${s.totalShots?Math.round(s.totalHits/s.totalShots*100):0}% · 남은 시간 ${s.remaining.toFixed(1)}초`;action.textContent=won?'새 작전 시작':success?'다음 미션 브리핑':'이 미션 재도전';if(s.state!=='success'){sniperBest=Math.max(sniperBest,s.score);try{localStorage.setItem('shadowSniperBest',String(sniperBest));}catch{}sniperEl('sniperBest').textContent=sniperBest.toLocaleString('ko-KR');window.dispatchEvent(new CustomEvent('partygame:score',{detail:{gameId:'shadow-sniper',score:s.score,wave:s.mission+1}}));}}
 }
 function sniperRestart(){sniper=new SniperGame();renderedState='';renderedMission=-1;sniperSync();}
 sniperEl('missionAction').onclick=()=>{if(!sniperReady)return;if(sniper.state==='briefing')sniper.start();else if(sniper.state==='paused')sniper.pause();else if(sniper.state==='success')sniper.next();else if(sniper.state==='failed')sniper.retry();else if(sniper.state==='won')sniperRestart();sniperSync();sniperEl('gameCanvas').focus({preventScroll:true});};
@@ -59,6 +59,38 @@ function makeSniperScene(){return class extends Phaser.Scene {
    for(const x of [10,920])for(let j=0;j<3;j++){g.lineStyle(1,0xa89cba).lineBetween(x+12,270+j*72,x+15,310+j*72);g.fillStyle([0xdf8f9c,0x94becd,0xcfb570][j]).fillEllipse(x+12,260+j*72,20,27);}
    for(let i=0;i<130;i++){const x=(i*157)%960,y=155+(i*97)%375;g.fillStyle([0xb58d9d,0xc7b880,0x84aca7][i%3],.6).fillRect(x,y,2,4);}
    for(let i=0;i<5;i++){const x=130+i*174,y=227+(i%3)*90;g.lineStyle(2,[0xc698b0,0x90bbb9,0xd7c388][i%3],.5).strokeCircle(x,y,14);g.lineStyle(1,0xaca6bb,.6).lineBetween(x-22,y,x+22,y).lineBetween(x,y-22,x,y+22);g.fillStyle(0xdccba1,.6).fillCircle(x,y,3);}
+  }else if(['garden','pier','station'].includes(m.theme)){
+   if(m.theme==='garden'){
+    g.fillStyle(0xbdded1).fillRect(0,0,960,170);g.fillStyle(0xf5e3a9).fillCircle(805,47,25);
+    for(let i=0;i<9;i++){const x=i*120;g.fillStyle(0x508776).fillCircle(x,115,50);g.fillStyle(0x80ae88).fillCircle(x+18,94,35);}
+    g.fillStyle(0xa4c9b7).fillRect(290,55,335,105);poly([[270,55],[455,6],[645,55]],0xcee6de);
+    for(let i=0;i<8;i++){g.lineStyle(3,0x6b9690).lineBetween(292+i*47,57,292+i*47,158);g.lineStyle(1,0xeff4d8,.8).lineBetween(302+i*43,62,302+i*43,143);}
+    g.fillStyle(0x91b688).fillRect(0,160,960,380);g.fillStyle(0xd7cdb1).fillRect(0,175,960,340);
+    for(let i=0;i<90;i++){const x=i*137%960,y=180+i*67%340;g.lineStyle(1,0xb9b49b,.5).lineBetween(x,y,x+25,y);}
+    for(const x of [22,925])for(let y=210;y<520;y+=70){g.fillStyle(0x658d67).fillCircle(x,y,20);for(let j=0;j<4;j++)g.fillStyle([0xf1b6c1,0xe9d780,0xc2b5df][j%3]).fillCircle(x-10+j*7,y-8+j%2*8,4);}
+   }else if(m.theme==='pier'){
+    g.fillStyle(0xe9baa4).fillRect(0,0,960,100);g.fillStyle(0xf6dda4).fillCircle(720,53,32);g.fillStyle(0x719eac).fillRect(0,100,960,90);
+    for(let i=0;i<35;i++){const x=i*117%960,y=110+i*13%70;g.lineStyle(2,0xf0d9b1,.45).lineBetween(x,y,x+35,y);}
+    g.fillStyle(0xd7ba8c).fillRect(0,180,960,360);g.fillStyle(0xb89679).fillRect(40,180,880,360);
+    for(let y=190;y<540;y+=22){g.lineStyle(1,0x806d62,.5).lineBetween(40,y,920,y);for(let x=60;x<920;x+=110)g.fillStyle(0x725f55,.5).fillCircle(x,y+4,1);}
+    g.lineStyle(5,0xe2c4a0).lineBetween(40,164,920,164);for(let x=45;x<940;x+=70)g.fillStyle(0x8d7567).fillRect(x,153,6,37);
+    for(const x of [80,365,835]){g.fillStyle(0x756f79).fillRect(x,75,4,77);poly([[x-40,122],[x+42,122],[x+28,138],[x-25,138]],0x8b6271);poly([[x-3,78],[x-3,115],[x-32,115]],0xf4dfb9);}
+    for(const x of [14,930]){g.fillStyle(0x8a7064).fillRect(x,60,7,120);for(let i=0;i<5;i++)poly([[x+3,63],[x-45+i*19,35+i%2*17],[x-35+i*18,74]],0x627d69);}
+   }else{
+    g.fillStyle(0x617b8d).fillRect(0,0,960,160);g.fillStyle(0xbfcaca).fillRect(0,20,960,16);
+    for(let x=0;x<960;x+=120){poly([[x,0],[x+60,57],[x+120,0]],0x405c71);g.lineStyle(3,0x8fa4ae).lineBetween(x,0,x+60,57).lineBetween(x+60,57,x+120,0);}
+    g.fillStyle(0x365973).fillRoundedRect(24,65,912,98,17);g.fillStyle(0xe0b776).fillRect(25,133,910,8);
+    for(let i=0;i<15;i++){const x=45+i*59;g.fillStyle(0xa8c7cb).fillRoundedRect(x,78,40,37,4);g.fillStyle(0x607f91).fillRect(x+4,104,32,7);}
+    g.fillStyle(0xc1bcae).fillRect(0,163,960,377);g.fillStyle(0xe5c171).fillRect(0,164,960,8);
+    for(let y=185;y<540;y+=32){g.lineStyle(1,0x9d9f99,.6).lineBetween(0,y,960,y);for(let x=(y%64?0:48);x<960;x+=96)g.lineBetween(x,y,x,y+32);}
+    for(const x of [25,925]){g.fillStyle(0x4e697a).fillRect(x,0,10,220);g.fillStyle(0x304a60).fillRect(x-10,206,30,10);}
+    g.fillStyle(0x263d50).fillRoundedRect(360,13,240,42,4);g.fillStyle(0xe6c990).fillRect(377,26,112,5).fillRect(377,38,84,4);
+    g.fillStyle(0xe9e6cc).fillCircle(558,34,16);g.lineStyle(2,0x405969).lineBetween(558,34,558,23).lineBetween(558,34,566,38);
+   }
+   for(const o of sniper.obstacles){
+    if(m.theme==='garden'){g.fillStyle(0x8a8670).fillRoundedRect(o.x-o.rx,o.y-o.ry,o.rx*2,o.ry*2,8);g.fillStyle(0x63845e).fillEllipse(o.x,o.y-6,53,26);for(let j=0;j<7;j++)g.fillStyle([0xeaa6b8,0xebd277,0xb49dd0][j%3]).fillCircle(o.x-22+j*7,o.y-7+(j%2)*6,4);}
+    else{g.fillStyle(m.theme==='pier'?0x9e7371:0x667f81).fillRect(o.x-o.rx,o.y-10,o.rx*2,8).fillRect(o.x-o.rx,o.y+1,o.rx*2,5);g.fillStyle(0x5a666b).fillRect(o.x-o.rx+3,o.y+6,4,6).fillRect(o.x+o.rx-7,o.y+6,4,6);}
+   }
   }else{
    poly([[0,148],[140,8],[290,151]],0xbfd0db);poly([[200,153],[410,0],[610,153]],0xd6e0e4);poly([[510,153],[760,9],[960,153]],0xb9cbdc);poly([[335,55],[410,0],[482,55],[441,46],[412,66],[387,45]],0xf0ece5);
    g.fillStyle(0xd6e2e3).fillRect(0,155,960,385);g.fillStyle(0xb8cfd8,.6).fillEllipse(465,340,890,310);for(let y=170;y<540;y+=46){g.lineStyle(1,0xa1becd,.4).lineBetween(0,y,960,y+15);}
@@ -76,11 +108,25 @@ function makeSniperScene(){return class extends Phaser.Scene {
    if(a.stripes)for(let i=0;i<4;i++)rect(-8,-32+i*5,16,2.5,0xf0e8d6);
    if(a.cap){rect(-6,-47,12,5,0x506888);rect(-7,-43,15,2,0x506888);}if(a.helmet){circle(0,-44,6,0xe8ca76);rect(-8,-43,16,3,0xe8ca76);}if(a.visor){rect(-7,-45,14,7,0x435d69);rect(-6,-44,12,3,0x9de9d1);}
    if(a.hat==='beanie'){circle(0,-45,6,0xd25460);rect(-7,-45,14,4,0xf3e6d1);circle(0,-52,2.5,0xf3e6d1);}if(a.hat==='sailor'){rect(-7,-48,14,5,0xe4e4d8);rect(-6,-43,12,2,0x526b8a);}if(a.hat==='chef'){rect(-6,-52,12,10,0xf2ead8);circle(-4,-53,4,0xf2ead8);circle(3,-55,5,0xf2ead8);circle(7,-52,3,0xf2ead8);rect(-6,-29,12,14,0xf0e6d6);}if(a.hat==='beret'){circle(-2,-46,7,0x816590);rect(-7,-44,14,3,0x816590);}if(a.hat==='sunhat'||a.hat==='explorer'){rect(-10,-44,20,3,0xe3c391);rect(-5,-50,10,7,0xd5b17b);}if(a.hat==='clown'){for(let j=0;j<5;j++)circle(-7+j*3.5,-45-Math.sin(j)*3,3.5,[0xc87982,0x8bbdc3,0xe7cf82][j%3]);circle(1,-39,2,0xdf6d77);}if(a.hat==='tophat'){rect(-6,-56,12,14,0x404155);rect(-9,-44,18,3,0x404155);rect(-6,-47,12,3,0xc8b88f);}
+   if(['garden','fisher','boater'].includes(a.hat)){const color=a.hat==='garden'?0x5c8662:a.hat==='fisher'?0xa58a62:0xe7ca91;rect(-6,-50,12,8,color);rect(-10,-44,20,3,color);rect(-6,-46,12,2,a.hat==='boater'?0xb7757a:0x455e57);}
+   if(a.hat==='headband')rect(-6,-45,12,2,0xf1ead5);
+   if(a.hat==='band'){rect(-6,-53,12,11,0x4c647a);rect(-8,-44,16,2,0xe2c385);circle(0,-55,3,0xd7a976);}
+   if(a.hat==='baker'){circle(-3,-48,5,0xf2e7cf);circle(3,-48,5,0xf2e7cf);rect(-6,-46,12,4,0xf2e7cf);rect(-5,-29,10,16,0xab7b60);}
+   if(a.role==='정원사'){rect(-6,-24,12,12,0x4d7667);line(-5,-32,-4,-22,2,0x4d7667);line(5,-32,4,-22,2,0x4d7667);}
+   if(a.role==='과학자'){line(0,-33,0,-13,1,0x829b9c);rect(-6,-25,4,5,0x9cbcc5);}
    if(!fallen){const glance=(a.motion?.gaze??pose.facing??1)*1.2;circle(-2+glance,-41,.65,0x394754);circle(2+glance,-41,.65,0x394754);}
    if(a.glasses){for(const x of [-3,3]){const p=pt(x,-40);g.lineStyle(.8,0x3d4651).strokeCircle(p.x,p.y,2.4);}line(-1,-40,1,-40,.6,0x3d4651);}
    if(a.scarf){rect(-7,-35,14,3.5,a.scarf);rect(3,-32,4,9,a.scarf);}if(a.case){line(9,-20,16,-20,1,0x6f737b);rect(7,-17,13,10,a.target?0x19202b:0x71615b);rect(12,-15,2,2,0xadb2b0);}
    if(fallen)return;
    const action=a.action,steam=(x,y)=>{for(let i=0;i<3;i++){const h=(t*8+i*5)%16;circle(x+Math.sin(t*2+i)*2,y-h,1,0xf4e9d1);}},note=(x,y)=>{circle(x,y,2,0xeacb7f);line(x+2,y,x+2,y-8,1,0xeacb7f);line(x+2,y-8,x+6,y-6,1,0xeacb7f);};
+   if(action==='water'){rect(12,-22,13,10,0x749eae);line(22,-19,31,-23,3,0x749eae);for(let i=0;i<4;i++){const q=(pose.prop+i*.23)%1;circle(30+q*6,-22+q*20,1,0x9cd6de);}rect(29,-3,12,6,0xb28b69);line(35,-4,35,-13,2,0x6c9d69);circle(35,-14,4,0xe6bd8d);}
+   if(action==='read'){shape([[-11,-32],[0,-29],[11,-32],[11,-20],[0,-17],[-11,-20]],0xeee3c6);line(0,-29,0,-17,1,0x987f74);for(let j=0;j<3;j++){line(-8,-28+j*3,-3,-27+j*3,.6,0x9a9583);line(3,-27+j*3,8,-28+j*3,.6,0x9a9583);}if(pose.prop>.8)line(0,-29,5,-32+(pose.prop-.8)*50,1,0xf7efd9);}
+   if(action==='fish'){line(right.x,right.y,31,-65,1.5,0x8b755f);line(31,-65,41,-5+Math.sin(t*1.8)*3,.7,0xc5d4ce);circle(41,-3+Math.sin(t*1.8)*3,2,0xe79885);}
+   if(action==='balloon')for(let j=0;j<3;j++){const x=-6+j*13+pose.prop*4,y=-68-(j%2)*12;line(right.x,right.y,x,y+7,.7,0xe3d6be);const p=pt(x,y);g.fillStyle([0xe99fa9,0x8ccbd3,0xe9cf82][j]).fillEllipse(p.x,p.y,12,16);circle(x-2,y-3,2,0xf7e9d5);}
+   if(action==='inspect'){line(right.x,right.y,right.x+6,right.y-7,2,0x6b727d);const p=pt(right.x+7,right.y-10);g.lineStyle(1.7,0xb6d9dc).strokeCircle(p.x,p.y,5);}
+   if(action==='stretch'){rect(-4,-28,8,7,0xe8eee1);line(-2,-27,2,-27,1,0x44888f);}
+   if(action==='drum'){rect(-12,-22,24,14,0xb37178);rect(-13,-24,26,3,0xf0d7a4);rect(-13,-10,26,3,0xe3bd83);for(let i=0;i<4;i++)line(-10+i*6,-21,-7+i*6,-11,1,0xf0d7a4);line(left.x,left.y,0,-23,1.5,0xdfbc88);line(right.x,right.y,5,-23,1.5,0xdfbc88);}
+   if(action==='knead'){rect(8,-15,28,4,0xa18163);line(11,-11,11,0,2,0x806a59);line(33,-11,33,0,2,0x806a59);const p=pt(22,-18);g.fillStyle(0xf1dcb0).fillEllipse(p.x,p.y,14+Math.sin(t*3.2)*2,6);line(left.x,left.y,right.x,right.y,4,0xb9976f);}
    if(action==='photo'){const y=pose.prop?-41:-26;rect(-7,y,14,8,0x3f4d59);circle(0,y+4,3,0x8da9ba);circle(0,y+4,1.5,0x203c50);if(pose.prop&&t%4>1.95&&t%4<2.12){line(8,y,16,y-7,2,0xfff1b0);line(10,y+2,20,y+2,2,0xfff1b0);}}
    if(action==='carry'){rect(-14,-27,28,17,0xb48a5f);rect(-12,-24,24,2,0xe5bc80);line(-12,-12,12,-25,2,0x816449);line(-12,-25,12,-12,2,0x816449);}
    if(action==='paint'){line(23,-39,18,0,2,0x9c7758);line(29,-39,37,0,2,0x9c7758);rect(19,-43,21,24,0xe5c58e);rect(21,-41,17,19,0xf4ead5);shape([[22,-24],[28,-35],[36,-24]],0x7fae9a);circle(33,-37,3,0xe6b268);circle(left.x,left.y,5,0xb88c67);circle(left.x-2,left.y,1.5,0xd96573);line(right.x,right.y,right.x+6,right.y-4,1,0x485979);}
