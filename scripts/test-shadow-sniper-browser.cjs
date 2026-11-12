@@ -60,5 +60,6 @@ assert.equal(await page.locator('#shotHistoryList li').count(),1);assert((await 
 await page.reload();await page.waitForFunction(()=>sniperReady);assert.equal(await page.evaluate(()=>sniperHighContrast),true);assert(await page.locator('#highContrast').isChecked());assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));assert.deepEqual(errors,[]);
 await page.evaluate(()=>window.scrollTo(0,0));await page.waitForTimeout(100);await page.screenshot({path:path.join(root,'test-results/willy-third-upgrade-mobile.png'),fullPage:true});
 console.log('PASS 29 and UI 25-30: contrast pixels/persistence, notebook input, journal and warnings');
+await require('./test-shadow-sniper-tools.cjs')(page,assert);assert.deepEqual(errors,[]);
 console.log('PASS: real Phaser themed crowds, bullet flight, fall and blood, shot pause freeze, scope/shoot, mission transitions, protected-target failure/retry, pause, mobile touch, viewport, campaign victory, score event and restart');
 }finally{if(browser)await browser.close();server.close();}})().catch(e=>{console.error(e);process.exitCode=1;});

@@ -30,3 +30,6 @@ exclude:
   - scripts/test-shooter-progress.cjs
   - scripts/test-site-menu-browser.cjs
   - scripts/test-space-shooter-polish.cjs
+  - scripts/test-shadow-sniper-tools.cjs
+  - scripts/test-shadow-sniper-improvements-4.cjs
+  - scripts/test-sniper-audio.cjs

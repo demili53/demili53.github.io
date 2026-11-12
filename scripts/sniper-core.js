@@ -185,7 +185,7 @@ class SniperGame {
       const stationary=['paint','cook','repair','shop','snowman','shovel','play','water','fish','knead','drum'].includes(a.action);
       a.motion={x:a.origin,y:a.originY,vx:0,vy:0,gait:a.phase,facing:a.id%2?1:-1,
         state:'activity',timer:1+this.random()*4,pace:(14+this.random()*11)*({'운동선수':1.1,'우편배달부':1.08,'독서가':.85,'낚시꾼':.88,'정원사':.92}[a.role]||1),
-        sociability:.6+(a.id%5)*.15,courage:this.random(),stationary,goal:{x:a.origin,y:a.originY},blend:1,fromPose:null,
+        curiosity:.75+((a.id*7)%5)*.125,sociability:.6+(a.id%5)*.15,courage:this.random(),stationary,goal:{x:a.origin,y:a.originY},blend:1,fromPose:null,
         reaction:null,escapeLeft:0,stuck:0,route:[],replans:0,fear:0,socialCooldown:3+this.random()*5,partner:null,recentPartners:[],
         yielding:0,runBlend:0,gaze:a.id%2?1:-1,vigilance:0,alarmCount:0,progressDistance:Infinity,
         fatigue:0,fatigueRate:a.role==='운동선수'?.65:a.case?1.12:1,visit:null,visitCooldown:2+(a.id%4),lastVisit:null,recentVisits:[]};
@@ -218,10 +218,10 @@ class SniperGame {
   }
   chooseDestination(a,away){
     const b=a.motion,minY=this.config.theme==='harbor'?235:178;
-    let best=null,bestScore=-Infinity;
+    const candidates=[];
     for(let attempt=0;attempt<12;attempt++){
       const angle=away?Math.atan2(b.y-away.y,b.x-away.x)+(this.random()-.5)*1.4:this.random()*Math.PI*2;
-      const distance=away?55+this.random()*50:25+this.random()*65;
+      const distance=away?55+this.random()*50:(25+this.random()*65)*b.curiosity;
       const x=sniperClamp(b.x+Math.cos(angle)*distance,Math.max(48,a.origin-100),Math.min(912,a.origin+100));
       const y=sniperClamp(b.y+Math.sin(angle)*distance*.45,Math.max(minY,a.originY-30),Math.min(498,a.originY+30));
       if(Math.hypot(x-b.x,y-b.y)<12)continue;
@@ -229,9 +229,10 @@ class SniperGame {
       const goal={x,y},crowding=this.actors.reduce((sum,n)=>sum+(n.id!==a.id&&!n.dead?Math.max(0,45-Math.hypot(n.x-x,n.y-y)):0),0);
       const danger=away||b.fear>.2&&b.threat;
       const score=(danger?Math.hypot(x-danger.x,y-danger.y)-Math.hypot(b.x-danger.x,b.y-danger.y):Math.hypot(x-b.x,y-b.y)*.2)-crowding;
-      if(score>bestScore){best=goal;bestScore=score;}
+      candidates.push({goal,score});
     }
-    if(best&&this.planRoute(a,best)){b.replans=0;return true;}
+    candidates.sort((left,right)=>right.score-left.score);
+    for(const candidate of candidates)if(this.planRoute(a,candidate.goal)){b.replans=0;return true;}
     b.goal={x:b.x,y:b.y};b.route=[];return false;
   }
   planRoute(a,goal){
@@ -303,7 +304,7 @@ class SniperGame {
       b.visitCooldown=Math.max(0,b.visitCooldown-dt);
       if(b.visit&&!this.interestHost(b.visit))this.setBehavior(a,'observe','look',.8);
       b.yielding=Math.max(0,b.yielding-dt);b.vigilance=Math.max(0,b.vigilance-dt);if(b.vigilance===0)b.alarmCount=0;
-      if(b.state==='social'){const partner=this.actors.find(n=>n.id===b.partner);if(a.hidden||!partner||partner.dead||partner.hidden||partner.motion.partner!==a.id)b.timer=0;else b.facing=partner.x>a.x?1:-1;}
+      if(b.state==='social'){const partner=this.actors.find(n=>n.id===b.partner);if(a.hidden||!partner||partner.dead||partner.hidden||partner.motion.partner!==a.id||Math.hypot(partner.motion.x-b.x,partner.motion.y-b.y)>90||Math.abs(partner.motion.y-b.y)>35||!sniperClearPath(b,partner.motion,this.obstacles))b.timer=0;else b.facing=partner.x>a.x?1:-1;}
       if(b.reaction){b.reaction.delay-=dt;if(b.reaction.delay<=0){
         b.threat={x:b.reaction.x,y:b.reaction.y};b.reaction=null;
         this.setBehavior(a,'startled','startle',.35+b.courage*.4);
@@ -328,7 +329,9 @@ class SniperGame {
         if(b.alarmCount>=2&&b.vigilance>0)this.setBehavior(a,'observe','look',1.5);
         else this.setBehavior(a,'activity',a.homeAction,2+this.random()*4);
       }else if(b.state==='recover'&&b.timer<=0){
-        if(this.planRoute(a,{x:a.origin,y:a.originY})){b.replans=0;this.setBehavior(a,'return','walk',12);}
+        const homeDanger=b.threat&&Math.hypot(a.origin-b.threat.x,a.originY-b.threat.y);
+        if(b.fear>.35&&b.threat&&homeDanger<90&&homeDanger+10<Math.hypot(b.x-b.threat.x,b.y-b.threat.y))b.timer=1.2;
+        else if(this.planRoute(a,{x:a.origin,y:a.originY})){b.replans=0;this.setBehavior(a,'return','walk',12);}
         else this.setBehavior(a,'observe','look',1);
       }
       const moving=['travel','flee','return'].includes(b.state);

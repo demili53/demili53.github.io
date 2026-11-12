@@ -39,3 +39,6 @@
 - 추가 검증: `node scripts/test-shadow-sniper-improvements-2.cjs`; 회차별 기록은 `rules/games/shadow-sniper-iterations-2.md`.
 
 - 추가 21~30회: 사교성/최근 대화 상대 기억, 직업별 관람 취향, 피로별 휴식, 일정한 대각선 조준·집중 정밀 이동, 사격 준비 안내·미션 사격 기록·위험 경고, 굵은 조준선, 관찰 메모 검색. 기록: `rules/games/shadow-sniper-iterations-3.md`; 검사: `node scripts/test-shadow-sniper-improvements-3.cjs`.
+
+- 추가 31~40회: 호기심별 탐색, 대화 거리/시야 종료, 대체 목적지, 위험 지역 복귀 지연, 전체화면, 왼손 배치, 수동 단서 체크, 외형 메모 고정, 일시정지 도움말, 선택형 효과음. 기록: `rules/games/shadow-sniper-iterations-4.md`. 새 UI 보조 모듈 `scripts/sniper-play-tools.js`, 오디오 `scripts/sniper-audio.js`. 효과음은 매 방문 기본 꺼짐이며 음량만 저장.
+- 검사: `node scripts/test-shadow-sniper-improvements-4.cjs`, `node scripts/test-sniper-audio.cjs`, 기존 브라우저 검사가 `scripts/test-shadow-sniper-tools.cjs` UI 검사를 함께 실행.
