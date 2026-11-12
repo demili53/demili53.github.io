@@ -347,3 +347,92 @@ assert.equal(new context.Game(()=>.5,'classic','bad').map,'grove');
  const armor=new context.Game(()=>.5);armor.wave=3;armor.spawn();assert.equal(armor.enemies[0].kind,'armored');assert.equal(armor.enemies[0].hp,98);
 }
 console.log('PASS: three maps, spawn lanes, nine mode/map combinations, new weapon economy, priority shots, poison/regen/freeze, gravity resistance, split-once and armored health');
+
+// Expedition rules, roster, bosses and final-wave transitions are independent of free-play records.
+for(let stage=0;stage<6;stage++){
+ const m=new context.Game(()=>.5,'rush','grove',stage);assert.equal(m.stage,stage);assert.equal(m.mode,'classic');assert.equal(m.rules.waves,[4,5,5,6,7,8][stage]);assert.equal(m.map,['grove','canyon','glacier','marsh','volcano','ruins'][stage]);
+ m.spawn();assert(m.scenario.roster.includes(m.enemies[0].kind));assert(Number.isFinite(m.enemies[0].hp));
+ for(const wave of m.rules.bosses){const b=new context.Game(()=>.5,'classic','grove',stage);b.state='running';b.wave=wave;b.spawned=b.spawnLimit-1;b.step(.05);assert(b.enemies[0].boss);}
+ m.state='running';for(let wave=1;wave<=m.rules.waves;wave++){m.enemies=[];m.spawned=m.spawnLimit;m.waveTime=m.rules.waveSeconds;m.step(.05);if(wave<m.rules.waves){assert.equal(m.state,'reward');m.chooseReward(m.offers[0]);}else assert.equal(m.state,'won');}
+}
+for(const stage of [-2,6,1.5,'1'])assert.equal(new context.Game(()=>.5,'classic','grove',stage).stage,-1);
+{
+ const move=(kind,hp,slow)=>{const m=fresh();m.state='running';m.spawnClock=100;m.player.x=650;m.player.y=650;m.player.cd=100;m.enemies=[{id:1,x:100,y:360,hp,maxHp:100,kind,r:12,speed:40,slow,cd:100}];m.step(.05);return m.enemies[0].x-100;};
+ assert(move('wisp',100,2)>move('grunt',100,2));assert(move('berserker',40,0)>move('berserker',100,0));
+}
+console.log('PASS: six expedition stages, rosters, boss schedule, reward/victory transitions, invalid-stage fallback and special enemy movement');
+
+// Dedicated attack visuals retain the shared bounded effect clock.
+for(const [type,kind]of [['sniper','sniperShot'],['venom','venomCloud'],['gravity','gravityWell']]){
+ const m=fresh();m.state='building';m.gold=1000;m.build(0,type);m.state='running';m.spawnClock=100;m.player.cd=100;m.enemies=[{id:1,x:430,y:215,hp:1000,maxHp:1000,r:12,speed:0,slow:0,cd:100}];m.step(.05);assert(m.effects.some(e=>e.kind===kind));
+ m.state='paused';const frozen=JSON.stringify(m);m.step(.05);assert.equal(JSON.stringify(m),frozen);m.state='running';m.slots[0].tower.cd=100;for(let i=0;i<20;i++)m.step(.05);assert(!m.effects.some(e=>e.kind===kind));
+}
+console.log('PASS: distinct sniper/venom/gravity visuals, pause and expiry');
+
+// Cycle 1: priorities change real aim, exclude dead/out-of-range enemies and guard paused edits.
+{const m=fresh();m.state='building';m.build(0,'arrow');const slot=m.slots[0],enemies=[{id:1,x:400,y:215,hp:40,maxHp:50},{id:2,x:360,y:350,hp:80,maxHp:100},{id:3,x:430,y:215,hp:10,maxHp:20},{id:4,x:900,y:900,hp:1,maxHp:9999},{id:5,x:360,y:215,hp:0,maxHp:2000}];for(const [priority,id]of [['nearest',1],['core',2],['strong',2],['weak',3]]){assert(m.setPriority(0,priority));assert.equal(m.towerTarget(slot,enemies,175).id,id);}assert.equal(m.setPriority(0,'bad'),false);m.state='paused';assert.equal(m.setPriority(0,'core'),false);}
+console.log('PASS cycle 1: tower targeting priorities');
+
+// Cycle 2: scouting is deterministic and reflects actual stage rosters and boss schedules.
+{const m=fresh(),before=JSON.stringify(m);assert.equal(m.waveIntel().total,m.spawnLimit);assert.equal(m.waveIntel(4).boss,true);assert(m.waveIntel(5).roster.includes('regenerator'));assert.equal(m.waveIntel(11),null);assert.equal(JSON.stringify(m),before);const stage=new context.Game(()=>.5,'classic','grove',3);assert(stage.waveIntel().roster.includes('splitter'));assert.equal(stage.waveIntel().lanes.join('/'),'동/남/서');}
+console.log('PASS cycle 2: wave scouting');
+
+// Cycle 3: two simulation substeps preserve collision accuracy and stop at reward boundaries.
+{const a=fresh(),b=fresh();for(const m of [a,b]){m.state='running';m.spawnClock=100;}a.advance(.05,{x:1,y:0},2);b.step(.05,{x:1,y:0});b.step(.05,{x:1,y:0});assert.equal(JSON.stringify(a),JSON.stringify(b));a.state='paused';const frozen=JSON.stringify(a);a.advance(.05,{},2);assert.equal(JSON.stringify(a),frozen);const reward=fresh();reward.state='running';reward.spawned=reward.spawnLimit;reward.waveTime=28;reward.advance(.05,{x:0,y:0},2);assert.equal(reward.state,'reward');assert.equal(reward.time,.05);assert.equal(reward.waveTime,0);}
+console.log('PASS cycle 3: safe 2x simulation and pause/reward boundaries');
+
+// Cycle 5: repeat purchase shares all ordinary placement and currency guards.
+{const m=fresh();m.state='building';assert.equal(m.repeatBuild(0),false);m.gold=200;assert(m.build(0,'cannon'));assert(m.repeatBuild(1));assert.equal(m.gold,20);assert.equal(m.repeatBuild(2),false);assert.equal(m.repeatBuild(1),false);m.gold=200;m.state='paused';assert.equal(m.repeatBuild(2),false);assert.equal(fresh().lastBuilt,null);}
+console.log('PASS cycle 5: repeat-build economy and reset');
+
+// Cycle 6: upgrade preview uses exactly the stats fired in combat, including mode and perks.
+{const m=new context.Game(()=>.5,'siege');m.perks.power=2;m.perks.haste=1;m.perks.range=1;m.state='building';m.gold=1000;m.build(0,'arrow');m.upgrade(0);const stats=m.towerStats('arrow',2);m.state='running';m.spawnClock=100;m.enemies=[{id:1,x:450,y:215,hp:1000,maxHp:1000,r:12,speed:0,slow:0,cd:100}];m.step(.05);assert.equal(m.shots[0].damage,stats.damage);assert.equal(m.slots[0].tower.cd,stats.interval);assert.equal(stats.range,212);assert.equal(m.towerStats('invalid'),null);}
+console.log('PASS cycle 6: upgrade stats match actual shots');
+
+// Cycle 7: medals require victory, reward health/perfect defense and do not grade free play.
+{const m=new context.Game(()=>.5,'classic','grove',0);assert.equal(m.stageMedal(),0);m.state='won';m.core=100;assert.equal(m.stageMedal(),1);m.core=240;assert.equal(m.stageMedal(),2);m.perfectWaves=m.rules.waves;assert.equal(m.stageMedal(),3);m.state='lost';assert.equal(m.stageMedal(),0);const free=fresh();free.state='won';assert.equal(free.stageMedal(),0);}
+console.log('PASS cycle 7: stage medal thresholds');
+
+// Cycle 9: only skip an empty fully-spawned wave, with exactly one ordinary reward.
+{const m=fresh();m.state='running';assert.equal(m.finishWave(),false);m.spawned=m.spawnLimit;m.enemies=[{hp:1}];assert.equal(m.finishWave(),false);m.enemies=[];m.state='paused';assert.equal(m.finishWave(),false);m.state='running';const time=m.time;assert(m.finishWave());assert.equal(m.state,'reward');assert.equal(m.time,time);assert.equal(m.gold,180);assert.equal(m.finishWave(),false);m.chooseReward(m.offers[0]);m.wave=m.rules.waves;m.spawned=m.spawnLimit;m.enemies=[];assert(m.finishWave());assert.equal(m.state,'won');assert.equal(m.finishWave(),false);}
+console.log('PASS cycle 9: safe empty-wave finish without duplicate rewards');
+
+// Cycle 10: actual damage excludes overkill and repeated kills; spending records successful actions only.
+{const m=fresh();m.state='building';m.gold=1000;assert(m.build(0,'arrow'));assert.equal(m.build(0,'arrow'),false);assert(m.upgrade(0));m.core=250;assert(m.repair());assert.equal(m.repair(),false);const e={hp:7,x:0,y:0,r:12};m.damage(e,100);m.damage(e,100);const report=m.battleReport();assert.equal(report.damage,7);assert.equal(report.built,1);assert.equal(report.upgrades,1);assert.equal(report.repairs,1);assert.equal(report.spent,180);report.built=99;assert.equal(m.runStats.built,1);assert.equal(fresh().runStats.damage,0);}
+console.log('PASS cycle 10: battle report damage and economy accounting');
+
+// Expansion cycle 1: level-three specialization changes actual stats and only charges once.
+{const m=fresh();m.state='building';m.gold=1000;m.build(0,'flame');assert.equal(m.specialize(0,'power'),false);m.upgrade(0);m.upgrade(0);const before=m.gold,base=m.towerStats('flame',3);assert(m.specialize(0,'power'));assert.equal(m.gold,before-80);assert.equal(m.specialize(0,'rapid'),false);const stats=m.towerStats('flame',3,'power');assert.equal(stats.damage,base.damage*1.3);m.state='running';m.spawnClock=100;m.player.cd=100;m.enemies=[{id:1,x:430,y:215,hp:1000,maxHp:1000,r:12,speed:0,slow:0,cd:100}];m.step(.05);assert.equal(m.enemies[0].burnDamage,stats.damage*.5);}
+console.log('PASS expansion 1: specialization and burn scaling');
+
+// Expansion 2: one free reroll keeps reward pause and never applies a card twice.
+{const m=fresh();assert.equal(m.rerollRewards(),false);m.offerReward();const old=[...m.offers],gold=m.gold;assert(m.rerollRewards());assert.equal(m.state,'reward');assert.equal(m.gold,gold);assert.equal(new Set(m.offers).size,m.offers.length);assert(m.offers.some(id=>!old.includes(id)));assert.equal(m.rerollRewards(),false);assert(m.chooseReward(m.offers[0]));assert.equal(fresh().rerolls,1);}
+console.log('PASS expansion 2: free reward reroll lifecycle');
+
+// Expansion 3: expedition cards have real economy/cooldown/heal effects; free play excludes them.
+{const free=fresh();for(let i=0;i<20;i++){free.offerReward();assert(free.offers.every(id=>!['bounty','capacitor','mending'].includes(id)));}const m=new context.Game(()=>.5,'classic','grove',0);m.state='running';m.perks.bounty=2;const gold=m.gold;m.damage({hp:1,x:10,y:10,r:12},5);assert.equal(m.gold,gold+12);m.perks.capacitor=3;m.enemies=[{hp:100,x:400,y:360,r:12}];assert(m.castShockwave());assert.equal(m.shockwaveCd,12);m.perks.mending=2;m.core=200;m.waveCoreDamage=100;m.spawned=m.spawnLimit;m.enemies=[];m.finishWave();assert.equal(m.core,235);}
+console.log('PASS expansion 3: expedition-only cards');
+
+// Expansion 4: barrier protects only the core, expires in combat, and shares the paused clock.
+{const m=fresh();assert.equal(m.castBarrier(),false);m.state='running';m.spawnClock=100;m.player.x=650;m.player.y=650;m.player.cd=100;assert(m.castBarrier());assert.equal(m.castBarrier(),false);m.enemies=[{id:1,x:360,y:360,hp:1000,maxHp:1000,r:12,speed:0,slow:0,cd:0}];m.step(.05);assert.equal(m.core,296);assert.equal(m.waveCoreDamage,4);m.state='paused';const before=JSON.stringify(m);m.step(.05);assert.equal(JSON.stringify(m),before);m.state='running';m.enemies=[];for(let i=0;i<101;i++)m.step(.05);assert.equal(m.barrierTime,0);assert(m.barrierCd>0);}
+console.log('PASS expansion 4: core barrier and cooldown');
+
+// Expansion 5: expedition boss enrages once at half health, free-play bosses retain old behavior.
+{for(const stage of [-1,0]){const m=new context.Game(()=>.5,'classic','grove',stage);m.spawn(true);const e=m.enemies[0];m.damage(e,e.maxHp*.5);assert.equal(!!e.enraged,stage===0);const count=m.effects.filter(f=>f.kind==='bossArrival').length;m.damage(e,1);assert.equal(m.effects.filter(f=>f.kind==='bossArrival').length,count);if(stage===0){m.state='running';m.spawnClock=100;m.player.x=650;m.player.y=650;m.player.cd=100;e.x=360;e.y=360;e.cd=0;m.step(.05);assert.equal(e.cd,.7);}}}
+console.log('PASS expansion 5: expedition boss second phase');
+
+// Expansion 6: missions only reward a winning expedition and track historical tower peak.
+{const m=new context.Game(()=>.5,'classic','grove',0,'compact');m.state='building';m.gold=10000;for(let i=0;i<5;i++)m.build(i,'arrow');m.sell(4);m.state='won';assert.equal(m.missionSatisfied(),false);const n=new context.Game(()=>.5,'classic','grove',0,'noRepair');n.state='running';n.wave=n.rules.waves;n.spawned=n.spawnLimit;n.finishWave();assert(n.missionSatisfied());assert.equal(n.score,2650);const score=n.score;assert.equal(n.finishWave(),false);assert.equal(n.score,score);assert.equal(new context.Game(()=>.5,'classic','grove',-1,'compact').mission,'none');}
+console.log('PASS expansion 6: stage missions and one-time bonus');
+
+// Expansion 7: relocation preserves tower identity, investment, upgrades and cooldown.
+{const m=fresh();m.state='building';m.gold=1000;m.build(0,'arrow');m.upgrade(0);const t=m.slots[0].tower;t.cd=.4;const gold=m.gold,spent=t.spent;assert(m.relocate(0,2));assert.equal(m.gold,gold-25);assert.equal(m.slots[0].tower,null);assert.equal(m.slots[2].tower,t);assert.equal(t.spent,spent);assert.equal(t.cd,.4);assert.equal(m.relocate(2,2),false);m.state='paused';assert.equal(m.relocate(2,3),false);assert.equal(m.runStats.relocations,1);}
+console.log('PASS expansion 7: tower relocation');
+
+// Expansion 8: wave history records damage before repairs and the actual combat clock.
+{const m=fresh();m.state='running';m.time=7;m.waveCoreDamage=21;m.kills=3;m.spawned=m.spawnLimit;m.finishWave();assert.equal(m.waveHistory.length,1);assert.equal(m.waveHistory[0].seconds,7);assert.equal(m.waveHistory[0].coreDamage,21);assert.equal(m.waveHistory[0].kills,3);assert.equal(m.waveHistory[0].perfect,false);m.step(.05);assert.equal(m.waveHistory.length,1);m.chooseReward(m.offers[0]);m.time=12;m.kills=8;m.spawned=m.spawnLimit;m.finishWave();assert.equal(m.waveHistory[1].seconds,5);assert.equal(m.waveHistory[1].kills,5);assert.equal(fresh().waveHistory.length,0);}
+console.log('PASS expansion 8: bounded per-wave history');
+
+// Expansion 10: budget-aware presets use real purchases and never overwrite existing towers.
+{for(const mode of ['classic','siege'])for(const map of ['grove','marsh','volcano','ruins'])for(const id of ['balanced','crowd','precision']){const m=new context.Game(()=>.5,mode,map),start=m.gold,plan=m.loadoutPlan(id);assert(plan.cost<=start);assert.equal(new Set(plan.items.map(x=>x.index)).size,plan.items.length);assert.equal(m.deployLoadout(id),false);m.state='building';assert(m.deployLoadout(id));assert.equal(m.gold,start-plan.cost);assert.equal(m.runStats.built,plan.items.length);assert.equal(m.deployLoadout(id),false);assert(m.slots[map==='marsh'?2:0].tower);}const m=fresh();m.state='building';assert.equal(m.deployLoadout('none'),false);assert.equal(m.deployLoadout('bad'),false);}
+console.log('PASS expansion 10: starting loadout budgets and slots');

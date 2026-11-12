@@ -105,18 +105,53 @@ const root = path.resolve(__dirname, '..');
       await makeShare(browser, await page.locator('#gameCanvas').screenshot(), path.join(root,'site-share.png'), '새벽의 요새', '무료 타워 디펜스', '방어전 · 돌격전 · 요새전', '9종 무기 / 전용 이펙트 / 보스 방어');
     }
 
-    for(const map of ['grove','canyon','glacier']){
+    for(const map of ['grove','canyon','glacier','marsh','volcano','ruins']){
       await page.evaluate(map=>{
         selectedMap=map;resetMode('classic');game.state='building';game.gold=10000;
         const types=Object.keys(TYPES);game.slots.forEach((s,i)=>game.build(i,types[i]));
-        game.enemies=['armored','regenerator','splitter','shard','grunt'].map((kind,i)=>({id:i+1,kind,x:180+i*85,y:100,hp:90,maxHp:100,r:12,speed:0,slow:0,cd:100,runner:kind==='shard'}));
-        game.enemies.push({id:6,x:360,y:560,hp:700,maxHp:800,r:23,boss:true,kind:'grunt',speed:0,slow:0,cd:100});
-        game.time=3;setState('paused');$('overlay').style.display='none';
+        game.enemies=['armored','regenerator','splitter','wisp','berserker','shard','grunt'].map((kind,i)=>({id:i+1,kind,x:105+i*85,y:100,hp:90,maxHp:100,r:12,speed:0,slow:0,cd:100,runner:kind==='shard'}));
+        game.enemies.push({id:8,x:360,y:560,hp:700,maxHp:800,r:23,boss:true,kind:'grunt',speed:0,slow:0,cd:100});
+        game.emit('venomCloud',200,460,55,0xa8ed72,.7);game.emit('gravityWell',510,400,110,0x92a7ff,.6);game.emit('sniperShot',200,240,145,0xffe3a1,.3,-.4);for(const effect of game.effects)effect.life=effect.max*.6;game.time=3;setState('paused');$('overlay').style.display='none';
       },map);
       await page.waitForTimeout(100);
       await page.locator('#gameCanvas').screenshot({path:path.join(root,'test-results/bastion-graphics-'+map+'.png')});
       const frame=await page.locator('#gameCanvas').screenshot();await page.waitForTimeout(120);assert(frame.equals(await page.locator('#gameCanvas').screenshot()),'Scenery freezes on '+map);
     }
+
+    assert.equal(await page.evaluate(()=>Object.keys(app.textures.list).filter(k=>k.startsWith('bastion-elite-')).length),24);
+    await page.locator('#reducedEffects').check();await page.waitForTimeout(80);
+    const reducedFrame=await page.locator('#gameCanvas').screenshot();await page.waitForTimeout(120);assert(reducedFrame.equals(await page.locator('#gameCanvas').screenshot()));await page.locator('#reducedEffects').uncheck();
+    await page.evaluate(()=>{$('overlay').style.display='';selectedStage=-1;resetMode('classic');});
+    await page.click('#start');await page.evaluate(()=>{game.gold=1000;game.spawnClock=100;});await page.locator('#gameCanvas').focus();await page.keyboard.press('2');assert.equal(await page.evaluate(()=>selected),1);assert.equal(await page.evaluate(()=>game.state),'building');await page.locator('[data-weapon="arrow"]').click();await page.keyboard.press('u');assert.equal(await page.evaluate(()=>game.slots[1].tower.level),2);await page.keyboard.press('Escape');await page.keyboard.press('p');await page.keyboard.press('3');assert.equal(await page.evaluate(()=>game.state),'paused');await page.evaluate(()=>resetMode('classic'));
+
+    // Ten-cycle upgrade: purchase repeat, aiming controls, stats, speed, codex and safe wave finish.
+    await page.click('#start');await page.evaluate(()=>{game.gold=1000;game.spawnClock=100;});await page.locator('#gameCanvas').focus();await page.keyboard.press('1');await page.locator('[data-weapon="arrow"]').click();
+    await page.getByRole('button',{name:/조준: 가까운 적/}).click();assert.equal(await page.evaluate(()=>game.slots[0].tower.priority),'core');assert((await page.getByRole('button',{name:/강화 → Lv.2/}).textContent()).includes('15.0 → 24.8'));
+    await page.keyboard.press('2');await page.locator('#repeatBuild').click();assert.equal(await page.evaluate(()=>game.slots[1].tower.type),'arrow');await page.keyboard.press('Escape');
+    await page.click('#battleSpeed');assert.equal(await page.evaluate(()=>battleSpeed),2);assert.equal(await page.locator('#battleSpeed').getAttribute('aria-pressed'),'true');await page.click('#pause');const stopped=await page.evaluate(()=>game.time);await page.waitForTimeout(160);assert.equal(await page.evaluate(()=>game.time),stopped);await page.click('#battleSpeed');
+    assert.equal(await page.locator('#codexEntries li').count(),9);assert((await page.locator('#waveIntel').textContent()).includes('W1'));
+    await page.click('#start');await page.evaluate(()=>{game.spawned=game.spawnLimit;game.enemies=[];game.waveTime=1;sync();});assert(await page.locator('#finishWave').isVisible());await page.click('#finishWave');assert.equal(await page.evaluate(()=>game.state),'reward');assert.equal(await page.locator('#finishWave').isVisible(),false);
+    await page.evaluate(()=>resetMode('classic'));
+    await page.locator('#stageChoice').selectOption('0');
+    assert.equal(await page.evaluate(()=>game.stage),0);assert(await page.locator('input[name="map"]').first().isDisabled());
+    await page.click('#start');assert(await page.locator('#stageChoice').isDisabled());
+    await page.evaluate(()=>{game.wave=game.rules.waves;game.waveTime=game.rules.waveSeconds;game.spawned=game.spawnLimit;game.enemies=[];game.step(.05);sync();});
+    assert(await page.locator('#battleReport').isVisible());assert.equal(await page.locator('#reportStats div').count(),6);await page.setViewportSize({width:390,height:844});await page.locator('#nextStage').scrollIntoViewIfNeeded();assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));const nextRect=await page.locator('#nextStage').boundingBox();assert(nextRect.x>=0&&nextRect.x+nextRect.width<=390);await page.locator('#gameCanvas').screenshot({path:path.join(root,'test-results/bastion-result-mobile.png')});await page.setViewportSize({width:1360,height:1000});assert(await page.locator('#nextStage').isVisible());assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('dawnBastionStageClears')).includes(0)),true);
+    await page.click('#nextStage');assert.equal(await page.evaluate(()=>game.stage),1);assert.equal(await page.evaluate(()=>game.map),'canyon');assert.equal(await page.evaluate(()=>game.state),'idle');
+    await page.locator('#stageChoice').selectOption('5');await page.click('#start');
+    await page.evaluate(()=>{game.wave=game.rules.waves;game.waveTime=game.rules.waveSeconds;game.spawned=game.spawnLimit;game.enemies=[];game.step(.05);sync();});assert(await page.locator('#nextStage').isHidden());
+    await page.reload();await page.waitForFunction(()=>ready);assert.equal(await page.evaluate(()=>stageClears.includes(0)&&stageClears.includes(5)),true);assert.equal(await page.evaluate(()=>stageMedals[0]),2);assert((await page.locator('#stageChoice option[value="0"]').textContent()).includes('★★'));
+    await page.locator('#stageChoice').selectOption('3');assert.equal(await page.evaluate(()=>game.map),'marsh');assert.equal(await page.locator('[data-enemy="regenerator"]').getAttribute('data-active'),'true');await page.locator('#stageChoice').selectOption('-1');assert.equal(await page.evaluate(()=>game.stage),-1);assert.equal(await page.locator('input[name="map"]').first().isDisabled(),false);
+
+    // Second ten-cycle expansion: presets, specialization, relocation, barrier, missions and logs.
+    await page.locator('#stageChoice').selectOption('0');await page.locator('#missionChoice').selectOption('noRepair');await page.locator('#loadoutChoice').selectOption('balanced');assert((await page.locator('#loadoutHelp').textContent()).includes('135'));
+    await page.click('#start');assert.equal(await page.evaluate(()=>game.mission),'noRepair');assert.equal(await page.evaluate(()=>game.slots.filter(s=>s.tower).length),2);assert.equal(await page.evaluate(()=>game.gold),45);
+    await page.evaluate(()=>{game.gold=5000;game.spawnClock=1000;});await page.locator('#gameCanvas').focus();await page.keyboard.press('1');await page.keyboard.press('u');await page.keyboard.press('u');await page.getByRole('button',{name:/특성화 · 고출력/}).click();assert.equal(await page.evaluate(()=>game.slots[0].tower.specialization),'power');
+    await page.locator('#relocateChoices summary').click();await page.getByRole('button',{name:'2번 지점으로 이동',exact:true}).click();assert.equal(await page.evaluate(()=>game.slots[1].tower.specialization),'power');assert.equal(await page.evaluate(()=>game.slots[0].tower),null);await page.keyboard.press('Escape');
+    await page.click('#barrier');assert((await page.evaluate(()=>game.barrierTime))>0);await page.locator('#showCoverage').check();assert.equal(await page.evaluate(()=>localStorage.getItem('dawnBastionCoverage')),'1');
+    await page.evaluate(()=>{game.spawned=game.spawnLimit;game.enemies=[];game.waveTime=1;sync();});await page.click('#finishWave');assert.equal(await page.locator('#waveLog tr').count(),1);await page.click('#rerollRewards');assert(await page.locator('#rerollRewards').isDisabled());await page.locator('#rewardChoices button').first().click();
+    await page.evaluate(()=>{game.wave=game.rules.waves;game.waveTime=1;game.spawned=game.spawnLimit;game.enemies=[];sync();});await page.click('#finishWave');assert.equal(await page.evaluate(()=>game.missionSatisfied()),true);assert((await page.locator('#reportAdvice').textContent()).includes('달성 +500점'));
+    await page.reload();await page.waitForFunction(()=>ready);assert(await page.locator('#showCoverage').isChecked());await page.locator('#showCoverage').uncheck();
     for(const old of ['/arcade/dawn-bastion.html','/arcade/']){await page.goto(base+old);await page.waitForURL(base+'/');await page.waitForFunction(()=>ready);}
     const missing=await page.goto(base+'/blog/posts/removed.html');assert.equal(missing.status(),404);assert.equal(await page.locator('meta[name="robots"]').getAttribute('content'),'noindex, follow');
     await page.goto(base+'/arcade/space-shooter.html');await page.waitForFunction(()=>typeof ex!=='undefined'&&document.querySelector('#startBtn'));

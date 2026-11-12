@@ -1,5 +1,5 @@
 const http=require('node:http'),fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),{chromium}=require('playwright');
-const root=path.resolve(__dirname,'..'),results=path.join(root,'test-results');
+const root=path.resolve(__dirname,'..'),results=path.resolve(root,process.env.RIFT_TEST_RESULTS||'test-results');fs.mkdirSync(results,{recursive:true});
 (async()=>{
  const server=http.createServer((req,res)=>{
   const uri=new URL(req.url,'http://localhost').pathname,file=path.resolve(root,'.'+(uri.endsWith('/')?uri+'index.html':uri));
@@ -16,7 +16,7 @@ const root=path.resolve(__dirname,'..'),results=path.join(root,'test-results');
   await page.goto(`http://127.0.0.1:${server.address().port}/arcade/rift-blade.html`);
   await page.waitForFunction(()=>typeof rift!=='undefined');
   assert.equal(await page.locator('site-header nav a').count(),5);
-  assert.equal(await page.locator('#classChoices [data-class]').count(),6);
+  assert.equal(await page.locator('#classChoices [data-class]').count(),6);assert.equal(await page.locator('#stageList li').count(),6);
   await page.click('[data-class="warrior"]');await page.click('#startBtn');
   assert.equal(await page.evaluate(()=>rift.state),'playing');
   const startX=await page.evaluate(()=>rift.player.x);
@@ -85,7 +85,7 @@ const root=path.resolve(__dirname,'..'),results=path.join(root,'test-results');
   await page.keyboard.press('u');assert((await page.evaluate(()=>rift.player.mp))<ultimateMana.mp-ultimateMana.cost+4);
   assert(await page.evaluate(()=>rift.effects.some(e=>e.kind==='ultimate'&&e.classId==='warrior')));
   await page.evaluate(()=>{for(const e of rift.enemies)rift.hurtEnemy(e,999);rift.step(.01);for(const e of rift.enemies)rift.hurtEnemy(e,999);rift.step(.01);});
-  await page.waitForFunction(()=>!document.getElementById('upgradeChoices').hidden);await page.click('[data-upgrade="power"]');
+  await page.waitForFunction(()=>!document.getElementById('upgradeChoices').hidden);assert.equal(await page.locator('[data-upgrade]').count(),3);const firstRelic=await page.locator('[data-upgrade]').first().getAttribute('data-upgrade');await page.locator('[data-upgrade]').first().click();assert((await page.evaluate(()=>rift.relics)).includes(firstRelic));
   assert.equal(await page.evaluate(()=>rift.stage),1);
   await page.setViewportSize({width:390,height:844});
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
@@ -95,7 +95,7 @@ const root=path.resolve(__dirname,'..'),results=path.join(root,'test-results');
   await page.waitForTimeout(220);await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
   assert((await page.evaluate(()=>rift.player.x))>x+15);assert.equal(await page.evaluate(()=>riftTouches.size),0);
   await capturePage('rift-blade-mobile.png');
-  await page.evaluate(()=>{while(rift.state==='playing'){for(const e of rift.enemies)rift.hurtEnemy(e,999);rift.step(.01);if(rift.state==='upgrade')rift.upgrade('mana');}});
+  for(let stage=1;stage<6;stage++){await page.evaluate(()=>{for(let wave=0;wave<2;wave++){for(const e of rift.enemies)rift.hurtEnemy(e,99999);rift.step(.01);}});if(stage<5){await page.waitForFunction(()=>!document.getElementById('upgradeChoices').hidden);assert.equal(await page.locator('[data-upgrade]').count(),3);assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));if(stage===1){await capturePage('rift-relics-mobile.png');assert(await page.evaluate(()=>{const panel=document.getElementById('riftOverlay').getBoundingClientRect();return [...document.querySelectorAll('[data-upgrade]')].every(b=>b.getBoundingClientRect().bottom<=panel.bottom+1);}));}await page.locator('[data-upgrade]').first().click();assert.equal(await page.evaluate(()=>rift.stage),stage+1);assert.equal(await page.locator('#relicCollection li').count(),stage+1);}}
   await page.waitForFunction(()=>rift.state==='won'&&riftSaved);
   assert((await page.evaluate(()=>Number(localStorage.getItem('riftBladeBest'))))>0);
   await page.click('#startBtn');assert.equal(await page.evaluate(()=>rift.stage),0);assert.equal(await page.evaluate(()=>rift.score),0);
@@ -109,7 +109,7 @@ const root=path.resolve(__dirname,'..'),results=path.join(root,'test-results');
   // Select each class through the actual UI and capture raw, frozen canvas pixels.
   await page.setViewportSize({width:1440,height:1080});let shareCanvas;
   for(const [classIndex,classId] of ['warrior','mage','brawler','archer','assassin','paladin'].entries()){
-   const stage=classIndex%3;
+   const stage=classIndex;
    await page.evaluate(()=>{rift=new RiftGame();riftSaved=false;riftClearInput();});
    await page.waitForFunction(()=>!document.getElementById('classChoices').hidden);
    await page.click(`[data-class="${classId}"]`);
@@ -144,6 +144,20 @@ const root=path.resolve(__dirname,'..'),results=path.join(root,'test-results');
    fs.writeFileSync(path.join(results,`rift-dungeon-${stage+1}.png`),pixels);
    if(classId==='warrior')shareCanvas=pixels;
   }
+  // Trigger each real boss AI pattern, then render the warning and active attack.
+  for(let stage=0;stage<6;stage++){
+   await page.evaluate(stage=>{rift=new RiftGame();rift.stage=stage;rift.wave=1;rift.start();const boss=rift.enemies.find(e=>e.type==='boss');rift.enemies=[boss];boss.x=650;boss.y=365;boss.cd=0;rift.player.x=550;rift.player.y=365;rift.player.inv=99;rift.step(.01);rift.pause();},stage);
+   await page.waitForTimeout(60);
+   assert(await page.evaluate(()=>rift.hazards.length>0&&rift.hazards.every(h=>h.wind>=.75)));
+   const warning=await page.evaluate(()=>riftCanvas.toDataURL());
+   fs.writeFileSync(path.join(results,`rift-boss-warning-${stage+1}.png`),Buffer.from(warning.split(',')[1],'base64'));
+   await page.waitForTimeout(80);assert.equal(await page.evaluate(()=>riftCanvas.toDataURL()),warning);
+   await page.evaluate(()=>{rift.pause();for(let i=0;i<26;i++)rift.step(.04);rift.pause();});await page.waitForTimeout(60);
+   assert(await page.evaluate(()=>rift.hazards.some(h=>h.wind===0&&h.triggered)));
+   const active=await page.evaluate(()=>riftCanvas.toDataURL());assert.notEqual(active,warning);
+   fs.writeFileSync(path.join(results,`rift-boss-active-${stage+1}.png`),Buffer.from(active.split(',')[1],'base64'));
+   await page.waitForTimeout(80);assert.equal(await page.evaluate(()=>riftCanvas.toDataURL()),active);
+  }
   assert.deepEqual(errors,[]);
   if(process.env.UPDATE_SHARE_IMAGES==='1'){
    const cover=await browser.newPage({viewport:{width:1200,height:630},deviceScaleFactor:1});
@@ -151,6 +165,6 @@ const root=path.resolve(__dirname,'..'),results=path.join(root,'test-results');
    await cover.locator('img').evaluate(i=>i.decode());fs.mkdirSync(path.join(root,'assets/games/rift-blade'),{recursive:true});
    await cover.screenshot({path:path.join(root,'assets/games/rift-blade/share.png')});
   }
-  console.log('PASS: six classes, specialization choices, individual skill ranks/caps, awakening, modal focus trap, special skills, level rewards, class branches, talent pause/spending/resume, XP and ultimate unlock/action, raw class/dungeon visual captures, pause pixels, mobile touch/layout, campaign, records, defeat/restart and no runtime errors');
+  console.log('PASS: six regions/12 waves, six boss warning/active visuals and freeze, random relic choice/mobile fit/collection, six classes, specializations/ranks/awakening, modal focus, progression, mobile touch/layout, full campaign, records, defeat/restart and no runtime errors');
  }finally{if(browser)await browser.close();server.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});
