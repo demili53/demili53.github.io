@@ -1,6 +1,6 @@
 // Shared site header, navigation, account status and footer. Page content stays in <main>.
 (() => {
-  const menus = [['/', '새벽의 요새'], ['/arcade/space-shooter.html', '비행기 슈팅'], ['/exaone/', 'EXAONE Agent']];
+  const menus = [['/', '새벽의 요새'], ['/arcade/space-shooter.html', '비행기 슈팅'], ['/exaone/', 'EXAONE Agent'], ['/arcade/shadow-sniper.html', '윌리 저격']];
   const currentPath = location.pathname.replace(/index\.html$/, '');
   const active = href => href === '/' ? currentPath === '/' : href.endsWith('/')
     ? currentPath.startsWith(href) : currentPath === href;
@@ -115,7 +115,7 @@
         footer{padding-top:22px!important;padding-bottom:24px!important}nav{display:flex;gap:12px 22px;flex-wrap:wrap}p{margin:16px 0 0;line-height:1.6}
 
         :host{margin-top:42px;background:#101722;border-color:#293448;color:#8396b2}footer{display:flex;justify-content:space-between;gap:24px;align-items:center;min-height:100px}nav{gap:10px 20px}nav a{font-size:11px;color:#a5b6cf}nav a:hover{color:#ffbf8a}p{font-size:10px;line-height:1.8;margin:0;max-width:245px;text-align:right}@media(max-width:650px){footer{align-items:start;flex-direction:column;gap:18px;padding-top:24px!important;padding-bottom:24px!important}p{text-align:left;max-width:none}nav{gap:10px 18px}}
-      </style><footer class="wrap"><nav aria-label="사이트 안내"><a href="/privacy.html">개인정보처리방침</a><a href="/terms.html">이용약관</a><a href="/contact.html">문의하기</a><a href="/account.html">회원 계정</a><a href="/">새벽의 요새</a></nav><p>© ${new Date().getFullYear()} PartyGame. 새벽의 요새 · 무료 타워 디펜스 게임.</p></footer>`;
+      </style><footer class="wrap"><nav aria-label="사이트 안내"><a href="/privacy.html">개인정보처리방침</a><a href="/terms.html">이용약관</a><a href="/contact.html">문의하기</a><a href="/account.html">회원 계정</a><a href="/">새벽의 요새</a><a href="/arcade/shadow-sniper.html">윌리를 찾아서 저격해라</a></nav><p>© ${new Date().getFullYear()} PartyGame. 새벽의 요새 · 무료 타워 디펜스 게임.</p></footer>`;
     }
   }
   customElements.define('site-header', SiteHeader);
