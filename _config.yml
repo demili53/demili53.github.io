@@ -33,3 +33,14 @@ exclude:
   - scripts/test-shadow-sniper-tools.cjs
   - scripts/test-shadow-sniper-improvements-4.cjs
   - scripts/test-sniper-audio.cjs
+  - scripts/test-bastion-convenience-browser.cjs
+  - scripts/test-bastion-convenience.cjs
+  - scripts/test-bastion-progress.cjs
+  - scripts/test-rift-achievements.cjs
+  - scripts/test-rift-combat-log.cjs
+  - scripts/test-rift-controls.cjs
+  - scripts/test-rift-tactics-browser.cjs
+  - scripts/test-shooter-encounters.cjs
+  - scripts/test-shooter-training.cjs
+  - scripts/test-space-shooter-seventh.cjs
+  - scripts/test-space-shooter-sixth.cjs

@@ -147,13 +147,34 @@ function finishBastionWeapon(g,type,c){
 // Four cached poses per elite: idle, alternating stride and attack.
 function createBastionEliteTextures(scene){
  const result={};
- for(const kind of ['armored','regenerator','splitter','wisp','berserker','shard']){
+ for(const kind of ['armored','regenerator','splitter','wisp','berserker','shard','shieldbearer','healer']){
   result[kind]=[];
   for(let pose=0;pose<4;pose++){
    const g=scene.make.graphics({},false),step=pose===1?-3:pose===2?3:0,attack=pose===3?6:0;
    const poly=(p,c,a=1)=>{g.fillStyle(c,a);g.fillPoints(p.map(([x,y])=>({x,y})),true);};
    const line=(x,y,xx,yy,w,c,a=1)=>{g.lineStyle(w,c,a);g.lineBetween(x,y,xx,yy);};
-   if(kind==='armored'){
+   if(kind==='shieldbearer'){
+    // A compact armored carrier behind a wide, translucent hexagonal energy shield.
+    for(const [x,d]of [[47,step],[64,-step]]){g.fillStyle(0x183c49);g.fillRoundedRect(x-6,56,12,22+d,3);g.fillStyle(0x668f9b);g.fillRoundedRect(x-6,60,12,13,3);g.fillStyle(0x18303e);g.fillRoundedRect(x-8,76+d,16,7,3);line(x-4,63,x+3,63,1,0xb5dcd9);}
+    poly([[40,30],[62,28],[74,43],[66,65],[43,64],[34,47]],0x305d6a);poly([[44,32],[56,30],[56,62],[44,59]],0x8bbfc1);poly([[56,30],[65,34],[68,57],[56,62]],0x4c808e);
+    poly([[42,16],[56,11],[69,20],[65,34],[43,35],[37,27]],0x60949e);poly([[42,17],[55,13],[55,32],[41,28]],0xa4d0cc);g.fillStyle(0x102d3c);g.fillRoundedRect(43,23,22,7,2);line(46,26,61,26,2,0xb1fff1);
+    poly([[66,34],[78,29],[84,40],[77,51],[68,46]],0x4f7c89);line(74,34,79,39,2,0xb4d5ca);
+    const shift=attack*.6;
+    poly([[22-shift,25],[43-shift,35],[45-shift,63],[23-shift,82],[5-shift,64],[5-shift,36]],0x173c4b,.94);
+    poly([[22-shift,29],[39-shift,38],[40-shift,61],[23-shift,76],[10-shift,61],[10-shift,39]],0x54d7c8,.42);
+    g.lineStyle(2,0x8ffff0,.9);g.strokePoints([{x:22-shift,y:27},{x:42-shift,y:36},{x:43-shift,y:62},{x:23-shift,y:79},{x:7-shift,y:63},{x:7-shift,y:38}],true);
+    line(23-shift,34,23-shift,70,1,0xc3fff1,.75);line(12-shift,46,35-shift,46,1,0xc3fff1,.45);line(12-shift,58,35-shift,58,1,0xc3fff1,.45);
+    g.fillStyle(0xd5fff1);g.fillCircle(23-shift,52,4);g.lineStyle(1,0xb1fff1,.7);g.strokeCircle(23-shift,52,8);
+   }else if(kind==='healer'){
+    // Ivory mantle and a suspended mint orb distinguish the healer from the dark green regenerator.
+    g.fillStyle(0x344c59);g.fillRoundedRect(34+step,72,12,10,3);g.fillRoundedRect(51-step,72,12,10,3);
+    poly([[36,30],[59,30],[67,77],[54,73],[47,83],[34,76],[26,79]],0xb4c9c4);poly([[37,33],[47,36],[43,76],[31,73]],0xedf1d9);poly([[51,34],[58,32],[64,72],[54,67]],0x82a9ab);line(39,39,34,68,2,0xc2aa69);line(54,38,60,68,2,0xdcd5a2);
+    poly([[31,31],[34,17],[47,7],[62,20],[64,32],[56,41],[39,40]],0xd8e4d9);poly([[36,27],[47,16],[58,26],[55,36],[40,36]],0x254352);poly([[33,23],[47,8],[46,16],[37,30]],0xf7f4dc);line(40,29,45,29,2,0xa8fff1);line(50,29,55,29,2,0xa8fff1);
+    poly([[35,39],[47,46],[59,39],[56,49],[47,53],[38,48]],0x698d8f);line(37,41,47,47,1,0xe4d8a9);line(47,47,57,41,1,0xe4d8a9);
+    g.fillStyle(0xe9ce88);g.fillCircle(47,54,3);line(73,32-attack,73,82,3,0x7d9c9d);line(72,34-attack,72,80,1,0xe1e3be);
+    g.lineStyle(2,0xbdb77e);g.strokeEllipse(73,20-attack,21,27);g.fillStyle(0xa0fff0,.12);g.fillCircle(73,20-attack,14);g.fillStyle(0x72daca);g.fillCircle(73,20-attack,7);g.fillStyle(0xe8fff2);g.fillCircle(71,18-attack,3);
+    line(66,36-attack,73,31-attack,2,0xd7d9b3);g.fillStyle(0xc8e6d1);g.fillCircle(63,47,5);
+   }else if(kind==='armored'){
     // Broad steel silhouette, overlapping greaves, shield and visor.
     for(const [x,d]of [[35,step],[59,-step]]){g.fillStyle(0x182837);g.fillRoundedRect(x-6,57,12,23+d,3);g.fillStyle(0x78909c);g.fillRoundedRect(x-7,61,13,12,3);g.fillStyle(0x354f62);g.fillRoundedRect(x-9,75+d,17,8,3);line(x-5,64,x+4,64,1,0xc3d7d6);}
     poly([[30,32],[61,30],[69,48],[59,65],[34,65],[26,49]],0x263e52);poly([[32,33],[47,29],[48,60],[35,59]],0x8da7b3);poly([[48,30],[61,33],[61,57],[48,60]],0x506d84);
@@ -208,4 +229,63 @@ function drawBastionSpecialEffect(front,back,f,reduced){
   if(!reduced)for(let i=0;i<4;i++){const a=i*Math.PI/2+.5;front.lineBetween(x+Math.cos(a)*9,y+Math.sin(a)*9,x+Math.cos(a)*(13+t*10),y+Math.sin(a)*(13+t*10));}
  }
  return true;
+}
+
+// Shield strength and brief heal feedback share the caller's combat clock; no timers or particles.
+function drawBastionSupportStatus(g,e,y,time,reduced){
+ if(e.kind==='shieldbearer'&&e.shield>0){
+  const ratio=Math.max(0,Math.min(1,e.shield/(e.maxShield||e.shield)));
+  g.fillStyle(0x76eedc,.025+ratio*.035);g.fillEllipse(e.x,y,53,63);
+  g.lineStyle(1.5,0x8df9e7,.35+ratio*.35);g.strokeEllipse(e.x,y,53,63);
+  g.fillStyle(0x143344,.9);g.fillRoundedRect(e.x-17,y+33,34,4,2);g.fillStyle(0x8df9e7,.9);g.fillRoundedRect(e.x-17,y+33,34*ratio,4,2);
+ }
+ if(e.kind==='healer'&&e.healFlash>0){
+  const strength=Math.min(1,e.healFlash/.5),progress=reduced?.4:1-strength;
+  g.lineStyle(1.5,0xd8ffe8,strength*.7);g.strokeEllipse(e.x,y+18,35+progress*35,12+progress*12);
+  g.fillStyle(0xc9ffdc,strength*.9);g.fillRoundedRect(e.x-2,y-36-progress*6,4,14,1);g.fillRoundedRect(e.x-7,y-31-progress*6,14,4,1);
+ }
+}
+// Guardian identity accents stay below the painted actor and follow the shared combat clock.
+function drawBastionGuardianBadge(g,p,guardian,time,reduced){
+ if(!p||!Number.isFinite(p.x)||!Number.isFinite(p.y))return;
+ const kind=['guardian','scout','gunner'].includes(guardian)?guardian:'guardian';
+ const color=kind==='scout'?0x91e9c5:kind==='gunner'?0xf2bd83:0xa4d8ef;
+ const x=p.x-21,y=p.y+13;
+ g.fillStyle(0x0b2230,.85);g.fillCircle(x,y,7.5);g.lineStyle(1,color,.8);g.strokeCircle(x,y,7.5);
+ if(kind==='scout'){
+  g.lineStyle(1.5,color,.95);
+  for(const offset of [-2,2]){g.lineBetween(x-3+offset,y-3,x+offset,y);g.lineBetween(x+offset,y,x-3+offset,y+3);}
+ }else if(kind==='gunner'){
+  g.lineStyle(1.5,color,.95);g.strokeCircle(x,y,3.2);g.lineBetween(x-5,y,x+5,y);g.lineBetween(x,y-5,x,y+5);
+ }else{
+  g.fillStyle(color,.9);g.fillPoints([{x,y:y-4},{x:x+3.5,y:y-1},{x:x+2.5,y:y+3},{x,y:y+5},{x:x-2.5,y:y+3},{x:x-3.5,y:y-1}],true);
+ }
+ if(kind==='scout'&&!reduced&&p.inv>0){
+  const angle=Number.isFinite(p.moveAngle)?p.moveAngle:Math.PI/2,dx=Math.cos(angle),dy=Math.sin(angle);
+  const fade=Math.min(1,p.inv/.35);
+  for(let i=0;i<2;i++){const offset=13+i*8;g.lineStyle(1.5,color,fade*(.35-i*.1));g.lineBetween(p.x-dx*offset,p.y-dy*offset,p.x-dx*(offset+6),p.y-dy*(offset+6));}
+ }
+}
+// Telegraph the charge toward the objective before movement begins. Geometry is bounded and deterministic.
+function drawBastionBossCharge(g,e,time,reduced){
+ if(!e?.boss||e.hp<=0||!Number.isFinite(e.x)||!Number.isFinite(e.y))return;
+ const windup=Math.max(0,Math.min(1,Number(e.chargeWindup)||0)),charging=Math.max(0,Math.min(1.2,Number(e.chargeTime)||0));
+ if(!windup&&!charging)return;
+ const dx=360-e.x,dy=360-e.y,length=Math.hypot(dx,dy),ux=length?dx/length:0,uy=length?dy/length:-1;
+ const radius=Number.isFinite(e.r)?e.r:23;
+ if(windup>0){
+  const progress=reduced?.5:1-windup,r=radius+10+(reduced?3:windup*11);
+  g.fillStyle(0xffa47d,.035);g.fillCircle(e.x,e.y,r);g.lineStyle(2,0xffc398,.55+progress*.3);g.strokeCircle(e.x,e.y,r);
+  g.lineStyle(1.5,0xffa882,.5);
+  const count=Math.min(24,Math.floor(Math.max(0,length-radius-24)/22));
+  for(let i=0;i<count;i++){const start=radius+18+i*22,end=Math.min(length-12,start+10);if(end>start)g.lineBetween(e.x+ux*start,e.y+uy*start,e.x+ux*end,e.y+uy*end);}
+  const ahead=radius+24,ax=e.x+ux*ahead,ay=e.y+uy*ahead;
+  g.lineStyle(2,0xffd8ae,.85);g.lineBetween(ax-ux*8-uy*5,ay-uy*8+ux*5,ax,ay);g.lineBetween(ax-ux*8+uy*5,ay-uy*8-ux*5,ax,ay);
+ }else{
+  g.lineStyle(1.5,0xffb089,.65);g.strokeEllipse(e.x,e.y+radius*.5,radius*2.2,radius);
+  if(!reduced){
+   const strength=Math.min(1,charging/.25);
+   for(let i=-1;i<=1;i++){const side=i*(radius*.65),start=radius+6,end=start+16+(i===0?10:0),x=e.x-uy*side,y=e.y+ux*side;g.lineStyle(i===0?2:1.5,0xffb687,strength*(i===0?.6:.4));g.lineBetween(x-ux*start,y-uy*start,x-ux*end,y-uy*end);}
+  }
+ }
 }

@@ -1,0 +1,48 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const vm = require('node:vm');
+const encounters = require('./shooter-encounters.js');
+const near = (a, b) => assert(Math.abs(a - b) < 1e-8, `${a} != ${b}`);
+
+const basic = { tier: 1, entering: false, x: 40, hp: 100 };
+assert.deepEqual(encounters.stepBoss(basic, 30, 200), []);
+assert.equal(basic.beam, undefined); assert.equal(basic.escortCooldown, undefined);
+const entering = { tier: 3, entering: true, beamCooldown: 2, escortCooldown: 3 };
+assert.deepEqual(encounters.stepBoss(entering, 10, 100), []);
+assert.deepEqual(entering, { tier: 3, entering: true, beamCooldown: 2, escortCooldown: 3 });
+const escort = { tier: 2 };
+assert.deepEqual(encounters.stepBoss(escort, 7.9, 200), []); near(escort.escortCooldown, .1);
+assert.deepEqual(encounters.stepBoss(escort, .1, 200), [{ type: 'escort' }]);
+assert.equal(escort.escortCooldown, 8); assert.equal(escort.beam, undefined);
+assert.equal(encounters.stepBoss(escort, 100, 200).length, 1); assert.equal(escort.escortCooldown, 8);
+console.log('PASS: tier gates, entry freeze, escort boundary and no catch-up burst');
+
+const beam = { tier: 3, x: 80, hp: 300, fireCd: 2 };
+encounters.stepBoss(beam, 5.9, -500); assert.equal(beam.beam, null); near(beam.beamCooldown, .1);
+encounters.stepBoss(beam, .1, -500);
+assert.deepEqual(beam.beam, { x: 40, width: 52, phase: 'warning', remaining: .9 });
+encounters.stepBoss(beam, .4, 470); near(beam.beam.remaining, .5); assert.equal(beam.beam.x, 40);
+assert.equal(beam.beamCooldown, 6);
+encounters.stepBoss(beam, .5, 470); assert.equal(beam.beam.phase, 'active'); near(beam.beam.remaining, .35);
+encounters.stepBoss(beam, .35, 470); assert.equal(beam.beam, null); assert.equal(beam.beamCooldown, 6);
+encounters.stepBoss(beam, 6, 900); assert.equal(beam.beam.x, 440);
+assert.equal(beam.x, 80); assert.equal(beam.hp, 300); assert.equal(beam.fireCd, 2);
+encounters.cancelBeam(beam); assert.equal(beam.beam, null); assert.equal(beam.beamCooldown, 6);
+encounters.stepBoss(beam, 5.99, 200); assert.equal(beam.beam, null);
+console.log('PASS: warning/active boundaries, locked and clamped aim, cooldown isolation and cancellation');
+
+const overshoot = { tier: 3 };
+encounters.stepBoss(overshoot, 6.95, 230);
+assert.equal(overshoot.beam.phase, 'active'); near(overshoot.beam.remaining, .3);
+encounters.stepBoss(overshoot, .4, 100); assert.equal(overshoot.beam, null); near(overshoot.beamCooldown, 5.9);
+const large = { tier: 3 }; encounters.stepBoss(large, 7250000006.5, 200);
+assert.equal(large.beam.phase, 'warning'); near(large.beam.remaining, .4);
+const before = JSON.stringify(large);
+for (const invalid of [0, -1, NaN, Infinity]) assert.deepEqual(encounters.stepBoss(large, invalid, 200), []);
+assert.equal(JSON.stringify(large), before);
+const smallSteps = { tier: 3 };
+for (let i = 0; i < 139; i++) encounters.stepBoss(smallSteps, .05, 230);
+assert.equal(smallSteps.beam.phase, 'active'); near(smallSteps.beam.remaining, .3);
+const browser = {}; vm.runInNewContext(fs.readFileSync(require.resolve('./shooter-encounters.js'), 'utf8'), browser);
+assert.equal(typeof browser.ShooterEncounters.stepBoss, 'function');
+console.log('PASS: timestep remainder, bounded large-step handling, invalid inputs and browser global');

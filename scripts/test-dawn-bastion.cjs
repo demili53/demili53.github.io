@@ -470,3 +470,39 @@ console.log('PASS third cycle 8: practice mode');
 // Third cycle 9: saved layouts validate entries and always rebuild at level one for full price.
 {const m=new context.Game(()=>.5,'practice');const plan=[{index:0,type:'arrow',level:3},{index:0,type:'laser'},null,{index:2,type:'banner'},{index:20,type:'cannon'},{index:3,type:'bad'}];const preview=m.loadoutPlan('custom',plan);assert.equal(preview.items.length,2);assert.equal(preview.cost,190);m.state='building';assert(m.deployLoadout('custom',plan));assert.equal(m.gold,410);assert.equal(m.slots[0].tower.level,1);assert.equal(m.slots[2].tower.type,'banner');assert.equal(m.loadoutPlan('custom',{}).items.length,0);}
 console.log('PASS third cycle 9: blueprint validation and purchase');
+
+// Fourth cycle 1: shields absorb real damage, spill precisely, never double-award, and don't inflate HP damage.
+{const m=fresh(),e={id:1,x:100,y:100,r:12,hp:50,maxHp:50,shield:30,maxShield:30};m.damage(e,20);assert.equal(e.shield,10);assert.equal(e.hp,50);assert.equal(m.runStats.damage,0);m.damage(e,25);assert.equal(e.shield,0);assert.equal(e.hp,35);assert.equal(m.runStats.damage,15);m.damage(e,100);m.damage(e,100);assert.equal(m.kills,1);assert.equal(m.runStats.damage,50);}
+console.log('PASS fourth cycle 1: shield-bearing enemies');
+
+// Fourth cycle 2: heal one eligible nearby ally, never revive/overheal, poison interrupts, clock pauses.
+{const m=fresh(),h={id:1,kind:'healer',x:100,y:100,hp:100,maxHp:100,healClock:0},target={id:2,x:120,y:100,hp:40,maxHp:100},dead={id:3,x:110,y:100,hp:0,maxHp:100},far={id:4,x:400,y:100,hp:1,maxHp:100};m.enemies=[h,target,dead,far];m.supportHeal(h,.05);assert.equal(target.hp,46);assert.equal(dead.hp,0);assert.equal(far.hp,1);h.healClock=0;target.poisonTime=2;m.supportHeal(h,.05);assert.equal(target.hp,46);target.poisonTime=0;target.hp=99;h.healClock=0;m.supportHeal(h,.05);assert.equal(target.hp,100);m.state='paused';const before=JSON.stringify(m);m.step(.05);assert.equal(JSON.stringify(m),before);}
+console.log('PASS fourth cycle 2: healing support enemies');
+
+// Fourth cycle 3: late bosses spawn a bounded pair of escorts, separate from scheduled wave count.
+{const m=new context.Game(()=>.5,'classic','grove',6);m.wave=3;const boss=m.spawn(true);assert(boss.boss);assert.equal(m.enemies.length,3);assert.equal(m.enemies[1].kind,'shieldbearer');assert.equal(m.enemies[2].kind,'healer');assert(m.enemies[1].escort);assert.equal(m.waveIntel().escorts,2);const old=fresh();old.spawn(true);assert.equal(old.enemies.length,1);const full=new context.Game(()=>.5,'classic','grove',7);full.enemies=Array.from({length:149},()=>({hp:1}));full.spawn(true);assert.equal(full.enemies.length,150);assert.equal(full.spawn(),null);}
+console.log('PASS fourth cycle 3: bounded boss escorts');
+
+// Fourth cycle 4: support priority respects range/death and yields to an explicit focus mark.
+{const m=fresh();m.state='building';m.build(0,'arrow');m.setPriority(0,'support');const slot=m.slots[0],normal={id:1,x:380,y:215,hp:100,kind:'grunt'},regen={id:2,x:400,y:215,hp:100,kind:'regenerator'},healer={id:3,x:450,y:215,hp:100,kind:'healer'},far={id:4,x:700,y:215,hp:100,kind:'healer'};const list=[normal,regen,healer,far];assert.equal(m.towerTarget(slot,list,175),healer);healer.hp=0;assert.equal(m.towerTarget(slot,list,175),regen);m.focusId=1;m.focusTime=2;assert.equal(m.towerTarget(slot,list,175),normal);}
+console.log('PASS fourth cycle 4: support-first targeting');
+
+// Fourth batch integration: late-wave mixed armies, healing and escorts remain bounded and finite.
+{for(const stage of [6,7]){const m=new context.Game(()=>.5,'classic','grove',stage);m.state='building';m.gold=10000;for(let i=0;i<8;i++){m.build(i,['banner','arrow','venom','frost','flame','sniper','tesla','cannon'][i]);m.upgrade(i);m.upgrade(i);}m.state='running';for(let frame=0;frame<10000&&!['won','lost'].includes(m.state);frame++){if(m.state==='reward')m.chooseReward(m.offers[0]);m.step(.05);assert(m.enemies.length<=150);assert(m.effects.length<=100);for(const e of m.enemies){assert(Number.isFinite(e.hp));assert(e.hp<=e.maxHp);assert(Number.isFinite(e.x)&&Number.isFinite(e.y));}}assert(m.wave>1);}}
+console.log('PASS fourth batch: late-stage army/healing/escort stress');
+
+// Fifth cycle 1: selectable guardian profiles change movement and actual attacks, default is preserved.
+{const make=id=>{const m=new context.Game(()=>.5,'classic','grove',-1,'none',id);m.state='running';m.spawnClock=100;m.enemies=[{id:1,x:420,y:420,hp:1000,maxHp:1000,r:12,speed:0,slow:0,cd:100}];return m;};const normal=make('guardian'),scout=make('scout'),gunner=make('gunner');for(const m of [normal,scout,gunner])m.step(.05,{x:1,y:0});assert(scout.player.x>normal.player.x);assert(gunner.player.x<normal.player.x);assert.equal(scout.shots[0].damage,22*.8);assert.equal(gunner.shots[0].splash,35);assert.equal(gunner.shots[0].damage,22*1.2);assert(scout.dash());assert.equal(scout.dashCd,4);assert.equal(make('bad').guardian,'guardian');}
+console.log('PASS fifth cycle 1: guardian combat profiles');
+
+// Fifth cycle 2: banishment replaces once, excludes future draws, never consumes on invalid/no alternatives.
+{const m=fresh();assert.equal(m.banishReward('power'),false);m.offerReward();const id=m.offers[0];assert(m.banishReward(id));assert(!m.offers.includes(id));assert.equal(new Set(m.offers).size,m.offers.length);assert.equal(m.banishReward(m.offers[0]),false);for(let i=0;i<10;i++){m.offerReward();assert(!m.offers.includes(id));}const limited=fresh();for(const id of ['power','haste','range','guardian'])limited.perks[id]=3;limited.offerReward();assert.equal(limited.banishReward(limited.offers[0]),false);assert.equal(limited.banishes,1);}
+console.log('PASS fifth cycle 2: reward banishment');
+
+// Fifth cycle 3: emergency supply is a one-use, non-lethal core tradeoff and forfeits perfect defense.
+{const m=fresh();assert.equal(m.emergencySupply(),false);m.state='running';const gold=m.gold;assert(m.emergencySupply());assert.equal(m.gold,gold+80);assert.equal(m.core,270);assert.equal(m.waveCoreDamage,30);assert.equal(m.emergencySupply(),false);m.spawned=m.spawnLimit;m.finishWave();assert.equal(m.lastWavePerfect,false);const n=fresh();n.state='building';n.core=30;assert.equal(n.emergencySupply(),false);n.core=31;assert(n.emergencySupply());assert.equal(n.core,1);}
+console.log('PASS fifth cycle 3: emergency supply tradeoff');
+
+// Fifth cycle 4: late boss windup stops movement, charge follows core, and pause freezes every phase.
+{const m=new context.Game(()=>.5,'classic','grove',6);m.state='running';m.spawnClock=1000;m.player.x=650;m.player.y=650;m.player.cd=100;const e=m.spawn(true);m.enemies=[e];e.x=360;e.y=100;e.chargeCd=.01;m.step(.05);assert.equal(e.chargeWindup,1);assert.equal(e.y,100);m.state='paused';const snapshot=JSON.stringify(m);m.step(.05);assert.equal(JSON.stringify(m),snapshot);m.state='running';for(let i=0;i<20;i++)m.step(.05);assert.equal(e.chargeWindup,0);assert(e.chargeTime>0);assert(e.y>100);for(let i=0;i<24;i++)m.step(.05);assert.equal(e.chargeTime,0);assert(e.chargeCd>0);const normal=fresh();normal.spawn(true);normal.bossCharge(normal.enemies[0],10);assert.equal(normal.enemies[0].chargeWindup,0);}
+console.log('PASS fifth cycle 4: boss charge telegraph and lifecycle');

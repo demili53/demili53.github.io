@@ -109,8 +109,8 @@ const root = path.resolve(__dirname, '..');
       await page.evaluate(map=>{
         selectedMap=map;resetMode('classic');game.state='building';game.gold=10000;
         const types=Object.keys(TYPES);game.slots.forEach((s,i)=>game.build(i,types[i]));
-        game.enemies=['armored','regenerator','splitter','wisp','berserker','shard','grunt'].map((kind,i)=>({id:i+1,kind,x:105+i*85,y:100,hp:90,maxHp:100,r:12,speed:0,slow:0,cd:100,runner:kind==='shard'}));
-        game.enemies.push({id:8,x:360,y:560,hp:700,maxHp:800,r:23,boss:true,kind:'grunt',speed:0,slow:0,cd:100});
+        game.enemies=['armored','regenerator','splitter','wisp','berserker','shard','grunt','shieldbearer','healer'].map((kind,i)=>({id:i+1,kind,shield:kind==='shieldbearer'?60:0,maxShield:60,healFlash:kind==='healer'?.5:0,x:52+i*77,y:100,hp:90,maxHp:100,r:12,speed:0,slow:0,cd:100,runner:kind==='shard'}));
+        game.enemies.push({id:10,x:360,y:560,hp:700,maxHp:800,r:23,boss:true,kind:'grunt',speed:0,slow:0,cd:100});
         game.emit('venomCloud',200,460,55,0xa8ed72,.7);game.emit('gravityWell',510,400,110,0x92a7ff,.6);game.emit('sniperShot',200,240,145,0xffe3a1,.3,-.4);for(const effect of game.effects)effect.life=effect.max*.6;game.time=3;setState('paused');$('overlay').style.display='none';
       },map);
       await page.waitForTimeout(100);
@@ -118,7 +118,7 @@ const root = path.resolve(__dirname, '..');
       const frame=await page.locator('#gameCanvas').screenshot();await page.waitForTimeout(120);assert(frame.equals(await page.locator('#gameCanvas').screenshot()),'Scenery freezes on '+map);
     }
 
-    assert.equal(await page.evaluate(()=>Object.keys(app.textures.list).filter(k=>k.startsWith('bastion-elite-')).length),24);
+    assert.equal(await page.evaluate(()=>Object.keys(app.textures.list).filter(k=>k.startsWith('bastion-elite-')).length),32);
     await page.locator('#reducedEffects').check();await page.waitForTimeout(80);
     const reducedFrame=await page.locator('#gameCanvas').screenshot();await page.waitForTimeout(120);assert(reducedFrame.equals(await page.locator('#gameCanvas').screenshot()));await page.locator('#reducedEffects').uncheck();
     await page.evaluate(()=>{$('overlay').style.display='';selectedStage=-1;resetMode('classic');});
@@ -129,7 +129,7 @@ const root = path.resolve(__dirname, '..');
     await page.getByRole('button',{name:/조준: 가까운 적/}).click();assert.equal(await page.evaluate(()=>game.slots[0].tower.priority),'core');assert((await page.getByRole('button',{name:/강화 → Lv.2/}).textContent()).includes('15.0 → 24.8'));
     await page.keyboard.press('2');await page.locator('#repeatBuild').click();assert.equal(await page.evaluate(()=>game.slots[1].tower.type),'arrow');await page.keyboard.press('Escape');
     await page.click('#battleSpeed');assert.equal(await page.evaluate(()=>battleSpeed),2);assert.equal(await page.locator('#battleSpeed').getAttribute('aria-pressed'),'true');await page.click('#pause');const stopped=await page.evaluate(()=>game.time);await page.waitForTimeout(160);assert.equal(await page.evaluate(()=>game.time),stopped);await page.click('#battleSpeed');
-    assert.equal(await page.locator('#codexEntries li').count(),9);assert((await page.locator('#waveIntel').textContent()).includes('W1'));
+    assert.equal(await page.locator('#codexEntries li').count(),11);assert((await page.locator('#waveIntel').textContent()).includes('W1'));
     await page.click('#start');await page.evaluate(()=>{game.spawned=game.spawnLimit;game.enemies=[];game.waveTime=1;sync();});assert(await page.locator('#finishWave').isVisible());await page.click('#finishWave');assert.equal(await page.evaluate(()=>game.state),'reward');assert.equal(await page.locator('#finishWave').isVisible(),false);
     await page.evaluate(()=>resetMode('classic'));
     await page.locator('#stageChoice').selectOption('0');
@@ -162,6 +162,47 @@ const root = path.resolve(__dirname, '..');
     await page.locator('#soundEnabled').check();await page.waitForFunction(()=>battleSound.enabled);await page.evaluate(()=>game.emit('sniperShot',360,215,100,0xffe3a1,.3,0));await page.waitForFunction(()=>battleSound.lastSound>-Infinity);assert((await page.evaluate(()=>battleSound.voices.size))<=4);await page.click('#pause');assert.equal(await page.evaluate(()=>battleSound.voices.size),0);await page.locator('#soundEnabled').uncheck();await page.click('#start');
     await page.setViewportSize({width:390,height:844});await page.locator('#showCoverage').check();await page.locator('#gameCanvas').scrollIntoViewIfNeeded();assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.locator('#gameCanvas').screenshot({path:path.join(root,'test-results/bastion-training-mobile.png')});
     await page.reload();await page.waitForFunction(()=>ready);assert.equal(await page.evaluate(()=>savedBlueprint.length),2);assert.equal(await page.locator('#soundEnabled').isChecked(),false);await page.locator('input[name="mode"][value="practice"]').check();await page.locator('#loadoutChoice').selectOption('custom');assert((await page.locator('#loadoutHelp').textContent()).includes('190'));await page.click('#start');assert.equal(await page.evaluate(()=>game.gold),410);assert.equal(await page.evaluate(()=>game.slots[0].tower.level),1);assert.equal(await page.evaluate(()=>game.slots[1].tower.type),'banner');await page.setViewportSize({width:1360,height:1000});
+
+    // Fourth cycle: filters, repair, keyboard reward selection and persisted progression.
+    assert(await page.locator('#recommendedStage').isDisabled());await page.evaluate(()=>{game.gold=1000;game.core=200;game.spawnClock=1000;game.player.cd=100;});await page.locator('#gameCanvas').focus();await page.keyboard.press('3');
+    await page.locator('[data-category="support"]').click();assert.equal(await page.locator('[data-weapon]:visible').count(),1);assert(await page.locator('[data-weapon="banner"]').isVisible());await page.locator('[data-category="all"]').click();assert.equal(await page.locator('[data-weapon]:visible').count(),10);
+    await page.keyboard.press('r');assert.equal(await page.evaluate(()=>game.state),'building');assert.equal(await page.evaluate(()=>game.core),290);assert.equal(await page.evaluate(()=>game.gold),940);await page.click('#quickRepair');assert.equal(await page.evaluate(()=>game.state),'building');assert.equal(await page.evaluate(()=>game.core),300);await page.keyboard.press('Escape');
+    await page.evaluate(()=>{game.spawned=game.spawnLimit;game.enemies=[];game.waveTime=1;sync();});await page.click('#finishWave');assert.equal(await page.evaluate(()=>game.state),'reward');const offers=await page.evaluate(()=>game.offers.slice());await page.locator('#gameCanvas').focus();await page.keyboard.press('2');assert.equal(await page.evaluate(id=>game.perks[id],offers[1]),1);assert.equal(await page.evaluate(()=>game.state),'running');
+    await page.evaluate(()=>{game.wave=game.rules.waves;game.spawned=game.spawnLimit;game.waveTime=1;game.enemies=[];sync();});await page.click('#finishWave');assert(await page.locator('#recommendedStage').isEnabled());assert.equal(await page.locator('[data-achievement="first_win"]').getAttribute('data-earned'),'true');const recorded=await page.evaluate(()=>JSON.parse(localStorage.getItem('dawnBastionRunHistory')).length);await page.evaluate(()=>{sync();sync();});assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('dawnBastionRunHistory')).length),recorded);
+    await page.locator('#recommendedStage').click();assert.equal(await page.evaluate(()=>game.state),'idle');assert((await page.evaluate(()=>game.stage))>=0);await page.reload();await page.waitForFunction(()=>ready);assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('dawnBastionRunHistory')).length),recorded);assert.equal(await page.locator('[data-achievement="first_win"]').getAttribute('data-earned'),'true');
+    // Fifth cycle: guardian profiles, supply/banishment, records, shopping and movement input.
+    await page.evaluate(()=>localStorage.setItem('dawnBastionAchievements',JSON.stringify(JSON.parse(localStorage.getItem('dawnBastionAchievements')).filter(id=>id!=='combo_ten'))));
+    await page.reload();await page.waitForFunction(()=>ready);
+    await page.locator('#guardianChoice').selectOption('gunner');await page.locator('#loadoutChoice').selectOption('none');
+    await page.click('#start');assert.equal(await page.evaluate(()=>game.guardian),'gunner');assert(await page.locator('#guardianChoice').isDisabled());
+    await page.evaluate(()=>{game.spawnClock=1000;game.player.cd=100;game.enemies=[];game.bestCombo=4;sync();});
+    assert((await page.locator('[data-progress-for="combo_ten"]').textContent()).includes('4 / 10'));
+    const fifthGold=await page.evaluate(()=>game.gold);await page.click('#emergencySupply');
+    assert.equal(await page.evaluate(()=>game.core),270);assert.equal(await page.evaluate(()=>game.gold),fifthGold+80);assert.equal(await page.evaluate(()=>game.waveCoreDamage),30);assert(await page.locator('#emergencySupply').isDisabled());
+    await page.locator('#gameCanvas').focus();await page.keyboard.press('1');await page.locator('#shopSort').selectOption('cost');
+    const fifthPrices=await page.locator('#buildChoices [data-weapon]').evaluateAll(nodes=>nodes.map(node=>TYPES[node.dataset.weapon].cost));assert.deepEqual(fifthPrices,fifthPrices.slice().sort((a,b)=>a-b));
+    await page.evaluate(()=>{game.gold=80;sync();});await page.locator('#shopAffordable').check();assert.equal(await page.locator('#buildChoices [data-weapon]:visible').count(),2);
+    await page.locator('[data-weapon="arrow"]').click();await page.click('#nextEmptySlot');assert.equal(await page.evaluate(()=>selected),1);
+    await page.click('#nextTowerSlot');assert.equal(await page.evaluate(()=>selected),0);await page.keyboard.press('Escape');
+    await page.evaluate(()=>{game.spawned=game.spawnLimit;game.enemies=[];game.waveTime=1;sync();});await page.click('#finishWave');assert.equal(await page.evaluate(()=>game.perfectWaves),0);
+    const fifthBanned=await page.locator('#banishChoice').inputValue();await page.click('#banishReward');assert(await page.locator('#banishReward').isDisabled());
+    assert.equal(await page.evaluate(id=>game.offers.includes(id),fifthBanned),false);await page.click('#rerollRewards');assert.equal(await page.evaluate(id=>game.offers.includes(id),fifthBanned),false);
+    await page.locator('#rewardChoices button').first().click();await page.evaluate(()=>{game.spawnClock=1000;game.player.cd=100;game.enemies=[];});
+    await page.setViewportSize({width:390,height:844});await page.locator('#movementPadEnabled').check();await page.locator('[data-direction="right"]').scrollIntoViewIfNeeded();
+    const fifthPad=await page.locator('[data-direction="right"]').boundingBox(),fifthX=await page.evaluate(()=>game.player.x);
+    await page.mouse.move(fifthPad.x+fifthPad.width/2,fifthPad.y+fifthPad.height/2);await page.mouse.down();await page.waitForTimeout(160);await page.mouse.up();
+    assert((await page.evaluate(()=>game.player.x))>fifthX+5);assert.deepEqual(await page.evaluate(()=>convenience.getMovement()),{x:0,y:0});
+    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.locator('#movementControls').screenshot({path:path.join(root,'test-results/bastion-movement-mobile.png')});
+    await page.evaluate(()=>{game.wave=game.rules.waves;game.spawned=game.spawnLimit;game.waveTime=1;game.enemies=[];sync();});await page.click('#finishWave');
+    const fifthRecord=await page.evaluate(()=>JSON.parse(localStorage.getItem('dawnBastionRunHistory'))[0]);assert.equal(fifthRecord.loadout.guardian,'gunner');assert.equal(fifthRecord.loadout.towers[0].type,'arrow');assert.equal(fifthRecord.loadout.perks.length,1);
+    await page.locator('#runHistoryPanel > details > summary').click();await page.locator('#historyOutcomeFilters [data-outcome-filter="won"]').click();assert.equal(await page.locator('#runHistoryList > [data-outcome="lost"]').count(),0);
+    await page.locator('.bastion-run-loadout > summary').first().click();assert((await page.locator('.bastion-run-loadout').first().textContent()).includes('포격수'));
+    const fifthHistoryCount=await page.evaluate(()=>JSON.parse(localStorage.getItem('dawnBastionRunHistory')).length);await page.locator('#historyOutcomeFilters [data-outcome-filter="lost"]').click();assert.equal(await page.locator('#runHistoryList > [data-outcome="won"]').count(),0);assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('dawnBastionRunHistory')).length),fifthHistoryCount);
+    await page.reload();await page.waitForFunction(()=>ready);assert(await page.locator('#movementPadEnabled').isChecked());await page.locator('#movementPadEnabled').uncheck();
+    await page.locator('#guardianChoice').selectOption('scout');await page.click('#start');assert.equal(await page.evaluate(()=>game.guardian),'scout');
+    await page.evaluate(()=>{selectedStage=7;resetMode('classic');game.state='running';game.wave=2;game.spawnClock=1000;game.player.cd=100;const boss=game.spawn(true);boss.x=130;boss.y=170;boss.chargeWindup=.8;setState('paused');$('overlay').style.display='none';});
+    await page.waitForTimeout(80);assert((await page.locator('#bossName').textContent()).includes('돌진 준비'));await page.locator('#gameCanvas').screenshot({path:path.join(root,'test-results/bastion-charge-mobile.png')});
+    await page.setViewportSize({width:1360,height:1000});
     for(const old of ['/arcade/dawn-bastion.html','/arcade/']){await page.goto(base+old);await page.waitForURL(base+'/');await page.waitForFunction(()=>ready);}
     const missing=await page.goto(base+'/blog/posts/removed.html');assert.equal(missing.status(),404);assert.equal(await page.locator('meta[name="robots"]').getAttribute('content'),'noindex, follow');
     await page.goto(base+'/arcade/space-shooter.html');await page.waitForFunction(()=>typeof ex!=='undefined'&&document.querySelector('#startBtn'));

@@ -103,6 +103,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <div id="rewardChoices" class="hidden" aria-label="보급 선택"></div>
               <button id="rewardModeBtn" type="button" class="hidden rounded-lg border border-cyan-200/50 px-3 py-2 text-xs">기체 개조 보기</button>
               <button id="overlayStartBtn" type="button" class="rounded-lg border border-cyan-200/60 px-5 py-2 text-cyan-100 hover:bg-white/10 transition">게임 시작</button>
+              <button id="finishRunBtn" type="button" class="hidden rounded-lg border border-amber-200/50 px-4 py-2 text-xs">출격 종료 · 기록 저장</button>
             </div>
           </div>
         </div>
@@ -113,6 +114,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <button id="combatPauseBtn" type="button" class="rounded-lg border border-white/20 px-3 py-2">일시정지</button>
             <button id="dashBtn" type="button" class="rounded-lg border border-cyan-200/50 px-3 py-2">긴급 회피 (R)</button>
             <button id="overdriveBtn" type="button" class="rounded-lg border border-amber-200/50 px-3 py-2">오버드라이브 (C)</button>
+            <button id="empBtn" type="button" class="rounded-lg border border-cyan-200/50 px-3 py-2">EMP (V)</button>
             <button id="effectsBtn" type="button" class="rounded-lg border border-white/20 px-3 py-2" aria-pressed="false">효과 줄이기</button>
             <button id="touchModeBtn" type="button" class="rounded-lg border border-white/20 px-3 py-2" aria-pressed="false">터치: 위치 이동</button>
             <button id="soundBtn" type="button" class="rounded-lg border border-white/20 px-3 py-2" aria-pressed="false">소리 켜기</button>
@@ -126,6 +128,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <aside class="grid gap-4">
         <section class="rounded-2xl border border-white/10 bg-white/5 p-5">
           <h2 class="text-lg font-semibold text-cyan-100">전투 정보</h2>
+          <p id="modeInfo" class="mt-2 text-xs text-cyan-200">일반 출격</p>
           <div class="mt-4 grid grid-cols-3 gap-2 text-center">
             <div class="rounded-xl border border-white/10 bg-slate-950/40 p-3">
               <p class="text-xs text-slate-400">점수</p>
@@ -158,15 +161,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <p id="briefingEl" class="mt-3 rounded-lg border border-cyan-200/20 p-2 text-xs text-cyan-100"></p>
           <details class="mt-4 text-sm text-slate-300"><summary>이번 출격 도전 과제</summary><ul id="missionList" class="mt-2 grid gap-2"></ul></details>
           <details id="combatReport" class="mt-4 text-sm text-slate-300"><summary>전투 평가 · 무기별 피해</summary><div id="reportText" class="mt-2 text-xs leading-relaxed">전투를 완료하면 결과가 표시됩니다.</div></details>
+          <details class="mt-4 text-sm text-slate-300"><summary>웨이브별 전투 기록</summary><ol id="waveHistory" class="mt-2 grid gap-2 text-xs"></ol></details>
           <details class="mt-4 text-sm text-slate-300"><summary>조종사 기록 · 수집 메달</summary>
             <p id="lifetimeStats" class="mt-2 text-xs leading-relaxed"></p>
             <ul id="medalList" class="mt-2 grid gap-2 text-xs"></ul>
             <p class="mt-2 text-xs text-slate-400">이 브라우저에 저장 · 메달은 전투 능력에 영향을 주지 않습니다.</p>
           </details>
           <details class="mt-4 text-sm text-slate-300"><summary>전투 설정</summary>
+            <label class="mt-3 flex items-center gap-2"><input id="highContrast" type="checkbox"> 적탄 고대비 표시</label>
             <label class="mt-3 flex items-center gap-2"><input id="weaponLock" type="checkbox"> 무기 고정 · 변경 아이템을 에너지 +10으로</label>
+            <label class="mt-3 block" for="droneMode">지원 드론 역할 (Lv.6부터)</label>
+            <select id="droneMode" class="mt-2 w-full rounded-lg bg-slate-900 p-2"><option value="attack">공격 · 0.65초마다 사격</option><option value="guard">방어 · 2초마다 근처 적탄 요격</option></select>
             <label class="mt-3 block" for="soundVolume">효과음 음량 <output id="soundVolumeValue">50%</output></label>
             <input id="soundVolume" type="range" min="0" max="100" value="50" class="mt-2 w-full" aria-label="효과음 음량">
+          </details>
+          <details class="mt-4 text-sm text-slate-300"><summary>사격장 · 보스 훈련</summary>
+            <p class="mt-2 text-xs">대기·종료 화면에서 시작합니다. 점수·순위·조종사 기록에 반영하지 않습니다.</p>
+            <label class="mt-2 block">훈련 웨이브 <select id="trainingWave" class="rounded bg-slate-900 p-2"><option>1</option><option selected>5</option><option>10</option><option>15</option><option>20</option></select></label>
+            <label class="mt-2 block">무기 레벨 <input id="trainingLevel" type="number" min="1" max="10" value="5" class="w-16 rounded bg-slate-900 p-2"></label>
+            <label class="mt-2 flex items-center gap-2"><input id="trainingInvincible" type="checkbox" checked> 무적 훈련 (피격 횟수는 측정)</label>
+            <div class="mt-3 flex flex-wrap gap-2"><button id="trainingTargetsBtn" type="button" class="rounded border border-cyan-200/40 p-2">사격장 시작·재배치</button><button id="trainingBossBtn" type="button" class="rounded border border-fuchsia-200/40 p-2">보스 훈련·재배치</button><button id="normalRunBtn" type="button" class="rounded border border-amber-200/40 p-2">일반 출격으로</button></div>
+            <p id="trainingStats" class="mt-3 text-xs"></p>
           </details>
           <details class="mt-4 text-sm text-slate-300"><summary>이 기기의 최근 전투 5회</summary><ol id="recentRuns" class="mt-3 grid gap-2"></ol></details>
         </section>
@@ -188,6 +203,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <p>보스 발사 직후 0.45초 약점 노출 · 격파 후 소모품 자동 회수</p>
             <p>Lv.6 / Lv.9: 지원 드론 1기 / 2기 · 봄의 보스 피해도 레벨마다 +5</p>
             <p>전투 설정에서 무기 고정과 음량 조절 · 완료한 출격은 조종사 기록에 누적</p>
+            <p>V: 에너지 50으로 EMP · 반경 140 적탄 제거와 일반 적 정지</p>
+            <p>드론은 공격/방어 선택 · 상단 25% 회수 구역에서는 모든 아이템을 끌어당깁니다.</p>
+            <p>보스 위협2부터 호위기, 위협3부터 예고 레이저 · 봄으로 레이저 취소</p>
             <p>집중형: 펄스·레이저·레일건·유도탄</p>
             <p>확산형: 스프레드·플라즈마·파동</p>
             <p>🅿 최대 10단계 강화 · Ⓦ 무기 변경(레벨 유지)</p>
@@ -213,6 +231,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </main>
 
   <script src="/scripts/shooter-progress.js"></script>
+  <script src="/scripts/shooter-encounters.js"></script>
+  <script src="/scripts/shooter-training.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/excalibur@0.30.3/build/dist/excalibur.min.js"></script>
   <script>
     const W = 480, H = 640;
@@ -252,6 +272,58 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     let carrierSpawned = false;
     let bossSalvage = false;
     let damageByWeapon = {};
+    let runMode = "normal", trainingConfig = ShooterTraining.normalize({}), trainingScenario = "targets", trainingCleared = false, powerDrought = 0, highContrast = false;
+    try { highContrast = localStorage.getItem("spaceShooterHighContrast") === "true"; } catch {}
+    function startTraining(config, scenario = "targets") {
+      if (runMode === "normal" && !["idle", "over"].includes(state)) return;
+      const normalized = ShooterTraining.normalize(config);
+      resetGame(); runMode = "training"; trainingConfig = normalized; trainingScenario = scenario === "boss" ? "boss" : "targets";
+      wave = normalized.wave; player.level = normalized.level; charge = 100; bombs = 9;
+      if (trainingScenario === "boss") { spawnBoss(); enemies[0].entering = false; enemies[0].y = 90; }
+      else enemies = ShooterTraining.buildTargets(normalized, W, H).map((target, trainingSlot) => ({ ...target, trainingSlot }));
+      startGame(); syncUi("훈련 시작 · 기록/순위 미반영");
+    }
+    function trainingSummary() {
+      const damage = Object.values(damageByWeapon).reduce((sum, value) => sum + value, 0);
+      return `경과 ${elapsed.toFixed(1)}초 · 유효 피해 ${Math.round(damage)} · DPS ${(damage / Math.max(.1, elapsed)).toFixed(1)} · 피격 ${hitsTaken}회`;
+    }
+    function finishRun() { if (state === "paused") gameOver(); }
+    function pickupWeapon(weapon) {
+      return WEAPON_KEYS.includes(weapon) && weapon !== player.weapon ? weapon : WEAPON_KEYS[(WEAPON_KEYS.indexOf(player.weapon) + 1) % WEAPON_KEYS.length];
+    }
+    function itemLabel(item) {
+      if (item.kind === "weapon") return weaponLocked ? "에너지 +10" : WEAPONS[pickupWeapon(item.weapon)].name;
+      if (item.kind === "power" && player.level >= MAX_WEAPON_LEVEL || item.kind === "life" && player.lives >= 5 || item.kind === "shield" && player.shield) return "+500점";
+      return { power: "강화 +1", life: "회복 +1", bomb: "봄 +1", shield: "방어막" }[item.kind] || "보급";
+    }
+    let empCooldown = 0, empFlash = 0, guardCooldown = 0, droneMode = "attack", bountyAssigned = false;
+    let waveHistory = [], waveStartStats = { kills: 0, score: 0, hits: 0, time: 0 };
+    try { if (localStorage.getItem("spaceShooterDroneMode") === "guard") droneMode = "guard"; } catch {}
+    function renderWaveHistory() {
+      el("waveHistory").replaceChildren(...waveHistory.slice(-6).reverse().map(row => {
+        const li = document.createElement("li");
+        li.textContent = `W${row.wave} · ${row.kills}격추 · +${row.score}점 · ${row.hits ? `피격 ${row.hits}회` : "무피격"} · ${row.seconds}초`;
+        return li;
+      }));
+    }
+    function emp() {
+      if (state !== "playing" || charge < 50 || empCooldown > 0) return;
+      charge -= 50; empCooldown = 4; empFlash = .35;
+      eBullets = eBullets.filter(b => Math.hypot(b.x - player.x, b.y - player.y) > 140);
+      enemies.forEach(e => { if (e.type !== "boss" && Math.hypot(e.x - player.x, e.y - player.y) <= 140) e.stunTime = 1.5; });
+      playSound("power"); syncUi("EMP · 주변 적탄 제거 / 일반 적 1.5초 정지");
+    }
+    function guardDrones() {
+      if (droneMode !== "guard" || !droneCount() || guardCooldown > 0) return;
+      let intercepted = 0;
+      for (let i = 0; i < droneCount(); i++) {
+        const x = player.x + (droneCount() === 1 || i === 0 ? -30 : 30), y = player.y + 6;
+        let nearest = -1, distance = 60;
+        eBullets.forEach((b, index) => { const d = Math.hypot(b.x - x, b.y - y); if (d < distance) { nearest = index; distance = d; } });
+        if (nearest >= 0) { const b = eBullets.splice(nearest, 1)[0]; burst(b.x, b.y, "#86efac", 6); intercepted++; }
+      }
+      if (intercepted) { guardCooldown = 2; floatText(`요격 ${intercepted}`, player.x, player.y - 40, "#86efac"); }
+    }
     let runId = "";
     const progressLedger = ShooterProgress.create({
       getItem(key) { return localStorage.getItem(key); },
@@ -280,6 +352,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
     function droneCount() { return player.level >= 9 ? 2 : player.level >= 6 ? 1 : 0; }
     function fireDrones() {
+      if (droneMode !== "attack") return;
       const count = droneCount();
       for (let i = 0; i < count; i++) {
         const side = count === 1 ? -1 : (i ? 1 : -1);
@@ -294,12 +367,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (enemy.hp <= 0) return;
       const actual = Math.min(enemy.hp, Math.max(0, amount));
       enemy.hp -= actual;
+      if (actual > 0) enemy.hitFeedback = .8;
       damageByWeapon[weapon] = (damageByWeapon[weapon] || 0) + actual;
     }
     function renderCombatReport() {
       const total = Object.values(damageByWeapon).reduce((sum, n) => sum + n, 0);
       const top = Object.entries(damageByWeapon).sort((a, b) => b[1] - a[1]).slice(0, 3);
-      el("reportText").textContent = `평가 ${runGrade()} · 총 피해 ${Math.round(total)} · ${top.map(([key, value]) => `${WEAPONS[key]?.name || (key === "drone" ? "지원 드론" : "봄")} ${Math.round(value)} (${total ? Math.round(value / total * 100) : 0}%)`).join(" / ") || "기록 없음"} · 등급 기준 B 5,000 / A 15,000 / S 30,000점`;
+      const breakdown = top.map(([key, value]) => `${WEAPONS[key]?.name || (key === "drone" ? "지원 드론" : "봄")} ${Math.round(value)} (${total ? Math.round(value / total * 100) : 0}%)`).join(" / ") || "기록 없음";
+      el("reportText").textContent = runMode === "training" ? `${trainingSummary()} · ${breakdown} · 기록/순위 미반영` : `평가 ${runGrade()} · 총 피해 ${Math.round(total)} · ${breakdown} · 등급 기준 B 5,000 / A 15,000 / S 30,000점`;
     }
     let soundEnabled = false, audioContext = null, soundVoices = 0, lastSoundShot = -1, soundEvents = 0, soundBusy = false;
     const activeSounds = new Set();
@@ -363,7 +438,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     ];
     let completedMissions = new Set();
     function checkMissions() {
-      if (state !== "playing") return;
+      if (state !== "playing" || runMode === "training") return;
       MISSIONS.forEach(mission => {
         if (!completedMissions.has(mission.id) && mission.progress() >= mission.target) {
           completedMissions.add(mission.id); score += 1500; addCharge(20);
@@ -396,6 +471,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       });
     }
     function recordRun() {
+      if (runMode === "training") return;
       const earned = progressLedger.record({ id: runId, score, wave, seconds: Math.floor(elapsed), kills, perfectWaves, grazes });
       renderProgress();
       if (earned.newMedals.length) floatText(`메달 ${earned.newMedals.length}개 획득!`, W / 2, H * .6, "#fbbf24");
@@ -421,6 +497,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         perfectWaves += 1; addCharge(10);
         floatText(`무피격 +${lastWaveBonus}`, W / 2, H * .6);
       }
+      checkMissions();
+      waveHistory.push({ wave: completed, kills: kills - waveStartStats.kills, score: score - waveStartStats.score, hits: hitsTaken - waveStartStats.hits, seconds: Math.round(elapsed - waveStartStats.time) });
+      if (waveHistory.length > 20) waveHistory.shift();
+      waveStartStats = { kills, score, hits: hitsTaken, time: elapsed }; renderWaveHistory();
+      bountyAssigned = false;
       waveDamaged = false; formationSpawned = false; carrierSpawned = false;
     }
     const focused = () => focusMode || keys.ShiftLeft || keys.ShiftRight;
@@ -496,6 +577,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     function resetGame() {
+      runMode = "normal"; trainingCleared = false; powerDrought = 0;
       runId = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
       const ship = SHIPS[selectedShip];
       player = { x: W / 2, y: H - 90, w: 26, h: 30, cooldown: 0, level: 1, weapon: preferredWeapon, ship: selectedShip, lives: ship.lives, invuln: 0, shield: 0 };
@@ -511,6 +593,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       bossSalvage = false;
       damageByWeapon = {}; el("reportText").textContent = "전투를 완료하면 결과가 표시됩니다."; el("combatReport").open = false;
       droneCooldown = 0;
+      empCooldown = 0; empFlash = 0; guardCooldown = 0; bountyAssigned = false;
+      waveHistory = []; waveStartStats = { kills: 0, score: 0, hits: 0, time: 0 }; renderWaveHistory();
       dashCooldown = 0; charge = 0; overdriveTime = 0; grazes = 0;
       waveDamaged = false; lastCompletedWave = 0; lastWaveBonus = 0; perfectWaves = 0; notices = [];
       upgrades = { damage: 0, magnet: 0, dash: 0, combo: 0 }; rewardMode = "supply";
@@ -534,6 +618,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       comboEl.textContent = String(combo);
       el("weaponSelect").value = player.weapon;
       el("weaponLock").checked = weaponLocked;
+      el("highContrast").checked = highContrast;
+      el("modeInfo").textContent = runMode === "training" ? `${ShooterTraining.describe(trainingConfig)} · 순위 미반영` : "일반 출격 · 기록/순위 반영";
+      el("trainingStats").textContent = runMode === "training" ? trainingSummary() : "현재 무기로 사격하거나 지정 웨이브의 보스를 연습하세요.";
+      for (const id of ["trainingTargetsBtn", "trainingBossBtn"]) el(id).disabled = runMode === "normal" && !["idle", "over"].includes(state);
+      el("normalRunBtn").disabled = runMode !== "training";
+      el("finishRunBtn").classList.toggle("hidden", state !== "paused");
+      el("finishRunBtn").textContent = runMode === "training" ? "훈련 종료 · 결과 보기" : "출격 종료 · 기록 저장";
       el("focusBtn").setAttribute("aria-pressed", String(focusMode));
       el("effectsBtn").setAttribute("aria-pressed", String(reducedEffects));
       el("effectsBtn").textContent = reducedEffects ? "효과 줄임 · 켜짐" : "효과 줄이기";
@@ -546,12 +637,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       el("dashBtn").textContent = dashCooldown > 0 ? `회피 ${dashCooldown.toFixed(1)}초` : "긴급 회피 (R)";
       el("overdriveBtn").disabled = state !== "playing" || charge < 100 || overdriveTime > 0;
       el("overdriveBtn").textContent = overdriveTime > 0 ? `화력 강화 ${overdriveTime.toFixed(1)}초` : `오버드라이브 ${charge}% (C)`;
+      el("empBtn").disabled = state !== "playing" || charge < 50 || empCooldown > 0;
+      el("empBtn").textContent = empCooldown > 0 ? `EMP ${empCooldown.toFixed(1)}초` : "EMP 50 에너지 (V)";
+      el("droneMode").value = droneMode;
       el("moduleEl").textContent = `개조 · 화력 ${upgrades.damage}/3 · 자석 ${upgrades.magnet}/3 · 회피 ${upgrades.dash}/3 · 콤보 ${upgrades.combo}/3`;
       el("touchModeBtn").setAttribute("aria-pressed", String(relativeTouch));
       el("touchModeBtn").textContent = relativeTouch ? "터치: 상대 이동" : "터치: 위치 이동";
       el("weaponInfo").textContent = `${WEAPON_GUIDE[player.weapon]} / 발사 간격 ${fireInterval().toFixed(2)}초 · 기체 속도 ${SHIPS[player.ship].speed} · 화력 ×${(SHIPS[player.ship].damage * (1 + upgrades.damage * .1) * (overdriveTime > 0 ? 1.3 : 1)).toFixed(2)}`;
       el("weaponInfo").textContent += ` · 지원 드론 ${droneCount()}기 (Lv.6/9 해금)`;
-      el("briefingEl").textContent = `${state === "reward" ? "이어서 " : "다음 "}${waveBriefing(state === "reward" ? wave : wave + 1)}`;
+      el("briefingEl").textContent = runMode === "training" ? (trainingScenario === "targets" ? "사격장 · 표적 3기는 파괴 후 재배치됩니다. Q/E로 무기를 비교하세요." : `보스 훈련 · ${waveBriefing(wave)} · 격파 후 재도전 가능`) : `${state === "reward" ? "이어서 " : "다음 "}${waveBriefing(state === "reward" ? wave : wave + 1)}`;
       const missionList = el("missionList");
       const missionText = MISSIONS.map(m => `${completedMissions.has(m.id) ? "✓" : "○"} ${m.name} · ${Math.min(m.target, m.progress())}/${m.target}${completedMissions.has(m.id) ? " · 보상 완료" : " · 1,500점"}`);
       if (missionList.dataset.progress !== missionText.join("|")) {
@@ -566,9 +660,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     function startGame() {
+      if (state === "over" && runMode === "training") { startTraining(trainingConfig, trainingScenario); return; }
       if (state === "over") resetGame();
       if (state === "playing" || state === "reward") return;
-      if (state === "idle") announce("WAVE 1 · 출격");
+      if (state === "idle") announce(runMode === "training" ? `훈련 W${wave} · ${trainingScenario === "targets" ? "사격장" : "보스전"}` : "WAVE 1 · 출격");
       state = "playing";
       pointerControlEnabled = false;
       touchAnchor = null; touchTarget = null; activePointerId = null;
@@ -592,16 +687,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (state === "over") return;
       checkMissions();
       state = "over";
-      if (score > best) { best = score; try { localStorage.setItem("spaceShooterBest", String(best)); } catch {} }
-      recordRun();
+      if (runMode === "normal") {
+        if (score > best) { best = score; try { localStorage.setItem("spaceShooterBest", String(best)); } catch {} }
+        recordRun();
+        window.dispatchEvent(new CustomEvent("partygame:score", { detail: { gameId: "space-shooter", score, wave } }));
+      }
       renderCombatReport(); el("combatReport").open = true;
-      window.dispatchEvent(new CustomEvent("partygame:score", { detail: { gameId: "space-shooter", score, wave } }));
       overlayTitle.textContent = `게임 오버 · 평가 ${runGrade()}`;
       overlayText.textContent = `점수 ${score}점 · 최고 ${best}점 · 웨이브 ${wave} / 격추 ${kills}대 · 최대 ${maxCombo}콤보 · 생존 ${Math.floor(elapsed)}초 · 피격 ${hitsTaken}회 · 무피격 돌파 ${perfectWaves}회 · 근접 회피 ${grazes}회`;
+      if (runMode === "training") { overlayTitle.textContent = trainingCleared ? "보스 훈련 성공" : "훈련 종료"; overlayText.textContent = `${trainingSummary()} · 기록/순위 미반영`; }
       overlayStartBtn.textContent = "다시 시작";
       shipChoicePanel.classList.remove("hidden");
       overlay.classList.remove("hidden");
-      syncUi("게임 오버");
+      syncUi(runMode === "training" ? "훈련 종료 · 기록/순위 미반영" : "게임 오버");
     }
 
     // ---- spawning ----
@@ -707,6 +805,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       e.armored = wave >= 6 && type === "grunt" && roll < .12;
       if (e.armored) { e.hp *= 1.5; e.score *= 2; }
       e.maxHp = e.hp;
+      if (wave >= 3 && !bountyAssigned && !bossActive) { e.bounty = true; bountyAssigned = true; }
       enemies.push(e);
     }
 
@@ -730,6 +829,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     function spawnBoss() {
+      if (enemies.some(enemy => enemy.type === "boss")) return;
+      if (enemies.length >= 40) {
+        const retire = enemies.reduce((selected, enemy, index) => Math.abs(enemy.y - H / 2) > Math.abs(enemies[selected].y - H / 2) ? index : selected, 0);
+        enemies.splice(retire, 1);
+      }
       const hp = 120 + wave * 40;
       const tier = Math.max(1, Math.floor(wave / 5));
       enemies.push({
@@ -738,6 +842,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       });
       bossActive = true;
       announce(`WARNING · 보스 위협 ${tier}`);
+    }
+    function spawnBossEscorts(boss) {
+      if (boss.tier < 2) return;
+      const room = Math.min(2, 40 - enemies.length, 6 - enemies.filter(e => e.escort).length);
+      for (let i = 0; i < room; i++) {
+        const hp = 8 + wave;
+        enemies.push({ type: "shooter", escort: true, x: clamp(boss.x + (i ? 65 : -65), 24, W - 24), y: boss.y + 40,
+          w: 32, h: 30, hp, maxHp: hp, vx: i ? 30 : -30, vy: 65, phase: 0, fireCd: 1.1, score: 220 });
+      }
     }
 
     function dropItem(x, y) {
@@ -806,7 +919,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         for (let k = 0; k < pairs; k += 1) {
           const amp = 130 + lv * 9 + k * 22, dmg = 1 + Math.floor(lv / 4), r = 4.5 + lv * 0.12;
           mk(0, 0, -540, r, dmg, 0, { kind: "pwave", baseVx: 0, waveAmp: amp, phase: k * 0.6, age: 0 });
-          mk(0, 0, -540, r, dmg, 0, { kind: "pwave", baseVx: 0, waveAmp: -amp, phase: Math.PI + k * 0.6, age: 0 });
+          mk(0, 0, -540, r, dmg, 0, { kind: "pwave", baseVx: 0, waveAmp: -amp, phase: k * 0.6, age: 0 });
         }
       }
     }
@@ -875,12 +988,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       bombs -= 1;
       eBullets = [];
       enemies.forEach((e) => {
+        if (e.type === "boss") ShooterEncounters.cancelBeam(e);
         if (e.type === "boss") { damageEnemy(e, 30 + (player.level - 1) * 5, "bomb"); burst(e.x, e.y, "#f0abfc", 14); }
         else { damageEnemy(e, e.hp, "bomb"); }
       });
       burst(player.x, player.y, "#67e8f9", 40);
       shake(10, 300);
       resolveEnemyDeaths(true);
+      if (state !== "playing") return;
       if (rewardPending) showReward();
       else syncUi("💣 봄 사용!");
     }
@@ -943,6 +1058,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     function killEnemy(e, byPlayer) {
+      if (runMode === "training") {
+        if (byPlayer) kills++;
+        burst(e.x, e.y, "#a5f3fc", 10);
+        if (e.type === "boss") { bossActive = false; trainingCleared = true; gameOver(); }
+        return;
+      }
+      const itemStart = items.length;
       playSound(e.type === "boss" ? "boss" : "kill");
       if (byPlayer) {
         combo += 1; comboTimer = 2.5 + upgrades.combo * .5;
@@ -950,10 +1072,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         addCharge(e.type === "boss" ? 25 : e.elite ? 12 : 3);
         const points = Math.round(e.score * (1 + combo * 0.08));
         score += points; floatText(`+${points}`, e.x, e.y);
+        if (e.bounty) { const bonus = 250 + wave * 25; score += bonus; addCharge(5); floatText(`우선 표적 +${bonus}`, e.x, e.y - 25, "#fbbf24"); }
       }
       burst(e.x, e.y, e.type === "boss" ? "#f0abfc" : "#fca5a5", e.type === "boss" ? 60 : 16);
       if (e.type === "boss") {
         shake(14, 450); completeWave(wave);
+        powerDrought = 0;
         applyItem("power"); // Guaranteed upgrade is granted before the optional supply choice.
         items.push({ x: e.x, y: e.y, vy: 70, kind: "life" });
         bossSalvage = true;
@@ -964,10 +1088,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         items.push({ x: e.x - 14, y: e.y, vy: 70, kind: "power" }, { x: e.x + 14, y: e.y, vy: 70, kind: "bomb" });
       }
       if (e.elite && byPlayer) items.push({ x: e.x, y: e.y, vy: 75, kind: "power" });
+      if (byPlayer && e.type !== "boss") {
+        powerDrought = items.slice(itemStart).some(item => item.kind === "power") ? 0 : powerDrought + 1;
+        if (powerDrought >= 12) { items.push({ x: e.x, y: e.y, vy: 70, kind: "power" }); powerDrought = 0; }
+      }
     }
     function resolveEnemyDeaths(byPlayer) {
-      for (let i = enemies.length - 1; i >= 0; i -= 1) {
-        if (enemies[i].hp <= 0) { killEnemy(enemies[i], byPlayer); enemies.splice(i, 1); }
+      const dead = enemies.filter(enemy => enemy.hp <= 0);
+      enemies = enemies.filter(enemy => enemy.hp > 0);
+      dead.sort((a, b) => Number(a.type === "boss") - Number(b.type === "boss"));
+      dead.forEach(enemy => killEnemy(enemy, byPlayer));
+      if (runMode === "training" && trainingScenario === "targets" && state === "playing") {
+        const targets = ShooterTraining.buildTargets(trainingConfig, W, H);
+        dead.filter(enemy => enemy.trainingTarget).forEach(enemy => enemies.push({ ...targets[enemy.trainingSlot], trainingSlot: enemy.trainingSlot }));
       }
     }
 
@@ -981,6 +1114,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         burst(player.x, player.y, "#67e8f9", 24); syncUi("방어막이 피격을 막았습니다!"); return;
       }
       hitsTaken += 1;
+      if (runMode === "training" && trainingConfig.invincible) { player.invuln = 1.6; syncUi("훈련 피격 · 체력 유지"); return; }
       player.lives -= 1;
       player.invuln = 1.6;
       combo = 0;
@@ -998,8 +1132,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (kind === "power") { player.level = Math.min(MAX_WEAPON_LEVEL, player.level + 1); syncUi(player.level === MAX_WEAPON_LEVEL ? "최대 파워!" : `파워 Lv.${player.level}!`); }
       else if (kind === "weapon") {
         if (weaponLocked) { addCharge(10); floatText("무기 유지 · 에너지 +10", player.x, player.y - 40); syncUi("무기 유지 · 변경 아이템을 에너지로 회수"); return; }
-        let next = weapon;
-        if (!next || next === player.weapon) next = WEAPON_KEYS[(WEAPON_KEYS.indexOf(player.weapon) + 1) % WEAPON_KEYS.length];
+        const next = pickupWeapon(weapon);
         player.weapon = next; player.cooldown = 0; syncUi(`${WEAPONS[next].type} · ${WEAPONS[next].name} 장착!`);
       }
       else if (kind === "life") { player.lives = Math.min(5, player.lives + 1); syncUi("라이프 +1"); }
@@ -1023,7 +1156,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (p.life <= 0) particles.splice(i, 1);
       }
       if (state !== "playing") return;
+      const oldPlayerX = player.x, oldPlayerY = player.y;
       elapsed += dt;
+      empCooldown = Math.max(0, empCooldown - dt); empFlash = Math.max(0, empFlash - dt); guardCooldown = Math.max(0, guardCooldown - dt);
       dashCooldown = Math.max(0, dashCooldown - dt);
       overdriveTime = Math.max(0, overdriveTime - dt);
       bannerTime = Math.max(0, bannerTime - dt);
@@ -1057,7 +1192,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (droneCount() && droneCooldown <= 0) { fireDrones(); droneCooldown = .65; }
 
       // waves
-      if (!bossActive) {
+      if (!bossActive && runMode !== "training") {
         waveTimer += dt;
         if (wave >= 2 && !formationSpawned && waveTimer >= 3) { formationSpawned = true; spawnFormation(); }
         if (wave >= 4 && !carrierSpawned && waveTimer >= 6) { carrierSpawned = true; spawnCarrier(); }
@@ -1117,16 +1252,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (consumed || b.y < -20 || b.y > H + 40 || b.x < -30 || b.x > W + 30) pBullets.splice(i, 1);
       }
       resolveEnemyDeaths(true);
+      if (state !== "playing") return;
       if (rewardPending) { showReward(); return; }
 
       // enemies
       for (let i = enemies.length - 1; i >= 0; i -= 1) {
         const e = enemies[i];
+        const oldEnemyX = e.x, oldEnemyY = e.y;
         e.exposed = Math.max(0, (e.exposed || 0) - dt);
         e.slowTime = Math.max(0, (e.slowTime || 0) - dt);
+        e.stunTime = Math.max(0, (e.stunTime || 0) - dt);
+        e.hitFeedback = Math.max(0, (e.hitFeedback || 0) - dt);
         if (e.type === "boss") {
           if (e.entering) { e.y += 60 * dt; if (e.y >= 90) { e.y = 90; e.entering = false; } }
           else {
+            ShooterEncounters.stepBoss(e, dt, player.x, W).forEach(event => { if (event.type === "escort") spawnBossEscorts(e); });
+            if (e.beam?.phase === "active" && player.y + player.h / 2 >= e.y + 30 && Math.abs(player.x - e.beam.x) <= (e.beam.width + player.w * .7) / 2) {
+              hitPlayer(); if (state !== "playing") return;
+            }
             e.x += e.vx * dt;
             if (e.x < e.w / 2 + 10 || e.x > W - e.w / 2 - 10) e.vx *= -1;
             e.x = clamp(e.x, e.w / 2 + 10, W - e.w / 2 - 10);
@@ -1134,7 +1277,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             if (!e.enraged && e.hp <= e.maxHp * 0.4) { e.enraged = true; announce("보스 과부하 · 탄막 가속"); }
             if (e.fireCd <= 0) { bossFire(e); e.fireCd = Math.max(0.7, 1.4 - wave * 0.03) * (e.enraged ? 0.72 : 1); }
           }
-        } else {
+        } else if (!(e.stunTime > 0)) {
           if (!stepRusher(e, dt)) e.y += e.vy * dt * (e.slowTime > 0 ? .55 : 1);
           if (e.formation) {
             e.phase += dt * 1.5; e.x = e.baseX + Math.sin(e.phase) * 28;
@@ -1149,19 +1292,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             e.fireCd -= dt;
             if (e.fireCd <= 0 && e.y > 0 && e.y < H * 0.7) { enemyFireAimed(e, 150 + wave * 6, 1 + Math.min(4, Math.floor(wave / 3))); e.fireCd = rand(1.0, 1.9); }
           }
-          if (e.y > H + 30 || e.x < -60 || e.x > W + 60) { enemies.splice(i, 1); continue; }
         }
         // contact with player
-        if (rectsOverlap(e, player)) {
+        if (sweptHit(oldEnemyX - oldPlayerX, oldEnemyY - oldPlayerY, e.x - player.x, e.y - player.y, 0, { x: 0, y: 0, w: e.w + player.w, h: e.h + player.h })) {
           hitPlayer();
           if (e.type !== "boss") { e.hp = 0; }
         }
+        if (e.type !== "boss" && (e.y > H + 30 || e.x < -60 || e.x > W + 60)) enemies.splice(i, 1);
       }
       resolveEnemyDeaths(false);
       if (state !== "playing") return;
       if (rewardPending) { showReward(); return; }
 
       // enemy bullets
+      guardDrones();
       for (let i = eBullets.length - 1; i >= 0; i -= 1) {
         const b = eBullets[i];
         b.age = (b.age || 0) + dt;
@@ -1197,8 +1341,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const it = items[i];
         it.y += it.vy * dt;
         const distance = Math.hypot(player.x - it.x, player.y - it.y);
-        if (distance < 95 + upgrades.magnet * 25) {
-          const pull = Math.min(1, 240 * dt / Math.max(1, distance));
+        if (player.y < H * .25 || distance < 95 + upgrades.magnet * 25) {
+          const pull = Math.min(1, (player.y < H * .25 ? 360 : 240) * dt / Math.max(1, distance));
           it.x += (player.x - it.x) * pull; it.y += (player.y - it.y) * pull;
         }
         if (it.y > H + 20) { items.splice(i, 1); continue; }
@@ -1385,6 +1529,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       ctx.save(); ctx.globalAlpha = .15; ctx.fillStyle = sectorFor().tint; ctx.fillRect(0, 0, W, H); ctx.restore();
 
       if (!player) return;
+      ctx.save(); ctx.strokeStyle = player.y < H * .25 ? "#86efac" : "rgba(134,239,172,.22)";
+      ctx.setLineDash([4, 8]); ctx.beginPath(); ctx.moveTo(8, H * .25); ctx.lineTo(W - 8, H * .25); ctx.stroke();
+      ctx.fillStyle = ctx.strokeStyle; ctx.font = "10px system-ui"; ctx.textAlign = "right"; ctx.fillText("↑ 전장 아이템 회수 구역", W - 12, H * .25 - 6); ctx.restore();
 
       // items
       items.forEach((it) => {
@@ -1398,6 +1545,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         ctx.fillStyle = "#0f172a"; ctx.font = "bold 14px system-ui, sans-serif";
         ctx.textAlign = "center"; ctx.textBaseline = "middle";
         ctx.fillText(label, it.x, it.y + 1);
+        ctx.fillStyle = "#f8fafc"; ctx.font = "bold 10px system-ui"; ctx.strokeStyle = "#020617"; ctx.lineWidth = 3;
+        const caption = itemLabel(it), captionX = clamp(it.x, 38, W - 38);
+        ctx.strokeText(caption, captionX, it.y - 20); ctx.fillText(caption, captionX, it.y - 20);
       });
 
       // player bullets
@@ -1418,7 +1568,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       });
 
       // enemies
+      enemies.filter(e => e.beam).forEach(e => {
+        const beam = e.beam, active = beam.phase === "active", top = Math.max(0, e.y + 30);
+        ctx.save(); ctx.fillStyle = active ? "rgba(251,113,133,.72)" : "rgba(251,191,36,.14)";
+        ctx.fillRect(beam.x - beam.width / 2, top, beam.width, H - top);
+        ctx.strokeStyle = active ? "#fff1f2" : "#fbbf24"; ctx.lineWidth = active ? 3 : 1;
+        ctx.strokeRect(beam.x - beam.width / 2, top, beam.width, H - top);
+        ctx.fillStyle = "#fde68a"; ctx.font = "bold 12px system-ui"; ctx.textAlign = "center";
+        ctx.fillText(active ? "레이저" : "위험 · 이동하세요", beam.x, Math.min(H - 20, Math.max(190, top + 35))); ctx.restore();
+      });
       enemies.forEach(drawEnemy);
+      enemies.forEach(e => {
+        if (e.trainingTarget) { ctx.save(); ctx.fillStyle = "#a5f3fc"; ctx.font = "bold 11px system-ui"; ctx.textAlign = "center"; ctx.fillText(`표적 ${e.trainingSlot + 1}`, e.x, e.y - e.h / 2 - 8); ctx.restore(); }
+        if (e.bounty) { ctx.save(); ctx.strokeStyle = "#fbbf24"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(e.x, e.y, 27, 0, Math.PI * 2); ctx.stroke(); ctx.fillStyle = "#fde68a"; ctx.font = "10px system-ui"; ctx.textAlign = "center"; ctx.fillText("우선 표적", e.x, e.y - 32); ctx.restore(); }
+        if (e.type !== "boss" && (e.hitFeedback > 0 || e.trainingTarget) && e.hp > 0) {
+          ctx.fillStyle = "#0f172a"; ctx.fillRect(e.x - 18, e.y + e.h / 2 + 7, 36, 4);
+          ctx.fillStyle = "#a5f3fc"; ctx.fillRect(e.x - 18, e.y + e.h / 2 + 7, 36 * clamp(e.hp / e.maxHp, 0, 1), 4);
+        }
+        if (e.stunTime > 0) { ctx.strokeStyle = "#93c5fd"; ctx.lineWidth = 2; ctx.strokeRect(e.x - e.w / 2, e.y - e.h / 2, e.w, e.h); }
+      });
       enemies.filter(e => e.armored || e.carrier).forEach(e => {
         ctx.save(); ctx.strokeStyle = e.carrier ? "#86efac" : "#cbd5e1"; ctx.lineWidth = 3;
         ctx.strokeRect(e.x - e.w / 2 - 4, e.y - e.h / 2 - 4, e.w + 8, e.h + 8);
@@ -1446,7 +1614,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // enemy bullets
       eBullets.forEach((b) => {
         ctx.save(); ctx.translate(b.x, b.y);
-        ctx.fillStyle = b.color || "#fda4af";
+        ctx.fillStyle = highContrast ? "#ffea00" : b.color || "#fda4af";
         if (b.kind === "missile") {
           ctx.rotate(Math.atan2(b.vy, b.vx) + Math.PI / 2);
           ctx.beginPath(); ctx.moveTo(0, -b.r * 1.6); ctx.lineTo(b.r * .75, b.r); ctx.lineTo(0, b.r * .65); ctx.lineTo(-b.r * .75, b.r); ctx.closePath(); ctx.fill();
@@ -1456,17 +1624,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         } else {
           ctx.beginPath(); ctx.arc(0, 0, b.r, 0, Math.PI * 2); ctx.fill();
         }
-        ctx.globalAlpha = .35; ctx.strokeStyle = b.color || "#f43f5e"; ctx.lineWidth = 3;
+        ctx.globalAlpha = highContrast ? 1 : .35; ctx.strokeStyle = highContrast ? "#ffffff" : b.color || "#f43f5e"; ctx.lineWidth = 3;
         ctx.beginPath(); ctx.arc(0, 0, b.r + 3, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
       });
 
       // player (blink while invulnerable)
       const blink = !reducedEffects && player.invuln > 0 && Math.floor(nowMs / 90) % 2 === 0;
       drawShip(player.x, player.y, blink);
+      if (empFlash > 0) { ctx.save(); ctx.strokeStyle = `rgba(147,197,253,${empFlash / .35})`; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(player.x, player.y, 140 * (1 - empFlash / .4), 0, Math.PI * 2); ctx.stroke(); ctx.restore(); }
       for (let i = 0; i < droneCount(); i++) {
         const side = droneCount() === 1 ? -1 : (i ? 1 : -1);
         ctx.save(); ctx.translate(player.x + side * 30, player.y + 6);
-        ctx.fillStyle = "#a5f3fc"; ctx.beginPath(); ctx.moveTo(0, -9); ctx.lineTo(7, 6); ctx.lineTo(-7, 6); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = droneMode === "guard" ? "#86efac" : "#a5f3fc"; ctx.beginPath(); ctx.moveTo(0, -9); ctx.lineTo(7, 6); ctx.lineTo(-7, 6); ctx.closePath(); ctx.fill();
         ctx.fillStyle = "#38bdf8"; ctx.fillRect(-2, 6, 4, 8); ctx.restore();
       }
       if (player.shield || focused()) {
@@ -1506,7 +1675,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // top-left score + bomb count
       ctx.fillStyle = "#e2e8f0"; ctx.font = "bold 18px system-ui, sans-serif";
       ctx.textAlign = "left"; ctx.textBaseline = "top";
-      ctx.fillText(`${score}`, 12, 12);
+      if (runMode === "training") { ctx.fillStyle = "#a5f3fc"; ctx.font = "bold 14px system-ui"; ctx.fillText("훈련 · 순위 미반영", 12, 12); }
+      else ctx.fillText(`${score}`, 12, 12);
       ctx.font = "12px system-ui, sans-serif"; ctx.fillStyle = "#c4b5fd";
       ctx.fillText(`💣 ${bombs}`, 12, 34);
       ctx.textAlign = "right"; ctx.fillStyle = "#a5f3fc";
@@ -1555,11 +1725,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     });
     el("startBtn").addEventListener("click", startGame);
     overlayStartBtn.addEventListener("click", startGame);
+    el("finishRunBtn").addEventListener("click", finishRun);
+    const trainingInputs = () => ({ wave: Number(el("trainingWave").value), level: Number(el("trainingLevel").value), invincible: el("trainingInvincible").checked });
+    el("trainingTargetsBtn").addEventListener("click", () => startTraining(trainingInputs(), "targets"));
+    el("trainingBossBtn").addEventListener("click", () => startTraining(trainingInputs(), "boss"));
+    el("normalRunBtn").addEventListener("click", () => { if (runMode === "training") { resetGame(); startGame(); } });
+    el("highContrast").addEventListener("change", e => { highContrast = e.target.checked; try { localStorage.setItem("spaceShooterHighContrast", String(highContrast)); } catch {} syncUi(); });
     el("rewardModeBtn").addEventListener("click", () => { if (state === "reward") showReward(rewardMode === "supply" ? "modules" : "supply"); });
     el("pauseBtn").addEventListener("click", togglePause);
     el("combatPauseBtn").addEventListener("click", togglePause);
     el("dashBtn").addEventListener("click", dash);
     el("overdriveBtn").addEventListener("click", activateOverdrive);
+    el("empBtn").addEventListener("click", emp);
+    el("droneMode").addEventListener("change", e => {
+      if (!["attack", "guard"].includes(e.target.value)) return;
+      droneMode = e.target.value;
+      try { localStorage.setItem("spaceShooterDroneMode", droneMode); } catch {}
+      syncUi(droneMode === "guard" ? "방어 드론 · 사격 대신 근처 적탄 요격" : "공격 드론 · 지원 사격");
+    });
     el("effectsBtn").addEventListener("click", toggleEffects);
     el("touchModeBtn").addEventListener("click", toggleTouchMode);
     el("soundBtn").addEventListener("click", toggleSound);
@@ -1613,7 +1796,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
       if (e.target?.closest("button") && ["Space", "Enter"].includes(e.code)) return;
       keys[e.code] = true;
-      if (e.repeat && ["KeyP", "KeyB", "KeyF", "KeyQ", "KeyE", "KeyR", "KeyC"].includes(e.code)) return;
+      if (e.repeat && ["KeyP", "KeyB", "KeyF", "KeyQ", "KeyE", "KeyR", "KeyC", "KeyV"].includes(e.code)) return;
+      if (e.code === "KeyV") { e.preventDefault(); emp(); }
       if (e.code === "KeyR") { e.preventDefault(); dash(); }
       if (e.code === "KeyC") { e.preventDefault(); activateOverdrive(); }
       if (["KeyQ", "KeyE"].includes(e.code)) {
