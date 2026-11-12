@@ -47,5 +47,18 @@ assert(await page.locator('#reloadMeter').isHidden());assert.equal(await page.lo
 assert(await page.evaluate(()=>JSON.parse(localStorage.getItem('shadowSniperMissionBests'))[0].grade==='S'));
 await page.reload();await page.waitForFunction(()=>sniperReady);assert.equal(await page.evaluate(()=>sniper.requireObservation&&sniper.autoReload&&sniperDragSensitivity===.7),true);assert((await page.locator('#missionBest').textContent()).includes('S'));assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
 await page.screenshot({path:path.join(root,'test-results/willy-options-mobile.png'),fullPage:true});assert.deepEqual(errors,[]);
+// Iterations 21-30: actual UI, contrast rendering, journal and notebook controls.
+await page.evaluate(()=>{sniperRestart();sniper.start();sniper.scoped=true;sniper.pause();sniperSync();});
+const thinReticle=await page.locator('#gameCanvas').screenshot({style:'#missionOverlay{visibility:hidden!important}'});
+await page.locator('#highContrast').check();await page.waitForTimeout(80);
+assert.equal(await page.evaluate(()=>sniperHighContrast),true);assert(!thinReticle.equals(await page.locator('#gameCanvas').screenshot({style:'#missionOverlay{visibility:hidden!important}'})));
+await page.evaluate(()=>{sniper.updateObservation(sniper.actors[0],1.2);sniper.updateObservation(sniper.actors[1],1.2);document.getElementById('observationNotes').open=true;sniperSync();});
+await page.locator('#noteSearch').fill('존재하지않는단서');assert.equal(await page.locator('#observationList li').count(),0);await page.locator('#noteSearch').fill('');assert.equal(await page.locator('#observationList li').count(),2);
+await page.locator('#noteSearch').press('f');assert.equal(await page.evaluate(()=>sniper.totalShots),0);await page.locator('#noteSearch').fill('');
+await page.evaluate(()=>{sniper.pause();sniper.requireObservation=false;sniper.aimAt(30,40);sniper.shoot();sniper.skipShot();sniper.remaining=14;sniper.pause();sniperSync();});
+assert.equal(await page.locator('#shotHistoryList li').count(),1);assert((await page.locator('#shotHistoryList').textContent()).includes('빗나감'));assert((await page.locator('#tacticalWarning').textContent()).includes('시간'));assert((await page.locator('#shotReadiness').textContent()).includes('작전'));
+await page.reload();await page.waitForFunction(()=>sniperReady);assert.equal(await page.evaluate(()=>sniperHighContrast),true);assert(await page.locator('#highContrast').isChecked());assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));assert.deepEqual(errors,[]);
+await page.evaluate(()=>window.scrollTo(0,0));await page.waitForTimeout(100);await page.screenshot({path:path.join(root,'test-results/willy-third-upgrade-mobile.png'),fullPage:true});
+console.log('PASS 29 and UI 25-30: contrast pixels/persistence, notebook input, journal and warnings');
 console.log('PASS: real Phaser themed crowds, bullet flight, fall and blood, shot pause freeze, scope/shoot, mission transitions, protected-target failure/retry, pause, mobile touch, viewport, campaign victory, score event and restart');
 }finally{if(browser)await browser.close();server.close();}})().catch(e=>{console.error(e);process.exitCode=1;});

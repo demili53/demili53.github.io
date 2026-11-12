@@ -37,3 +37,5 @@
 
 - 추가 11~20회: 점진적 집중 안정화, 직업별 보행/피로, 최근 방문 3곳 기억, 관찰 메모, 선택형 관찰 후 사격/자동 재장전, 터치 감도, 재장전 진행률, 작전 기록, 미션별 최고 기록. `shadowSniperMissionBests`는 등급→발사 수→시간 순으로 개인 기록을 저장하며 온라인 점수에 영향을 주지 않음. 옵션과 감도도 로컬 저장.
 - 추가 검증: `node scripts/test-shadow-sniper-improvements-2.cjs`; 회차별 기록은 `rules/games/shadow-sniper-iterations-2.md`.
+
+- 추가 21~30회: 사교성/최근 대화 상대 기억, 직업별 관람 취향, 피로별 휴식, 일정한 대각선 조준·집중 정밀 이동, 사격 준비 안내·미션 사격 기록·위험 경고, 굵은 조준선, 관찰 메모 검색. 기록: `rules/games/shadow-sniper-iterations-3.md`; 검사: `node scripts/test-shadow-sniper-improvements-3.cjs`.

@@ -175,7 +175,7 @@ class SniperGame {
   loadMission(){const m=SNIPER_MISSIONS[this.mission];this.elapsed=0;this.remaining=m.time;this.mag=3;this.reserve=9;this.reloadLeft=0;this.cooldown=0;this.alert=0;this.focus=100;this.holding=false;this.scoped=false;this.identification=0;this.inspected=null;this.identifyId=null;this.feedback='표적을 확인한 뒤 스코프를 켜고 사격하세요.';this.shotFlash=0;this.impact=null;this.shot=null;this.particles=[];this.pausedFrom='running';this.failure='';this.actors=[...m.targets,...m.extras].map((a,i)=>({...a,id:i,origin:a.x,originY:a.y,x:a.x,action:sniperActivity(a,m.theme),phase:i*1.3,speed:a.speed||.32,range:a.range||35,dead:false,hidden:false,fallTime:0,hitX:0,hitY:0}));const swap=1+Math.floor(this.random()*(this.actors.length-1)),target=this.actors[0],other=this.actors[swap];for(const k of ['origin','originY','x','y','phase']){const v=target[k];target[k]=other[k];other[k]=v;}this.initCrowd();for(const a of this.actors){a.pose=sniperActorPose(a,0);a.x=a.pose.x;a.y=a.pose.y;}this.aim={x:480,y:285};}
   initCrowd(){
     this.observations=new Set();this.identifyGrace=0;
-    this.steadiness=0;
+    this.steadiness=0;this.shotHistory=[];
     this.requireObservation??=false;
     this.autoReload??=false;
     this.report=null;this.missionHistory??=[];
@@ -185,8 +185,8 @@ class SniperGame {
       const stationary=['paint','cook','repair','shop','snowman','shovel','play','water','fish','knead','drum'].includes(a.action);
       a.motion={x:a.origin,y:a.originY,vx:0,vy:0,gait:a.phase,facing:a.id%2?1:-1,
         state:'activity',timer:1+this.random()*4,pace:(14+this.random()*11)*({'운동선수':1.1,'우편배달부':1.08,'독서가':.85,'낚시꾼':.88,'정원사':.92}[a.role]||1),
-        courage:this.random(),stationary,goal:{x:a.origin,y:a.originY},blend:1,fromPose:null,
-        reaction:null,escapeLeft:0,stuck:0,route:[],replans:0,fear:0,socialCooldown:3+this.random()*5,partner:null,
+        sociability:.6+(a.id%5)*.15,courage:this.random(),stationary,goal:{x:a.origin,y:a.originY},blend:1,fromPose:null,
+        reaction:null,escapeLeft:0,stuck:0,route:[],replans:0,fear:0,socialCooldown:3+this.random()*5,partner:null,recentPartners:[],
         yielding:0,runBlend:0,gaze:a.id%2?1:-1,vigilance:0,alarmCount:0,progressDistance:Infinity,
         fatigue:0,fatigueRate:a.role==='운동선수'?.65:a.case?1.12:1,visit:null,visitCooldown:2+(a.id%4),lastVisit:null,recentVisits:[]};
       // Some initial crowd slots border a prop. Resolve before the first visible frame.
@@ -250,8 +250,13 @@ class SniperGame {
     const host=this.actors.find(n=>n.id===spot.id),focus=spot.focus||spot;
     return host&&!host.dead&&!host.hidden&&['activity','observe'].includes(host.motion.state)&&Math.hypot(host.motion.x-focus.x,host.motion.y-focus.y)<14?host:null;
   }
+  restDuration(a){return sniperClamp((a.motion.fatigue-.3)/.12,2,6);}
+  interestPreference(a,kind){
+    const favorites={'독서가':['paint','water'],'과학자':['repair','water'],'운동선수':['play','drum'],'우편배달부':['cook','knead']};
+    return (a.camera?25:['play','drum'].includes(kind)?18:8)+(favorites[a.role]?.includes(kind)?22:0);
+  }
   chooseInterest(a){
-    const b=a.motion;if(b.stationary||b.fear>.2||b.vigilance>0||b.visitCooldown>0||a.hidden)return false;
+    const b=a.motion;if(b.stationary||b.reaction||b.fatigue>.65||b.fear>.2||b.vigilance>0||b.visitCooldown>0||a.hidden)return false;
     const candidates=[];
     for(const spot of this.interests){
       const host=this.interestHost(spot);
@@ -262,7 +267,7 @@ class SniperGame {
         if(this.actors.some(n=>!n.dead&&n.id!==a.id&&(n.motion.visit?.id===spot.id&&n.motion.visit.slot===slot||Math.hypot(n.x-goal.x,n.y-goal.y)<24)))continue;
         if(!sniperClearPath(goal,goal,this.obstacles))continue;
         const distance=Math.hypot(goal.x-b.x,goal.y-b.y);
-        const preference=a.camera?25:spot.kind==='play'?18:8;
+        const preference=this.interestPreference(a,spot.kind);
         candidates.push({spot,slot,goal,score:preference-distance*.2-(b.recentVisits.some(v=>v.id===spot.id&&v.until>this.elapsed)?35:0)+this.random()*8});
       }
     }
@@ -274,12 +279,13 @@ class SniperGame {
     return false;
   }
   tryConversation(a){
-    const b=a.motion;if(a.dead||a.hidden||b.stationary||b.fear>.2||b.socialCooldown>0||b.reaction||b.vigilance>0||!['activity','observe'].includes(b.state))return false;
-    const partner=this.actors.filter(n=>n.id!==a.id&&!n.dead&&!n.hidden&&!n.motion.stationary&&!n.motion.reaction&&n.motion.fear<.2&&n.motion.vigilance===0&&n.motion.socialCooldown<=0&&['activity','observe'].includes(n.motion.state))
+    const b=a.motion;if(a.dead||a.hidden||b.stationary||b.fear>.2||b.socialCooldown>0||b.fatigue>.65||b.reaction||b.vigilance>0||!['activity','observe'].includes(b.state))return false;
+    const partner=this.actors.filter(n=>n.id!==a.id&&!b.recentPartners.some(v=>v.id===n.id&&v.until>this.elapsed)&&!n.motion.recentPartners.some(v=>v.id===a.id&&v.until>this.elapsed)&&!n.dead&&!n.hidden&&!n.motion.stationary&&!n.motion.reaction&&n.motion.fatigue<=.65&&n.motion.fear<.2&&n.motion.vigilance===0&&n.motion.socialCooldown<=0&&['activity','observe'].includes(n.motion.state))
       .sort((p,q)=>Math.hypot(p.x-a.x,p.y-a.y)-Math.hypot(q.x-a.x,q.y-a.y))
       .find(n=>{const distance=Math.hypot(n.x-a.x,n.y-a.y);return distance>28&&distance<78&&Math.abs(n.y-a.y)<25&&sniperClearPath(b,n.motion,this.obstacles);});
     if(!partner)return false;
-    const duration=1.8+this.random()*1.7;this.setBehavior(a,'social','talk',duration);this.setBehavior(partner,'social','talk',duration);
+    const duration=(1.8+this.random()*1.7)*(b.sociability+partner.motion.sociability)/2;this.setBehavior(a,'social','talk',duration);this.setBehavior(partner,'social','talk',duration);
+    for(const [person,other] of [[a,partner],[partner,a]])person.motion.recentPartners=[{id:other.id,until:this.elapsed+30},...person.motion.recentPartners.filter(v=>v.id!==other.id&&v.until>this.elapsed)].slice(0,2);
     b.partner=partner.id;partner.motion.partner=a.id;b.facing=partner.x>a.x?1:-1;partner.motion.facing=-b.facing;return true;
   }
   alertCrowd(x,y){
@@ -307,10 +313,12 @@ class SniperGame {
         this.setBehavior(a,'flee','walk',b.escapeLeft);
       }else if(b.state==='social'&&b.timer<=0){
         this.setBehavior(a,'observe','look',1);
+      }else if(b.state==='resting'&&b.timer<=0&&b.fatigue>.4&&!b.reaction&&b.fear<=.2){
+        b.timer=this.restDuration(a);
       }else if(['visiting','resting'].includes(b.state)&&b.timer<=0){
         this.setBehavior(a,'observe','look',.8);
       }else if(b.state==='activity'&&b.timer<=0){
-        if(b.fatigue>.68&&b.vigilance===0)this.setBehavior(a,'resting','rest',3+this.random()*2);
+        if(b.fatigue>.68&&b.vigilance===0&&!b.reaction&&b.fear<=.2)this.setBehavior(a,'resting','rest',this.restDuration(a));
         else if(!this.tryConversation(a)&&!this.chooseInterest(a)){
           if(b.stationary){this.setBehavior(a,'observe','look',.8+this.random()*1.4);}
           else if(this.chooseDestination(a)){this.setBehavior(a,'travel',['carry','ski','skate'].includes(a.homeAction)?a.homeAction:'walk',7);}
@@ -393,8 +401,8 @@ class SniperGame {
     }
     this.inspected=a;
   }
-  observationNotes(){
-    return [...this.observations].map(id=>this.actors.find(a=>a.id===id)).filter(Boolean).map((a,i)=>({number:i+1,description:a.desc}));
+  observationNotes(query=''){
+    return [...this.observations].map(id=>this.actors.find(a=>a.id===id)).filter(Boolean).map((a,i)=>({number:i+1,description:a.desc})).filter(note=>note.description.toLocaleLowerCase().includes(String(query).trim().toLocaleLowerCase()));
   }
   get campaignSummary(){
     const completed=this.missionHistory.length,shots=this.missionHistory.reduce((n,r)=>n+r.shots,0);
@@ -412,6 +420,11 @@ class SniperGame {
   retry(){if(this.state!=='failed')return false;Object.assign(this,{score:this.checkpoint.score,totalShots:this.checkpoint.shots,totalHits:this.checkpoint.hits});this.loadMission();this.state='briefing';return true;}
   next(){if(this.state!=='success'||this.mission>=SNIPER_MISSIONS.length-1)return false;this.mission++;this.checkpoint={score:this.score,shots:this.totalShots,hits:this.totalHits};this.loadMission();this.state='briefing';return true;}
   sway(){const strength=5.2-4.1*this.steadiness;return{x:Math.sin(this.elapsed*2.3)*strength,y:Math.cos(this.elapsed*1.7)*strength*.65};}
+  moveAim(dx,dy,dt){
+    if(this.state!=='running'||![dx,dy,dt].every(Number.isFinite)||dt<=0)return false;
+    const length=Math.max(1,Math.hypot(dx,dy)),speed=(this.scoped?95:220)*(this.holding?.5:1)*Math.min(dt,.05);
+    return this.aimAt(this.aim.x+dx/length*speed,this.aim.y+dy/length*speed);
+  }
   aimAt(x,y){if(!Number.isFinite(x)||!Number.isFinite(y))return false;this.aim.x=Math.max(25,Math.min(935,x));this.aim.y=Math.max(35,Math.min(510,y));return true;}
   step(dt){if(!Number.isFinite(dt)||dt<=0)return;dt=Math.min(.05,dt);if(this.state==='shot'){this.stepShot(dt);return;}if(this.state!=='running')return;this.updateParticles(dt);this.elapsed+=dt;this.remaining=Math.max(0,this.remaining-dt);this.cooldown=Math.max(0,this.cooldown-dt);this.shotFlash=Math.max(0,this.shotFlash-dt);if(this.impact)this.impact.life-=dt;
     if(this.reloadLeft>0){this.reloadLeft-=dt;if(this.reloadLeft<=0){this.reloadLeft=0;const n=Math.min(3-this.mag,this.reserve);this.mag+=n;this.reserve-=n;this.feedback='재장전 완료. 표적을 확인하세요.';}}
@@ -443,6 +456,7 @@ class SniperGame {
     this.particles=[];this.shotFlash=0;return true;
   }
   resolveShot(){const shot=this.shot,a=shot.actor;this.impact={x:shot.x,y:shot.y,life:.55};shot.outcome='running';
+    this.shotHistory.push({number:this.shotHistory.length+1,result:a?(a.target?'표적 명중':'오인 사격'):'빗나감',seconds:Math.round(this.elapsed*10)/10});if(this.shotHistory.length>12)this.shotHistory.shift();
     if(a){a.dead=true;a.fallTime=0;a.hitX=shot.x;a.hitY=shot.y;a.fallDir=a.id%2?-1:1;
       for(let i=0;i<18;i++){const angle=-1.45+i*.115,speed=15+(i*13%34);this.particles.push({x:shot.x,y:shot.y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed-15,life:.45+(i%5)*.14,max:1.1,size:1+(i%3)*.45});}
       if(!a.target){shot.outcome='failed';this.failure='다른 인물을 오인 사격했습니다. 윌리의 단서를 모두 확인하세요.';shot.message=this.failure;return;}
@@ -450,6 +464,22 @@ class SniperGame {
       if(this.targetsLeft===0){this.score+=Math.ceil(this.remaining)*8+Math.max(0,100-Math.round(this.alert))*3;shot.outcome=this.mission===SNIPER_MISSIONS.length-1?'won':'success';}
     }else{this.alert=Math.min(100,this.alert+24);this.alertCrowd(shot.x,shot.y);shot.message='빗나갔습니다. 놀란 사람들이 흩어집니다. 경계도가 상승했습니다.';if(this.alert>=100){shot.outcome='failed';this.failure='발사 위치가 노출되어 작전을 중단합니다.';}}
     if(shot.outcome==='running'&&this.mag===0&&this.reserve===0){shot.outcome='failed';this.failure='탄약을 모두 소진했습니다.';}
+  }
+  get tacticalWarning(){
+    if(!['running','paused','shot'].includes(this.state))return '';
+    const messages=[];if(this.remaining<=15)messages.push('시간 주의: 15초 이하');
+    if(this.alert>=72)messages.push('노출 주의: 추가 실수가 작전을 끝낼 수 있습니다');
+    if(this.mag+this.reserve<=3)messages.push('탄약 주의: 남은 탄약 3발 이하');
+    return messages.join(' · ');
+  }
+  get shotReadiness(){
+    if(this.state!=='running')return '작전 진행 중에 사격할 수 있습니다.';
+    if(!this.scoped)return '스코프를 켜세요.';
+    if(this.reloadLeft>0)return '재장전 중입니다.';
+    if(this.cooldown>0)return '다음 사격을 준비하고 있습니다.';
+    if(this.mag<=0)return this.reserve?'탄창이 비었습니다. 재장전하세요.':'남은 탄약이 없습니다.';
+    if(this.requireObservation){const drift=this.sway(),actor=this.actorAt(this.aim.x+drift.x/2.3,this.aim.y+drift.y/2.3);if(!actor||!this.observations.has(actor.id))return '조준한 인물의 관찰을 완료하세요.';}
+    return '사격 준비 완료 · 외형 단서를 다시 확인하세요.';
   }
   shoot(){if(this.state!=='running'||!this.scoped||this.cooldown>0||this.reloadLeft>0)return {kind:'blocked'};if(this.mag<=0){this.feedback=this.reserve?'탄창이 비었습니다. R 또는 재장전을 누르세요.':'남은 탄약이 없습니다.';return {kind:'empty'};}
     const drift=this.sway(),x=this.aim.x+drift.x/2.3,y=this.aim.y+drift.y/2.3;const a=this.actorAt(x,y);
