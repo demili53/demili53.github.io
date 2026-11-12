@@ -92,6 +92,8 @@ const root = path.resolve(__dirname, '..');
     });
     await require('./test-space-shooter-expansion.cjs')(check, page);
     await require('./test-space-shooter-tactics.cjs')(check, page);
+    await require('./test-space-shooter-sectors.cjs')(check, page);
+    await require('./test-space-shooter-polish.cjs')(check, page);
     await page.evaluate(() => { selectedShip = 'speed'; preferredWeapon = 'railgun'; saveLoadout(); });
     await page.reload();
     await page.waitForFunction(() => typeof player !== 'undefined' && player && game.isRunning());
@@ -101,11 +103,15 @@ const root = path.resolve(__dirname, '..');
     await page.waitForTimeout(1600);
     fs.mkdirSync(path.join(root, 'test-results'), { recursive: true });
     await page.evaluate(() => { player.invuln = 0; });
+    await page.evaluate(() => scrollTo(0, 0));
     await page.screenshot({ path: path.join(root, 'test-results/space-shooter-upgraded-desktop.png'), fullPage: true });
     await page.setViewportSize({ width: 390, height: 844 });
     await page.click('#combatPauseBtn');
     await page.evaluate(() => scrollTo(0, 0));
     await page.screenshot({ path: path.join(root, 'test-results/space-shooter-upgraded-mobile.png'), fullPage: true });
+    await page.evaluate(() => { el('lifetimeStats').closest('details').open = true; el('weaponLock').closest('details').open = true; });
+    await page.locator('aside section').first().screenshot({ path: path.join(root, 'test-results/space-shooter-career-mobile.png') });
+    await page.evaluate(() => { el('lifetimeStats').closest('details').open = false; el('weaponLock').closest('details').open = false; });
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
     await page.click('#overlayStartBtn');
     await page.click('#focusBtn');
@@ -147,6 +153,19 @@ const root = path.resolve(__dirname, '..');
     });
     assert.equal(fullscreenFit, true, 'mobile fullscreen keeps board and controls within view');
     await page.evaluate(() => document.exitFullscreen());
+    await page.setViewportSize({ width: 1280, height: 1000 });
+    for (const number of [1, 6, 11]) {
+      await page.evaluate(number => {
+        resetGame(); startGame(); wave = number; player.invuln = 999; reducedEffects = true;
+        spawnFormation(); spawnCarrier();
+        enemies.forEach((enemy, i) => { enemy.y = 140 + i % 3 * 65; });
+        if (number >= 6) { enemies[0].armored = true; }
+        syncUi(); return game.start();
+      }, number);
+      await page.waitForTimeout(160);
+      await page.evaluate(() => game.stop());
+      await page.locator('#gameCanvas').screenshot({ path: path.join(root, `test-results/space-shooter-sector-${number}.png`) });
+    }
     await check('120-second combat simulation has bounded entities and valid progression', () => {
       resetGame(); startGame(); player.level = 10; player.invuln = 999;
       for (let frame = 0; frame < 2400; frame++) {

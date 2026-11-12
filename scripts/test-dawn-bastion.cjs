@@ -349,18 +349,18 @@ assert.equal(new context.Game(()=>.5,'classic','bad').map,'grove');
 console.log('PASS: three maps, spawn lanes, nine mode/map combinations, new weapon economy, priority shots, poison/regen/freeze, gravity resistance, split-once and armored health');
 
 // Expedition rules, roster, bosses and final-wave transitions are independent of free-play records.
-for(let stage=0;stage<6;stage++){
- const m=new context.Game(()=>.5,'rush','grove',stage);assert.equal(m.stage,stage);assert.equal(m.mode,'classic');assert.equal(m.rules.waves,[4,5,5,6,7,8][stage]);assert.equal(m.map,['grove','canyon','glacier','marsh','volcano','ruins'][stage]);
+for(let stage=0;stage<8;stage++){
+ const m=new context.Game(()=>.5,'rush','grove',stage);assert.equal(m.stage,stage);assert.equal(m.mode,'classic');assert.equal(m.rules.waves,[4,5,5,6,7,8,9,10][stage]);assert.equal(m.map,['grove','canyon','glacier','marsh','volcano','ruins','marsh','ruins'][stage]);
  m.spawn();assert(m.scenario.roster.includes(m.enemies[0].kind));assert(Number.isFinite(m.enemies[0].hp));
  for(const wave of m.rules.bosses){const b=new context.Game(()=>.5,'classic','grove',stage);b.state='running';b.wave=wave;b.spawned=b.spawnLimit-1;b.step(.05);assert(b.enemies[0].boss);}
  m.state='running';for(let wave=1;wave<=m.rules.waves;wave++){m.enemies=[];m.spawned=m.spawnLimit;m.waveTime=m.rules.waveSeconds;m.step(.05);if(wave<m.rules.waves){assert.equal(m.state,'reward');m.chooseReward(m.offers[0]);}else assert.equal(m.state,'won');}
 }
-for(const stage of [-2,6,1.5,'1'])assert.equal(new context.Game(()=>.5,'classic','grove',stage).stage,-1);
+for(const stage of [-2,8,1.5,'1'])assert.equal(new context.Game(()=>.5,'classic','grove',stage).stage,-1);
 {
  const move=(kind,hp,slow)=>{const m=fresh();m.state='running';m.spawnClock=100;m.player.x=650;m.player.y=650;m.player.cd=100;m.enemies=[{id:1,x:100,y:360,hp,maxHp:100,kind,r:12,speed:40,slow,cd:100}];m.step(.05);return m.enemies[0].x-100;};
  assert(move('wisp',100,2)>move('grunt',100,2));assert(move('berserker',40,0)>move('berserker',100,0));
 }
-console.log('PASS: six expedition stages, rosters, boss schedule, reward/victory transitions, invalid-stage fallback and special enemy movement');
+console.log('PASS: eight expedition stages, rosters, boss schedule, reward/victory transitions, invalid-stage fallback and special enemy movement');
 
 // Dedicated attack visuals retain the shared bounded effect clock.
 for(const [type,kind]of [['sniper','sniperShot'],['venom','venomCloud'],['gravity','gravityWell']]){
@@ -436,3 +436,37 @@ console.log('PASS expansion 8: bounded per-wave history');
 // Expansion 10: budget-aware presets use real purchases and never overwrite existing towers.
 {for(const mode of ['classic','siege'])for(const map of ['grove','marsh','volcano','ruins'])for(const id of ['balanced','crowd','precision']){const m=new context.Game(()=>.5,mode,map),start=m.gold,plan=m.loadoutPlan(id);assert(plan.cost<=start);assert.equal(new Set(plan.items.map(x=>x.index)).size,plan.items.length);assert.equal(m.deployLoadout(id),false);m.state='building';assert(m.deployLoadout(id));assert.equal(m.gold,start-plan.cost);assert.equal(m.runStats.built,plan.items.length);assert.equal(m.deployLoadout(id),false);assert(m.slots[map==='marsh'?2:0].tower);}const m=fresh();m.state='building';assert.equal(m.deployLoadout('none'),false);assert.equal(m.deployLoadout('bad'),false);}
 console.log('PASS expansion 10: starting loadout budgets and slots');
+
+// Third cycle 1: focus is range-limited, expires, and never selects a dead target.
+{const m=fresh();m.state='building';m.build(0,'arrow');m.enemies=[{id:1,x:400,y:215,hp:100},{id:2,x:360,y:350,hp:100}];assert(m.markTarget());assert.equal(m.focusId,2);assert.equal(m.towerTarget(m.slots[0],m.enemies,175).id,2);m.enemies[1].hp=0;assert.equal(m.towerTarget(m.slots[0],m.enemies,175).id,1);m.state='paused';const frozen=JSON.stringify(m);m.step(.05);assert.equal(JSON.stringify(m),frozen);assert.equal(m.markTarget(),false);}
+console.log('PASS third cycle 1: focus fire');
+
+// Third cycle 2: dodge obeys map edges, grants brief invulnerability, and is unavailable in siege.
+{const m=fresh();m.state='running';m.spawnClock=100;m.step(.05,{x:1,y:0});const x=m.player.x;assert(m.dash());assert.equal(m.player.x,x+85);assert.equal(m.player.inv,.35);assert.equal(m.dash(),false);m.dashCd=0;m.player.x=690;assert(m.dash());assert.equal(m.player.x,702);m.state='paused';assert.equal(m.dash(),false);const siege=new context.Game(()=>.5,'siege');siege.state='running';assert.equal(siege.dash(),false);}
+console.log('PASS third cycle 2: guardian dodge');
+
+// Third cycle 3: overdrive has a real rate effect, bounded cost, pause and expiration.
+{const m=fresh();m.state='building';m.gold=1000;m.build(0,'arrow');const slot=m.slots[0],base=m.combatStats(slot).interval;assert(m.overdrive(0));assert.equal(m.combatStats(slot).interval,base*.65);assert.equal(m.overdrive(0),false);m.state='paused';const snapshot=JSON.stringify(m);m.step(.05);assert.equal(JSON.stringify(m),snapshot);m.state='running';m.spawnClock=1000;for(let i=0;i<121;i++)m.step(.05);assert.equal(slot.tower.overdriveTime,0);assert.equal(m.combatStats(slot).interval,base);assert(slot.tower.overdriveCd>0);}
+console.log('PASS third cycle 3: tower overdrive');
+
+console.log('PASS third cycle 4: stages 7 and 8 boss/reward/victory regression');
+
+// Third cycle 5: late-stage events modify actual spawns and keep bounty attached to each enemy.
+{const m=new context.Game(()=>.5,'classic','grove',6);m.spawn();assert.equal(m.waveEvent().speed,1.15);assert.equal(m.enemies[0].speed,(24+1)*m.rules.enemySpeed*1.15);m.wave=2;m.spawn(true);assert.equal(m.enemies[1].maxHp,(260+120)*m.scenario.hp*1.2);m.wave=3;m.spawn();const e=m.enemies.at(-1),gold=m.gold;m.damage(e,10000);assert.equal(m.gold,gold+11);assert.equal(fresh().waveEvent().bounty,0);}
+console.log('PASS third cycle 5: late expedition wave modifiers');
+
+// Third cycle 6: support stacks by max only, respects range, and does not attack.
+{const m=fresh();m.state='building';m.gold=10000;m.build(0,'arrow');m.build(1,'banner');m.build(7,'banner');const base=m.towerStats('arrow').damage;assert.equal(m.combatStats(m.slots[0]).damage,base*1.15);m.upgrade(1);m.upgrade(1);assert.equal(m.combatStats(m.slots[0]).damage,base*1.25);assert.equal(m.specialize(1,'power'),false);assert(m.specialize(1,'reach'));assert.equal(m.overdrive(1),false);m.state='running';m.spawnClock=100;m.player.cd=100;m.enemies=[{id:1,x:430,y:215,hp:1000,maxHp:1000,r:12,speed:0,slow:0,cd:100}];m.step(.05);assert.equal(m.shots.length,1);assert.equal(m.shots[0].damage,base*1.25);}
+console.log('PASS third cycle 6: command tower aura');
+
+// Third cycle 7: thermal shock needs both effects, has a per-enemy cooldown and freezes on pause.
+{const m=fresh();m.state='running';m.spawnClock=100;m.player.cd=100;const e={id:1,x:100,y:100,hp:1000,maxHp:1000,r:12,speed:0,slow:10,cd:100,burnTime:10,burnDamage:0,burnTick:.5};m.enemies=[e];m.step(.05);assert.equal(e.hp,988);for(let i=0;i<10;i++)m.step(.05);assert.equal(e.hp,988);m.state='paused';const snapshot=JSON.stringify(m);m.step(.05);assert.equal(JSON.stringify(m),snapshot);m.state='running';for(let i=0;i<20;i++)m.step(.05);assert.equal(e.hp,976);e.slow=0;for(let i=0;i<31;i++)m.step(.05);assert.equal(e.hp,976);}
+console.log('PASS third cycle 7: thermal combo cooldown');
+
+// Third cycle 8: practice has funded purchases, weaker real enemies and three-wave victory.
+{const m=new context.Game(()=>.5,'practice');assert.equal(m.mode,'practice');assert.equal(m.gold,600);m.spawn();assert.equal(m.enemies[0].hp,33*.6);assert.equal(m.enemies[0].speed,25*.8);m.state='running';for(let wave=1;wave<=3;wave++){m.enemies=[];m.spawned=m.spawnLimit;m.finishWave();if(wave<3){assert.equal(m.state,'reward');m.chooseReward(m.offers[0]);}else assert.equal(m.state,'won');}}
+console.log('PASS third cycle 8: practice mode');
+
+// Third cycle 9: saved layouts validate entries and always rebuild at level one for full price.
+{const m=new context.Game(()=>.5,'practice');const plan=[{index:0,type:'arrow',level:3},{index:0,type:'laser'},null,{index:2,type:'banner'},{index:20,type:'cannon'},{index:3,type:'bad'}];const preview=m.loadoutPlan('custom',plan);assert.equal(preview.items.length,2);assert.equal(preview.cost,190);m.state='building';assert(m.deployLoadout('custom',plan));assert.equal(m.gold,410);assert.equal(m.slots[0].tower.level,1);assert.equal(m.slots[2].tower.type,'banner');assert.equal(m.loadoutPlan('custom',{}).items.length,0);}
+console.log('PASS third cycle 9: blueprint validation and purchase');

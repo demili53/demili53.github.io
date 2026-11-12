@@ -119,6 +119,7 @@ function drawBastionEnemyArmor(g,e,y,t,reduced) {
 }
 // Weapon textures are generated once; each silhouette communicates its firing style.
 function finishBastionWeapon(g,type,c){
+ if(type==='banner'){g.clear();g.fillStyle(0x455962);g.fillRoundedRect(27,13,6,39,2);g.fillStyle(0xf9dca0);g.fillCircle(30,11,4);g.fillStyle(0xa77b45);g.fillPoints([{x:33,y:15},{x:55,y:19},{x:50,y:29},{x:55,y:37},{x:33,y:33}],true);g.fillStyle(0xffe4aa);g.fillPoints([{x:41,y:20},{x:46,y:26},{x:41,y:32},{x:37,y:26}],true);g.fillStyle(0xc0a67c);g.fillEllipse(30,51,24,7);return;}
  if(['sniper','venom','gravity'].includes(type)){
   g.clear();
   if(type==='sniper'){
