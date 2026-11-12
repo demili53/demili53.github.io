@@ -49,6 +49,14 @@ function sniperActivity(actor,theme){
  return newRoles[actor.role]||(byTheme[theme]||byTheme[theme==='pier'?'harbor':'festival'])[actor.role]||'walk';
 }
 const sniperClamp=(n,min,max)=>Math.max(min,Math.min(max,n));
+function sniperAmbient(theme,time,reduced=false){
+ if(reduced||!Number.isFinite(time))return [];
+ if(theme==='garden')return Array.from({length:7},(_,i)=>({kind:'butterfly',x:85+i*125+Math.sin(time*.65+i)*17,y:116+Math.cos(time*.9+i*2)*12,wing:2+Math.abs(Math.sin(time*6+i))*3,color:i%2?0xefca82:0xcda5c9}));
+ if(theme==='harbor'||theme==='pier')return Array.from({length:10},(_,i)=>({kind:'water',x:(30+i*97+time*6)%940,y:(theme==='pier'?115:145)+i%3*10,alpha:.15+(Math.sin(time*1.5+i)+1)*.16}));
+ if(theme==='festival')return Array.from({length:12},(_,i)=>({kind:'light',x:15+i*76,y:20+(15+i*76)/38,alpha:.08+(Math.sin(time*1.1+i)+1)*.08}));
+ if(theme==='station')return Array.from({length:4},(_,i)=>({kind:'signal',x:400+i*22,y:45,alpha:.3+(Math.sin(time*.8+i)+1)*.3}));
+ return [];
+}
 // Ground footprints of the tables, planters and benches drawn by buildCity.
 function sniperObstacles(theme){
  if(theme==='harbor')return Array.from({length:5},(_,i)=>{const x=120+i*170,y=298+(i%2)*94;return[{x,y,rx:26,ry:14},{x:x+49,y,rx:13,ry:16}];}).flat();
@@ -166,6 +174,8 @@ class SniperGame {
   constructor(random=Math.random){this.random=random;this.state='briefing';this.mission=0;this.score=0;this.totalShots=0;this.totalHits=0;this.checkpoint={score:0,shots:0,hits:0};this.aim={x:480,y:285};this.loadMission();}
   loadMission(){const m=SNIPER_MISSIONS[this.mission];this.elapsed=0;this.remaining=m.time;this.mag=3;this.reserve=9;this.reloadLeft=0;this.cooldown=0;this.alert=0;this.focus=100;this.holding=false;this.scoped=false;this.identification=0;this.inspected=null;this.identifyId=null;this.feedback='표적을 확인한 뒤 스코프를 켜고 사격하세요.';this.shotFlash=0;this.impact=null;this.shot=null;this.particles=[];this.pausedFrom='running';this.failure='';this.actors=[...m.targets,...m.extras].map((a,i)=>({...a,id:i,origin:a.x,originY:a.y,x:a.x,action:sniperActivity(a,m.theme),phase:i*1.3,speed:a.speed||.32,range:a.range||35,dead:false,hidden:false,fallTime:0,hitX:0,hitY:0}));const swap=1+Math.floor(this.random()*(this.actors.length-1)),target=this.actors[0],other=this.actors[swap];for(const k of ['origin','originY','x','y','phase']){const v=target[k];target[k]=other[k];other[k]=v;}this.initCrowd();for(const a of this.actors){a.pose=sniperActorPose(a,0);a.x=a.pose.x;a.y=a.pose.y;}this.aim={x:480,y:285};}
   initCrowd(){
+    this.observations=new Set();this.identifyGrace=0;
+    this.report=null;this.missionHistory??=[];
     this.obstacles=sniperObstacles(this.config.theme);
     for(const a of this.actors){
       a.homeAction=a.action;
@@ -221,12 +231,24 @@ class SniperGame {
     const b=a.motion,route=sniperRoute(b,goal,this.obstacles,this.config.theme==='harbor'?235:178);
     if(!route.length)return false;b.goal={...goal};b.route=route;b.progressDistance=Math.hypot(route[0].x-b.x,route[0].y-b.y);return true;
   }
+  advanceRoute(a){
+    const b=a.motion;
+    // Follow the farthest currently visible waypoint to avoid stopping at every corner.
+    for(let i=b.route.length-1;i>0;i--)if(sniperClearPath(b,b.route[i],this.obstacles)){
+      b.route.splice(0,i);b.progressDistance=Infinity;b.stuck=0;break;
+    }
+    while(b.route.length>1&&Math.hypot(b.route[0].x-b.x,b.route[0].y-b.y)<5){b.route.shift();b.progressDistance=Infinity;b.stuck=0;}
+  }
+  interestHost(spot){
+    const host=this.actors.find(n=>n.id===spot.id),focus=spot.focus||spot;
+    return host&&!host.dead&&!host.hidden&&['activity','observe'].includes(host.motion.state)&&Math.hypot(host.motion.x-focus.x,host.motion.y-focus.y)<14?host:null;
+  }
   chooseInterest(a){
     const b=a.motion;if(b.stationary||b.fear>.2||b.vigilance>0||b.visitCooldown>0||a.hidden)return false;
     const candidates=[];
     for(const spot of this.interests){
-      const host=this.actors.find(n=>n.id===spot.id);
-      if(spot.id===a.id||!host||host.dead||host.hidden||!['activity','observe'].includes(host.motion.state))continue;
+      const host=this.interestHost(spot);
+      if(spot.id===a.id||!host)continue;
       for(const slot of [-1,1]){
         const goal={x:spot.x+slot*48,y:spot.y+12};
         if(goal.x<48||goal.x>912||goal.y>498||Math.abs(goal.x-a.origin)>120||Math.abs(goal.y-a.originY)>60)continue;
@@ -245,8 +267,8 @@ class SniperGame {
     return false;
   }
   tryConversation(a){
-    const b=a.motion;if(a.hidden||b.stationary||b.fear>.2||b.socialCooldown>0||b.reaction||b.vigilance>0)return false;
-    const partner=this.actors.filter(n=>n.id!==a.id&&!n.dead&&!n.hidden&&!n.motion.stationary&&!n.motion.reaction&&n.motion.fear<.2&&n.motion.socialCooldown<=0&&['activity','observe'].includes(n.motion.state))
+    const b=a.motion;if(a.dead||a.hidden||b.stationary||b.fear>.2||b.socialCooldown>0||b.reaction||b.vigilance>0||!['activity','observe'].includes(b.state))return false;
+    const partner=this.actors.filter(n=>n.id!==a.id&&!n.dead&&!n.hidden&&!n.motion.stationary&&!n.motion.reaction&&n.motion.fear<.2&&n.motion.vigilance===0&&n.motion.socialCooldown<=0&&['activity','observe'].includes(n.motion.state))
       .sort((p,q)=>Math.hypot(p.x-a.x,p.y-a.y)-Math.hypot(q.x-a.x,q.y-a.y))
       .find(n=>{const distance=Math.hypot(n.x-a.x,n.y-a.y);return distance>28&&distance<78&&Math.abs(n.y-a.y)<25&&sniperClearPath(b,n.motion,this.obstacles);});
     if(!partner)return false;
@@ -266,9 +288,9 @@ class SniperGame {
       if(a.dead){a.fallTime=Math.min(1.2,a.fallTime+dt);continue;}
       const b=a.motion;b.timer-=dt;b.blend=Math.min(1,b.blend+dt*4);b.fear=Math.max(0,b.fear-dt*.055);b.socialCooldown=Math.max(0,b.socialCooldown-dt);
       b.visitCooldown=Math.max(0,b.visitCooldown-dt);
-      if(b.visit){const host=this.actors.find(n=>n.id===b.visit.id);if(!host||host.dead||host.hidden||!['activity','observe'].includes(host.motion.state))this.setBehavior(a,'observe','look',.8);}
+      if(b.visit&&!this.interestHost(b.visit))this.setBehavior(a,'observe','look',.8);
       b.yielding=Math.max(0,b.yielding-dt);b.vigilance=Math.max(0,b.vigilance-dt);if(b.vigilance===0)b.alarmCount=0;
-      if(b.state==='social'){const partner=this.actors.find(n=>n.id===b.partner);if(a.hidden||!partner||partner.dead||partner.hidden)b.timer=0;}
+      if(b.state==='social'){const partner=this.actors.find(n=>n.id===b.partner);if(a.hidden||!partner||partner.dead||partner.hidden||partner.motion.partner!==a.id)b.timer=0;else b.facing=partner.x>a.x?1:-1;}
       if(b.reaction){b.reaction.delay-=dt;if(b.reaction.delay<=0){
         b.threat={x:b.reaction.x,y:b.reaction.y};b.reaction=null;
         this.setBehavior(a,'startled','startle',.35+b.courage*.4);
@@ -295,7 +317,7 @@ class SniperGame {
         else this.setBehavior(a,'observe','look',1);
       }
       const moving=['travel','flee','return'].includes(b.state);
-      while(b.route.length>1&&Math.hypot(b.route[0].x-b.x,b.route[0].y-b.y)<5){b.route.shift();b.progressDistance=Infinity;b.stuck=0;}
+      if(moving)this.advanceRoute(a);
       if(moving&&b.stuck>.75&&b.replans<2){this.planRoute(a,b.goal);b.replans++;b.stuck=0;}
       const waypoint=b.route[0]||b.goal,dx=waypoint.x-b.x,dy=waypoint.y-b.y,dist=Math.hypot(b.goal.x-b.x,b.goal.y-b.y),wayDistance=Math.hypot(dx,dy);
       if(moving&&(dist<4||b.timer<=0||b.stuck>1.4)&&(b.state!=='flee'||b.timer<b.escapeLeft-.4)){
@@ -353,6 +375,17 @@ class SniperGame {
       return Math.abs(localX)<(inspect?23:10)&&localY>(inspect?-55:-46)&&localY<(inspect?8:2);
     });
   }
+  updateObservation(a,dt){
+    if(a){
+      if(a.id!==this.identifyId){this.identifyId=a.id;this.identification=0;}
+      this.identification=this.observations.has(a.id)?1:Math.min(1,this.identification+dt/1.1);
+      this.identifyGrace=.22;if(this.identification===1)this.observations.add(a.id);
+    }else{
+      this.identifyGrace=Math.max(0,this.identifyGrace-dt);
+      if(this.identifyGrace===0){this.identification=0;this.identifyId=null;}
+    }
+    this.inspected=a;
+  }
   get config(){return SNIPER_MISSIONS[this.mission];}
   get targetsLeft(){return this.actors.filter(a=>a.target&&!a.dead).length;}
   start(){if(this.state!=='briefing')return false;this.state='running';return true;}
@@ -363,19 +396,32 @@ class SniperGame {
   retry(){if(this.state!=='failed')return false;Object.assign(this,{score:this.checkpoint.score,totalShots:this.checkpoint.shots,totalHits:this.checkpoint.hits});this.loadMission();this.state='briefing';return true;}
   next(){if(this.state!=='success'||this.mission>=SNIPER_MISSIONS.length-1)return false;this.mission++;this.checkpoint={score:this.score,shots:this.totalShots,hits:this.totalHits};this.loadMission();this.state='briefing';return true;}
   sway(){const strength=this.holding&&this.focus>0?1.1:5.2;return{x:Math.sin(this.elapsed*2.3)*strength,y:Math.cos(this.elapsed*1.7)*strength*.65};}
-  aimAt(x,y){this.aim.x=Math.max(25,Math.min(935,x));this.aim.y=Math.max(35,Math.min(510,y));}
-  step(dt){dt=Math.min(.05,Math.max(0,dt));if(this.state==='shot'){this.stepShot(dt);return;}if(this.state!=='running')return;this.updateParticles(dt);this.elapsed+=dt;this.remaining=Math.max(0,this.remaining-dt);this.cooldown=Math.max(0,this.cooldown-dt);this.shotFlash=Math.max(0,this.shotFlash-dt);if(this.impact)this.impact.life-=dt;
+  aimAt(x,y){if(!Number.isFinite(x)||!Number.isFinite(y))return false;this.aim.x=Math.max(25,Math.min(935,x));this.aim.y=Math.max(35,Math.min(510,y));return true;}
+  step(dt){if(!Number.isFinite(dt)||dt<=0)return;dt=Math.min(.05,dt);if(this.state==='shot'){this.stepShot(dt);return;}if(this.state!=='running')return;this.updateParticles(dt);this.elapsed+=dt;this.remaining=Math.max(0,this.remaining-dt);this.cooldown=Math.max(0,this.cooldown-dt);this.shotFlash=Math.max(0,this.shotFlash-dt);if(this.impact)this.impact.life-=dt;
     if(this.reloadLeft>0){this.reloadLeft-=dt;if(this.reloadLeft<=0){this.reloadLeft=0;const n=Math.min(3-this.mag,this.reserve);this.mag+=n;this.reserve-=n;this.feedback='재장전 완료. 표적을 확인하세요.';}}
     if(this.holding&&this.scoped&&this.reloadLeft===0){this.focus=Math.max(0,this.focus-dt*32);if(this.focus===0)this.holding=false;}else this.focus=Math.min(100,this.focus+dt*18);
     this.stepCrowd(dt);
     const a=this.scoped?this.actorAt(this.aim.x,this.aim.y,true):null;
-    if(a&&a.id===this.identifyId)this.identification=Math.min(1,this.identification+dt/1.1);else{this.identification=0;this.identifyId=a?.id??null;}this.inspected=a;
+    this.updateObservation(a,dt);
     if(this.remaining===0)this.fail('작전 시간이 초과되었습니다.');
   }
   updateParticles(dt){for(const p of this.particles){p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=75*dt;}this.particles=this.particles.filter(p=>p.life>0);}
   stepShot(dt){const shot=this.shot;shot.clock+=dt;this.shotFlash=Math.max(0,this.shotFlash-dt);this.updateParticles(dt);for(const a of this.actors)if(a.dead)a.fallTime=Math.min(1.2,a.fallTime+dt);
     if(!shot.impacted&&shot.clock>=shot.flight){shot.impacted=true;this.resolveShot();}
-    if(shot.clock>=shot.duration){this.state=shot.outcome;this.feedback=shot.message;this.shot=null;this.cooldown=.15;}
+    if(shot.clock>=shot.duration){
+      if(!this.report&&['success','won'].includes(shot.outcome)){
+        const shots=this.totalShots-this.checkpoint.shots;
+        this.report={mission:this.mission,shots,accuracy:Math.round(100/Math.max(1,shots)),observed:this.observations.size,seconds:Math.round((this.config.time-this.remaining)*10)/10,grade:shots===1?(this.remaining>=this.config.time*.5?'S':'A'):'B'};
+        this.missionHistory.push({...this.report});
+      }
+      this.state=shot.outcome;this.feedback=shot.message;this.shot=null;this.cooldown=.15;
+    }
+  }
+  skipShot(){
+    if(this.state!=='shot'||!this.shot)return false;
+    this.stepShot(Math.max(0,this.shot.duration-this.shot.clock)+.001);
+    for(const a of this.actors)if(a.dead)a.fallTime=1.2;
+    this.particles=[];this.shotFlash=0;return true;
   }
   resolveShot(){const shot=this.shot,a=shot.actor;this.impact={x:shot.x,y:shot.y,life:.55};shot.outcome='running';
     if(a){a.dead=true;a.fallTime=0;a.hitX=shot.x;a.hitY=shot.y;a.fallDir=a.id%2?-1:1;
