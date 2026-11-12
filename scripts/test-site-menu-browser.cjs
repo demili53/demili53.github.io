@@ -63,7 +63,45 @@ export async function signOut(){setUser(null);}`;
     await page.goto(`${origin}/arcade/rift-blade.html`);
     await page.waitForFunction(() => document.querySelector('site-header')?.shadowRoot?.querySelector('#accountLabel')?.textContent === '로그인·회원가입');
     assert.equal(await menuLinks.count(), 5);
+    assert.equal(await page.locator('site-header nav h2#gamesLabel').count(), 1);
+    assert.equal(await page.locator('site-header nav h2#toolsLabel').count(), 1);
+    assert.equal(await page.locator('site-header nav section[aria-labelledby="gamesLabel"] a').count(), 4);
+    assert.equal(await page.locator('site-header nav section[aria-labelledby="toolsLabel"] a').count(), 1);
+    assert.deepEqual(await menuLinks.evaluateAll(links => links.map(link => link.getAttribute('href'))), [
+      '/', '/arcade/rift-blade.html', '/arcade/space-shooter.html', '/arcade/shadow-sniper.html', '/exaone/'
+    ], 'games stay together before the AI tool');
     assert.equal(await page.locator('site-header nav [aria-current="page"]').getAttribute('href'), '/arcade/rift-blade.html');
+    // Real games listen on document/window. Shadow DOM retargets the header's
+    // button to SITE-HEADER, so their native-button guards cannot protect it.
+    await page.evaluate(() => {
+      window.menuTestKeys = { down: [], up: [], contentClicks: 0 };
+      const shortcuts = ['Space', 'KeyP', 'KeyF', 'ArrowDown'];
+      document.addEventListener('keydown', event => {
+        if (!shortcuts.includes(event.code)) return;
+        window.menuTestKeys.down.push(event.code);
+        if (event.code !== 'Space' || event.target.tagName !== 'BUTTON') event.preventDefault();
+      });
+      document.addEventListener('keyup', event => {
+        if (shortcuts.includes(event.code)) window.menuTestKeys.up.push(event.code);
+      });
+      document.querySelector('#contentAction').addEventListener('click', () => window.menuTestKeys.contentClicks++);
+    });
+    await toggle.focus();
+    await page.keyboard.press('Space');
+    await expectOpen(true);
+    await page.keyboard.press('Space');
+    await expectOpen(false);
+    assert.deepEqual(await page.evaluate(() => window.menuTestKeys.down), [], 'Space activates header button without triggering game');
+    assert.deepEqual(await page.evaluate(() => window.menuTestKeys.up), ['Space', 'Space'], 'keyup still releases held game keys');
+    await page.keyboard.press('Space');
+    await menuLinks.first().focus();
+    for (const key of ['p', 'f', 'ArrowDown']) await page.keyboard.press(key);
+    assert.deepEqual(await page.evaluate(() => window.menuTestKeys.down), [], 'menu navigation does not run game shortcuts');
+    await page.locator('#contentAction').focus();
+    await page.keyboard.press('p');
+    await page.keyboard.press('Space');
+    assert.deepEqual(await page.evaluate(() => window.menuTestKeys.down), ['KeyP', 'Space'], 'main keyboard input still reaches game handlers');
+    assert.equal(await page.evaluate(() => window.menuTestKeys.contentClicks), 1, 'main buttons retain native keyboard activation');
     await expectOpen(false);
     const closedBounds = await page.evaluate(() => ({
       main: document.querySelector('main').getBoundingClientRect().top,
@@ -142,6 +180,9 @@ export async function signOut(){setUser(null);}`;
 
     await setUser(null);
     fs.mkdirSync(path.join(root, 'test-results'), { recursive: true });
+    await page.setViewportSize({ width: 768, height: 900 });
+    await page.screenshot({ path: path.join(root, 'test-results/site-menu-tablet.png') });
+    await page.setViewportSize({ width: 1440, height: 900 });
     await page.screenshot({ path: path.join(root, 'test-results/site-menu-desktop.png') });
     await page.setViewportSize({ width: 390, height: 844 });
     await toggle.click();
@@ -151,7 +192,7 @@ export async function signOut(){setUser(null);}`;
     await page.setViewportSize({ width: 667, height: 375 });
     await menuLinks.last().scrollIntoViewIfNeeded();
     const landscape = await panel.evaluate(el => {
-      const last = el.querySelector('nav a:last-child').getBoundingClientRect();
+      const last = [...el.querySelectorAll('nav a')].at(-1).getBoundingClientRect();
       const bounds = el.getBoundingClientRect();
       return { scrollable: el.scrollHeight > el.clientHeight, lastTop: last.top, lastBottom: last.bottom, panelTop: bounds.top, panelBottom: bounds.bottom, height: innerHeight };
     });
@@ -168,7 +209,7 @@ export async function signOut(){setUser(null);}`;
     assert.equal(await page.locator('site-header nav [aria-current]').count(), 0);
     assert.deepEqual(errors, [], 'no browser errors');
     assert.deepEqual(failures, [], 'interaction regressions');
-    console.log('PASS: menu toggle, Escape/focus, skip/outside close, breakpoint reset, current pages, 6 responsive widths, both auth states, and screenshots');
+    console.log('PASS: game/tool groups, keyboard isolation/native controls, menu toggle, Escape/focus, skip/outside close, breakpoint reset, current pages, 6 responsive widths, both auth states, and screenshots');
   } finally {
     await browser?.close();
     await new Promise(resolve => server.close(resolve));

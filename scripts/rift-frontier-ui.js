@@ -2,7 +2,7 @@
 // The second expedition expansion shares the canvas and core state with the main UI.
 let riftCampTab='loot',riftFrontierKey='',riftLastCamp=-1,riftPracticeReturn=null;
 let riftJournalData=RiftJournal.load(),riftJournalRecorded='';
-const riftEnemyNames={guard:'검병',mage:'마법사',brute:'중갑병',ranger:'궁병',wraith:'망령',boss:'수문장'};
+const riftEnemyNames={guard:'검병',mage:'마법사',brute:'중갑병',ranger:'궁병',wraith:'망령',sentinel:'방패병',acolyte:'치유사',boss:'수문장'};
 
 function riftOfferCards(id,offers,attribute){
  const holder=$(id);holder.replaceChildren();
