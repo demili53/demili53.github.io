@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>미사일 러시 | 무기 업그레이드 슈팅 게임 · PartyGame</title>
+<meta name="description" content="위에서 쏟아지는 적 편대를 아래의 미사일 포대로 막아내세요. 레벨업마다 다연장·유도·관통·폭발 탄두를 업그레이드하고, 보스를 격파해 미사일을 5단계로 진화시키는 무료 브라우저 무한 웨이브 슈팅 게임.">
+<meta name="keywords" content="미사일 게임,무기 업그레이드 게임,슈팅 게임,무한 웨이브,브라우저 게임,무료 게임"><meta name="robots" content="index, follow"><meta name="theme-color" content="#0d111a">
+<link rel="canonical" href="https://partygame.pe.kr/arcade/missile-rush.html"><link rel="icon" href="/favicon.ico">
+<meta property="og:type" content="website"><meta property="og:site_name" content="PartyGame"><meta property="og:title" content="미사일 러시 | 무기 업그레이드 슈팅 게임"><meta property="og:description" content="쏟아지는 적을 막고 미사일을 업그레이드하며 끝없이 버티는 슈팅 게임."><meta property="og:url" content="https://partygame.pe.kr/arcade/missile-rush.html"><meta property="og:image" content="https://partygame.pe.kr/assets/games/missile-rush/share.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="미사일 러시 게임 화면">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="미사일 러시"><meta name="twitter:description" content="미사일을 업그레이드하며 끝없는 적 편대를 막아내세요."><meta name="twitter:image" content="https://partygame.pe.kr/assets/games/missile-rush/share.png">
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-T2KDKBN8');</script>
+<meta name="google-adsense-account" content="ca-pub-1087435977438565"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565" crossorigin="anonymous"></script>
+<script src="/scripts/site-layout.js" defer></script><link rel="stylesheet" href="/styles/site-design.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"미사일 러시","url":"https://partygame.pe.kr/arcade/missile-rush.html","description":"위에서 쏟아지는 적을 미사일 포대로 막으며 레벨업 업그레이드와 보스 격파 진화로 화력을 키우는 무한 웨이브 슈팅 게임.","inLanguage":"ko","genre":["Arcade","Shooter"],"gamePlatform":["PC web browser","Mobile web browser"],"playMode":"https://schema.org/SinglePlayer","isAccessibleForFree":true,"operatingSystem":"Web browser","applicationCategory":"GameApplication"}</script>
+<style>
+body{margin:0}button{font:inherit;cursor:pointer}button:disabled{opacity:.4;cursor:not-allowed}[hidden]{display:none!important}
+.rush-shell{max-width:1180px;margin:auto;padding:30px 28px 0}
+.rush-heading{display:flex;justify-content:space-between;align-items:end;gap:18px;margin:6px 0 24px}.kicker{font-size:10px;letter-spacing:.22em;color:#ffad66;font-weight:750}
+.rush-heading h1{font-size:clamp(29px,4vw,44px);margin:9px 0 10px;color:#f4f7ff;font-weight:850;line-height:1.2}.sub{font-size:13px;color:#99abc2;line-height:1.8;margin:0}
+.classification{font-size:10px;letter-spacing:.13em;color:#a7b8ce;padding:9px 12px;border:1px solid #344357;border-radius:5px;white-space:nowrap}
+.rush-layout{display:grid;grid-template-columns:minmax(0,520px) minmax(0,1fr);gap:18px;justify-content:center}
+.rush-panel{background:#151e2d;border:1px solid #29384e;border-radius:12px;overflow:hidden}.rush-layout>section{align-self:start}
+.rush-hud{display:grid;grid-template-columns:repeat(4,1fr);padding:12px 14px;gap:8px;background:#172232;border-bottom:1px solid #2c3a50}
+.rush-hud small{font-size:9px;color:#8ea3be;display:block;letter-spacing:.1em}.rush-hud strong{font-size:19px;color:#f1f5fc;display:block;margin-top:4px;font-variant-numeric:tabular-nums}.rush-hud strong.danger{color:#ff8f86}
+.xp{padding:8px 14px;background:#131c2a;border-bottom:1px solid #2c3a50;display:flex;align-items:center;gap:10px}.xp .bar{flex:1;height:6px;background:#0b1320;border-radius:8px;overflow:hidden}.xp .bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,#84dfc2,#7ce8ff);transition:width .12s}.xp small{font-size:10px;color:#9fb6cc;min-width:86px;text-align:right;font-variant-numeric:tabular-nums}
+.rush-stage{position:relative;aspect-ratio:480/760;width:100%;margin:auto;background:#0a0f24;overflow:hidden;user-select:none;-webkit-user-select:none}
+.rush-stage canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+.rush-banner{position:absolute;top:16%;left:0;right:0;text-align:center;font-size:20px;font-weight:850;color:#ffe2a8;text-shadow:0 2px 10px #000;pointer-events:none;letter-spacing:.02em}
+.rush-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#070c1ce0;text-align:center;padding:18px;backdrop-filter:blur(4px)}
+.rush-overlay>div{max-width:420px;width:100%}.rush-overlay h2{font-size:25px;color:#fff;margin:8px 0 10px}.rush-overlay p{font-size:13px;line-height:1.8;color:#b3c4db;margin:0 0 16px;white-space:pre-line}
+.rush-btn{border:1px solid #3d506a;background:#23344a;color:#e6f0ff;border-radius:7px;min-height:42px;padding:10px 16px;font-size:13px;font-weight:700}.rush-btn:hover:not(:disabled){background:#304963}.rush-btn.primary{background:#ffad66;border-color:#ffad66;color:#251a11}.rush-btn.primary:hover:not(:disabled){background:#ffc08a}
+.rush-cards{display:grid;gap:9px}.rush-card{display:grid;grid-template-columns:auto auto 1fr;grid-template-areas:"k i b" "k i s" "k i e";column-gap:12px;align-items:center;text-align:left;background:#182638;border:1px solid #3e5674;border-radius:10px;padding:12px 14px;color:#e8f1ff}
+.rush-card:hover,.rush-card:focus-visible{border-color:#ffad66;background:#22324a}.rush-card kbd{grid-area:k;font-size:10px;font-family:inherit;color:#8ea3be;border:1px solid #3e5674;border-radius:4px;padding:2px 6px}.rush-card .ico{grid-area:i;font-size:26px;color:#ffc58f;width:34px;text-align:center}
+.rush-card b{grid-area:b;font-size:15px}.rush-card small{grid-area:s;font-size:12px;color:#a9bdd6;line-height:1.5;margin-top:2px}.rush-card em{grid-area:e;font-style:normal;font-size:10px;color:#84dfc2;margin-top:3px}
+.rush-controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:11px 13px}.rush-controls label{font-size:12px;color:#b8c9d8}
+.rush-status{font-size:12px;line-height:1.7;margin:0;padding:0 14px 13px;color:#bdcce0;min-height:34px}
+.rush-aside{display:grid;align-content:start;gap:14px}.card{padding:18px}.card h2{font-size:15px;margin:8px 0 12px;color:#edf3fb}.card p,.card li{font-size:12px;color:#a3b6ce;line-height:1.85}
+.tier{font-size:17px;font-weight:850;margin:4px 0 12px}.stat-list,.owned-list{list-style:none;padding:0;margin:0;display:grid;gap:4px}.stat-list{grid-template-columns:1fr 1fr;column-gap:16px}
+.stat-list li,.owned-list li{display:flex;justify-content:space-between;border-bottom:1px solid #243248;padding:3px 0}.stat-list b,.owned-list b{color:#f1f5fc;font-variant-numeric:tabular-nums}.owned-list li.empty{border:0;color:#8ea3be}
+.evo-track{display:flex;gap:5px;margin-top:12px}.evo-track span{flex:1;height:5px;border-radius:4px;background:#30405a}
+.best{font-size:22px;font-weight:750;color:#ffbd86}
+#firebaseRankingList{list-style:none;padding:0;margin:12px 0}#firebaseRankingList li{padding:10px 0;border-bottom:1px solid #2a394d;display:flex;align-items:center;gap:9px;font-size:11px;color:#c2d0e4}#firebaseRankingList li>strong{min-width:17px;color:#ffb981}#firebaseRankingList li>span:first-of-type{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#firebaseRankingList li>span:last-of-type{white-space:nowrap}#firebaseRankingStatus{font-size:11px;line-height:1.8}
+.rush-guide{margin-top:28px;padding:24px;border-radius:12px;border:1px solid #29384e;background:#131c2a}.rush-guide h2{font-size:20px;color:#f1f5ff;margin:0 0 18px}.guide-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}.rush-guide h3{font-size:13px;color:#ffd0a5}.rush-guide p,.rush-guide li{font-size:12px;color:#9fb0c6;line-height:1.95}
+.crosslinks{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.crosslinks a{font-size:12px;color:#ffbf8c;border:1px solid #344357;border-radius:6px;padding:8px 12px}
+@media(max-width:900px){.rush-layout{grid-template-columns:1fr}.rush-aside{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:580px){.rush-shell{padding:18px 12px 0}.classification{display:none}.rush-heading{margin-bottom:16px}.rush-heading h1{font-size:30px}.sub{font-size:12px}.rush-hud{padding:9px 10px}.rush-hud strong{font-size:15px}.rush-hud small{font-size:8px}.rush-aside{grid-template-columns:1fr}.guide-grid{grid-template-columns:1fr;gap:6px}.rush-guide{padding:18px}.rush-card{padding:10px 12px}.rush-card b{font-size:14px}.rush-overlay h2{font-size:21px}.rush-banner{font-size:16px}}
+</style>
+</head><body><site-header></site-header><noscript><p>게임을 실행하려면 JavaScript를 켜 주세요.</p><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T2KDKBN8" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<main class="rush-shell" id="mainContent" tabindex="-1">
+<header class="rush-heading"><div><div class="kicker">ENDLESS WEAPON UPGRADE SHOOTER</div><h1>미사일 러시</h1><p class="sub">하늘에서 적 편대가 쏟아진다. 포대는 멈추지 않는다.<br>레벨업마다 무기를 업그레이드하고, 보스를 격파해 미사일을 진화시켜라.</p></div><span class="classification">ENDLESS WAVES / 5 MISSILE TIERS</span></header>
+<div class="rush-layout"><section class="rush-panel" id="rushPanel" aria-label="미사일 러시 게임">
+<div class="rush-hud"><div><small>WAVE</small><strong id="waveHud">1</strong></div><div><small>내구도</small><strong id="hpHud">5 / 5</strong></div><div><small>레벨</small><strong id="levelHud">Lv.1</strong></div><div><small>점수</small><strong id="scoreHud">0</strong></div></div>
+<div class="xp"><div class="bar" aria-hidden="true"><span id="xpBar"></span></div><small id="xpText">0 / 11 XP</small></div>
+<div class="rush-stage"><canvas id="rushCanvas" width="480" height="760" tabindex="0" aria-label="미사일 포대 전장. 방향키 또는 WASD로 이동하고 화면을 드래그해도 이동합니다. 미사일은 자동 발사됩니다."></canvas>
+<div class="rush-banner" id="rushBanner" hidden aria-hidden="true"></div>
+<div class="rush-overlay" id="rushOverlay"><div><div class="kicker" id="overlayKicker">MISSILE RUSH</div><h2 id="overlayTitle">방어선을 지켜라</h2><p id="overlayText">미사일은 자동으로 발사됩니다. 포대를 움직여 적을 격추하고, 떨어지는 경험치 결정을 모아 레벨업하세요.
+적이 아래 방어선을 넘거나 포대에 부딪히면 내구도가 줄어듭니다.</p><div class="rush-cards" id="upgradeChoices" hidden></div><button class="rush-btn primary" id="startRush" disabled>불러오는 중…</button></div></div>
+</div>
+<div class="rush-controls"><button class="rush-btn" id="pauseRush" disabled>일시정지</button><label><input id="rushSound" type="checkbox"> 효과음</label><label><input id="rushMotion" type="checkbox"> 화면 흔들림 끄기</label></div>
+<p class="rush-status" id="rushStatus" role="status" aria-live="polite">전투 시작을 누르면 1웨이브가 시작됩니다.</p>
+</section><aside class="rush-aside">
+<section class="rush-panel card"><div class="kicker">CURRENT WEAPON</div><h2>현재 미사일</h2><div class="tier" id="tierName" style="color:#ffd27a">Mk.I 소형 미사일</div><ul class="stat-list" id="weaponStats"></ul><div class="evo-track" id="evoTrack" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div><p>5웨이브마다 등장하는 보스를 격파하면 미사일이 한 단계 진화합니다(최대 Mk.V).</p></section>
+<section class="rush-panel card"><h2>장착한 업그레이드</h2><ul class="owned-list" id="upgradeList"><li class="empty">레벨업하면 업그레이드 카드를 선택합니다.</li></ul></section>
+<section class="rush-panel card"><h2>조작 방법</h2><p>방향키 / WASD · 포대 이동<br>화면 드래그 · 포대 이동(모바일)<br>미사일 · 자동 발사<br>1 · 2 · 3 · 업그레이드 선택<br>P / Esc · 일시정지</p></section>
+<section class="rush-panel card"><div class="kicker">PERSONAL RECORD</div><h2>이 브라우저 최고 기록</h2><div class="best" id="rushBest">0점 · 0웨이브</div></section>
+<section class="rush-panel card"><h2>미사일 러시 TOP 10</h2><ol id="firebaseRankingList"><li class="sub">온라인 기록을 불러오는 중…</li></ol><p id="firebaseRankingStatus" aria-live="polite">로그인 회원의 최고 기록을 저장합니다.</p></section>
+</aside></div>
+<section class="rush-guide"><div class="kicker">FIELD MANUAL</div><h2>쏟아지는 적, 끝없이 강해지는 미사일</h2><div class="guide-grid">
+<div><h3>01. 끝없는 웨이브</h3><p>정찰 드론으로 시작해 지그재그 전투기, 중장갑 운반선, 조준 사격을 하는 포격기, 처치하면 두 조각으로 갈라지는 분열 모함이 차례로 합류합니다. 웨이브가 오를수록 적의 체력과 수, 속도가 늘어납니다.</p></div>
+<div><h3>02. 10가지 업그레이드</h3><p>탄두 강화·고속 장전·다연장 발사대·유도 장치·관통 탄두·폭발 탄두·측면 드론·치명 조준·장갑 보강·자석 회수기 중 레벨업마다 무작위 3장을 제시합니다. 다연장과 폭발 탄두는 무리를, 관통과 유도는 빠른 적을 상대하기 좋습니다.</p></div>
+<div><h3>03. 보스와 미사일 진화</h3><p>5·10·15… 웨이브에는 탄막을 뿌리고 드론을 부르는 거대 요새선이 등장합니다. 격파하면 내구도 2를 회복하고 미사일이 Mk.II 고폭 → Mk.III 플라즈마 → Mk.IV 반물질 → Mk.V 성운 파괴탄으로 진화합니다.</p></div>
+</div></section>
+<nav class="crosslinks" aria-label="게임 선택"><a href="/arcade/space-shooter.html">비행기 슈팅 ↗</a><a href="/arcade/rift-blade.html">균열의 검 RPG ↗</a><a href="/arcade/shadow-sniper.html">윌리를 찾아서 저격해라 ↗</a></nav>
+</main><site-footer></site-footer>
+<script type="module">import { initializeGameRanking } from '/scripts/firebase-game-ranking.js';initializeGameRanking({gameId:'missile-rush',gameName:'미사일 러시'});</script>
+<script src="/scripts/missile-rush-core.js"></script><script src="/scripts/missile-rush.js"></script>
+</body></html>

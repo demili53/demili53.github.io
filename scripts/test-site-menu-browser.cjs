@@ -62,13 +62,13 @@ export async function signOut(){setUser(null);}`;
 
     await page.goto(`${origin}/arcade/rift-blade.html`);
     await page.waitForFunction(() => document.querySelector('site-header')?.shadowRoot?.querySelector('#accountLabel')?.textContent === '로그인·회원가입');
-    assert.equal(await menuLinks.count(), 5);
+    assert.equal(await menuLinks.count(), 6);
     assert.equal(await page.locator('site-header nav h2#gamesLabel').count(), 1);
     assert.equal(await page.locator('site-header nav h2#toolsLabel').count(), 1);
-    assert.equal(await page.locator('site-header nav section[aria-labelledby="gamesLabel"] a').count(), 4);
+    assert.equal(await page.locator('site-header nav section[aria-labelledby="gamesLabel"] a').count(), 5);
     assert.equal(await page.locator('site-header nav section[aria-labelledby="toolsLabel"] a').count(), 1);
     assert.deepEqual(await menuLinks.evaluateAll(links => links.map(link => link.getAttribute('href'))), [
-      '/', '/arcade/rift-blade.html', '/arcade/space-shooter.html', '/arcade/shadow-sniper.html', '/exaone/'
+      '/', '/arcade/rift-blade.html', '/arcade/space-shooter.html', '/arcade/missile-rush.html', '/arcade/shadow-sniper.html', '/exaone/'
     ], 'games stay together before the AI tool');
     assert.equal(await page.locator('site-header nav [aria-current="page"]').getAttribute('href'), '/arcade/rift-blade.html');
     // Real games listen on document/window. Shadow DOM retargets the header's
@@ -200,7 +200,7 @@ export async function signOut(){setUser(null);}`;
     assert(landscape.lastTop >= landscape.panelTop && landscape.lastBottom <= landscape.panelBottom + 1 && landscape.panelBottom <= landscape.height, 'last item is reachable inside landscape viewport');
     await page.setViewportSize({ width: 390, height: 844 });
 
-    for (const pathname of ['/', '/arcade/space-shooter.html', '/arcade/shadow-sniper.html', '/exaone/']) {
+    for (const pathname of ['/', '/arcade/space-shooter.html', '/arcade/missile-rush.html', '/arcade/shadow-sniper.html', '/exaone/']) {
       await page.goto(origin + pathname);
       assert.equal(await page.locator('site-header nav [aria-current="page"]').getAttribute('href'), pathname);
     }

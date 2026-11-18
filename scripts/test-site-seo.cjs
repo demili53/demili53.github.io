@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const root = path.resolve(__dirname, '..');
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 const origin = 'https://partygame.pe.kr';
-const games = [['arcade/rift-blade.html', '/arcade/rift-blade.html'], ['index.html', '/'], ['arcade/space-shooter.html', '/arcade/space-shooter.html'], ['arcade/shadow-sniper.html', '/arcade/shadow-sniper.html']];
+const games = [['arcade/rift-blade.html', '/arcade/rift-blade.html'], ['index.html', '/'], ['arcade/space-shooter.html', '/arcade/space-shooter.html'], ['arcade/shadow-sniper.html', '/arcade/shadow-sniper.html'], ['arcade/missile-rush.html', '/arcade/missile-rush.html']];
 for (const [file, url] of games) {
   const html = read(file);
   assert(html.includes(`rel="canonical" href="${origin}${url}"`), file);
@@ -30,7 +30,7 @@ assert(!read('robots.txt').includes('blog'));
 assert.match(read('404.html'), /noindex, follow/);
 for (const dir of ['blog', 'ai-ranking', 'game-ranking', 'webtoon-ranking', 'downloads']) assert(!fs.existsSync(path.join(root, dir)), dir);
 for (const file of ['2048.html', 'send-volume-calculator.html', 'ffmpeg-video-joiner.html', 'arcade/zombi-shot.html', 'arcade/vampire-survival.html']) assert(!fs.existsSync(path.join(root, file)), file);
-for (const file of ['arcade/rift-blade.html', 'index.html', 'arcade/space-shooter.html', 'arcade/shadow-sniper.html', 'account.html', 'privacy.html', 'terms.html', 'contact.html', '404.html']) {
+for (const file of ['arcade/missile-rush.html', 'arcade/rift-blade.html', 'index.html', 'arcade/space-shooter.html', 'arcade/shadow-sniper.html', 'account.html', 'privacy.html', 'terms.html', 'contact.html', '404.html']) {
   const html = read(file);
   for (const match of html.matchAll(/(?:href|src)="(\/[^"#?]*)[^\"]*"/g)) {
     const url = match[1];

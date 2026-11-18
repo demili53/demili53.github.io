@@ -4,7 +4,7 @@ service cloud.firestore {
   match /databases/{database}/documents {
     match /gameRankings/{gameId}/players/{userId} {
       function validGame() {
-        return gameId in ['space-shooter', 'dawn-bastion', 'shadow-sniper'];
+        return gameId in ['space-shooter', 'dawn-bastion', 'shadow-sniper', 'missile-rush'];
       }
 
       function validScore() {
