@@ -38,7 +38,29 @@ SNIPER_MISSIONS.push(
  {name:'노을빛 해변 산책로',code:'05 / SUNSET PIER',theme:'pier',time:130,color:0xe8b99e,accent:0xf2d38b,brief:'노을이 지는 해변 산책로에서 윌리를 찾으세요. 낚시와 풍선, 북 연주에 시선을 빼앗기지 마세요. 보라 스카프가 마지막 단서입니다.',clues:['빨강·흰 줄무늬 + 빨간 털모자','둥근 안경','보라 스카프']},
  {name:'분주한 중앙역',code:'06 / CENTRAL STATION',theme:'station',time:140,color:0x9eafba,accent:0xe7bd72,brief:'열차가 도착한 중앙역에서 마지막 윌리를 찾으세요. 책을 읽는 승객과 빵을 만드는 상인 사이, 주황 스카프를 찾아보세요.',clues:['빨강·흰 줄무늬 + 빨간 털모자','둥근 안경','주황 스카프']}
 );
-SNIPER_MISSIONS.forEach((m,i)=>{const c=makeWillyCrowd(i);m.extras=c.extras;m.targets=[{...c.position,role:'윌리',coat:0xd85b61,stripes:true,hat:'beanie',glasses:true,case:i===0,scarf:[null,0xf5d16a,0x6ed2a3,0x6ba8e5,0xbc91d9,0xf1a261][i],camera:false,instrument:false,visor:false,helmet:false,cap:false,cover:i===2,desc:m.clues.join(' · '),target:true}];});
+const SNIPER_SCARVES={yellow:[0xf5d16a,'노란 스카프'],green:[0x6ed2a3,'초록 스카프'],blue:[0x6ba8e5,'파란 스카프'],purple:[0xbc91d9,'보라 스카프'],orange:[0xf1a261,'주황 스카프']};
+// Disguised decoys copy the target but change exactly one clue. Wrong scarves avoid look-alike hues.
+const SNIPER_DECOYS=[['case','glasses'],['scarf:green','glasses'],['scarf:yellow','glasses'],['scarf:orange','glasses','scarf:green'],['scarf:green','glasses','scarf:yellow'],['scarf:blue','glasses','scarf:purple']];
+function makeSniperDecoy(base,mission,variant,slot){
+ const decoy={...slot,...base,x:slot.x,y:slot.y,range:slot.range,speed:slot.speed,skin:slot.skin,role:'변장 인물',cover:false,target:false,decoy:variant.split(':')[0]};
+ const parts=[mission.clues[0],'둥근 안경',mission.clues[2].split(' · ')[0]];decoy.caseColor=0x19202b;
+ if(variant==='glasses'){decoy.glasses=false;parts[1]='안경 없음';}
+ else if(variant==='case'){decoy.caseColor=0x9a5f35;parts[2]='갈색 서류 가방';}
+ else{const [color,name]=SNIPER_SCARVES[variant.split(':')[1]];decoy.scarf=color;parts[2]=name;}
+ decoy.desc=parts.join(' · ');return decoy;
+}
+SNIPER_MISSIONS.forEach((m,i)=>{const c=makeWillyCrowd(i);m.extras=c.extras;m.targets=[{...c.position,role:'윌리',coat:0xd85b61,stripes:true,hat:'beanie',glasses:true,case:i===0,scarf:[null,0xf5d16a,0x6ed2a3,0x6ba8e5,0xbc91d9,0xf1a261][i],camera:false,instrument:false,visor:false,helmet:false,cap:false,cover:i===2,desc:m.clues.join(' · '),target:true}];
+ // Replace only roles that appear more than once so every crowd keeps its full role variety.
+ const counts=new Map();for(const a of m.extras)counts.set(a.role,(counts.get(a.role)||0)+1);
+ const base=m.targets[0],{x,y,range,speed,skin,...look}=base;let cursor=Math.floor(m.extras.length*.3);
+ m.decoys=SNIPER_DECOYS[i].length;
+ for(const variant of SNIPER_DECOYS[i]){
+  for(let n=0;n<m.extras.length;n++){const k=(cursor+n*7)%m.extras.length,slot=m.extras[k];
+   if(slot.decoy||slot.role==='닮은 관광객'||counts.get(slot.role)<2)continue;
+   counts.set(slot.role,counts.get(slot.role)-1);m.extras[k]=makeSniperDecoy(look,m,variant,slot);cursor=k+Math.floor(m.extras.length/3);break;
+  }
+ }
+});
 // Activity poses drive both movement and rendering, so visible bodies and hit tests stay together.
 function sniperActivity(actor,theme){
  const byTheme={
@@ -171,8 +193,8 @@ function sniperActorPose(a,time){
  return pose;
 }
 class SniperGame {
-  constructor(random=Math.random){this.random=random;this.state='briefing';this.mission=0;this.score=0;this.totalShots=0;this.totalHits=0;this.checkpoint={score:0,shots:0,hits:0};this.aim={x:480,y:285};this.loadMission();}
-  loadMission(){const m=SNIPER_MISSIONS[this.mission];this.elapsed=0;this.remaining=m.time;this.mag=3;this.reserve=9;this.reloadLeft=0;this.cooldown=0;this.alert=0;this.focus=100;this.holding=false;this.scoped=false;this.identification=0;this.inspected=null;this.identifyId=null;this.feedback='표적을 확인한 뒤 스코프를 켜고 사격하세요.';this.shotFlash=0;this.impact=null;this.shot=null;this.particles=[];this.pausedFrom='running';this.failure='';this.actors=[...m.targets,...m.extras].map((a,i)=>({...a,id:i,origin:a.x,originY:a.y,x:a.x,action:sniperActivity(a,m.theme),phase:i*1.3,speed:a.speed||.32,range:a.range||35,dead:false,hidden:false,fallTime:0,hitX:0,hitY:0}));const swap=1+Math.floor(this.random()*(this.actors.length-1)),target=this.actors[0],other=this.actors[swap];for(const k of ['origin','originY','x','y','phase']){const v=target[k];target[k]=other[k];other[k]=v;}this.initCrowd();for(const a of this.actors){a.pose=sniperActorPose(a,0);a.x=a.pose.x;a.y=a.pose.y;}this.aim={x:480,y:285};}
+  constructor(random=Math.random){this.random=random;this.state='briefing';this.mission=0;this.score=0;this.totalShots=0;this.totalHits=0;this.streak=0;this.bestStreak=0;this.checkpoint={score:0,shots:0,hits:0,streak:0,bestStreak:0};this.aim={x:480,y:285};this.loadMission();}
+  loadMission(){const m=SNIPER_MISSIONS[this.mission];this.elapsed=0;this.remaining=m.time;this.mag=3;this.reserve=9;this.reloadLeft=0;this.cooldown=0;this.alert=0;this.focus=100;this.holding=false;this.scoped=false;this.identification=0;this.inspected=null;this.identifyId=null;this.feedback='표적을 확인한 뒤 스코프를 켜고 사격하세요.';this.shotFlash=0;this.impact=null;this.shot=null;this.particles=[];this.pausedFrom='running';this.failure='';this.actors=[...m.targets,...m.extras].map((a,i)=>({...a,id:i,origin:a.x,originY:a.y,x:a.x,action:sniperActivity(a,m.theme),phase:i*1.3,speed:a.speed||.32,range:a.range||35,dead:false,hidden:false,fallTime:0,hitX:0,hitY:0}));const swap=1+Math.floor(this.random()*(this.actors.length-1)),target=this.actors[0],other=this.actors[swap];for(const k of ['origin','originY','x','y','phase']){const v=target[k];target[k]=other[k];other[k]=v;}this.hintUsed=false;this.hintLeft=0;this.hintZone=null;this.bonus={hit:0,precision:0,time:0,stealth:0,streak:0,hint:0};this.initCrowd();for(const a of this.actors){a.pose=sniperActorPose(a,0);a.x=a.pose.x;a.y=a.pose.y;}this.aim={x:480,y:285};}
   initCrowd(){
     this.observations=new Set();this.identifyGrace=0;
     this.steadiness=0;this.shotHistory=[];
@@ -393,6 +415,16 @@ class SniperGame {
       return Math.abs(localX)<(inspect?23:10)&&localY>(inspect?-55:-46)&&localY<(inspect?8:2);
     });
   }
+  actorLocal(a,x,y){const p=a.pose,dx=x-a.x,dy=y-a.y-p.bob,c=Math.cos(p.lean),s=Math.sin(p.lean);return{x:dx*c+dy*s,y:-dx*s+dy*c};}
+  // The head and hat sit above the shoulders (-35) in the same local frame as actorAt.
+  isPrecisionHit(a,x,y){return Boolean(a)&&this.actorLocal(a,x,y).y<-35;}
+  radioHint(){
+    if(this.state!=='running'||this.hintUsed)return false;
+    const target=this.actors.find(a=>a.target&&!a.dead);if(!target)return false;
+    this.hintUsed=true;this.hintLeft=5;this.hintZone=sniperClamp(Math.floor(target.motion.x/320),0,2);
+    this.feedback=`무전 지원: 윌리는 화면 ${['왼쪽','가운데','오른쪽'][this.hintZone]} 구역에 있습니다. 미션 보상 200점 차감, S 등급 불가.`;
+    return true;
+  }
   updateObservation(a,dt){
     if(a){
       if(a.id!==this.identifyId){this.identifyId=a.id;this.identification=0;}
@@ -420,8 +452,8 @@ class SniperGame {
   maybeAutoReload(){return Boolean(this.autoReload&&this.mag===0&&this.reload());}
   get reloadProgress(){return this.reloadLeft>0?sniperClamp(1-this.reloadLeft/1.6,0,1):0;}
   fail(reason){if(this.state!=='running')return;this.state='failed';this.failure=reason;this.holding=false;}
-  retry(){if(this.state!=='failed')return false;Object.assign(this,{score:this.checkpoint.score,totalShots:this.checkpoint.shots,totalHits:this.checkpoint.hits});this.loadMission();this.state='briefing';return true;}
-  next(){if(this.state!=='success'||this.mission>=SNIPER_MISSIONS.length-1)return false;this.mission++;this.checkpoint={score:this.score,shots:this.totalShots,hits:this.totalHits};this.loadMission();this.state='briefing';return true;}
+  retry(){if(this.state!=='failed')return false;Object.assign(this,{score:this.checkpoint.score,totalShots:this.checkpoint.shots,totalHits:this.checkpoint.hits,streak:this.checkpoint.streak??0,bestStreak:this.checkpoint.bestStreak??0});this.loadMission();this.state='briefing';return true;}
+  next(){if(this.state!=='success'||this.mission>=SNIPER_MISSIONS.length-1)return false;this.mission++;this.checkpoint={score:this.score,shots:this.totalShots,hits:this.totalHits,streak:this.streak,bestStreak:this.bestStreak};this.loadMission();this.state='briefing';return true;}
   sway(){const strength=5.2-4.1*this.steadiness;return{x:Math.sin(this.elapsed*2.3)*strength,y:Math.cos(this.elapsed*1.7)*strength*.65};}
   moveAim(dx,dy,dt){
     if(this.state!=='running'||![dx,dy,dt].every(Number.isFinite)||dt<=0)return false;
@@ -429,7 +461,7 @@ class SniperGame {
     return this.aimAt(this.aim.x+dx/length*speed,this.aim.y+dy/length*speed);
   }
   aimAt(x,y){if(!Number.isFinite(x)||!Number.isFinite(y))return false;this.aim.x=Math.max(25,Math.min(935,x));this.aim.y=Math.max(35,Math.min(510,y));return true;}
-  step(dt){if(!Number.isFinite(dt)||dt<=0)return;dt=Math.min(.05,dt);if(this.state==='shot'){this.stepShot(dt);return;}if(this.state!=='running')return;this.updateParticles(dt);this.elapsed+=dt;this.remaining=Math.max(0,this.remaining-dt);this.cooldown=Math.max(0,this.cooldown-dt);this.shotFlash=Math.max(0,this.shotFlash-dt);if(this.impact)this.impact.life-=dt;
+  step(dt){if(!Number.isFinite(dt)||dt<=0)return;dt=Math.min(.05,dt);if(this.state==='shot'){this.stepShot(dt);return;}if(this.state!=='running')return;this.updateParticles(dt);this.elapsed+=dt;this.remaining=Math.max(0,this.remaining-dt);this.cooldown=Math.max(0,this.cooldown-dt);this.shotFlash=Math.max(0,this.shotFlash-dt);if(this.impact)this.impact.life-=dt;this.hintLeft=Math.max(0,this.hintLeft-dt);
     if(this.reloadLeft>0){this.reloadLeft-=dt;if(this.reloadLeft<=0){this.reloadLeft=0;const n=Math.min(3-this.mag,this.reserve);this.mag+=n;this.reserve-=n;this.feedback='재장전 완료. 표적을 확인하세요.';}}
     if(this.holding&&this.scoped&&this.reloadLeft===0){this.focus=Math.max(0,this.focus-dt*32);if(this.focus===0)this.holding=false;}else this.focus=Math.min(100,this.focus+dt*18);
     const steadyTarget=this.holding&&this.scoped&&this.focus>0&&this.reloadLeft===0?1:0;
@@ -445,7 +477,7 @@ class SniperGame {
     if(shot.clock>=shot.duration){
       if(!this.report&&['success','won'].includes(shot.outcome)){
         const shots=this.totalShots-this.checkpoint.shots;
-        this.report={mission:this.mission,shots,accuracy:Math.round(100/Math.max(1,shots)),observed:this.observations.size,seconds:Math.round((this.config.time-this.remaining)*10)/10,grade:shots===1?(this.remaining>=this.config.time*.5?'S':'A'):'B'};
+        this.report={mission:this.mission,shots,accuracy:Math.round(100/Math.max(1,shots)),observed:this.observations.size,seconds:Math.round((this.config.time-this.remaining)*10)/10,grade:shots===1?(this.remaining>=this.config.time*.5&&!this.hintUsed?'S':'A'):'B',hint:this.hintUsed,streak:this.streak,bonus:{...this.bonus}};
         this.missionHistory.push({...this.report});
       }
       this.state=shot.outcome;this.feedback=shot.message;this.shot=null;this.cooldown=.15;
@@ -459,12 +491,23 @@ class SniperGame {
     this.particles=[];this.shotFlash=0;return true;
   }
   resolveShot(){const shot=this.shot,a=shot.actor;this.impact={x:shot.x,y:shot.y,life:.55};shot.outcome='running';
-    this.shotHistory.push({number:this.shotHistory.length+1,result:a?(a.target?'표적 명중':'오인 사격'):'빗나감',seconds:Math.round(this.elapsed*10)/10});if(this.shotHistory.length>12)this.shotHistory.shift();
+    this.shotHistory.push({number:this.shotHistory.length+1,result:a?(a.target?(this.isPrecisionHit(a,shot.x,shot.y)?'정밀 명중':'표적 명중'):a.decoy?'가짜 윌리 사격':'오인 사격'):'빗나감',seconds:Math.round(this.elapsed*10)/10});if(this.shotHistory.length>12)this.shotHistory.shift();
     if(a){a.dead=true;a.fallTime=0;a.hitX=shot.x;a.hitY=shot.y;a.fallDir=a.id%2?-1:1;
       for(let i=0;i<18;i++){const angle=-1.45+i*.115,speed=15+(i*13%34);this.particles.push({x:shot.x,y:shot.y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed-15,life:.45+(i%5)*.14,max:1.1,size:1+(i%3)*.45});}
-      if(!a.target){shot.outcome='failed';this.failure='다른 인물을 오인 사격했습니다. 윌리의 단서를 모두 확인하세요.';shot.message=this.failure;return;}
-      this.totalHits++;this.score+=500;this.alert=Math.min(100,this.alert+8);shot.message='윌리 명중 확인. 다음 장소를 확인하세요.';
-      if(this.targetsLeft===0){this.score+=Math.ceil(this.remaining)*8+Math.max(0,100-Math.round(this.alert))*3;shot.outcome=this.mission===SNIPER_MISSIONS.length-1?'won':'success';}
+      if(!a.target){shot.outcome='failed';this.streak=0;
+        const reason={glasses:'안경이 없었습니다',case:'가방 색이 달랐습니다',scarf:'스카프 색이 달랐습니다'}[a.decoy];
+        this.failure=reason?`변장한 가짜 윌리였습니다. ${reason}. 단서를 하나씩 대조하세요.`:'다른 인물을 오인 사격했습니다. 윌리의 단서를 모두 확인하세요.';shot.message=this.failure;return;}
+      const precise=this.isPrecisionHit(a,shot.x,shot.y);shot.precise=precise;
+      this.totalHits++;this.score+=500;this.bonus.hit+=500;if(precise){this.score+=250;this.bonus.precision+=250;}
+      this.alert=Math.min(100,this.alert+8);shot.message=precise?'정밀 명중! 머리를 정확히 맞혔습니다. +250':'윌리 명중 확인. 다음 장소를 확인하세요.';
+      if(this.targetsLeft===0){
+        const time=Math.ceil(this.remaining)*8,stealth=Math.max(0,100-Math.round(this.alert))*3,firstShot=this.totalShots-this.checkpoint.shots===1;
+        this.streak=firstShot?this.streak+1:0;this.bestStreak=Math.max(this.bestStreak,this.streak);
+        const streak=this.streak>=2?Math.min(600,150*(this.streak-1)):0;
+        const hint=this.hintUsed?-Math.min(200,this.bonus.hit+this.bonus.precision+time+stealth+streak):0;
+        Object.assign(this.bonus,{time,stealth,streak,hint});this.score+=time+stealth+streak+hint;
+        if(streak)shot.message+=` 첫발 명중 ${this.streak}연속! +${streak}`;
+        shot.outcome=this.mission===SNIPER_MISSIONS.length-1?'won':'success';}
     }else{this.alert=Math.min(100,this.alert+24);this.alertCrowd(shot.x,shot.y);shot.message='빗나갔습니다. 놀란 사람들이 흩어집니다. 경계도가 상승했습니다.';if(this.alert>=100){shot.outcome='failed';this.failure='발사 위치가 노출되어 작전을 중단합니다.';}}
     if(shot.outcome==='running'&&this.mag===0&&this.reserve===0){shot.outcome='failed';this.failure='탄약을 모두 소진했습니다.';}
   }
