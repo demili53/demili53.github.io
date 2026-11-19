@@ -301,10 +301,12 @@
     $('charCount').textContent = `${questionEl.value.length} / 300`;
     const found = [a.situation && `상황: ${a.situation.label}`, a.who.length && `사람: ${a.who.join(', ')}`, a.when && `시점: ${a.when}`].filter(Boolean);
     $('aiFound').textContent = found.length ? found.join(' · ') : '';
-    if (!spreadTouched && !state) {
+    // Follow the worry with a matching spread until the first card is picked.
+    if (!spreadTouched && (!state || state.picks.length === 0)) {
       const key = questionEl.value.trim() ? a.qtype.spread : 'one';
+      const changed = spreadKey() !== key;
       document.querySelector(`input[name=spread][value=${key}]`).checked = true;
-      if (cards.length) renderSlots(SPREADS[key], a);
+      if (cards.length && changed) { if (state) start(); else renderSlots(SPREADS[key], a); }
     }
     return a;
   }
@@ -330,7 +332,7 @@
     deckEl.innerHTML = state.pool.map((_, i) => `<button type="button" data-i="${i}" aria-label="엎어 놓은 카드 ${i + 1}번" style="--dx:${randomInt(40) - 20}px;--dy:${randomInt(24) - 12}px;--rot:${randomInt(24) - 12}deg"><img src="${BASE}back.jpg" alt=""></button>`).join('');
     deckEl.classList.remove('shuffling'); void deckEl.offsetWidth; deckEl.classList.add('shuffling');
     renderSlots(spread, analysis);
-    shuffleBtn.textContent = '다시 섞기';
+    shuffleBtn.textContent = '카드 다시 섞기';
     setStatus(`고민을 떠올리며 끌리는 카드를 ${spread.positions.length}장 고르세요.`);
   }
 
@@ -375,6 +377,10 @@
   }
 
   function showReading() {
+    // Read the worry as it is now, so text typed after dealing still counts.
+    state.analysis = currentAnalysis();
+    state.question = questionEl.value.trim();
+    state.choiceNames = state.analysis.choices;
     const { analysis, spread } = state;
     $('readingQuestion').textContent = spread.label;
     $('readingOpening').textContent = opening(state);
@@ -405,12 +411,17 @@
     document.querySelectorAll('#dictTabs button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.filter === filter)));
   }
 
-  questionEl.addEventListener('input', () => { refreshAnalysis(); });
+  questionEl.addEventListener('input', () => {
+    // A finished reading belongs to the old worry: deal a fresh table for the new one.
+    if (state && state.opened === state.spread.positions.length) { start(); setStatus('새 고민으로 끌리는 카드를 다시 고르세요.'); }
+    refreshAnalysis();
+  });
   topicSel.addEventListener('change', () => { topicTouched = true; });
   qtypeSel.addEventListener('change', () => { qtypeTouched = true; if (!spreadTouched && !state) { const q = QTYPES.find(x => x.id === qtypeSel.value); document.querySelector(`input[name=spread][value=${q.spread}]`).checked = true; renderSlots(SPREADS[q.spread], currentAnalysis()); } });
   deckEl.addEventListener('click', e => { const b = e.target.closest('button[data-i]'); if (b) pick(+b.dataset.i); });
   slotsEl.addEventListener('click', e => { const b = e.target.closest('button[data-slot]'); if (b) open(+b.dataset.slot); });
   shuffleBtn.addEventListener('click', start);
+  $('useReversed').addEventListener('change', () => { if (state && state.picks.length === 0) state.reversed = $('useReversed').checked; });
   document.querySelectorAll('input[name=spread]').forEach(r => r.addEventListener('change', () => {
     spreadTouched = true;
     if (state) start(); else if (cards.length) renderSlots(SPREADS[spreadKey()], currentAnalysis());
@@ -418,9 +429,8 @@
   $('againBtn').addEventListener('click', () => { state = null; start(); $('deck').scrollIntoView({ block: 'center' }); });
   $('newBtn').addEventListener('click', () => {
     state = null; spreadTouched = topicTouched = qtypeTouched = false;
-    questionEl.value = ''; reading.hidden = true; deckEl.innerHTML = ''; shuffleBtn.textContent = '카드 섞기';
-    refreshAnalysis(); renderSlots(SPREADS[spreadKey()], currentAnalysis());
-    setStatus('고민을 적은 뒤 카드 섞기를 누르세요.');
+    questionEl.value = ''; reading.hidden = true;
+    refreshAnalysis(); start();
     questionEl.focus();
   });
   $('copyBtn').addEventListener('click', async () => {
@@ -437,8 +447,7 @@
     cards = json.cards;
     shuffleBtn.disabled = false;
     renderDict('major');
-    setStatus('고민을 적은 뒤 카드 섞기를 누르세요.');
-    renderSlots(SPREADS[spreadKey()], currentAnalysis());
+    start(); // deal right away; shuffling again is optional
   }).catch(() => setStatus('카드를 불러오지 못했습니다. 새로고침해 주세요.'));
 
   window.TarotReader = { analyze, TOPICS, QTYPES, SPREADS }; // used by the page test
