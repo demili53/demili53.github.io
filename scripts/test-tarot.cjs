@@ -47,4 +47,6 @@ const html = fs.readFileSync(path.join(root, 'fortune', 'tarot.html'), 'utf8');
 assert(html.indexOf('/scripts/tarot-readings.js') < html.indexOf('/scripts/tarot.js'), 'readings load first');
 assert(html.indexOf('/scripts/tarot-ai.js') < html.indexOf('/scripts/tarot.js'), 'reader module loads first');
 assert.match(html, /<textarea id="question"/);
+for (const f of ['tarot-readings', 'tarot-ai', 'tarot']) assert.match(html, new RegExp(`/scripts/${f}\\.js\\?v=\\d+`), `${f}.js has a cache-busting version`);
+for (const id of ['flipAllBtn', 'imageBtn', 'shareBtn', 'readingMeter']) assert(html.includes(`id="${id}"`), id);
 console.log('PASS: 78 tarot cards, topic readings, situations and card combinations');

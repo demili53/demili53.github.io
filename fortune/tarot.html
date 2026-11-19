@@ -10,7 +10,7 @@
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-T2KDKBN8');</script>
 <meta name="google-adsense-account" content="ca-pub-1087435977438565"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565" crossorigin="anonymous"></script>
 <script src="/scripts/site-layout.js" defer></script><link rel="stylesheet" href="/styles/site-design.css">
-<script src="/scripts/tarot-readings.js" defer></script><script src="/scripts/tarot-ai.js" defer></script><script src="/scripts/tarot.js" defer></script>
+<script src="/scripts/tarot-readings.js?v=20261120" defer></script><script src="/scripts/tarot-ai.js?v=20261120" defer></script><script src="/scripts/tarot.js?v=20261120" defer></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"무료 타로점","url":"https://partygame.pe.kr/fortune/tarot.html","description":"고민을 글로 적고 1909년 라이더-웨이트 타로 78장 중에서 카드를 직접 고르면 주제와 질문에 맞춰 해석해 주는 무료 타로점.","inLanguage":"ko","applicationCategory":"EntertainmentApplication","operatingSystem":"Web browser","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"}}</script>
 <style>
 body{margin:0}button{font:inherit;cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}[hidden]{display:none!important}
@@ -82,11 +82,26 @@ body{margin:0}button{font:inherit;cursor:pointer}button:disabled{opacity:.45;cur
 .dict-grid b{display:block;font-size:13px;color:#f0ecff;margin-top:8px}.dict-grid small{display:block;font-size:10px;color:#8f89ad}.dict-grid p{font-size:11px;color:#aeb8cf;line-height:1.6;margin:5px 0 0}
 .guide{margin-top:28px;padding:24px;border-radius:12px;border:1px solid #29384e;background:#131c2a}.guide h2{font-size:20px;color:#f1f5ff;margin:0 0 18px}.guide-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}.guide h3{font-size:13px;color:#e1c8ff}.guide p,.guide li{font-size:12px;color:#9fb0c6;line-height:1.95}
 .crosslinks{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0 0}.crosslinks a{font-size:12px;color:#d9b8ff;border:1px solid #3a3f5c;border-radius:6px;padding:8px 12px}
+.flip-all{min-height:38px;padding:7px 16px}
+.flight{position:fixed;z-index:50;pointer-events:none;border-radius:8px;box-shadow:0 14px 30px #000a;will-change:transform}
+.flip.landed .inner{animation:land .45s ease-out}@keyframes land{0%{transform:scale(1.06)}100%{transform:none}}
+.flip.open .front{animation:glow 1.2s ease-out}.flip.open.major .front{animation-name:glowGold}
+@keyframes glow{0%{box-shadow:0 0 0 0 #c9a2ffcc,0 10px 26px #0009}40%{box-shadow:0 0 34px 8px #c9a2ff99,0 10px 26px #0009}100%{box-shadow:0 10px 26px #0009}}
+@keyframes glowGold{0%{box-shadow:0 0 0 0 #ffd98acc,0 10px 26px #0009}40%{box-shadow:0 0 40px 12px #ffd98aa8,0 10px 26px #0009}100%{box-shadow:0 10px 26px #0009}}
+.reading.reveal .opening,.reading.reveal li,.reading.reveal .meter,.reading.reveal .summary,.reading.reveal .tip{animation:rise .55s cubic-bezier(.2,.7,.3,1) both;animation-delay:var(--d,0s)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.energy{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:20px;font-size:10.5px;font-weight:700;vertical-align:1px}
+.energy.up{background:#1f3b34;color:#8ee6c8}.energy.mid{background:#2a2f45;color:#c3cbe0}.energy.down{background:#3d2430;color:#ffb3c4}
+.meter{margin:16px 0 0;padding:14px 16px;border-radius:10px;background:#1b2036;border:1px solid #2f3756}
+.meter-head{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:#b9c5da;margin-bottom:9px}.meter-head b{color:#f1edff;font-size:13px}
+.meter-bar{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}.meter-bar i{height:8px;border-radius:4px;background:#2b3250}
+.meter-bar i.on{background:linear-gradient(90deg,#8f6ad8,#d9b8ff)}.meter.t2 .meter-bar i.on,.meter.t1 .meter-bar i.on{background:linear-gradient(90deg,#4fbf9b,#9df0d2)}.meter.t-2 .meter-bar i.on,.meter.t-1 .meter-bar i.on{background:linear-gradient(90deg,#c0566f,#ff9fb4)}
+.meter-scale{display:flex;justify-content:space-between;font-size:10px;color:#7f8aa5;margin-top:6px}
 @media(max-width:900px){.setup{grid-template-columns:1fr}.deck{grid-template-columns:repeat(9,minmax(0,1fr))}}
 @media(max-width:580px){.tarot-shell{padding:18px 12px 0}.classification{display:none}.tarot-heading{margin-bottom:16px}.tarot-heading h1{font-size:30px}.sub{font-size:12px}
 .setup,.table,.reading,.dict{padding:16px 14px}.spreads{grid-template-columns:repeat(2,minmax(0,1fr))}.deck{grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
 .slots{gap:8px}.slot{width:calc((100% - 16px)/3)}.slots.one .slot{width:52%}.slot .name{font-size:12px}.guide-grid{grid-template-columns:1fr;gap:6px}.guide{padding:18px}.daily{padding:16px 14px}.daily-result{grid-template-columns:92px 1fr;gap:12px}.card-dialog-body{grid-template-columns:1fr}.card-dialog-body img{max-width:150px}.card-dialog-body dl{grid-template-columns:76px 1fr}.dict-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(prefers-reduced-motion:reduce){.flip .inner,.deck button{transition:none}.deck.shuffling button{animation:none}}
+@media(prefers-reduced-motion:reduce){.flip .inner,.deck button{transition:none}.deck.shuffling button,.flip.landed .inner,.flip.open .front,.reading.reveal *{animation:none!important}}
 </style>
 </head><body><site-header></site-header><noscript><p>타로점을 보려면 JavaScript를 켜 주세요.</p><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T2KDKBN8" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <main class="tarot-shell" id="mainContent" tabindex="-1">
@@ -110,7 +125,7 @@ body{margin:0}button{font:inherit;cursor:pointer}button:disabled{opacity:.45;cur
 </section>
 
 <section class="panel table" aria-labelledby="tableTitle">
-  <div class="table-head"><h2 id="tableTitle">카드 테이블</h2><p class="status" id="status" role="status" aria-live="polite">카드를 불러오는 중입니다…</p></div>
+  <div class="table-head"><h2 id="tableTitle">카드 테이블</h2><p class="status" id="status" role="status" aria-live="polite">카드를 불러오는 중입니다…</p><button class="btn primary flip-all" id="flipAllBtn" type="button" hidden>모두 뒤집기</button></div>
   <div class="deck" id="deck" aria-label="엎어 놓은 카드"></div>
   <div class="slots" id="slots" aria-label="뽑은 카드"></div>
 </section>
@@ -119,9 +134,10 @@ body{margin:0}button{font:inherit;cursor:pointer}button:disabled{opacity:.45;cur
   <h2 id="readingTitle">타로 해석</h2><p class="q" id="readingQuestion"></p>
   <p class="opening" id="readingOpening"></p>
   <ol id="readingList"></ol>
+  <div class="meter" id="readingMeter" hidden></div>
   <p class="summary" id="readingSummary"></p>
   <p class="tip" id="readingTip"></p>
-  <div class="actions"><button class="btn primary" id="againBtn" type="button">같은 고민으로 다시 뽑기</button><button class="btn" id="newBtn" type="button">새 고민 적기</button><button class="btn" id="copyBtn" type="button">결과 복사</button></div>
+  <div class="actions"><button class="btn primary" id="againBtn" type="button">같은 고민으로 다시 뽑기</button><button class="btn" id="newBtn" type="button">새 고민 적기</button><button class="btn" id="copyBtn" type="button">결과 복사</button><button class="btn" id="imageBtn" type="button">이미지로 저장</button><button class="btn" id="shareBtn" type="button" hidden>공유하기</button></div>
   <p class="note">타로점은 재미와 자기 성찰을 위한 콘텐츠입니다. 건강·법률·금전 같은 중요한 결정은 전문가와 상의하세요.</p>
 </section>
 

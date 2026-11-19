@@ -294,7 +294,8 @@
   const DECK_SIZE = 26;
   const $ = id => document.getElementById(id);
   const deckEl = $('deck'), slotsEl = $('slots'), statusEl = $('status');
-  const shuffleBtn = $('shuffleBtn'), reading = $('reading'), questionEl = $('question');
+  const shuffleBtn = $('shuffleBtn'), reading = $('reading'), questionEl = $('question'), flipAllBtn = $('flipAllBtn');
+  const calm = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
   const topicSel = $('topicSelect'), qtypeSel = $('qtypeSelect');
   let cards = [], state = null, spreadTouched = false, topicTouched = false, qtypeTouched = false;
 
@@ -349,6 +350,7 @@
     const key = spreadKey(), spread = SPREADS[key];
     state = { key, spread, analysis, question: questionEl.value.trim(), choiceNames: analysis.choices, reversed: $('useReversed').checked, pool: shuffled(cards).slice(0, DECK_SIZE), picks: [], opened: 0 };
     reading.hidden = true;
+    flipAllBtn.hidden = true;
     deckEl.innerHTML = state.pool.map((_, i) => `<button type="button" data-i="${i}" aria-label="엎어 놓은 카드 ${i + 1}번" style="--dx:${randomInt(40) - 20}px;--dy:${randomInt(24) - 12}px;--rot:${randomInt(24) - 12}deg"><img src="${BASE}back.jpg" alt=""></button>`).join('');
     deckEl.classList.remove('shuffling'); void deckEl.offsetWidth; deckEl.classList.add('shuffling');
     renderSlots(spread, analysis);
@@ -368,15 +370,18 @@
     const slot = slotsEl.querySelector(`[data-slot="${slotIndex}"]`);
     slot.classList.remove('empty'); slot.disabled = false;
     slot.setAttribute('aria-label', `${state.spread.positions[slotIndex].name} 카드 뒤집기`);
+    slot.classList.toggle('major', card.arcana === 'major');
     const front = slot.querySelector('.front');
     front.classList.toggle('reversed', rev);
     front.querySelector('img').src = BASE + card.img;
+    fly(btn, slot);
     const left = state.spread.positions.length - state.picks.length;
     if (left) setStatus(`${left}장 더 고르세요.`);
     else {
       deckEl.querySelectorAll('button:not(.taken)').forEach(b => { b.disabled = true; });
-      setStatus('고른 카드를 눌러 하나씩 뒤집어 보세요.');
-      slotsEl.querySelector('.flip:not(.open)').focus();
+      setStatus('고른 카드를 눌러 하나씩 뒤집거나, 모두 뒤집기를 누르세요.');
+      if (state.spread.positions.length > 1) flipAllBtn.hidden = false;
+      setTimeout(() => { const f = slotsEl.querySelector('.flip:not(.open)'); if (f) f.focus(); }, calm() ? 0 : 560); // after the flight lands
     }
   }
 
@@ -392,6 +397,7 @@
     box.querySelector('.en').textContent = p.card.en;
     state.opened++;
     const total = state.spread.positions.length;
+    if (state.opened === total) flipAllBtn.hidden = true;
     if (state.opened === total && state.picks.length === total) setTimeout(showReading, 650);
     else if (state.picks.length === total) setStatus(`${total - state.opened}장 남았습니다.`);
   }
@@ -406,15 +412,163 @@
     $('readingOpening').textContent = opening(state);
     $('readingList').innerHTML = state.picks.map((p, i) => {
       const pos = spread.positions[i];
-      return `<li><img src="${BASE + p.card.img}" alt="${esc(p.card.ko)} 카드"${p.rev ? ' class="reversed"' : ''}><div><span class="tag">${esc(slotName(spread, i, analysis))}</span><b>${esc(p.card.ko)}${p.rev ? ' · 역방향' : ''} <small style="font-weight:400;color:#9a93b8">${esc(p.card.en)}</small></b><p>${esc(positionText(p, pos, analysis.topic, analysis.situation, analysis.who[0]))}</p></div></li>`;
+      return `<li style="--d:${(0.15 + i * 0.12).toFixed(2)}s"><img src="${BASE + p.card.img}" alt="${esc(p.card.ko)} 카드"${p.rev ? ' class="reversed"' : ''}><div><span class="tag">${esc(slotName(spread, i, analysis))}</span>${energyBadge(p, pos)}<b>${esc(p.card.ko)}${p.rev ? ' · 역방향' : ''} <small style="font-weight:400;color:#9a93b8">${esc(p.card.en)}</small></b><p>${esc(positionText(p, pos, analysis.topic, analysis.situation, analysis.who[0]))}</p></div></li>`;
     }).join('');
     state.summary = conclusion(state);
     state.tip = analysis.situation ? analysis.situation.tip : pickOne(analysis.topic.tips);
     $('readingSummary').textContent = state.summary;
     $('readingTip').textContent = state.tip;
+    renderMeter();
+    const after = (0.3 + state.picks.length * 0.12).toFixed(2) + 's';
+    ['readingMeter', 'readingSummary', 'readingTip'].forEach(id => $(id).style.setProperty('--d', after));
+    reading.classList.remove('reveal'); void reading.offsetWidth; reading.classList.add('reveal');
     reading.hidden = false;
     setStatus('해석이 준비되었습니다.');
-    reading.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+    reading.scrollIntoView({ behavior: calm() ? 'auto' : 'smooth', block: 'start' });
+  }
+
+  // Cards fly from the deck to their slot; skipped when the user prefers less motion.
+  function fly(fromBtn, slot) {
+    if (calm() || !fromBtn.animate) return;
+    const a = fromBtn.getBoundingClientRect(), b = slot.getBoundingClientRect();
+    if (!a.width || !b.width) return;
+    const ghost = document.createElement('img');
+    ghost.src = BASE + 'back.jpg'; ghost.alt = ''; ghost.className = 'flight';
+    Object.assign(ghost.style, { left: b.left + 'px', top: b.top + 'px', width: b.width + 'px', height: b.height + 'px' });
+    document.body.appendChild(ghost);
+    slot.style.visibility = 'hidden';
+    const sx = a.width / b.width, dx = a.left - b.left, dy = a.top - b.top;
+    const anim = ghost.animate([
+      { transform: `translate(${dx}px,${dy}px) scale(${sx})`, opacity: 0.9 },
+      { transform: `translate(${dx * 0.45}px,${dy * 0.45 - 40}px) scale(${(sx + 1) / 2}) rotate(-6deg)`, opacity: 1, offset: 0.55 },
+      { transform: 'none', opacity: 1 }
+    ], { duration: 520, easing: 'cubic-bezier(.3,.7,.3,1)' });
+    const done = () => { ghost.remove(); slot.style.visibility = ''; slot.classList.remove('landed'); void slot.offsetWidth; slot.classList.add('landed'); };
+    anim.onfinish = done; anim.oncancel = done;
+  }
+
+  function flipAll() {
+    if (!state) return;
+    flipAllBtn.hidden = true;
+    const gap = calm() ? 0 : 260;
+    state.picks.forEach((_, i) => setTimeout(() => open(i), i * gap));
+  }
+
+  const ENERGY = { up: '밝은 기운', mid: '중간 기운', down: '주의할 기운' };
+  function energyBadge(p, pos) {
+    if (pos.use === 'advice') return '';
+    const v = score(p), k = v >= 1 ? 'up' : v <= -1 ? 'down' : 'mid';
+    return `<span class="energy ${k}">${ENERGY[k]}</span>`;
+  }
+  const METER_WORD = { 2: '아주 밝음', 1: '밝은 편', 0: '반반', '-1': '조심스러움', '-2': '많이 막힘' };
+  function averageScore() { const s = state.picks.map(score); return s.reduce((a, b) => a + b, 0) / s.length; }
+  function renderMeter() {
+    const tone = level(averageScore()).tone, on = tone + 3;
+    const el = $('readingMeter');
+    el.className = `meter t${tone}`;
+    el.innerHTML = `<div class="meter-head"><span>카드 전체의 기운</span><b>${METER_WORD[tone]}</b></div><div class="meter-bar" role="img" aria-label="다섯 단계 중 ${on}단계, ${METER_WORD[tone]}">${[1, 2, 3, 4, 5].map(n => `<i${n <= on ? ' class="on"' : ''}></i>`).join('')}</div><div class="meter-scale"><span>막힘</span><span>반반</span><span>밝음</span></div>`;
+    el.hidden = false;
+  }
+
+  // ---------- Result image (drawn in the browser, never uploaded) ----------
+  function loadImg(src) {
+    return new Promise((ok, fail) => { const im = new Image(); im.onload = () => ok(im); im.onerror = fail; im.src = src; });
+  }
+  function wrap(ctx, text, width) {
+    const lines = [];
+    for (const para of String(text).split('\n')) {
+      let line = '';
+      for (const word of para.split(' ')) {
+        const test = line ? line + ' ' + word : word;
+        if (ctx.measureText(test).width <= width) { line = test; continue; }
+        if (line) lines.push(line);
+        line = word;
+        while (ctx.measureText(line).width > width) { // very long words break by character
+          let i = line.length; while (i > 1 && ctx.measureText(line.slice(0, i)).width > width) i--;
+          lines.push(line.slice(0, i)); line = line.slice(i);
+        }
+      }
+      lines.push(line);
+    }
+    return lines;
+  }
+  async function resultImage() {
+    const W = 1080, pad = 70, gap = 26, n = state.picks.length;
+    const cw = Math.min(250, (W - pad * 2 - gap * (n - 1)) / n), ch = cw * 434 / 300;
+    const font = getComputedStyle(document.body).fontFamily || 'sans-serif';
+    const imgs = await Promise.all(state.picks.map(p => loadImg(BASE + p.card.img)));
+    const c = document.createElement('canvas'), ctx = c.getContext('2d');
+    ctx.font = `500 30px ${font}`;
+    const summary = wrap(ctx, state.summary, W - pad * 2);
+    ctx.font = `600 28px ${font}`;
+    const tip = wrap(ctx, '오늘의 실천 · ' + state.tip, W - pad * 2);
+    const cardsTop = 245, textTop = cardsTop + ch + 175;
+    const H = Math.round(textTop + 110 + summary.length * 48 + 40 + tip.length * 44 + 130);
+    c.width = W; c.height = H;
+    const bg = ctx.createLinearGradient(0, 0, 0, H);
+    bg.addColorStop(0, '#2a2148'); bg.addColorStop(0.45, '#151a2b'); bg.addColorStop(1, '#0d111a');
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#d9b8ff'; ctx.font = `700 22px ${font}`;
+    ctx.fillText('RIDER–WAITE TAROT · 1909', W / 2, 88);
+    ctx.fillStyle = '#f4f0ff'; ctx.font = `800 52px ${font}`;
+    ctx.fillText(state.spread.label, W / 2, 152);
+    const left = (W - (cw * n + gap * (n - 1))) / 2;
+    state.picks.forEach((p, i) => {
+      const x = left + i * (cw + gap), y = cardsTop;
+      ctx.fillStyle = '#d9b8ff'; ctx.font = `700 ${n > 3 ? 20 : 24}px ${font}`;
+      ctx.fillText(state.spread.positions[i].name, x + cw / 2, y - 18);
+      ctx.save();
+      ctx.shadowColor = p.card.arcana === 'major' ? '#ffd98a88' : '#c9a2ff66'; ctx.shadowBlur = 30;
+      if (p.rev) { ctx.translate(x + cw, y + ch); ctx.rotate(Math.PI); ctx.drawImage(imgs[i], 0, 0, cw, ch); }
+      else ctx.drawImage(imgs[i], x, y, cw, ch);
+      ctx.restore();
+      ctx.fillStyle = '#f5f2ff'; ctx.font = `800 ${n > 3 ? 22 : 27}px ${font}`;
+      wrap(ctx, p.card.ko, cw + gap - 6).slice(0, 2).forEach((l, k) => ctx.fillText(l, x + cw / 2, y + ch + 42 + k * 30));
+      if (p.rev) { ctx.fillStyle = '#ffb3c4'; ctx.font = `600 ${n > 3 ? 17 : 20}px ${font}`; ctx.fillText('역방향', x + cw / 2, y + ch + 100); }
+    });
+    // Overall energy bar
+    const tone = level(averageScore()).tone, barW = 360, bx = (W - barW) / 2, by = textTop;
+    ctx.fillStyle = '#b9c5da'; ctx.font = `600 22px ${font}`;
+    ctx.fillText(`카드 전체의 기운 · ${METER_WORD[tone]}`, W / 2, by);
+    for (let k = 0; k < 5; k++) {
+      ctx.fillStyle = k < tone + 3 ? (tone > 0 ? '#7fdcbc' : tone < 0 ? '#ff9fb4' : '#c9a2ff') : '#2b3250';
+      ctx.beginPath(); ctx.roundRect ? ctx.roundRect(bx + k * (barW / 5) + 3, by + 22, barW / 5 - 6, 12, 6) : ctx.rect(bx + k * (barW / 5) + 3, by + 22, barW / 5 - 6, 12); ctx.fill();
+    }
+    ctx.textAlign = 'left';
+    let y = by + 100;
+    ctx.fillStyle = '#e4ddf7'; ctx.font = `500 30px ${font}`;
+    summary.forEach(l => { ctx.fillText(l, pad, y); y += 48; });
+    y += 30;
+    ctx.fillStyle = '#9df0d2'; ctx.font = `600 28px ${font}`;
+    tip.forEach(l => { ctx.fillText(l, pad, y); y += 44; });
+    ctx.textAlign = 'center'; ctx.fillStyle = '#8792ab'; ctx.font = `600 22px ${font}`;
+    ctx.fillText('partygame.pe.kr/fortune/tarot.html · 무료 타로점', W / 2, H - 50);
+    return new Promise(ok => c.toBlob(ok, 'image/png'));
+  }
+  async function saveImage() {
+    const btn = $('imageBtn'), label = btn.textContent;
+    btn.disabled = true; btn.textContent = '이미지 만드는 중…';
+    try {
+      const blob = await resultImage();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `tarot-${today()}.png`;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      btn.textContent = '저장했습니다';
+    } catch { btn.textContent = '저장하지 못했습니다'; }
+    btn.disabled = false;
+    setTimeout(() => { btn.textContent = label; }, 1800);
+  }
+  async function shareResult() {
+    const url = location.origin + location.pathname;
+    const text = `[타로점] ${state.spread.label}\n${state.picks.map((p, i) => `${state.spread.positions[i].name}: ${p.card.ko}${p.rev ? '(역방향)' : ''}`).join(' · ')}\n${state.summary}`;
+    try {
+      let files;
+      try { const blob = await resultImage(); const f = new File([blob], `tarot-${today()}.png`, { type: 'image/png' }); if (navigator.canShare && navigator.canShare({ files: [f] })) files = [f]; } catch { /* share text only */ }
+      await navigator.share(files ? { title: '타로점 결과', text, url, files } : { title: '타로점 결과', text, url });
+    } catch { /* closed the share sheet */ }
   }
 
   function resultText() {
@@ -441,6 +595,9 @@
   deckEl.addEventListener('click', e => { const b = e.target.closest('button[data-i]'); if (b) pick(+b.dataset.i); });
   slotsEl.addEventListener('click', e => { const b = e.target.closest('button[data-slot]'); if (b) open(+b.dataset.slot); });
   shuffleBtn.addEventListener('click', start);
+  flipAllBtn.addEventListener('click', flipAll);
+  $('imageBtn').addEventListener('click', () => { if (state && state.summary) saveImage(); });
+  if (navigator.share) { $('shareBtn').hidden = false; $('shareBtn').addEventListener('click', () => { if (state && state.summary) shareResult(); }); }
   $('useReversed').addEventListener('change', () => { if (state && state.picks.length === 0) state.reversed = $('useReversed').checked; });
   document.querySelectorAll('input[name=spread]').forEach(r => r.addEventListener('change', () => {
     spreadTouched = true;
@@ -496,7 +653,7 @@
 
   shuffleBtn.disabled = true;
   refreshAnalysis();
-  fetch(BASE + 'cards.json').then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(json => {
+  fetch(BASE + 'cards.json?v=20261120').then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(json => {
     cards = json.cards;
     shuffleBtn.disabled = false;
     renderDict('major');
