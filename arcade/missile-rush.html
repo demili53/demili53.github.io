@@ -10,7 +10,7 @@
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-T2KDKBN8');</script>
 <meta name="google-adsense-account" content="ca-pub-1087435977438565"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565" crossorigin="anonymous"></script>
 <script src="/scripts/site-layout.js" defer></script><link rel="stylesheet" href="/styles/site-design.css">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"미사일 러시","url":"https://partygame.pe.kr/arcade/missile-rush.html","description":"위에서 떨어지는 덧셈·뺄셈·곱셈·나눗셈 캡슐을 받아 미사일 포대 수를 바꾸고, 유닛 수만큼 커지는 화력으로 적 편대와 보스를 막는 무한 웨이브 슈팅 게임.","inLanguage":"ko","genre":["Arcade","Shooter"],"gamePlatform":["PC web browser","Mobile web browser"],"playMode":"https://schema.org/SinglePlayer","isAccessibleForFree":true,"operatingSystem":"Web browser","applicationCategory":"GameApplication"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"미사일 러시","url":"https://partygame.pe.kr/arcade/missile-rush.html","description":"위에서 떨어지는 덧셈·뺄셈·곱셈·나눗셈 캡슐을 받아 미사일 포대 수를 바꾸고, 다섯 가지 무기와 유닛 수만큼 커지는 화력으로 적 편대와 네 종류의 보스를 막는 무한 웨이브 슈팅 게임.","inLanguage":"ko","genre":["Arcade","Shooter"],"gamePlatform":["PC web browser","Mobile web browser"],"playMode":"https://schema.org/SinglePlayer","isAccessibleForFree":true,"operatingSystem":"Web browser","applicationCategory":"GameApplication"}</script>
 <style>
 body{margin:0}button{font:inherit;cursor:pointer}button:disabled{opacity:.4;cursor:not-allowed}[hidden]{display:none!important}
 .rush-shell{max-width:1180px;margin:auto;padding:30px 28px 0}
@@ -35,6 +35,7 @@ body{margin:0}button{font:inherit;cursor:pointer}button:disabled{opacity:.4;curs
 .rush-aside{display:grid;align-content:start;gap:14px}.card{padding:18px}.card h2{font-size:15px;margin:8px 0 12px;color:#edf3fb}.card p,.card li{font-size:12px;color:#a3b6ce;line-height:1.85}
 .tier{font-size:17px;font-weight:850;margin:4px 0 12px}.stat-list,.owned-list{list-style:none;padding:0;margin:0;display:grid;gap:4px}.stat-list{grid-template-columns:1fr 1fr;column-gap:16px}
 .stat-list li,.owned-list li{display:flex;justify-content:space-between;border-bottom:1px solid #243248;padding:3px 0}.stat-list b,.owned-list b{color:#f1f5fc;font-variant-numeric:tabular-nums}.owned-list li.empty{border:0;color:#8ea3be}
+.tier.sub-tier{font-size:13px;margin:10px 0 10px}.wdesc{margin:-6px 0 0}.legend .w{min-width:26px;border-radius:50%;background:#101a2c}
 .evo-track{display:flex;gap:5px;margin-top:12px}.evo-track span{flex:1;height:5px;border-radius:4px;background:#30405a}
 .best{font-size:22px;font-weight:750;color:#ffbd86}
 #firebaseRankingList{list-style:none;padding:0;margin:12px 0}#firebaseRankingList li{padding:10px 0;border-bottom:1px solid #2a394d;display:flex;align-items:center;gap:9px;font-size:11px;color:#c2d0e4}#firebaseRankingList li>strong{min-width:17px;color:#ffb981}#firebaseRankingList li>span:first-of-type{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#firebaseRankingList li>span:last-of-type{white-space:nowrap}#firebaseRankingStatus{font-size:11px;line-height:1.8}
@@ -45,7 +46,7 @@ body{margin:0}button{font:inherit;cursor:pointer}button:disabled{opacity:.4;curs
 </style>
 </head><body><site-header></site-header><noscript><p>게임을 실행하려면 JavaScript를 켜 주세요.</p><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T2KDKBN8" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <main class="rush-shell" id="mainContent" tabindex="-1">
-<header class="rush-heading"><div><div class="kicker">OPERATOR CAPSULE SQUAD SHOOTER</div><h1>미사일 러시</h1><p class="sub">적 편대 사이로 +, −, ×, ÷ 연산 캡슐이 떨어진다.<br>받는 캡슐에 따라 포대 수가 늘거나 줄고, 유닛 수가 곧 화력이다.</p></div><span class="classification">ENDLESS WAVES / + − × ÷</span></header>
+<header class="rush-heading"><div><div class="kicker">OPERATOR CAPSULE SQUAD SHOOTER</div><h1>미사일 러시</h1><p class="sub">적 편대 사이로 +, −, ×, ÷ 연산 캡슐이 떨어진다.<br>받는 캡슐에 따라 포대 수가 늘거나 줄고, 유닛 수가 곧 화력이다.</p></div><span class="classification">5 WEAPONS / 4 BOSSES / + − × ÷</span></header>
 <div class="rush-layout"><section class="rush-panel" id="rushPanel" aria-label="미사일 러시 게임">
 <div class="rush-hud"><div><small>WAVE</small><strong id="waveHud">1</strong></div><div><small>유닛</small><strong id="unitsHud">3기</strong></div><div><small>화력</small><strong id="powerHud">0</strong></div><div><small>점수</small><strong id="scoreHud">0</strong></div></div>
 <div class="xp"><div class="bar" aria-hidden="true"><span id="unitBar"></span></div><small id="unitText">최대 3기 · 한도 300</small></div>
@@ -57,20 +58,23 @@ body{margin:0}button{font:inherit;cursor:pointer}button:disabled{opacity:.4;curs
 <div class="rush-controls"><button class="rush-btn" id="pauseRush" disabled>일시정지</button><label><input id="rushSound" type="checkbox"> 효과음</label><label><input id="rushMotion" type="checkbox"> 화면 흔들림 끄기</label></div>
 <p class="rush-status" id="rushStatus" role="status" aria-live="polite">전투 시작을 누르면 1웨이브가 시작됩니다.</p>
 </section><aside class="rush-aside">
-<section class="rush-panel card"><div class="kicker">CURRENT WEAPON</div><h2>현재 미사일</h2><div class="tier" id="tierName" style="color:#ffd27a">Mk.I 소형 미사일</div><ul class="stat-list" id="weaponStats"></ul><div class="evo-track" id="evoTrack" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div><p>5웨이브마다 등장하는 보스를 격파하면 미사일이 한 단계 진화하고(최대 Mk.V) 증원 5기가 합류합니다.</p></section>
+<section class="rush-panel card"><div class="kicker">CURRENT WEAPON</div><h2>현재 무기</h2><div class="tier" id="weaponName" style="color:#ffd27a">미사일 Lv.1 / 3</div><p class="wdesc" id="weaponDesc">균형 잡힌 직사 미사일. 레벨마다 관통 +1</p><div class="tier sub-tier" id="tierName" style="color:#ffd27a">Mk.I 소형 미사일</div><ul class="stat-list" id="weaponStats"></ul><div class="evo-track" id="evoTrack" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div><p>5웨이브마다 등장하는 보스를 격파하면 탄두가 한 단계 진화하고(최대 Mk.V) 증원 5기와 무기 상자가 도착합니다.</p></section>
 <section class="rush-panel card"><h2>연산 기록</h2><ul class="owned-list" id="gateLog"><li class="empty">떨어지는 연산 캡슐을 받으면 여기에 기록됩니다.</li></ul></section>
 <section class="rush-panel card"><h2>연산 캡슐</h2><ul class="legend"><li><i class="a">+3</i>유닛 3기 증원 · 쏘면 숫자 증가</li><li><i class="s">−2</i>유닛 2기 손실 · 쏘면 줄다가 +로 반전</li><li><i class="m">×2</i>유닛 2배 복제</li><li><i class="d">÷2</i>유닛 절반으로 분할(최소 1기)</li></ul></section>
-<section class="rush-panel card"><h2>조작 방법</h2><p>방향키 / WASD · 부대 이동<br>화면 드래그 · 부대 이동(모바일)<br>미사일 · 자동 발사<br>캡슐에 닿기 · 연산 적용<br>P / Esc · 일시정지</p></section>
+<section class="rush-panel card"><h2>무기 상자</h2><ul class="legend"><li><i class="w" style="border-color:#ffd27a;color:#ffd27a">M</i>미사일 · 균형형, 레벨마다 관통 +1</li><li><i class="w" style="border-color:#ffb35c;color:#ffb35c">S</i>산탄포 · 넓게 퍼지는 근거리 화력</li><li><i class="w" style="border-color:#7ce8ff;color:#7ce8ff">L</i>관통 레이저 · 한 줄 전부 관통</li><li><i class="w" style="border-color:#c891ff;color:#c891ff">H</i>유도탄 · 적을 추적</li><li><i class="w" style="border-color:#ff7b6b;color:#ff7b6b">B</i>폭발탄 · 범위 폭발</li></ul><p>같은 무기 상자를 다시 받으면 Lv.3까지 강화됩니다(레벨당 피해 +20%).</p></section>
+<section class="rush-panel card"><h2>조작 방법</h2><p>방향키 / WASD · 부대 이동<br>화면 드래그 · 부대 이동(모바일)<br>미사일 · 자동 발사<br>캡슐에 닿기 · 연산 적용<br>육각 상자에 닿기 · 무기 교체/강화<br>P / Esc · 일시정지</p></section>
 <section class="rush-panel card"><div class="kicker">PERSONAL RECORD</div><h2>이 브라우저 최고 기록</h2><div class="best" id="rushBest">0점 · 0웨이브 · 최대 0기</div></section>
 <section class="rush-panel card"><h2>미사일 러시 TOP 10</h2><ol id="firebaseRankingList"><li class="sub">온라인 기록을 불러오는 중…</li></ol><p id="firebaseRankingStatus" aria-live="polite">로그인 회원의 최고 기록을 저장합니다.</p></section>
 </aside></div>
 <section class="rush-guide"><div class="kicker">FIELD MANUAL</div><h2>떨어지는 연산, 불어나는 부대</h2><div class="guide-grid">
 <div><h3>01. 유닛 수가 곧 화력</h3><p>포대 3기로 시작하며 유닛 하나하나가 같은 화력을 보탭니다. 10기는 1기의 열 배로 쏩니다. 40기마다 미사일 관통이 1회씩 붙고, 부대는 최대 300기까지 불어납니다. 대신 부대가 커질수록 몸집도 커져 적과 탄환을 피하기 어려워집니다.</p></div>
 <div><h3>02. 네 가지 연산 캡슐</h3><p>+n은 증원, ×n은 복제, −n은 손실, ÷n은 분할입니다. 캡슐은 하나씩 또는 좌우 한 쌍으로 떨어지며, 한 쌍은 한쪽만 받을 수 있습니다. +와 − 캡슐은 미사일을 집중하면 숫자가 1씩 유리하게 바뀌어 −3이 −2, −1을 지나 +1이 됩니다. 캡슐을 쏘는 동안은 적을 쏘지 못합니다.</p></div>
-<div><h3>03. 잃는 방법과 보스</h3><p>적과 부딪히거나 적이 방어선을 넘으면 적의 크기만큼 유닛을 잃고, 탄환에 맞으면 1기를 잃습니다. 유닛이 0이 되면 끝납니다. 5·10·15… 웨이브의 거대 요새선을 격파하면 증원 5기가 합류하고 미사일이 Mk.II 고폭 → Mk.III 플라즈마 → Mk.IV 반물질 → Mk.V 성운 파괴탄으로 진화합니다.</p></div>
+<div><h3>03. 다섯 가지 무기</h3><p>육각형 무기 상자를 받으면 무기가 바뀝니다. 미사일은 균형형, 산탄포는 가까운 무리에 강하고, 관통 레이저는 세로 한 줄의 적을 모두 태우며, 유도탄은 빗나가지 않고, 폭발탄은 주변을 함께 휩씁니다. 같은 무기 상자를 다시 받으면 Lv.3까지 강화되고, 최대 레벨에서는 증원 3기를 받습니다. 바꾼 무기의 레벨은 기억됩니다.</p></div>
+<div><h3>04. 잃는 방법</h3><p>적과 부딪히거나 적이 방어선을 넘으면 적의 크기만큼 유닛을 잃고, 탄환에 맞으면 1기를 잃습니다. 보스에 들이받히면 6기를 잃습니다. 유닛이 0이 되면 끝납니다. 캡슐 하나는 사격으로 네 번까지만 숫자를 바꿀 수 있습니다.</p></div>
+<div><h3>05. 네 종류의 보스</h3><p>5웨이브마다 보스가 번갈아 등장합니다. 거대 요새선은 부채꼴 탄막과 드론, 강습 모함은 빠른 기동과 전투기 편대, 분할 군주는 − · ÷ 캡슐을 부대 쪽으로 던지고, 쌍두 포격함은 양쪽 포탑 연사 뒤 화면 아래까지 돌진합니다. 격파하면 증원 5기와 무기 상자를 얻고 탄두가 Mk.V 성운 파괴탄까지 진화합니다.</p></div>
 </div></section>
 <nav class="crosslinks" aria-label="게임 선택"><a href="/arcade/space-shooter.html">비행기 슈팅 ↗</a><a href="/arcade/rift-blade.html">균열의 검 RPG ↗</a><a href="/arcade/shadow-sniper.html">윌리를 찾아서 저격해라 ↗</a></nav>
 </main><site-footer></site-footer>
 <script type="module">import { initializeGameRanking } from '/scripts/firebase-game-ranking.js';initializeGameRanking({gameId:'missile-rush',gameName:'미사일 러시'});</script>
-<script src="/scripts/missile-rush-core.js"></script><script src="/scripts/missile-rush.js"></script>
+<script src="/scripts/missile-rush-core.js?v=20261120b"></script><script src="/scripts/missile-rush.js?v=20261120b"></script>
 </body></html>

@@ -80,6 +80,39 @@ const mode = page => page.evaluate(() => window.__missileRush.mode);
     assert(s.units >= 28, `shot capsule lost its bite (units ${s.units}, log ${s.log[0]})`);
     assert.notEqual(s.log[0], '−3');
 
+    // Weapon crates: every weapon fires, the same crate levels it up, a falling crate is caught on contact.
+    await page.evaluate(() => { const m = window.__missileRush; m.holdCrates(); m.startWave(3); m.setUnits(40); });
+    for (const id of ['scatter', 'laser', 'homing', 'blast', 'missile']) {
+      await page.evaluate(w => { const m = window.__missileRush; m.pickWeapon(w); m.spawnAbove('drone'); m.spawnAbove('tank'); }, id);
+      const before = (await game(page)).score;
+      await page.waitForTimeout(2600);
+      s = await game(page);
+      assert.equal(s.weapon, id);
+      assert(id === 'laser' || s.missiles > 0, `${id} fires`);
+      assert(s.score > before, `${id} destroys enemies (${before} -> ${s.score})`);
+      await page.locator('.rush-stage').screenshot({ path: path.join(out, `missile-rush-weapon-${id}.png`) });
+      await page.evaluate(() => { const m = window.__missileRush; m.startWave(3); m.setUnits(40); });
+    }
+    await page.evaluate(() => window.__missileRush.pickWeapon('missile'));
+    assert.equal((await game(page)).wlevel, 2);
+    assert.match(await page.locator('#weaponName').innerText(), /미사일 Lv\.2/);
+    await page.evaluate(() => window.__missileRush.dropCrate('laser'));
+    await page.waitForFunction(() => window.__missileRush.snapshot().weapon === 'laser', null, { timeout: 5000 });
+    assert.match(await page.locator('#weaponName').innerText(), /관통 레이저 Lv\.1/);
+
+    // Four bosses rotate; each one attacks in its own way.
+    for (const [wave, id] of [[10, 'carrier'], [15, 'divider'], [20, 'hydra']]) {
+      await page.evaluate(w => { const m = window.__missileRush; m.setUnits(60); m.startWave(w); }, wave);
+      await page.waitForTimeout(5200);
+      s = await game(page);
+      assert.equal(s.boss, id);
+      assert(s.bullets > 0 || s.enemies > 1 || s.gates.length > 0, `${id} attacks`);
+      await page.locator('.rush-stage').screenshot({ path: path.join(out, `missile-rush-boss-${id}.png`) });
+      if (await mode(page) !== 'play') break;
+    }
+    assert.equal(await mode(page), 'play', 'squad of 60 survives the boss openings');
+    await page.evaluate(() => { const m = window.__missileRush; m.setUnits(20); m.pickWeapon('missile'); });
+
     // Boss wave and missile evolution.
     await page.evaluate(() => window.__missileRush.startWave(5));
     await page.waitForTimeout(1800);
@@ -142,6 +175,6 @@ const mode = page => page.evaluate(() => window.__missileRush.mode);
       await share.screenshot({ path: path.join(root, 'assets/games/missile-rush/share.png') });
     }
     assert.deepEqual(errors, [], 'no page errors');
-    console.log('PASS: missile rush auto-fire, waves, operator capsules (+ − × ÷, falling catch, shot shifting), unit-proportional firepower, boss evolution, pause freeze, game-over score event, mobile drag and layout');
+    console.log('PASS: missile rush auto-fire, waves, operator capsules (+ − × ÷, falling catch, shot shifting), unit-proportional firepower, 5 weapons and crates, 4 bosses, boss evolution, pause freeze, game-over score event, mobile drag and layout');
   } finally { await browser?.close(); server.close(); }
 })().catch(e => { console.error(e); process.exit(1); });
