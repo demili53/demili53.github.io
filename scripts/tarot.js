@@ -55,7 +55,13 @@
     relation: { label: '나 · 상대 · 관계', positions: [
       { name: '나의 마음', lead: '지금 당신의 마음 상태는' },
       { name: '상대의 마음', lead: '상대의 속마음을 보여 주는 카드는', use: 'feel' },
-      { name: '관계의 앞날', lead: '두 사람 관계의 앞날은' }] }
+      { name: '관계의 앞날', lead: '두 사람 관계의 앞날은' }] },
+    five: { label: '다섯 장 깊이 보기', positions: [
+      { name: '과거', lead: '지금의 고민을 만든 지난 흐름은' },
+      { name: '현재', lead: '지금 가장 크게 작용하는 기운은' },
+      { name: '숨은 영향', lead: '겉으로 드러나지 않았지만 이 일을 움직이는 힘은' },
+      { name: '조언', lead: '카드가 건네는 조언은', use: 'advice' },
+      { name: '결과', lead: '조언을 따를 때 기대할 수 있는 결과는' }] }
   };
   const SUITS = {
     wands: { ko: '완드', theme: '열정과 일, 추진력', time: '며칠에서 몇 주 안에 빠르게' },
@@ -149,7 +155,7 @@
     if (!sit || pos.use === 'advice' || pos.use === 'feel' || !window.TarotAI) return '';
     if (pos.name === '선택 B') return ''; // situation outcomes describe doing it, which is choice A
     const out = sit.out[window.TarotAI.levelOf(score(p))];
-    const LEADS = { '과거': `${sit.label} 문제에서 지난 흐름은`, '현재': `${sit.label} 문제의 지금 모습은`, '미래': `${sit.label} 문제가 앞으로 흘러가면`, '상황': `${sit.label} 문제의 핵심을 보면`, '결과': `조언대로 움직였을 때 ${sit.label} 문제는`, '나의 마음': `${sit.label} 문제에서 당신 쪽 흐름은`, '관계의 앞날': `${sit.label} 문제의 앞날은` };
+    const LEADS = { '숨은 영향': `${sit.label} 문제의 보이지 않는 곳에서는`, '과거': `${sit.label} 문제에서 지난 흐름은`, '현재': `${sit.label} 문제의 지금 모습은`, '미래': `${sit.label} 문제가 앞으로 흘러가면`, '상황': `${sit.label} 문제의 핵심을 보면`, '결과': `조언대로 움직였을 때 ${sit.label} 문제는`, '나의 마음': `${sit.label} 문제에서 당신 쪽 흐름은`, '관계의 앞날': `${sit.label} 문제의 앞날은` };
     const lead = pos.name.startsWith('선택') ? '이 길을 고르면' : LEADS[pos.name] || `${sit.label} 문제로 보면`;
     return ` ${lead} ${out.replace(/니다$/, '니다')}.`;
   }
@@ -245,9 +251,13 @@
     // Card combinations from the reader module, then general deck patterns
     const combos = window.TarotAI ? window.TarotAI.combinations(picks) : [];
     combos.forEach(t => parts.push(t + '.'));
-    if (window.TarotAI && window.TarotAI.shape && ['time', 'advice', 'relation'].includes(st.key)) {
-      const sh = window.TarotAI.shape(scores);
-      if (sh) { parts.push(sh.text + '.'); if (sh.sure) parts.push(sh.sure + '.'); }
+    if (window.TarotAI && window.TarotAI.shape && ['time', 'advice', 'relation', 'five'].includes(st.key)) {
+      // The five-card spread reads its shape from past, present and outcome.
+      const sh = window.TarotAI.shape(st.key === 'five' ? [scores[0], scores[1], scores[4]] : scores);
+      if (sh && st.key === 'five') {
+        parts.push('과거에서 현재, 결과까지 이어 보면 ' + sh.text.replace('세 장의 ', '') + '.');
+        if (Math.abs(scores[2] - scores[1]) >= 2) parts.push('겉으로 보이는 지금의 모습과 숨은 영향의 기운이 크게 다릅니다. 보이는 것만으로 판단하지 마세요.');
+      } else if (sh) { parts.push(sh.text + '.'); if (sh.sure) parts.push(sh.sure + '.'); }
     }
     const echo = window.TarotAI && window.TarotAI.numberEcho ? window.TarotAI.numberEcho(picks) : null;
     if (echo) parts.push(echo + '.');
@@ -417,7 +427,7 @@
 
   function renderDict(filter) {
     const list = cards.filter(c => filter === 'major' ? c.arcana === 'major' : c.suit === filter);
-    $('dictGrid').innerHTML = list.map(c => `<li><img src="${BASE + c.img}" alt="${esc(c.ko)} 카드" loading="lazy" width="300" height="434"><b>${esc(c.ko)}</b><small>${esc(c.en)}</small><p>${esc(c.meaning)}</p></li>`).join('');
+    $('dictGrid').innerHTML = list.map(c => `<li><button type="button" class="dict-card" data-id="${c.id}" aria-label="${esc(c.ko)} 카드 자세히 보기"><img src="${BASE + c.img}" alt="" loading="lazy" width="300" height="434"><b>${esc(c.ko)}</b><small>${esc(c.en)}</small><p>${esc(c.meaning)}</p></button></li>`).join('');
     document.querySelectorAll('#dictTabs button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.filter === filter)));
   }
 
@@ -451,6 +461,39 @@
   });
   $('dictTabs').addEventListener('click', e => { const b = e.target.closest('button[data-filter]'); if (b) renderDict(b.dataset.filter); });
 
+  // ---------- Card detail dialog ----------
+  const DETAIL_ROWS = [['love', '연애'], ['feel', '상대의 마음'], ['money', '재물'], ['work', '일 · 직장'], ['study', '학업 · 시험'], ['health', '건강'], ['people', '인간관계'], ['advice', '조언'], ['rev', '역방향']];
+  const dialog = $('cardDialog');
+  function showCard(id) {
+    const c = cards.find(x => x.id === id);
+    if (!c || !dialog.showModal) return;
+    $('cardDialogBody').innerHTML = `<img src="${BASE + c.img}" alt="${esc(c.ko)} 카드" width="300" height="434"><div><h3>${esc(c.ko)} <small>${esc(c.en)}</small></h3><p class="core">${esc(c.meaning)}</p><dl>${DETAIL_ROWS.map(([f, label]) => data(c, f) ? `<dt>${label}</dt><dd>${esc(data(c, f))}.</dd>` : '').join('')}</dl></div>`;
+    dialog.showModal();
+  }
+  $('dictGrid').addEventListener('click', e => { const b = e.target.closest('.dict-card'); if (b) showCard(b.dataset.id); });
+  $('cardDialogClose').addEventListener('click', () => dialog.close());
+  dialog.addEventListener('click', e => { if (e.target === dialog) dialog.close(); });
+
+  // ---------- Card of the day: one card per device per day ----------
+  const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+  function storedDaily() {
+    try { const v = JSON.parse(localStorage.getItem('tarotDaily') || 'null'); return v && v.date === today() ? v : null; } catch { return null; }
+  }
+  function showDaily(id) {
+    const c = cards.find(x => x.id === id);
+    if (!c) return;
+    $('dailyResult').innerHTML = `<button type="button" class="dict-card daily-card" data-id="${c.id}" aria-label="${esc(c.ko)} 카드 자세히 보기"><img src="${BASE + c.img}" alt="${esc(c.ko)} 카드" width="300" height="434"></button><div><b>${esc(c.ko)}</b> <small>${esc(c.en)}</small><p>오늘의 기운은 ‘${esc(c.meaning)}’입니다.</p><p class="daily-advice">${esc(data(c, 'advice') || '')}.</p><p class="note">오늘의 카드는 하루에 한 장이며 내일 새 카드로 바뀝니다.</p></div>`;
+    $('dailyResult').hidden = false;
+    $('dailyBtn').hidden = true;
+  }
+  $('dailyBtn').addEventListener('click', () => {
+    if (!cards.length) return;
+    const id = (storedDaily() || {}).id || cards[randomInt(cards.length)].id;
+    try { localStorage.setItem('tarotDaily', JSON.stringify({ date: today(), id })); } catch { /* private mode: show without saving */ }
+    showDaily(id);
+  });
+  $('dailyResult').addEventListener('click', e => { const b = e.target.closest('.dict-card'); if (b) showCard(b.dataset.id); });
+
   shuffleBtn.disabled = true;
   refreshAnalysis();
   fetch(BASE + 'cards.json').then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(json => {
@@ -458,6 +501,8 @@
     shuffleBtn.disabled = false;
     renderDict('major');
     start(); // deal right away; shuffling again is optional
+    const daily = storedDaily();
+    if (daily) showDaily(daily.id);
   }).catch(() => setStatus('카드를 불러오지 못했습니다. 새로고침해 주세요.'));
 
   window.TarotReader = { analyze, TOPICS, QTYPES, SPREADS }; // used by the page test

@@ -227,9 +227,10 @@
     }
     if (picks.length >= 3) {
       const suits = picks.map(p => p.card.suit).filter(Boolean);
-      if (suits.length === 3 && new Set(suits).size === 1) notes.push(`세 장이 모두 같은 ${({ wands: '완드', cups: '컵', swords: '소드', pentacles: '펜타클' })[suits[0]]} 카드입니다. 이 고민은 한 가지 영역에 힘이 모여 있습니다`);
-      if (picks.every(p => p.card.arcana === 'major')) notes.push('세 장이 모두 메이저 카드입니다. 개인의 힘을 넘어선 큰 흐름이 움직이고 있으니 결과를 받아들일 준비를 하세요');
-      if (picks.every(p => p.card.arcana === 'minor')) {
+      const three = picks.length === 3;
+      if (three && suits.length === 3 && new Set(suits).size === 1) notes.push(`세 장이 모두 같은 ${({ wands: '완드', cups: '컵', swords: '소드', pentacles: '펜타클' })[suits[0]]} 카드입니다. 이 고민은 한 가지 영역에 힘이 모여 있습니다`);
+      if (three && picks.every(p => p.card.arcana === 'major')) notes.push('세 장이 모두 메이저 카드입니다. 개인의 힘을 넘어선 큰 흐름이 움직이고 있으니 결과를 받아들일 준비를 하세요');
+      if (three && picks.every(p => p.card.arcana === 'minor')) {
         const ns = picks.map(p => numberOf(p.card.id));
         if (ns[0] < ns[1] && ns[1] < ns[2]) notes.push('카드 숫자가 점점 커지고 있습니다. 상황이 단계적으로 발전하는 흐름입니다');
         if (ns[0] > ns[1] && ns[1] > ns[2]) notes.push('카드 숫자가 점점 작아지고 있습니다. 일을 정리하고 처음으로 돌아가는 흐름입니다');
