@@ -45,22 +45,40 @@ const mode = page => page.evaluate(() => window.__missileRush.mode);
     assert(s.enemies > 0 || s.score > 0, 'enemies arrive');
     await page.screenshot({ path: path.join(out, 'missile-rush-wave1.png') });
 
-    // Level up: three cards, choose with key 2.
-    await page.evaluate(() => window.__missileRush.grantXp(11));
-    assert.equal(await mode(page), 'choose');
-    assert.equal(await page.locator('#upgradeChoices .rush-card').count(), 3);
-    await page.locator('.rush-stage').screenshot({ path: path.join(out, 'missile-rush-levelup.png') });
-    const chosen = (await game(page)).choices[1];
-    await page.keyboard.press('Digit2');
+    // Operator capsules: each of + − × ÷ changes the squad size and the firepower with it.
+    assert.equal(s.units, 3);
+    const power = async () => +(await page.locator('#powerHud').innerText()).replace(/,/g, '');
+    await page.evaluate(() => window.__missileRush.setUnits(4));
+    await page.waitForTimeout(250);
+    const p4 = await power();
+    await page.evaluate(() => window.__missileRush.catchGate('+', 3)); assert.equal((await game(page)).units, 7);
+    await page.evaluate(() => window.__missileRush.catchGate('×', 2)); assert.equal((await game(page)).units, 14);
+    await page.evaluate(() => window.__missileRush.catchGate('-', 2)); assert.equal((await game(page)).units, 12);
+    await page.evaluate(() => window.__missileRush.catchGate('÷', 2)); assert.equal((await game(page)).units, 6);
+    await page.evaluate(() => window.__missileRush.catchGate('×', 2));
+    await page.waitForTimeout(250);
     s = await game(page);
-    assert.equal(s.levels[chosen], 1); assert.equal(await mode(page), 'play');
+    assert.equal(s.units, 12); assert.equal(s.peak, 14);
+    assert.deepEqual(s.log.slice(0, 5), ['×2', '÷2', '−2', '×2', '+3']);
+    assert(Math.abs(await power() - p4 * 3) <= 2, 'three times the units, three times the firepower');
+    assert.equal(await page.locator('#gateLog li:not(.empty)').count(), 5);
+    assert.match(await page.locator('#unitsHud').innerText(), /12기/);
 
-    // Several pending level-ups chain one card after another.
-    await page.evaluate(() => window.__missileRush.grantXp(200));
-    let picks = 0;
-    while (await mode(page) === 'choose' && picks < 30) { await page.locator('#upgradeChoices .rush-card').first().click(); picks++; }
-    assert(picks >= 3, 'chained level ups');
-    assert((await page.locator('#upgradeList li:not(.empty)').count()) >= 1);
+    // A real capsule falls onto the squad and is applied on contact; pairs drop side by side.
+    await page.evaluate(() => { window.__missileRush.startWave(1); window.__missileRush.dropOnSquad('×', 3); });
+    await page.waitForFunction(() => window.__missileRush.snapshot().units === 36, null, { timeout: 5000 });
+    await page.evaluate(() => window.__missileRush.dropGates(true));
+    assert((await game(page)).gates.length >= 2, 'capsule pair on screen');
+    await page.waitForTimeout(1500);
+    await page.locator('.rush-stage').screenshot({ path: path.join(out, 'missile-rush-levelup.png') });
+
+    // Missiles bend a − capsule toward +: −3 becomes something better while it is under fire.
+    await page.evaluate(() => { const m = window.__missileRush; m.startWave(1); m.setUnits(30); m.dropOnSquad('-', 3); });
+    await page.evaluate(() => new Promise(r => setTimeout(r, 0)));
+    await page.waitForFunction(() => { const g = window.__missileRush.snapshot().gates; return g.length && g.every(l => l !== '−3'); }, null, { timeout: 5000 }).catch(() => {});
+    s = await game(page);
+    assert(s.units >= 28, `shot capsule lost its bite (units ${s.units}, log ${s.log[0]})`);
+    assert.notEqual(s.log[0], '−3');
 
     // Boss wave and missile evolution.
     await page.evaluate(() => window.__missileRush.startWave(5));
@@ -83,14 +101,12 @@ const mode = page => page.evaluate(() => window.__missileRush.mode);
     // Game over sends one score event for the ranking module.
     await page.evaluate(() => { window.scoreEvents = []; addEventListener('partygame:score', e => scoreEvents.push(e.detail)); });
     await page.evaluate(() => window.__missileRush.startWave(40));
-    await page.waitForFunction(() => window.__missileRush.mode === 'over' || window.__missileRush.mode === 'choose', null, { timeout: 90000, polling: 200 });
-    while (await mode(page) !== 'over') {
-      if (await mode(page) === 'choose') await page.locator('#upgradeChoices .rush-card').first().click();
-      await page.waitForTimeout(200);
-    }
+    await page.evaluate(() => window.__missileRush.setUnits(2));
+    await page.waitForFunction(() => window.__missileRush.mode === 'over', null, { timeout: 90000, polling: 200 });
+    assert.equal((await game(page)).units, 0);
     const events = await page.evaluate(() => window.scoreEvents);
     assert.equal(events.length, 1); assert.equal(events[0].gameId, 'missile-rush'); assert(events[0].score > 0);
-    assert.match(await page.locator('#rushBest').innerText(), /웨이브/);
+    assert.match(await page.locator('#rushBest').innerText(), /웨이브 · 최대 \d+기/);
     await page.screenshot({ path: path.join(out, 'missile-rush-gameover.png') });
 
     // Mobile: drag moves the launcher, layout fits without horizontal scroll.
@@ -114,19 +130,18 @@ const mode = page => page.evaluate(() => window.__missileRush.mode);
     if (process.env.UPDATE_SHARE_IMAGES === '1') {
       const share = await open({ viewport: { width: 1200, height: 900 } });
       await share.click('#startRush');
-      await share.evaluate(() => window.__missileRush.grantXp(500));
-      for (let i = 0; i < 40 && await mode(share) === 'choose'; i++) await share.locator('#upgradeChoices .rush-card').first().click();
+      await share.evaluate(() => window.__missileRush.setUnits(48));
       for (let i = 0; i < 2; i++) { await share.evaluate(() => window.__missileRush.startWave(5)); await share.evaluate(() => window.__missileRush.killBoss()); }
-      await share.evaluate(() => window.__missileRush.startWave(10));
+      await share.evaluate(() => { window.__missileRush.startWave(10); window.__missileRush.dropGates(true); });
       await share.waitForTimeout(3200);
       await share.evaluate(() => window.__missileRush.freeze());
       const shot = Buffer.from((await share.evaluate(() => document.getElementById('rushCanvas').toDataURL('image/png'))).split(',')[1], 'base64');
       await share.setViewportSize({ width: 1200, height: 630 });
-      await share.setContent(`<body style="margin:0;width:1200px;height:630px;background:linear-gradient(120deg,#0a0f24,#1d1530);display:flex;align-items:center;gap:60px;font-family:'Malgun Gothic',sans-serif;color:#fff;overflow:hidden"><img src="data:image/png;base64,${shot.toString('base64')}" style="height:630px;margin-left:110px;box-shadow:0 0 60px #0008"><div><div style="color:#ffad66;letter-spacing:.2em;font-size:18px;font-weight:700">ENDLESS WEAPON UPGRADE</div><h1 style="font-size:86px;margin:16px 0;letter-spacing:-.03em">미사일 러시</h1><p style="font-size:28px;color:#b3c4db;line-height:1.55;margin:0">쏟아지는 적을 막고<br>미사일을 끝없이 업그레이드</p></div></body>`);
+      await share.setContent(`<body style="margin:0;width:1200px;height:630px;background:linear-gradient(120deg,#0a0f24,#1d1530);display:flex;align-items:center;gap:60px;font-family:'Malgun Gothic',sans-serif;color:#fff;overflow:hidden"><img src="data:image/png;base64,${shot.toString('base64')}" style="height:630px;margin-left:110px;box-shadow:0 0 60px #0008"><div><div style="color:#ffad66;letter-spacing:.2em;font-size:18px;font-weight:700">OPERATOR CAPSULE SQUAD</div><h1 style="font-size:86px;margin:16px 0;letter-spacing:-.03em">미사일 러시</h1><p style="font-size:28px;color:#b3c4db;line-height:1.55;margin:0">+ − × ÷ 캡슐로 부대를 불려<br>쏟아지는 적을 막아라</p></div></body>`);
       fs.mkdirSync(path.join(root, 'assets/games/missile-rush'), { recursive: true });
       await share.screenshot({ path: path.join(root, 'assets/games/missile-rush/share.png') });
     }
     assert.deepEqual(errors, [], 'no page errors');
-    console.log('PASS: missile rush auto-fire, waves, level-up cards (keys/click, chained), boss evolution, pause freeze, game-over score event, mobile drag and layout');
+    console.log('PASS: missile rush auto-fire, waves, operator capsules (+ − × ÷, falling catch, shot shifting), unit-proportional firepower, boss evolution, pause freeze, game-over score event, mobile drag and layout');
   } finally { await browser?.close(); server.close(); }
 })().catch(e => { console.error(e); process.exit(1); });

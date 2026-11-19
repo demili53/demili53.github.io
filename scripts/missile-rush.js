@@ -1,5 +1,5 @@
-// Missile Rush: vertical endless shooter. Enemies pour from the top, the launcher at the bottom
-// fires automatically and grows through level-up upgrade cards and boss-driven missile evolution.
+// Missile Rush: vertical endless shooter. Operator capsules (+n, −n, ×n, ÷n) fall with the enemy waves;
+// catching one changes how many launchers are in the squad, and every launcher adds firepower.
 (() => {
   const C = window.MissileRushCore;
   const W = 480, H = 760, LINE = 742;
@@ -7,32 +7,36 @@
   const ctx = canvas.getContext('2d');
   const $ = id => document.getElementById(id);
   const ui = {
-    wave: $('waveHud'), hp: $('hpHud'), level: $('levelHud'), score: $('scoreHud'), xpBar: $('xpBar'), xpText: $('xpText'),
+    wave: $('waveHud'), units: $('unitsHud'), power: $('powerHud'), score: $('scoreHud'), unitBar: $('unitBar'), unitText: $('unitText'),
     overlay: $('rushOverlay'), overlayKicker: $('overlayKicker'), overlayTitle: $('overlayTitle'), overlayText: $('overlayText'),
-    start: $('startRush'), choices: $('upgradeChoices'), pause: $('pauseRush'), status: $('rushStatus'),
-    tier: $('tierName'), stats: $('weaponStats'), owned: $('upgradeList'), best: $('rushBest'), banner: $('rushBanner'),
+    start: $('startRush'), pause: $('pauseRush'), status: $('rushStatus'),
+    tier: $('tierName'), stats: $('weaponStats'), log: $('gateLog'), best: $('rushBest'), banner: $('rushBanner'),
     sound: $('rushSound'), motion: $('rushMotion')
   };
   const BEST_KEY = 'partygame.missileRush.best';
-  const readBest = () => { try { return JSON.parse(localStorage.getItem(BEST_KEY)) || { score: 0, wave: 0 }; } catch { return { score: 0, wave: 0 }; } };
+  const readBest = () => { try { return { score: 0, wave: 0, peak: 0, ...JSON.parse(localStorage.getItem(BEST_KEY)) }; } catch { return { score: 0, wave: 0, peak: 0 }; } };
   const writeBest = v => { try { localStorage.setItem(BEST_KEY, JSON.stringify(v)); } catch { /* storage unavailable */ } };
 
+  const GATE_W = 78, GATE_H = 40, SHOWN_UNITS = 90, SPACING = 5.2;
   const stars = Array.from({ length: 90 }, () => ({ x: Math.random() * W, y: Math.random() * H, s: Math.random() * 1.6 + .3, v: Math.random() * 40 + 20 }));
+  // Sunflower layout: unit i sits at radius SPACING·√i, so the squad grows as a tidy disc.
+  const formation = Array.from({ length: SHOWN_UNITS }, (_, i) => ({ x: Math.cos(i * 2.39996) * SPACING * Math.sqrt(i) * 1.15, y: Math.sin(i * 2.39996) * SPACING * Math.sqrt(i) * .8 }));
   let S; // game state
-  let mode = 'ready'; // ready | play | choose | paused | over
+  let mode = 'ready'; // ready | play | paused | over
   let lastTime = 0, hudTimer = 0, shake = 0;
   const keys = new Set();
   let drag = null;
 
   function fresh() {
     return {
-      player: { x: W / 2, y: 690, hp: 5, maxHp: 5, inv: 0 },
-      missiles: [], enemies: [], bullets: [], gems: [], parts: [], texts: [],
-      levels: {}, tier: 1, level: 1, xp: 0, score: 0, kills: 0, pendingLevels: 0,
-      wave: 0, queue: [], spawnTimer: 0, nextWaveTimer: 0, fireTimer: 0, droneTimer: 0, time: 0, choices: [], bannerTimer: 0
+      player: { x: W / 2, y: 680, inv: 0 },
+      units: C.START_UNITS, peak: C.START_UNITS, shown: C.START_UNITS, pulse: 0,
+      missiles: [], enemies: [], bullets: [], gates: [], parts: [], texts: [], log: [],
+      tier: 1, score: 0, kills: 0, caught: 0,
+      wave: 0, queue: [], spawnTimer: 0, gateTimer: 2, nextWaveTimer: 0, fireTimer: 0, time: 0, bannerTimer: 0, pairId: 0
     };
   }
-  const stats = () => C.weaponStats(S.levels, S.tier);
+  const stats = () => C.squadStats(S.units, S.tier);
 
   // ---------- Audio (optional, generated) ----------
   let audio = null, lastShotSound = 0;
@@ -55,45 +59,83 @@
     const q = [];
     for (const [type, count] of plan.plan) for (let i = 0; i < (plan.boss ? Math.ceil(count / 2) : count); i++) q.push(type);
     for (let i = q.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [q[i], q[j]] = [q[j], q[i]]; }
-    S.queue = q; S.spawnGap = plan.spawnGap; S.spawnTimer = 1.4;
+    S.queue = q; S.spawnGap = plan.spawnGap; S.gateGap = plan.gateGap; S.spawnTimer = 1.4; S.gateTimer = Math.min(S.gateTimer, 1);
     if (plan.boss) spawn('boss');
     banner(plan.boss ? `WAVE ${n} · 보스 출현` : `WAVE ${n}`);
-    say(plan.boss ? '거대 요새선이 접근합니다. 처치하면 미사일이 진화합니다!' : `${n}웨이브 · 적 ${q.length}기 접근`);
+    say(plan.boss ? '거대 요새선이 접근합니다. 부대를 최대한 불려서 맞서세요!' : `${n}웨이브 · 적 ${q.length}기 접근`);
   }
   function spawn(type, x, y) {
     const st = C.enemyStats(type, S.wave);
-    const e = { type, x: x ?? (30 + Math.random() * (W - 60)), y: y ?? -st.r, hp: st.hp, maxHp: st.hp, speed: st.speed, r: st.r, score: st.score, xp: st.xp, color: st.color, t: Math.random() * 6, fire: 1.5 + Math.random() * 1.5, flash: 0, dir: Math.random() < .5 ? -1 : 1 };
+    const e = { type, x: x ?? (30 + Math.random() * (W - 60)), y: y ?? -st.r, hp: st.hp, maxHp: st.hp, speed: st.speed, r: st.r, score: st.score, color: st.color, t: Math.random() * 6, fire: 1.5 + Math.random() * 1.5, flash: 0, dir: Math.random() < .5 ? -1 : 1 };
     if (type === 'boss') { e.x = W / 2; e.fire = 2.2; e.summon = 4; }
     S.enemies.push(e);
     return e;
+  }
+  function makeGate(g, x, pairId) {
+    return { op: g.op, v: g.v, x, y: -GATE_H, vy: 92 + Math.min(70, S.wave * 3), dmg: 0, flash: 0, pairId, wob: Math.random() * 6 };
+  }
+  function spawnGates(forcePair) {
+    if (forcePair === undefined && S.gates.some(g => g.y < GATE_H * 2)) return; // keep rows from overlapping
+    const pair = forcePair ?? Math.random() < .55;
+    if (pair) {
+      const id = ++S.pairId;
+      const [a, b] = C.rollPair(S.wave, S.units);
+      S.gates.push(makeGate(a, W * .27, id), makeGate(b, W * .73, id));
+    } else {
+      S.gates.push(makeGate(C.rollOperator(S.wave, S.units), 50 + Math.random() * (W - 100), 0));
+    }
+  }
+
+  // ---------- Squad ----------
+  function setUnits(n, reason, color) {
+    const before = S.units;
+    S.units = C.clampUnits(n);
+    S.peak = Math.max(S.peak, S.units);
+    S.pulse = .35;
+    const d = S.units - before;
+    if (d) floatText(S.player.x, S.player.y - stats().radius - 18, (d > 0 ? '+' : '') + d + '기', color || (d > 0 ? '#9dffb4' : '#ff8f86'));
+    if (reason) say(reason);
+    if (S.units <= 0) gameOver();
+  }
+  function loseUnits(n, reason) {
+    if (n <= 0 || mode !== 'play') return;
+    shake = Math.max(shake, 6 + Math.min(10, n * 2));
+    burst(S.player.x, S.player.y, '#ff8a7a', 10 + n * 3);
+    beep(120, .25, 'square', .05, -60);
+    setUnits(S.units - n, `${reason} 유닛 -${n}`);
+  }
+  function catchGate(gate) {
+    const before = S.units;
+    const after = C.applyOperator(before, gate);
+    const good = after >= before;
+    S.caught++;
+    S.log.unshift({ label: C.gateLabel(gate), before, after, good });
+    S.log.length = Math.min(S.log.length, 8);
+    for (const o of S.gates) if (o !== gate && gate.pairId && o.pairId === gate.pairId) { o.dead = true; burst(o.x, o.y, '#8aa0c0', 6); }
+    gate.dead = true;
+    burst(gate.x, gate.y, good ? '#9dffb4' : '#ff8f86', 18);
+    beep(good ? 700 : 200, good ? .2 : .3, 'triangle', .05, good ? 500 : -120);
+    if (!good) shake = Math.max(shake, 8);
+    banner(`${C.gateLabel(gate)} · ${before} → ${after}기`, .9);
+    if (good) S.score += Math.max(0, after - before) * 5;
+    setUnits(after, `${C.OPERATORS[gate.op].name} 캡슐 ${C.gateLabel(gate)} 획득 · 부대 ${before}기 → ${after}기`);
+    renderLoadout();
   }
 
   // ---------- Combat ----------
   function fire() {
     const st = stats();
-    const n = st.count, spread = Math.min(.16, .5 / n);
+    const n = st.count;
+    if (!n) return;
+    const width = Math.min(st.radius * 1.6, n * 9);
     for (let i = 0; i < n; i++) {
-      const k = i - (n - 1) / 2;
-      const a = -Math.PI / 2 + k * spread;
-      S.missiles.push({ x: S.player.x + k * 9, y: S.player.y - 26, vx: Math.cos(a) * st.speed, vy: Math.sin(a) * st.speed, dmg: st.damage, pierce: st.pierce, homing: st.homing, hit: new Set(), r: 4 + S.tier * .7, color: st.color, blast: st.blast, crit: st.crit, small: false });
+      const k = n === 1 ? 0 : i / (n - 1) - .5;
+      S.missiles.push({ x: S.player.x + k * width, y: S.player.y - st.radius * .6 - 10, vx: k * 40, vy: -st.speed, dmg: st.damage, pierce: st.pierce, hit: new Set(), r: 3.5 + S.tier * .6 + Math.min(3, st.damage / 8), color: st.color });
     }
     if (S.time - lastShotSound > .09) { beep(520 + S.tier * 60, .06, 'triangle', .025, -260); lastShotSound = S.time; }
   }
-  function fireDrones() {
-    const st = stats();
-    for (let d = 0; d < st.drones; d++) {
-      const side = d === 0 ? -1 : 1;
-      S.missiles.push({ x: S.player.x + side * 44, y: S.player.y - 4, vx: side * 60, vy: -460, dmg: st.damage * .55, pierce: 0, homing: 3, hit: new Set(), r: 3, color: '#a8fff0', blast: 0, crit: st.crit, small: true });
-    }
-  }
-  function nearestEnemy(x, y) {
-    let best = null, bd = Infinity;
-    for (const e of S.enemies) { if (e.y < -10 || e.y > y + 20) continue; const d = (e.x - x) ** 2 + (e.y - y) ** 2; if (d < bd) { bd = d; best = e; } }
-    return best;
-  }
-  function damage(e, amount, crit, x, y) {
+  function damage(e, amount) {
     e.hp -= amount; e.flash = .08;
-    if (crit) floatText(x, y - 10, '치명!', '#ffe27a');
     if (e.hp <= 0 && !e.dead) kill(e);
   }
   function kill(e) {
@@ -101,93 +143,44 @@
     burst(e.x, e.y, e.color, e.type === 'boss' ? 70 : 12 + e.r * .6);
     shake = Math.max(shake, e.type === 'boss' ? 16 : e.r > 18 ? 4 : 0);
     beep(e.type === 'boss' ? 90 : 180 + Math.random() * 60, e.type === 'boss' ? .7 : .14, 'sawtooth', .035, -120);
-    const gemCount = e.type === 'boss' ? 12 : 1;
-    for (let i = 0; i < gemCount; i++) S.gems.push({ x: e.x + (Math.random() - .5) * e.r, y: e.y + (Math.random() - .5) * e.r, v: e.type === 'boss' ? Math.ceil(e.xp / gemCount) : e.xp, vy: 40 + Math.random() * 30, vx: (Math.random() - .5) * 60 });
     if (e.type === 'splitter') for (const s of [-1, 1]) { const sh = spawn('shard', e.x + s * 12, e.y); sh.dir = s; }
     if (e.type === 'boss') evolve();
   }
   function evolve() {
-    const p = S.player;
-    p.hp = Math.min(p.maxHp, p.hp + 2);
     S.score += 500 * S.wave;
     if (S.tier < C.EVOLUTIONS.length) {
       S.tier++;
       const evo = C.evolution(S.tier);
       banner(`미사일 진화 · ${evo.name}`);
-      say(`보스 격파! 미사일이 ${evo.name}(으)로 진화했습니다. 피해 ×${evo.mult}`);
+      setUnits(S.units + C.BOSS_REWARD_UNITS, `보스 격파! 미사일이 ${evo.name}(으)로 진화했고 증원 ${C.BOSS_REWARD_UNITS}기가 합류했습니다.`);
     } else {
       banner('보스 격파 · 최종 진화 유지');
-      say('최종 진화 상태입니다. 보너스 점수와 내구도 회복을 획득했습니다.');
+      setUnits(S.units + C.BOSS_REWARD_UNITS, `최종 진화 상태입니다. 보너스 점수와 증원 ${C.BOSS_REWARD_UNITS}기를 획득했습니다.`);
     }
     beep(330, .5, 'triangle', .05, 600);
     renderLoadout();
   }
-  function hurtPlayer(reason) {
-    const p = S.player;
-    if (p.inv > 0) return;
-    p.hp--; p.inv = 1.1; shake = Math.max(shake, 10);
-    burst(p.x, p.y, '#ff8a7a', 18);
-    beep(120, .3, 'square', .05, -60);
-    say(reason);
-    if (p.hp <= 0) gameOver();
-  }
-  function gainXp(v) {
-    S.xp += v;
-    let need = C.xpToNext(S.level);
-    while (S.xp >= need) { S.xp -= need; S.level++; S.pendingLevels++; need = C.xpToNext(S.level); }
-    if (S.pendingLevels && mode === 'play') openChoices();
-  }
-
-  // ---------- Upgrades ----------
-  function openChoices() {
-    S.choices = C.rollChoices(S.levels);
-    if (!S.choices.length) { S.pendingLevels = 0; S.score += 300; say('모든 업그레이드 완료! 레벨업 보너스 300점'); return; }
-    mode = 'choose';
-    ui.choices.replaceChildren(...S.choices.map((id, i) => {
-      const def = C.UPGRADES.find(u => u.id === id), lv = S.levels[id] || 0;
-      const b = document.createElement('button');
-      b.className = 'rush-card'; b.type = 'button'; b.dataset.upgrade = id;
-      b.innerHTML = `<kbd>${i + 1}</kbd><span class="ico" aria-hidden="true">${def.icon}</span><b></b><small></small><em>Lv.${lv} → ${lv + 1} / ${def.max}</em>`;
-      b.querySelector('b').textContent = def.name;
-      b.querySelector('small').textContent = def.desc(lv);
-      b.addEventListener('click', () => pick(id));
-      return b;
-    }));
-    showOverlay('LEVEL UP · Lv.' + (S.level - S.pendingLevels + 1), '무기 업그레이드 선택', '세 가지 중 하나를 고르세요. 숫자키 1·2·3으로도 선택할 수 있습니다.', false);
-    ui.choices.hidden = false;
-    ui.choices.querySelector('button')?.focus({ preventScroll: true });
-  }
-  function pick(id) {
-    if (mode !== 'choose') return;
-    S.levels = C.applyUpgrade(S.levels, id);
-    if (id === 'armor') { S.player.maxHp++; S.player.hp = S.player.maxHp; }
-    const def = C.UPGRADES.find(u => u.id === id);
-    say(`${def.name} Lv.${S.levels[id]} 장착 완료`);
-    beep(660, .18, 'triangle', .04, 400);
-    S.pendingLevels--;
-    hideOverlay(); mode = 'play';
-    renderLoadout();
-    if (S.pendingLevels > 0) openChoices();
-    canvas.focus({ preventScroll: true });
-  }
+  const gateHit = (g, x, y, r) => Math.abs(x - g.x) < GATE_W / 2 + r && Math.abs(y - g.y) < GATE_H / 2 + r;
 
   // ---------- Update ----------
   function update(dt) {
     S.time += dt;
-    const p = S.player, st = stats();
+    const p = S.player;
+    let st = stats();
     // movement
     const kx = (keys.has('ArrowRight') || keys.has('KeyD') ? 1 : 0) - (keys.has('ArrowLeft') || keys.has('KeyA') ? 1 : 0);
     const ky = (keys.has('ArrowDown') || keys.has('KeyS') ? 1 : 0) - (keys.has('ArrowUp') || keys.has('KeyW') ? 1 : 0);
     p.x += kx * 380 * dt; p.y += ky * 300 * dt;
-    p.x = Math.max(24, Math.min(W - 24, p.x)); p.y = Math.max(470, Math.min(712, p.y));
+    clampPlayer();
     if (p.inv > 0) p.inv -= dt;
+    if (S.pulse > 0) S.pulse -= dt;
+    S.shown += (S.units - S.shown) * Math.min(1, dt * 10);
 
     // weapons
     S.fireTimer -= dt;
     if (S.fireTimer <= 0) { fire(); S.fireTimer += st.interval; if (S.fireTimer < 0) S.fireTimer = 0; }
-    if (st.drones) { S.droneTimer -= dt; if (S.droneTimer <= 0) { fireDrones(); S.droneTimer = .75; } }
 
-    // waves
+    // waves and operator capsules
     if (S.queue.length) {
       S.spawnTimer -= dt;
       if (S.spawnTimer <= 0) { spawn(S.queue.pop()); S.spawnTimer = S.spawnGap * (.6 + Math.random() * .8); }
@@ -196,34 +189,44 @@
       S.nextWaveTimer -= dt;
       if (S.nextWaveTimer <= 0) startWave(S.wave + 1);
     }
+    if (S.wave) { S.gateTimer -= dt; if (S.gateTimer <= 0) { spawnGates(); S.gateTimer = S.gateGap * (.8 + Math.random() * .4); } }
 
     // missiles
+    const cost = C.shiftCost(st.dps, S.wave);
     for (const m of S.missiles) {
-      if (m.homing) {
-        const t = nearestEnemy(m.x, m.y);
-        if (t) {
-          const cur = Math.atan2(m.vy, m.vx), want = Math.atan2(t.y - m.y, t.x - m.x);
-          let d = want - cur; while (d > Math.PI) d -= Math.PI * 2; while (d < -Math.PI) d += Math.PI * 2;
-          const turn = Math.max(-1, Math.min(1, d)) * m.homing * 2.6 * dt;
-          const sp = Math.hypot(m.vx, m.vy), a = cur + turn;
-          m.vx = Math.cos(a) * sp; m.vy = Math.sin(a) * sp;
-        }
-      }
       m.x += m.vx * dt; m.y += m.vy * dt;
-      if (Math.random() < .5) S.parts.push({ x: m.x, y: m.y + 6, vx: (Math.random() - .5) * 30, vy: 60, life: .25, max: .25, r: m.small ? 1.5 : 2.4, color: m.color });
+      if (Math.random() < .4) S.parts.push({ x: m.x, y: m.y + 6, vx: (Math.random() - .5) * 30, vy: 60, life: .22, max: .22, r: 2, color: m.color });
+      for (const g of S.gates) {
+        if (g.dead || !C.shiftable(g) || !gateHit(g, m.x, m.y, m.r)) continue;
+        m.dead = true; g.flash = .06; g.dmg += m.dmg; spark(m.x, m.y, '#e6f0ff');
+        if (g.dmg >= cost) {
+          g.dmg -= cost;
+          const prev = C.gateLabel(g);
+          Object.assign(g, C.shiftGate(g));
+          floatText(g.x, g.y - GATE_H / 2 - 6, `${prev} → ${C.gateLabel(g)}`, '#ffe27a');
+          beep(880, .06, 'sine', .03, 200);
+        }
+        break;
+      }
+      if (m.dead) continue;
       for (const e of S.enemies) {
         if (e.dead || m.hit.has(e)) continue;
         if ((e.x - m.x) ** 2 + (e.y - m.y) ** 2 > (e.r + m.r) ** 2) continue;
         m.hit.add(e);
-        const crit = Math.random() < m.crit, dmg = m.dmg * (crit ? 2 : 1);
-        damage(e, dmg, crit, m.x, m.y);
-        if (m.blast) {
-          explosion(m.x, m.y, m.blast, m.color);
-          for (const o of S.enemies) if (o !== e && !o.dead && (o.x - m.x) ** 2 + (o.y - m.y) ** 2 < (m.blast + o.r) ** 2) damage(o, dmg * .5, false, o.x, o.y);
-        } else spark(m.x, m.y, m.color);
+        damage(e, m.dmg);
+        spark(m.x, m.y, m.color);
         if (--m.pierce < 0) { m.dead = true; break; }
       }
       if (m.y < -30 || m.x < -30 || m.x > W + 30 || m.y > H + 30) m.dead = true;
+    }
+
+    // capsules
+    for (const g of S.gates) {
+      if (g.dead) continue;
+      g.y += g.vy * dt; g.wob += dt; if (g.flash > 0) g.flash -= dt;
+      const dx = Math.max(0, Math.abs(p.x - g.x) - GATE_W / 2), dy = Math.max(0, Math.abs(p.y - g.y) - GATE_H / 2);
+      if (dx * dx + dy * dy < (st.radius * .75) ** 2) { catchGate(g); if (mode === 'over') return; st = stats(); }
+      else if (g.y - GATE_H / 2 > H) g.dead = true;
     }
 
     // enemies
@@ -253,25 +256,20 @@
         default: e.y += e.speed * dt; e.x += Math.sin(e.t * 1.3) * 18 * dt;
       }
       e.x = Math.max(e.r, Math.min(W - e.r, e.x));
-      if (e.type !== 'boss' && (e.x - p.x) ** 2 + (e.y - p.y) ** 2 < (e.r + 16) ** 2) { e.dead = true; burst(e.x, e.y, e.color, 10); hurtPlayer('적과 충돌했습니다! 내구도 -1'); }
-      else if (e.y - e.r > LINE) { e.dead = true; hurtPlayer(`${C.ENEMIES[e.type].name}이(가) 방어선을 돌파했습니다! 내구도 -1`); }
+      if (e.type !== 'boss' && (e.x - p.x) ** 2 + (e.y - p.y) ** 2 < (e.r + st.radius * .8) ** 2) { e.dead = true; burst(e.x, e.y, e.color, 10); loseUnits(C.contactLoss(e.type), `${C.ENEMIES[e.type].name}과(와) 충돌!`); }
+      else if (e.y - e.r > LINE) { e.dead = true; loseUnits(C.breachLoss(e.type), `${C.ENEMIES[e.type].name}이(가) 방어선을 돌파!`); }
       if (mode === 'over') return;
+      st = stats();
     }
 
     // enemy bullets
     for (const b of S.bullets) {
       b.x += b.vx * dt; b.y += b.vy * dt;
-      if ((b.x - p.x) ** 2 + (b.y - p.y) ** 2 < (b.r + 12) ** 2) { b.dead = true; hurtPlayer('적 탄환에 피격! 내구도 -1'); if (mode === 'over') return; }
+      if ((b.x - p.x) ** 2 + (b.y - p.y) ** 2 < (b.r + st.radius * .7) ** 2) {
+        b.dead = true;
+        if (p.inv <= 0) { p.inv = .3; loseUnits(1, '적 탄환에 피격!'); if (mode === 'over') return; st = stats(); }
+      }
       if (b.y > H + 10 || b.x < -10 || b.x > W + 10) b.dead = true;
-    }
-
-    // xp gems
-    for (const g of S.gems) {
-      const dx = p.x - g.x, dy = p.y - g.y, d = Math.hypot(dx, dy);
-      if (d < st.magnet) { const sp = 480 * (1 - d / (st.magnet * 1.4)) + 160; g.x += dx / d * sp * dt; g.y += dy / d * sp * dt; }
-      else { g.vx *= .96; g.x += g.vx * dt; g.y += g.vy * dt; }
-      if (d < 22) { g.dead = true; gainXp(g.v); beep(900 + Math.random() * 200, .04, 'sine', .02); }
-      else if (g.y > H + 10) g.dead = true;
     }
 
     // effects
@@ -280,13 +278,17 @@
     S.missiles = S.missiles.filter(o => !o.dead);
     S.enemies = S.enemies.filter(o => !o.dead);
     S.bullets = S.bullets.filter(o => !o.dead);
-    S.gems = S.gems.filter(o => !o.dead);
+    S.gates = S.gates.filter(o => !o.dead);
     S.parts = S.parts.filter(o => o.life > 0);
     if (S.parts.length > 600) S.parts.splice(0, S.parts.length - 600);
     S.texts = S.texts.filter(o => o.life > 0);
     if (S.bannerTimer > 0) { S.bannerTimer -= dt; if (S.bannerTimer <= 0) ui.banner.hidden = true; }
     for (const s of stars) { s.y += s.v * dt; if (s.y > H) { s.y = 0; s.x = Math.random() * W; } }
     if (shake > 0) shake = Math.max(0, shake - dt * 40);
+  }
+  function clampPlayer() {
+    const p = S.player, r = Math.min(70, stats().radius);
+    p.x = Math.max(r, Math.min(W - r, p.x)); p.y = Math.max(470, Math.min(LINE - 30 - r * .5, p.y));
   }
   function aimShot(x, y, speed) {
     const a = Math.atan2(S.player.y - y, S.player.x - x);
@@ -295,9 +297,8 @@
   function burst(x, y, color, n) {
     for (let i = 0; i < n; i++) { const a = Math.random() * Math.PI * 2, sp = Math.random() * 220 + 40; S.parts.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: .5 + Math.random() * .4, max: .9, r: Math.random() * 3 + 1.5, color }); }
   }
-  function spark(x, y, color) { for (let i = 0; i < 4; i++) S.parts.push({ x, y, vx: (Math.random() - .5) * 160, vy: (Math.random() - .5) * 160, life: .2, max: .2, r: 1.8, color }); }
-  function explosion(x, y, r, color) { S.parts.push({ x, y, vx: 0, vy: 0, life: .25, max: .25, r, color, ring: true }); spark(x, y, color); }
-  function floatText(x, y, text, color) { if (S.texts.length < 30) S.texts.push({ x, y, text, color, life: .7 }); }
+  function spark(x, y, color) { for (let i = 0; i < 3; i++) S.parts.push({ x, y, vx: (Math.random() - .5) * 160, vy: (Math.random() - .5) * 160, life: .2, max: .2, r: 1.8, color }); }
+  function floatText(x, y, text, color) { if (S.texts.length < 30) S.texts.push({ x, y, text, color, life: .9 }); }
 
   // ---------- Render ----------
   function draw() {
@@ -314,51 +315,73 @@
     ctx.fillStyle = '#ff8a9360'; ctx.font = '700 10px Pretendard Variable, sans-serif'; ctx.fillText('DEFENSE LINE', 8, LINE + 13);
     if (!S) { ctx.restore(); return; }
 
-    for (const gm of S.gems) { ctx.fillStyle = gm.v > 2 ? '#7cf5ff' : '#8dffb0'; ctx.beginPath(); ctx.moveTo(gm.x, gm.y - 5); ctx.lineTo(gm.x + 4, gm.y); ctx.lineTo(gm.x, gm.y + 5); ctx.lineTo(gm.x - 4, gm.y); ctx.fill(); }
+    for (const gt of S.gates) drawGate(gt);
     for (const e of S.enemies) drawEnemy(e);
     for (const m of S.missiles) drawMissile(m);
     ctx.fillStyle = '#ff7b9c';
     for (const b of S.bullets) { ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#ffe1ea'; ctx.beginPath(); ctx.arc(b.x, b.y, b.r * .45, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#ff7b9c'; }
     for (const q of S.parts) {
       ctx.globalAlpha = Math.max(0, q.life / q.max);
-      if (q.ring) { ctx.strokeStyle = q.color; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(q.x, q.y, q.r * (1.2 - q.life / q.max * .6), 0, Math.PI * 2); ctx.stroke(); }
-      else { ctx.fillStyle = q.color; ctx.beginPath(); ctx.arc(q.x, q.y, q.r, 0, Math.PI * 2); ctx.fill(); }
+      ctx.fillStyle = q.color; ctx.beginPath(); ctx.arc(q.x, q.y, q.r, 0, Math.PI * 2); ctx.fill();
     }
     ctx.globalAlpha = 1;
-    drawPlayer();
-    ctx.font = '800 12px Pretendard Variable, sans-serif'; ctx.textAlign = 'center';
+    drawSquad();
+    ctx.font = '800 13px Pretendard Variable, sans-serif'; ctx.textAlign = 'center';
     for (const t of S.texts) { ctx.globalAlpha = Math.min(1, t.life * 2); ctx.fillStyle = t.color; ctx.fillText(t.text, t.x, t.y); }
     ctx.globalAlpha = 1; ctx.textAlign = 'left';
     ctx.restore();
   }
+  function roundRect(x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+  function drawGate(gt) {
+    const good = C.isGood(gt), mult = gt.op === '×' || gt.op === '÷';
+    const base = good ? (mult ? '#3fd7ff' : '#4fe39a') : (mult ? '#ff5f9e' : '#ff6a5f');
+    ctx.save(); ctx.translate(gt.x, gt.y + Math.sin(gt.wob * 3) * 2);
+    ctx.shadowColor = base; ctx.shadowBlur = 16;
+    ctx.fillStyle = gt.flash > 0 ? '#ffffff' : base + '33';
+    roundRect(-GATE_W / 2, -GATE_H / 2, GATE_W, GATE_H, 12); ctx.fill();
+    ctx.shadowBlur = 0; ctx.lineWidth = 2.5; ctx.strokeStyle = base; ctx.stroke();
+    if (C.shiftable(gt)) { // progress toward the next value step
+      const cost = C.shiftCost(stats().dps, S.wave);
+      ctx.fillStyle = '#ffe27a'; ctx.fillRect(-GATE_W / 2 + 8, GATE_H / 2 - 6, (GATE_W - 16) * Math.min(1, gt.dmg / cost), 3);
+    }
+    ctx.fillStyle = '#ffffff'; ctx.font = '900 22px Pretendard Variable, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(C.gateLabel(gt), 0, 0);
+    ctx.restore(); ctx.textBaseline = 'alphabetic';
+  }
   function drawMissile(m) {
     const a = Math.atan2(m.vy, m.vx);
     ctx.save(); ctx.translate(m.x, m.y); ctx.rotate(a + Math.PI / 2);
-    const L = m.small ? 9 : 10 + S.tier * 2.2, w = m.small ? 2.2 : 2.6 + S.tier * .5;
+    const L = 9 + S.tier * 2, w = 2.2 + S.tier * .45;
     ctx.fillStyle = m.color; ctx.shadowColor = m.color; ctx.shadowBlur = S.tier >= 3 ? 10 : 4;
     ctx.beginPath(); ctx.moveTo(0, -L); ctx.lineTo(w, -L * .45); ctx.lineTo(w, L * .55); ctx.lineTo(w * 1.9, L); ctx.lineTo(-w * 1.9, L); ctx.lineTo(-w, L * .55); ctx.lineTo(-w, -L * .45); ctx.closePath(); ctx.fill();
     ctx.shadowBlur = 0; ctx.fillStyle = '#ffffffcc'; ctx.fillRect(-w * .45, -L * .55, w * .9, L * .45);
-    ctx.fillStyle = '#ffb347'; ctx.beginPath(); ctx.moveTo(-w, L); ctx.lineTo(0, L + 6 + Math.random() * 6); ctx.lineTo(w, L); ctx.fill();
+    ctx.fillStyle = '#ffb347'; ctx.beginPath(); ctx.moveTo(-w, L); ctx.lineTo(0, L + 5 + Math.random() * 5); ctx.lineTo(w, L); ctx.fill();
     ctx.restore();
   }
-  function drawPlayer() {
+  function drawSquad() {
     const p = S.player, st = stats();
-    if (p.inv > 0 && Math.floor(p.inv * 14) % 2) return;
+    if (p.inv > 0 && Math.floor(p.inv * 20) % 2) return;
+    const n = Math.min(SHOWN_UNITS, Math.round(S.shown)), scale = 1 + Math.max(0, S.pulse) * .5;
     ctx.save(); ctx.translate(p.x, p.y);
-    // drones
-    for (let d = 0; d < st.drones; d++) { const s = d === 0 ? -1 : 1; ctx.save(); ctx.translate(s * 44, 2 + Math.sin(S.time * 4 + d) * 3); ctx.fillStyle = '#5ee6cf'; ctx.beginPath(); ctx.moveTo(0, -10); ctx.lineTo(8, 0); ctx.lineTo(0, 8); ctx.lineTo(-8, 0); ctx.fill(); ctx.fillStyle = '#e8fffb'; ctx.fillRect(-2, -3, 4, 4); ctx.restore(); }
-    // treads + hull
-    ctx.fillStyle = '#26364c'; ctx.fillRect(-26, 6, 52, 14); ctx.fillStyle = '#3d5574';
-    for (let i = -22; i < 24; i += 8) ctx.fillRect(i, 9, 4, 8);
-    ctx.fillStyle = '#4fd1b8'; ctx.beginPath(); ctx.moveTo(-22, 8); ctx.lineTo(-16, -8); ctx.lineTo(16, -8); ctx.lineTo(22, 8); ctx.closePath(); ctx.fill();
-    // launcher tubes reflect missile count
-    const tubes = Math.min(7, st.count);
-    for (let i = 0; i < tubes; i++) { const k = i - (tubes - 1) / 2; ctx.fillStyle = '#d7f7ef'; ctx.fillRect(k * 7 - 2.5, -26, 5, 18); ctx.fillStyle = st.color; ctx.fillRect(k * 7 - 2.5, -28, 5, 4); }
-    ctx.fillStyle = '#1d6b62'; ctx.beginPath(); ctx.arc(0, -4, 9, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = st.color; ctx.beginPath(); ctx.arc(0, -4, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#4fd1b814'; ctx.beginPath(); ctx.ellipse(0, 0, st.radius * 1.1, st.radius * .8, 0, 0, Math.PI * 2); ctx.fill();
+    for (let i = n - 1; i >= 0; i--) {
+      const f = formation[i];
+      ctx.save(); ctx.translate(f.x * scale, f.y * scale);
+      ctx.fillStyle = '#26364c'; ctx.fillRect(-6, 2, 12, 4);
+      ctx.fillStyle = i === 0 ? '#7ff0d8' : '#4fd1b8'; ctx.beginPath(); ctx.moveTo(-5, 3); ctx.lineTo(-3.5, -3); ctx.lineTo(3.5, -3); ctx.lineTo(5, 3); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#d7f7ef'; ctx.fillRect(-1.2, -9, 2.4, 7);
+      ctx.fillStyle = st.color; ctx.fillRect(-1.2, -10, 2.4, 2);
+      ctx.restore();
+    }
     ctx.restore();
-    // magnet range hint
-    ctx.strokeStyle = '#8dffb018'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(p.x, p.y, st.magnet, 0, Math.PI * 2); ctx.stroke();
+    // squad size badge
+    const label = S.units + '', by = p.y - st.radius * .8 - 20;
+    ctx.font = '900 16px Pretendard Variable, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const bw = Math.max(34, ctx.measureText(label).width + 18);
+    ctx.fillStyle = S.units <= 2 ? '#ff6a5fdd' : '#0b1320dd'; roundRect(p.x - bw / 2, by - 12, bw, 24, 12); ctx.fill();
+    ctx.strokeStyle = st.color; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.fillStyle = '#ffffff'; ctx.fillText(label, p.x, by + 1);
+    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
   }
   function drawEnemy(e) {
     ctx.save(); ctx.translate(e.x, e.y);
@@ -393,37 +416,35 @@
   // ---------- HUD / DOM ----------
   function renderHud() {
     if (!S) return;
+    const st = stats();
     ui.wave.textContent = String(Math.max(1, S.wave));
-    ui.hp.textContent = `${S.player.hp} / ${S.player.maxHp}`;
-    ui.hp.classList.toggle('danger', S.player.hp <= 2);
-    ui.level.textContent = 'Lv.' + S.level;
+    ui.units.textContent = S.units + '기';
+    ui.units.classList.toggle('danger', S.units <= 2);
+    ui.power.textContent = Math.round(st.dps).toLocaleString('ko-KR');
     ui.score.textContent = S.score.toLocaleString('ko-KR');
-    const need = C.xpToNext(S.level);
-    ui.xpBar.style.width = Math.min(100, S.xp / need * 100) + '%';
-    ui.xpText.textContent = `${S.xp} / ${need} XP`;
+    ui.unitBar.style.width = Math.min(100, Math.log(1 + S.units) / Math.log(1 + C.MAX_UNITS) * 100) + '%';
+    ui.unitText.textContent = `최대 ${S.peak}기 · 한도 ${C.MAX_UNITS}`;
   }
   function renderLoadout() {
     const st = stats(), evo = C.evolution(S.tier);
     ui.tier.textContent = evo.name; ui.tier.style.color = evo.color;
     document.querySelectorAll('#evoTrack span').forEach((el, i) => { el.style.background = i < S.tier ? C.EVOLUTIONS[i].color : ''; });
-    const rows = [['피해', st.damage.toFixed(1)], ['초당 발사', (1 / st.interval).toFixed(1) + '회'], ['동시 발사', st.count + '발'], ['관통', st.pierce + '회'], ['유도', st.homing ? st.homing + '단계' : '없음'], ['폭발 반경', st.blast || '없음'], ['드론', st.drones + '기'], ['치명타', Math.round(st.crit * 100) + '%']];
+    const rows = [['유닛', st.units + '기'], ['초당 피해', Math.round(st.dps).toLocaleString('ko-KR')], ['동시 발사', st.count + '발'], ['미사일 피해', st.damage.toFixed(1)], ['관통', st.pierce + '회'], ['진화 배율', '×' + evo.mult]];
     ui.stats.replaceChildren(...rows.map(([k, v]) => { const li = document.createElement('li'); li.innerHTML = '<span></span><b></b>'; li.firstChild.textContent = k; li.lastChild.textContent = v; return li; }));
-    const owned = C.UPGRADES.filter(u => S.levels[u.id]);
-    if (!owned.length) { const li = document.createElement('li'); li.className = 'empty'; li.textContent = '레벨업하면 업그레이드 카드를 선택합니다.'; ui.owned.replaceChildren(li); }
-    else ui.owned.replaceChildren(...owned.map(u => { const li = document.createElement('li'); li.textContent = `${u.icon} ${u.name}`; const b = document.createElement('b'); b.textContent = `${S.levels[u.id]} / ${u.max}`; li.append(b); return li; }));
+    if (!S.log.length) { const li = document.createElement('li'); li.className = 'empty'; li.textContent = '떨어지는 연산 캡슐을 받으면 여기에 기록됩니다.'; ui.log.replaceChildren(li); }
+    else ui.log.replaceChildren(...S.log.map(l => { const li = document.createElement('li'); const s = document.createElement('span'); s.textContent = l.label; s.className = l.good ? 'good' : 'bad'; const b = document.createElement('b'); b.textContent = `${l.before} → ${l.after}기`; li.append(s, b); return li; }));
   }
-  function renderBest() { const b = readBest(); ui.best.textContent = `${b.score.toLocaleString('ko-KR')}점 · ${b.wave}웨이브`; }
+  function renderBest() { const b = readBest(); ui.best.textContent = `${b.score.toLocaleString('ko-KR')}점 · ${b.wave}웨이브 · 최대 ${b.peak}기`; }
   function say(text) { ui.status.textContent = text; }
-  function banner(text) { ui.banner.textContent = text; ui.banner.hidden = false; S.bannerTimer = 2; }
-  function showOverlay(kicker, title, text, withButton, buttonLabel) {
+  function banner(text, time = 2) { ui.banner.textContent = text; ui.banner.hidden = false; S.bannerTimer = time; }
+  function showOverlay(kicker, title, text, buttonLabel) {
     ui.overlayKicker.textContent = kicker; ui.overlayTitle.textContent = title; ui.overlayText.textContent = text;
-    ui.start.hidden = !withButton; if (buttonLabel) ui.start.textContent = buttonLabel;
-    ui.choices.hidden = true; ui.overlay.hidden = false;
+    ui.start.textContent = buttonLabel; ui.overlay.hidden = false;
   }
-  function hideOverlay() { ui.overlay.hidden = true; ui.choices.hidden = true; }
+  function hideOverlay() { ui.overlay.hidden = true; }
 
   // ---------- Layout ----------
-  // Keep the whole battlefield (launcher included) visible below the sticky site header.
+  // Keep the whole battlefield (squad included) visible below the sticky site header.
   const panel = $('rushPanel'), stage = canvas.parentElement;
   const headerHeight = () => document.querySelector('site-header')?.getBoundingClientRect().height || 0;
   function fitStage() {
@@ -448,16 +469,18 @@
     canvas.focus({ preventScroll: true });
   }
   function setPaused(on) {
-    if (on && mode === 'play') { mode = 'paused'; ui.pause.textContent = '계속하기'; showOverlay('PAUSED', '일시정지', '계속하기 버튼이나 P 키를 눌러 전투를 이어가세요.', true, '계속하기'); }
+    if (on && mode === 'play') { mode = 'paused'; ui.pause.textContent = '계속하기'; showOverlay('PAUSED', '일시정지', '계속하기 버튼이나 P 키를 눌러 전투를 이어가세요.', '계속하기'); }
     else if (!on && mode === 'paused') { mode = 'play'; ui.pause.textContent = '일시정지'; hideOverlay(); canvas.focus({ preventScroll: true }); }
   }
   function gameOver() {
+    if (mode === 'over') return;
     mode = 'over';
     ui.pause.disabled = true;
     const best = readBest(), record = S.score > best.score;
-    if (record) writeBest({ score: S.score, wave: S.wave });
-    renderBest(); renderHud();
-    showOverlay('GAME OVER', record ? '새 최고 기록!' : '방어선 붕괴', `${S.wave}웨이브 · Lv.${S.level} · 처치 ${S.kills}기 · ${C.evolution(S.tier).name}\n점수 ${S.score.toLocaleString('ko-KR')}점`, true, '다시 도전');
+    if (record) writeBest({ score: S.score, wave: S.wave, peak: S.peak });
+    else if (S.peak > best.peak) writeBest({ ...best, peak: S.peak });
+    renderBest(); renderHud(); renderLoadout();
+    showOverlay('GAME OVER', record ? '새 최고 기록!' : '부대 전멸', `${S.wave}웨이브 · 최대 ${S.peak}기 · 처치 ${S.kills}기 · 캡슐 ${S.caught}개\n${C.evolution(S.tier).name} · 점수 ${S.score.toLocaleString('ko-KR')}점`, '다시 도전');
     window.dispatchEvent(new CustomEvent('partygame:score', { detail: { gameId: 'missile-rush', score: S.score, wave: S.wave } }));
   }
   function loop(t) {
@@ -476,7 +499,6 @@
   addEventListener('keydown', e => {
     if (e.target.closest?.('input,select,textarea')) return;
     const gameKey = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Space'].includes(e.code);
-    if (mode === 'choose' && /^Digit[1-3]$/.test(e.code)) { const id = S.choices[+e.code.slice(5) - 1]; if (id) pick(id); e.preventDefault(); return; }
     if (e.code === 'KeyP' || e.code === 'Escape') { if (mode === 'play' || mode === 'paused') { setPaused(mode === 'play'); e.preventDefault(); } return; }
     if ((e.code === 'Enter' || e.code === 'Space') && (mode === 'ready' || mode === 'over') && document.activeElement === canvas) { newGame(); e.preventDefault(); return; }
     if (mode === 'play' && (gameKey || /^Key[WASD]$/.test(e.code))) { keys.add(e.code); if (gameKey) e.preventDefault(); }
@@ -489,8 +511,9 @@
   canvas.addEventListener('pointermove', e => {
     if (!drag || drag.id !== e.pointerId || mode !== 'play') return;
     const q = toLogical(e), p = S.player;
-    p.x = Math.max(24, Math.min(W - 24, drag.px + (q.x - drag.sx) * 1.15));
-    p.y = Math.max(470, Math.min(712, drag.py + (q.y - drag.sy) * 1.15));
+    p.x = drag.px + (q.x - drag.sx) * 1.15;
+    p.y = drag.py + (q.y - drag.sy) * 1.15;
+    clampPlayer();
   });
   const endDrag = e => { if (drag && drag.id === e.pointerId) drag = null; };
   canvas.addEventListener('pointerup', endDrag); canvas.addEventListener('pointercancel', endDrag);
@@ -502,11 +525,15 @@
   // Test hooks (read-only snapshot + deterministic helpers for automated browser checks).
   window.__missileRush = {
     get mode() { return mode; },
-    snapshot: () => S && { wave: S.wave, level: S.level, tier: S.tier, score: S.score, hp: S.player.hp, enemies: S.enemies.length, missiles: S.missiles.length, levels: { ...S.levels }, choices: [...S.choices] },
+    snapshot: () => S && { wave: S.wave, tier: S.tier, score: S.score, units: S.units, peak: S.peak, enemies: S.enemies.length, missiles: S.missiles.length, gates: S.gates.map(g => C.gateLabel(g)), log: S.log.map(l => l.label) },
     player: () => S && { x: S.player.x, y: S.player.y },
     freeze: () => { if (mode === 'play') mode = 'frozen'; },
-    grantXp: v => gainXp(v),
-    killBoss: () => { const b = S.enemies.find(e => e.type === 'boss') || spawn('boss'); damage(b, b.hp + 1, false, b.x, b.y); },
+    catchGate: (op, v) => catchGate({ op, v, x: S.player.x, y: S.player.y, pairId: 0 }),
+    dropGates: (pair = true) => spawnGates(pair),
+    // Drops a capsule right above the squad so the real fall/catch path is exercised.
+    dropOnSquad: (op, v) => { const g = makeGate({ op, v }, S.player.x, 0); g.y = S.player.y - 140; S.gates.push(g); },
+    setUnits: n => setUnits(n),
+    killBoss: () => { const b = S.enemies.find(e => e.type === 'boss') || spawn('boss'); damage(b, b.hp + 1); },
     startWave: n => { S.enemies = []; S.queue = []; startWave(n); }
   };
 
