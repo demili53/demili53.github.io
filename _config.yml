@@ -46,3 +46,4 @@ exclude:
   - scripts/test-space-shooter-sixth.cjs
   - scripts/test-missile-rush.cjs
   - scripts/test-missile-rush-browser.cjs
+  - scripts/test-tarot.cjs

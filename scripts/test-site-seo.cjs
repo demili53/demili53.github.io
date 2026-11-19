@@ -25,12 +25,17 @@ for (const file of ['arcade/index.html', 'arcade/dawn-bastion.html']) {
   assert(read(file).includes(`rel="canonical" href="${origin}/"`));
 }
 const urls = [...read('sitemap.xml').matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1]);
-assert.deepEqual(urls.sort(), [...games.map(([, url]) => origin + url), origin + '/exaone/'].sort());
+const tarot = read('fortune/tarot.html');
+assert(tarot.includes(`rel="canonical" href="${origin}/fortune/tarot.html"`));
+assert.match(tarot, /<meta name="description" content="[^"]{30,}"/);
+assert.equal((tarot.match(/<h1\b/g) || []).length, 1);
+assert([...tarot.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].some(m => { const d = JSON.parse(m[1]); return d['@type'] === 'WebApplication' && d.url === origin + '/fortune/tarot.html' && !d.aggregateRating; }));
+assert.deepEqual(urls.sort(), [...games.map(([, url]) => origin + url), origin + '/exaone/', origin + '/fortune/tarot.html'].sort());
 assert(!read('robots.txt').includes('blog'));
 assert.match(read('404.html'), /noindex, follow/);
 for (const dir of ['blog', 'ai-ranking', 'game-ranking', 'webtoon-ranking', 'downloads']) assert(!fs.existsSync(path.join(root, dir)), dir);
 for (const file of ['2048.html', 'send-volume-calculator.html', 'ffmpeg-video-joiner.html', 'arcade/zombi-shot.html', 'arcade/vampire-survival.html']) assert(!fs.existsSync(path.join(root, file)), file);
-for (const file of ['arcade/missile-rush.html', 'arcade/rift-blade.html', 'index.html', 'arcade/space-shooter.html', 'arcade/shadow-sniper.html', 'account.html', 'privacy.html', 'terms.html', 'contact.html', '404.html']) {
+for (const file of ['fortune/tarot.html', 'arcade/missile-rush.html', 'arcade/rift-blade.html', 'index.html', 'arcade/space-shooter.html', 'arcade/shadow-sniper.html', 'account.html', 'privacy.html', 'terms.html', 'contact.html', '404.html']) {
   const html = read(file);
   for (const match of html.matchAll(/(?:href|src)="(\/[^"#?]*)[^\"]*"/g)) {
     const url = match[1];
@@ -40,4 +45,4 @@ for (const file of ['arcade/missile-rush.html', 'arcade/rift-blade.html', 'index
 }
 const shell = read('scripts/site-layout.js');
 assert(!/\/blog\/|\/ai-ranking\/|\/webtoon-ranking\//.test(shell));
-console.log('PASS: playable defense homepage, three-game sitemap, metadata/schema, legacy redirects, removed content, local links and 404');
+console.log('PASS: playable defense homepage, games and tarot sitemap, metadata/schema, legacy redirects, removed content, local links and 404');

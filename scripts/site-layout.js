@@ -6,6 +6,7 @@
     { url: '/arcade/space-shooter.html', label: '비행기 슈팅', description: '우주 아케이드', group: 'games', paths: '<path d="m12 3 8 17-8-4-8 4 8-17Zm0 0v13"/>' },
     { url: '/arcade/missile-rush.html', label: '미사일 러시', description: '무기 업그레이드', group: 'games', paths: '<path d="M12 2c2 2 3 5 3 9v6H9v-6c0-4 1-7 3-9Zm-3 11-3 3v4l3-2m6-5 3 3v4l-3-2m-5 2v4m4-4v4"/>' },
     { url: '/arcade/shadow-sniper.html', label: '윌리 저격', description: '관찰 · 저격', group: 'games', paths: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 1v4m0 14v4M1 12h4m14 0h4"/>' },
+    { url: '/fortune/tarot.html', label: '타로점', description: '오늘의 카드', group: 'games', paths: '<rect x="6" y="3" width="12" height="18" rx="2"/><path d="m12 8 1.2 2.6 2.8.3-2.1 1.9.6 2.8L12 14.2l-2.5 1.4.6-2.8L8 10.9l2.8-.3L12 8Z"/>' },
     { url: '/exaone/', label: 'EXAONE Agent', description: '로컬 AI 도구', group: 'tools', paths: '<rect x="5" y="5" width="14" height="14" rx="3"/><path d="M9 1v4m6-4v4M9 19v4m6-4v4M1 9h4m-4 6h4m14-6h4m-4 6h4M9 9h6v6H9z"/>' }
   ];
   const menuGroups = [{ id: 'games', label: '게임' }, { id: 'tools', label: 'AI 도구' }];
