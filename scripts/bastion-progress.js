@@ -1,9 +1,9 @@
 /* Local, read-only progression panels. They never change a running battle. */
 const BastionProgressData = (() => {
-  const modes = new Set(['classic', 'rush', 'siege', 'practice']);
+  const modes = new Set(['classic', 'rush', 'siege', 'practice', 'endless']);
   const maps = new Set(['grove', 'canyon', 'glacier', 'marsh', 'volcano', 'ruins']);
   const towerTypes = new Set(['arrow', 'cannon', 'frost', 'laser', 'tesla', 'sniper', 'venom', 'gravity', 'flame', 'banner']);
-  const perkLimits = { bounty: 2, capacitor: 3, mending: 3, power: 3, haste: 3, range: 3, guardian: 3, restore: 100, supply: 100 };
+  const perkLimits = { bounty: 2, capacitor: 3, mending: 3, power: 3, haste: 3, range: 3, guardian: 3, restore: 100, supply: 100, overcharge: 100 };
   const guardianIds = new Set(['guardian', 'scout', 'gunner']), missionIds = new Set(['none', 'noRepair', 'compact', 'diverse']);
   const achievements = [
     { id: 'first_win', name: '첫 승리', description: '어떤 모드든 한 번 승리' },
@@ -87,7 +87,7 @@ const BastionProgressData = (() => {
       if (['won', 'lost'].includes(game.state) && !recorded.has(game)) {
         // Mark before storage access, so a blocked quota never duplicates the same run.
         recorded.add(game);
-        const row = cleanHistory([{ at: now(), outcome: game.state, mode: game.mode, map: game.map, stage: game.stage, score: Math.round(game.score), wave: game.wave, waves: game.rules?.waves, kills: game.kills, seconds: game.time, perfect: game.perfectWaves, medal: typeof game.stageMedal === 'function' ? game.stageMedal() : 0, loadout: captureLoadout(game) }], stageCount)[0];
+        const row = cleanHistory([{ at: now(), outcome: game.state, mode: game.mode, map: game.map, stage: game.stage, score: Math.round(game.score), wave: Math.min(100, game.wave), waves: Number.isFinite(game.rules?.waves) ? game.rules.waves : Math.min(100, game.wave), kills: game.kills, seconds: game.time, perfect: game.perfectWaves, medal: typeof game.stageMedal === 'function' ? game.stageMedal() : 0, loadout: captureLoadout(game) }], stageCount)[0];
         if (row) { history = [row, ...history].slice(0, 10); write('dawnBastionRunHistory', history); revision++; }
       }
       return newlyEarned;
@@ -122,7 +122,7 @@ function installBastionProgress({ getGame, getMedals, selectStage }) {
   let renderedRevision = -1, recommendationKey = '', outcomeFilter = 'all', cachedSnapshot = null;
   const filterButtons = new Map(), progressRows = new Map();
   const towerNames = { arrow: '연사탑', cannon: '폭발탑', frost: '냉기탑', laser: '관통 광선탑', tesla: '연쇄 번개탑', sniper: '저격탑', venom: '맹독탑', gravity: '중력탑', flame: '화염 방사탑', banner: '지휘탑' };
-  const perkNames = { bounty: '회수 전문가', capacitor: '충격파 축전기', mending: '수정 복구 회로', power: '요새의 화력', haste: '빠른 장전', range: '정밀 조준', guardian: '수호자의 결의', restore: '긴급 복구', supply: '보급 상자' };
+  const perkNames = { bounty: '회수 전문가', capacitor: '충격파 축전기', mending: '수정 복구 회로', power: '요새의 화력', haste: '빠른 장전', range: '정밀 조준', guardian: '수호자의 결의', restore: '긴급 복구', supply: '보급 상자', overcharge: '심연의 공명' };
   const guardianNames = { guardian: '균형 수호자', scout: '척후병', gunner: '포격수' }, missionNames = { none: '기본 도전', noRepair: '무수리 도전', compact: '소수 정예', diverse: '무기 연구가' }, specializationNames = { power: '고출력', rapid: '속사', reach: '장거리' };
   function renderHistory() {
     if (!cachedSnapshot) return;
@@ -135,7 +135,7 @@ function installBastionProgress({ getGame, getMedals, selectStage }) {
     for (const entry of visible) {
       const row = element('li'); row.dataset.outcome = entry.outcome;
       const label = entry.stage >= 0 ? (entry.stage + 1) + '단계 · ' + STAGES[entry.stage].name : MODES[entry.mode].name + ' · ' + MAPS[entry.map].name;
-      row.append(element('strong', (entry.outcome === 'won' ? '승리' : '패배') + ' · ' + label), element('small', entry.score.toLocaleString('ko-KR') + '점 · ' + entry.wave + '/' + entry.waves + '웨이브 · ' + entry.kills + '처치 · ' + entry.seconds + '초' + (entry.medal ? ' · ' + '★'.repeat(entry.medal) : '')), element('small', new Date(entry.at).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })));
+      row.append(element('strong', (entry.outcome === 'won' ? '승리' : '패배') + ' · ' + label), element('small', entry.score.toLocaleString('ko-KR') + '점 · ' + (entry.mode === 'endless' ? entry.wave + '웨이브 도달 · ' : entry.wave + '/' + entry.waves + '웨이브 · ') + entry.kills + '처치 · ' + entry.seconds + '초' + (entry.medal ? ' · ' + '★'.repeat(entry.medal) : '')), element('small', new Date(entry.at).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })));
       const detail = element('details', undefined, 'bastion-run-loadout'); detail.append(element('summary', '편성·강화 보기'));
       if (entry.loadout) {
         const loadout = entry.loadout;

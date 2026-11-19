@@ -147,13 +147,31 @@ function finishBastionWeapon(g,type,c){
 // Four cached poses per elite: idle, alternating stride and attack.
 function createBastionEliteTextures(scene){
  const result={};
- for(const kind of ['armored','regenerator','splitter','wisp','berserker','shard','shieldbearer','healer']){
+ for(const kind of ['armored','regenerator','splitter','wisp','berserker','shard','shieldbearer','healer','bomber','stalker']){
   result[kind]=[];
   for(let pose=0;pose<4;pose++){
    const g=scene.make.graphics({},false),step=pose===1?-3:pose===2?3:0,attack=pose===3?6:0;
    const poly=(p,c,a=1)=>{g.fillStyle(c,a);g.fillPoints(p.map(([x,y])=>({x,y})),true);};
    const line=(x,y,xx,yy,w,c,a=1)=>{g.lineStyle(w,c,a);g.lineBetween(x,y,xx,yy);};
-   if(kind==='shieldbearer'){
+   if(kind==='bomber'){
+    // A hunched runner hauling a glowing ember keg; the fuse spark rises on the attack pose.
+    for(const [x,d]of [[38,step],[56,-step]]){line(x,60,x+d,78,9,0x3b2a2f);g.fillStyle(0x221c26);g.fillRoundedRect(x+d-7,75,15,8,3);}
+    poly([[30,40],[52,34],[64,48],[58,66],[34,67],[26,54]],0x6e3f37);poly([[32,42],[46,38],[46,63],[34,62]],0x9a5a45);
+    g.fillStyle(0x2a2029);g.fillCircle(60,38,19);g.fillStyle(0x4a3238);g.fillCircle(57,35,15);g.fillStyle(0xff8a3c,.9);g.fillCircle(60,38,9);g.fillStyle(0xffd27a);g.fillCircle(58,36,4);
+    g.lineStyle(3,0x1a141c);g.strokeCircle(60,38,19);line(46,30,74,46,2,0x8b6b4c);line(46,46,74,30,2,0x8b6b4c);
+    line(66,20,72,11-attack,2,0xcdb58a);g.fillStyle(0xffe9a8);g.fillCircle(72,10-attack,2.5+attack*.5);if(attack){g.fillStyle(0xff9455,.35);g.fillCircle(72,10-attack,9);}
+    poly([[29,26],[41,20],[50,29],[46,41],[33,42],[26,34]],0x7a4a3d);poly([[31,29],[40,24],[40,39],[32,38]],0xb26f52);g.fillStyle(0x171219);g.fillRect(31,30,13,5);line(33,32,36,32,2,0xffc56b);line(39,32,42,32,2,0xffc56b);
+    line(30,48,20-attack*.5,58,5,0x7a4a3d);g.fillStyle(0xb26f52);g.fillCircle(19-attack*.5,59,4);
+   }else if(kind==='stalker'){
+    // Slim hooded silhouette with twin daggers and a torn cloak; reads clearly even when faded.
+    for(const [x,d]of [[40,step],[55,-step]]){line(x,58,x+d,79,7,0x231c3a);g.fillStyle(0x15112a);g.fillRoundedRect(x+d-6,76,13,7,3);}
+    poly([[35,30],[60,30],[70,62],[62,58],[58,74],[48,62],[38,75],[34,58],[25,64]],0x2b2350);poly([[38,32],[48,35],[46,62],[36,58]],0x4b3f86);poly([[50,35],[58,32],[64,58],[52,60]],0x1d1838);
+    poly([[33,31],[36,16],[48,8],[60,17],[63,31],[55,39],[40,39]],0x362c66);poly([[38,26],[48,16],[57,26],[54,36],[41,36]],0x0c0a1c);poly([[35,22],[48,9],[47,16],[39,29]],0x6b5db0);
+    line(41,29,45,30,2,0x7df6ff);line(51,30,55,29,2,0x7df6ff);
+    line(32,42,22-attack,52,4,0x362c66);poly([[22-attack,52],[9-attack*1.6,45],[13-attack*1.6,57]],0xcfe9f2);line(22-attack,52,11-attack*1.6,48,1,0xffffff);
+    line(63,42,73+attack,52,4,0x362c66);poly([[73+attack,52],[87+attack*1.6,46],[83+attack*1.6,58]],0xcfe9f2);line(73+attack,52,85+attack*1.6,49,1,0xffffff);
+    g.fillStyle(0x7df6ff,.85);g.fillCircle(48,46,2.5);line(40,44,56,44,1,0x8f84cf);
+   }else if(kind==='shieldbearer'){
     // A compact armored carrier behind a wide, translucent hexagonal energy shield.
     for(const [x,d]of [[47,step],[64,-step]]){g.fillStyle(0x183c49);g.fillRoundedRect(x-6,56,12,22+d,3);g.fillStyle(0x668f9b);g.fillRoundedRect(x-6,60,12,13,3);g.fillStyle(0x18303e);g.fillRoundedRect(x-8,76+d,16,7,3);line(x-4,63,x+3,63,1,0xb5dcd9);}
     poly([[40,30],[62,28],[74,43],[66,65],[43,64],[34,47]],0x305d6a);poly([[44,32],[56,30],[56,62],[44,59]],0x8bbfc1);poly([[56,30],[65,34],[68,57],[56,62]],0x4c808e);

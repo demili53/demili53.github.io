@@ -118,7 +118,7 @@ const root = path.resolve(__dirname, '..');
       const frame=await page.locator('#gameCanvas').screenshot();await page.waitForTimeout(120);assert(frame.equals(await page.locator('#gameCanvas').screenshot()),'Scenery freezes on '+map);
     }
 
-    assert.equal(await page.evaluate(()=>Object.keys(app.textures.list).filter(k=>k.startsWith('bastion-elite-')).length),32);
+    assert.equal(await page.evaluate(()=>Object.keys(app.textures.list).filter(k=>k.startsWith('bastion-elite-')).length),40);
     await page.locator('#reducedEffects').check();await page.waitForTimeout(80);
     const reducedFrame=await page.locator('#gameCanvas').screenshot();await page.waitForTimeout(120);assert(reducedFrame.equals(await page.locator('#gameCanvas').screenshot()));await page.locator('#reducedEffects').uncheck();
     await page.evaluate(()=>{$('overlay').style.display='';selectedStage=-1;resetMode('classic');});
@@ -129,7 +129,7 @@ const root = path.resolve(__dirname, '..');
     await page.getByRole('button',{name:/조준: 가까운 적/}).click();assert.equal(await page.evaluate(()=>game.slots[0].tower.priority),'core');assert((await page.getByRole('button',{name:/강화 → Lv.2/}).textContent()).includes('15.0 → 24.8'));
     await page.keyboard.press('2');await page.locator('#repeatBuild').click();assert.equal(await page.evaluate(()=>game.slots[1].tower.type),'arrow');await page.keyboard.press('Escape');
     await page.click('#battleSpeed');assert.equal(await page.evaluate(()=>battleSpeed),2);assert.equal(await page.locator('#battleSpeed').getAttribute('aria-pressed'),'true');await page.click('#pause');const stopped=await page.evaluate(()=>game.time);await page.waitForTimeout(160);assert.equal(await page.evaluate(()=>game.time),stopped);await page.click('#battleSpeed');
-    assert.equal(await page.locator('#codexEntries li').count(),11);assert((await page.locator('#waveIntel').textContent()).includes('W1'));
+    assert.equal(await page.locator('#codexEntries li').count(),13);assert((await page.locator('#waveIntel').textContent()).includes('W1'));
     await page.click('#start');await page.evaluate(()=>{game.spawned=game.spawnLimit;game.enemies=[];game.waveTime=1;sync();});assert(await page.locator('#finishWave').isVisible());await page.click('#finishWave');assert.equal(await page.evaluate(()=>game.state),'reward');assert.equal(await page.locator('#finishWave').isVisible(),false);
     await page.evaluate(()=>resetMode('classic'));
     await page.locator('#stageChoice').selectOption('0');
@@ -203,6 +203,18 @@ const root = path.resolve(__dirname, '..');
     await page.evaluate(()=>{selectedStage=7;resetMode('classic');game.state='running';game.wave=2;game.spawnClock=1000;game.player.cd=100;const boss=game.spawn(true);boss.x=130;boss.y=170;boss.chargeWindup=.8;setState('paused');$('overlay').style.display='none';});
     await page.waitForTimeout(80);assert((await page.locator('#bossName').textContent()).includes('돌진 준비'));await page.locator('#gameCanvas').screenshot({path:path.join(root,'test-results/bastion-charge-mobile.png')});
     await page.setViewportSize({width:1360,height:1000});
+    // Abyss mode: real selector, endless HUD, archetype boss panel, new enemy sprites, amplification purchase and record storage.
+    await page.reload();await page.waitForFunction(()=>ready);await page.locator('input[name="mode"][value="endless"]').check();
+    assert.equal(await page.locator('#wave').textContent(),'01 / ∞');assert((await page.locator('#modeBadge').textContent()).includes('∞ WAVES'));assert((await page.locator('#modeRules').textContent()).includes('5웨이브마다'));
+    await page.click('#start');assert.equal(await page.evaluate(()=>game.mode),'endless');
+    await page.evaluate(()=>{game.wave=10;game.spawnClock=1000;game.player.cd=100;game.player.x=600;game.player.y=600;const boss=game.spawn(true);boss.x=210;boss.y=210;boss.speed=0;for(const [kind,x]of [['bomber',330],['stalker',450]]){const e=game.spawn(false,'grunt');e.kind=kind;e.x=x;e.y=120;e.speed=0;}game.state='building';game.gold=999;game.build(4,'arrow');game.slots[4].tower.jamTime=99;game.state='running';});
+    await page.waitForTimeout(250);assert((await page.locator('#bossName').textContent()).includes('철벽 군주'));assert((await page.locator('#bossHealth').textContent()).includes('보호막'));assert((await page.locator('#waveIntel').textContent()).includes('철벽 군주'));
+    assert.equal(await page.locator('#codexEntries [data-enemy="bomber"]').getAttribute('data-active'),'true');assert.equal(await page.evaluate(()=>game.enemies.filter(e=>!game.targetable(e)).length),1);
+    await page.locator('#gameCanvas').screenshot({path:path.join(root,'test-results/bastion-abyss.png')});
+    await page.evaluate(()=>openBuild(0));const amplifyButton=page.locator('#buildChoices button',{hasText:'심연 증폭 · 150 에테르'});await amplifyButton.click();assert.equal(await page.evaluate(()=>game.perks.overcharge),1);assert.equal(await page.locator('#buildChoices button',{hasText:'심연 증폭 · 200 에테르'}).count(),1);
+    await page.evaluate(()=>{closeBuild();game.core=0;game.step(.05);sync();});await page.waitForTimeout(150);assert((await page.locator('#overlayTitle').textContent()).includes('심연 10웨이브'));assert.equal(await page.evaluate(()=>localStorage.getItem('dawnBastionAbyssWave')),'10');
+    assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('dawnBastionRunHistory'))[0].mode),'endless');assert((await page.locator('#modeHelp').textContent()).includes('최고 도달 웨이브 10'));assert.equal(errors.length,0,errors.join('\n'));
+    await page.locator('input[name="mode"][value="classic"]').check();assert.equal(await page.locator('#wave').textContent(),'01 / 10');
     for(const old of ['/arcade/dawn-bastion.html','/arcade/']){await page.goto(base+old);await page.waitForURL(base+'/');await page.waitForFunction(()=>ready);}
     const missing=await page.goto(base+'/blog/posts/removed.html');assert.equal(missing.status(),404);assert.equal(await page.locator('meta[name="robots"]').getAttribute('content'),'noindex, follow');
     await page.goto(base+'/arcade/space-shooter.html');await page.waitForFunction(()=>typeof ex!=='undefined'&&document.querySelector('#startBtn'));
