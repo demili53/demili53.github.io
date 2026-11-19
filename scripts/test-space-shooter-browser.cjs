@@ -21,6 +21,9 @@ const root = path.resolve(__dirname, '..');
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.route(/googletagmanager|googlesyndication|google-analytics/, route => route.abort());
+    // 오프라인 검증: EXCALIBUR_LOCAL에 엔진 파일 경로를 주면 CDN 대신 그 파일을 사용한다.
+    if (process.env.EXCALIBUR_LOCAL) await page.route('**/excalibur.min.js', route => route.fulfill({ contentType: 'text/javascript', body: fs.readFileSync(process.env.EXCALIBUR_LOCAL) }));
+    if (process.env.TAILWIND_LOCAL_CSS) await page.route(/cdn\.tailwindcss\.com/, route => route.fulfill({ contentType: 'text/javascript', body: `document.head.appendChild(Object.assign(document.createElement('style'),{textContent:${JSON.stringify(fs.readFileSync(process.env.TAILWIND_LOCAL_CSS, 'utf8'))}}));` }));
     await page.route('**/scripts/firebase-client.js', route => route.fulfill({ contentType: 'text/javascript', body: 'export const app={},auth={currentUser:null},authReady=Promise.resolve();export function onAuthStateChanged(a,cb){queueMicrotask(()=>cb(null));return()=>{}}export async function signOut(){}' }));
     await page.route('**/scripts/firebase-game-ranking.js*', route => route.fulfill({ contentType: 'text/javascript', body: 'export function initializeGameRanking(){}' }));
     await page.goto(`http://127.0.0.1:${server.address().port}/arcade/space-shooter.html`);
@@ -39,10 +42,10 @@ const root = path.resolve(__dirname, '..');
       suspendInput(); const before = JSON.stringify([player, stars, particles, waveTimer]); update(1);
       return Math.abs(straight - diagonal) < .001 && slow < straight / 2 && state === 'paused' && !keys.KeyD && before === JSON.stringify([player, stars, particles, waveTimer]);
     });
-    await check('2. seven weapons preserve level and cooldown, HUD tracks state', () => {
+    await check('2. nine weapons preserve level and cooldown, HUD tracks state', () => {
       resetGame(); startGame(); player.level = 7; player.cooldown = .3;
       for (const key of WEAPON_KEYS) { changeWeapon(key); pBullets = []; playerFire(); if (!pBullets.length || player.level !== 7 || player.cooldown !== .3) return false; }
-      return el('weaponSelect').options.length === 7 && levelEl.textContent.includes('Lv.7') && el('bombBtn').textContent.includes('2');
+      return el('weaponSelect').options.length === 9 && levelEl.textContent.includes('Lv.7') && el('bombBtn').textContent.includes('2');
     });
     await check('3. shield blocks one hit then health takes damage', () => {
       resetGame(); startGame(); applyItem('shield'); const hp = player.lives; hitPlayer();
@@ -96,6 +99,7 @@ const root = path.resolve(__dirname, '..');
     await require('./test-space-shooter-polish.cjs')(check, page);
     await require('./test-space-shooter-sixth.cjs')(check, page);
     await require('./test-space-shooter-seventh.cjs')(check, page);
+    await require('./test-space-shooter-eighth.cjs')(check, page);
     await page.evaluate(() => { selectedShip = 'speed'; preferredWeapon = 'railgun'; saveLoadout(); });
     await page.reload();
     await page.waitForFunction(() => typeof player !== 'undefined' && player && game.isRunning());
