@@ -24,9 +24,22 @@ for (const c of cards) {
   for (const text of r.slice(1)) assert(typeof text === 'string' && text.length > 5 && !text.endsWith('.'), `${c.id}: text`);
 }
 assert.equal(Object.keys(readings).length, 78);
+const ai = { window: {} };
+vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'tarot-ai.js'), 'utf8'), ai);
+const { SITUATIONS, read, combinations } = ai.window.TarotAI;
+assert(SITUATIONS.length >= 40, 'situations');
+for (const s of SITUATIONS) assert(s.out.length === 5 && s.tip && s.words.length, s.id);
+assert.equal(read('다음 달 공무원 시험 합격할까요').situation.id, 'exam');
+assert.equal(read('다음 달 공무원 시험 합격할까요').when, '다음 달');
+const ids = new Set(cards.map(c => c.id));
+const pair = combinations([{ card: { id: 'major_16_tower', arcana: 'major' } }, { card: { id: 'major_17_star', arcana: 'major' } }]);
+assert.equal(pair.length, 1);
+const src = fs.readFileSync(path.join(__dirname, 'tarot-ai.js'), 'utf8');
+for (const m of src.matchAll(/\['((?:major|wands|cups|swords|pentacles)_\w+)', '(\w+)', '/g)) assert(ids.has(m[1]) && ids.has(m[2]), `pair ${m[1]} ${m[2]}`);
 const js = fs.readFileSync(path.join(__dirname, 'tarot.js'), 'utf8');
 assert(js.includes('crypto.getRandomValues'), 'unbiased random draw');
 const html = fs.readFileSync(path.join(root, 'fortune', 'tarot.html'), 'utf8');
 assert(html.indexOf('/scripts/tarot-readings.js') < html.indexOf('/scripts/tarot.js'), 'readings load first');
+assert(html.indexOf('/scripts/tarot-ai.js') < html.indexOf('/scripts/tarot.js'), 'reader module loads first');
 assert.match(html, /<textarea id="question"/);
-console.log('PASS: 78 tarot cards with images, meanings and topic readings');
+console.log('PASS: 78 tarot cards, topic readings, situations and card combinations');

@@ -10,7 +10,7 @@
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-T2KDKBN8');</script>
 <meta name="google-adsense-account" content="ca-pub-1087435977438565"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565" crossorigin="anonymous"></script>
 <script src="/scripts/site-layout.js" defer></script><link rel="stylesheet" href="/styles/site-design.css">
-<script src="/scripts/tarot-readings.js" defer></script><script src="/scripts/tarot.js" defer></script>
+<script src="/scripts/tarot-readings.js" defer></script><script src="/scripts/tarot-ai.js" defer></script><script src="/scripts/tarot.js" defer></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"무료 타로점","url":"https://partygame.pe.kr/fortune/tarot.html","description":"고민을 글로 적고 1909년 라이더-웨이트 타로 78장 중에서 카드를 직접 고르면 주제와 질문에 맞춰 해석해 주는 무료 타로점.","inLanguage":"ko","applicationCategory":"EntertainmentApplication","operatingSystem":"Web browser","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"}}</script>
 <style>
 body{margin:0}button{font:inherit;cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}[hidden]{display:none!important}
@@ -29,6 +29,7 @@ body{margin:0}button{font:inherit;cursor:pointer}button:disabled{opacity:.45;cur
 .count{float:right;font-weight:400;color:#7f8aa5;font-size:11px}
 .detect{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin-top:10px;font-size:12px;color:#b9c5da}
 .detect label{display:flex;align-items:center;gap:6px;margin:0;font-weight:600;color:#c9bdf0;font-size:12px}
+.ai-found{flex-basis:100%;font-size:11px;color:#9fd8c8}.ai-found:empty{display:none}
 .detect select{min-height:36px;border-radius:8px;border:1px solid #3a4566;background:#0f1424;color:#eef2fb;padding:4px 8px;font:inherit;font-size:12px}
 .opening{font-size:13px;line-height:1.85;color:#cfd6ea;margin:0 0 16px}
 .tip{margin:12px 0 0;font-size:13px;line-height:1.8;color:#bfe9dc}.tip::before{content:"오늘의 실천 · ";font-weight:800;color:#84dfc2}
@@ -89,7 +90,7 @@ body{margin:0}button{font:inherit;cursor:pointer}button:disabled{opacity:.45;cur
 <section class="panel setup" aria-label="타로점 준비">
   <div class="field"><label for="question">나의 고민 <span class="count" id="charCount">0 / 300</span></label>
     <textarea id="question" maxlength="300" rows="5" placeholder="지금 마음에 걸리는 고민을 편하게 적어 주세요. 누구와의 일인지, 무엇이 궁금한지 적을수록 해석이 고민에 맞춰집니다."></textarea>
-    <div class="detect" aria-live="polite"><label>주제 <select id="topicSelect" aria-label="고민 주제"></select></label><label>질문 <select id="qtypeSelect" aria-label="질문 유형"></select></label></div>
+    <div class="detect" aria-live="polite"><label>주제 <select id="topicSelect" aria-label="고민 주제"></select></label><label>질문 <select id="qtypeSelect" aria-label="질문 유형"></select></label><span class="ai-found" id="aiFound"></span></div>
     <p class="hint">적은 글에서 주제와 질문을 자동으로 알아내며, 틀리면 직접 바꿀 수 있습니다. 글은 이 화면 안에서만 쓰이고 어디에도 저장되거나 전송되지 않습니다.</p></div>
   <div class="field"><fieldset><legend>카드 배열 <span style="font-weight:400;color:#8d9cb8">(고민에 맞춰 자동 선택)</span></legend>
     <div class="spreads" id="spreads">

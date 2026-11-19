@@ -23,9 +23,9 @@
     { id: 'general', label: '전체 운세', domain: 'general', goal: '바라는 일이 이루어질', words: ['운세', '올해', '이번 달', '이번달', '요즘', '오늘', '전체'], tips: ['오늘 할 수 있는 작은 일 하나를 정해 바로 해 보세요.', '지금 마음을 무겁게 하는 일을 종이에 적어 보면 생각이 정리됩니다.'] }
   ];
   const QTYPES = [
-    { id: 'choice', label: '어느 쪽을 고를까', spread: 'choice', words: ['아니면', ' vs', 'vs ', '또는', '중에', '중 어느', '중에서', '어느 쪽', '어디로', '어떤 걸', '어떤걸', '할까 말까', '할지 말지', '말아야', '선택'] },
+    { id: 'choice', label: '어느 쪽을 고를까', spread: 'choice', words: ['아니면', ' vs', 'vs ', '또는', '중에', '중 어느', '중에서', '어느 쪽', '어디로', '어떤 걸', '어떤걸', '할까 말까', '말까', '할지 말지', '말아야', '선택'] },
     { id: 'timing', label: '언제쯤일까', spread: 'time', words: ['언제', '시기', '몇 월', '몇월', '얼마나 걸', '언제쯤', '때가'] },
-    { id: 'feeling', label: '상대의 마음', spread: 'relation', words: ['속마음', '마음이 있', '마음은', '마음을', '나를 어떻게', '날 어떻게', '좋아할까', '좋아하는지', '관심 있을까', '관심이 있', '생각하고 있', '감정', '나를 좋아', '날 좋아'] },
+    { id: 'feeling', label: '상대의 마음', spread: 'relation', words: ['속마음', '마음이 있', '마음은', '마음을', '나를 어떻게', '날 어떻게', '좋아할까', '좋아하는지', '관심 있을까', '관심이 있', '생각하고 있', '감정', '나를 좋아', '날 좋아', '마음이 뭘', '마음이 어떨', '마음일까', '무슨 생각', '어떤 마음', '진심일까'] },
     { id: 'how', label: '어떻게 하면 좋을까', spread: 'advice', words: ['어떻게 하면', '어떻게 해야', '어떡하', '어떻게 할까', '방법', '뭘 해야', '무엇을 해야', '해야 할까', '조언'] },
     { id: 'outlook', label: '앞으로의 흐름', spread: 'time', words: ['어떻게 될', '앞으로', '미래', '전망', '흐름', '결과'] },
     { id: 'possible', label: '이루어질까', spread: 'one', words: ['될까', '될지', '있을까', '할 수 있', '가능', '붙을까', '합격할', '성공할', '이루어', '돌아올까', '잘될까', '잘 될까', '괜찮을까', '맞을까', '올까', '줄까', '생길까', '풀릴까', '나아질까'] },
@@ -83,13 +83,18 @@
     for (const t of TOPICS) { const n = countHits(text, t.words); if (n > best) { best = n; topic = t; } }
     let qtype = QTYPES[QTYPES.length - 1];
     for (const q of QTYPES) { if (q.words.length && countHits(text, q.words) > 0) { qtype = q; break; } }
+    // "Should I do it?" questions are a yes/no choice between doing it and not doing it.
+    if (['possible', 'general'].includes(qtype.id) && /(할까|갈까|살까|둘까|끊을까|그만둘까|옮길까|헤어질까|만날까|해볼까|해 볼까|시작할까|바꿀까|차릴까|낼까|받을까)/.test(text) && !/될까|있을까|합격할까|성공할까|잘할까|붙을까/.test(text)) qtype = QTYPES.find(q => q.id === 'choice');
     if (qtype.id === 'general' && /까요|까\?|까 /.test(text)) qtype = QTYPES.find(q => q.id === 'possible');
     // A love worry that asks about the other person reads best as a relation spread.
-    if (qtype.id === 'general' && topic.domain === 'love' && /(그 사람|상대|걔|그 애|그분)/.test(text)) qtype = QTYPES.find(q => q.id === 'feeling');
+    if (qtype.id === 'general' && topic.domain === 'love' && /(그 사람|상대|걔|그 애|그분|썸남|썸녀|짝남|짝녀)/.test(text)) qtype = QTYPES.find(q => q.id === 'feeling');
     let emotion = null, eBest = 0;
     for (const e of EMOTIONS) { const n = countHits(text, e.words); if (n > eBest) { eBest = n; emotion = e; } }
-    const choices = parseChoices(raw || '');
-    return { topic, qtype, emotion, choices, empty: !raw.trim() };
+    const choices = parseChoices(raw || '') || (qtype.id === 'choice' ? ['한다', '하지 않는다'] : null);
+    const ai = window.TarotAI ? window.TarotAI.read(raw || '') : { situation: null, second: null, who: [], when: null };
+    // The detailed situation knows the topic better than plain word counts.
+    if (ai.situation) topic = TOPICS.find(t => t.id === ai.situation.topic) || topic;
+    return { topic, qtype, emotion, choices, empty: !raw.trim(), ...ai };
   }
 
   function parseChoices(raw) {
@@ -140,8 +145,15 @@
     if (use === 'feel') return `마음 깊은 곳을 보면 ${first}. 다만 역방향이라 지금은 그 마음을 겉으로 드러내지 못하고 망설이고 있습니다.`;
     return `지금은 ${rev}. 바로 섰다면 ${first}. 역방향인 지금은 그 흐름이 늦게 오거나 약하게 나타납니다.`;
   }
-  function positionText(p, pos, topic) {
-    return `${pos.lead} ${p.rev ? '역방향 ' : ''}‘${p.card.ko}’입니다. ${cardBody(p, pos.use, topic.domain)}`;
+  function situationClause(p, pos, sit) {
+    if (!sit || pos.use === 'advice' || pos.use === 'feel' || !window.TarotAI) return '';
+    if (pos.name === '선택 B') return ''; // situation outcomes describe doing it, which is choice A
+    const out = sit.out[window.TarotAI.levelOf(score(p))];
+    const lead = pos.name.startsWith('선택') ? '이 길을 고르면' : pos.name === '과거' ? `${sit.label} 문제에서 지난 흐름은` : `${sit.label} 문제로 보면`;
+    return ` ${lead} ${out.replace(/니다$/, '니다')}.`;
+  }
+  function positionText(p, pos, topic, sit) {
+    return `${pos.lead} ${p.rev ? '역방향 ' : ''}‘${p.card.ko}’입니다. ${cardBody(p, pos.use, topic.domain)}${situationClause(p, pos, sit)}`;
   }
 
   function level(avg) {
@@ -168,6 +180,11 @@
     } else t = SUITS[c.suit].time;
     return `‘${c.ko}’ 카드로 보면 변화는 ${t} 찾아올 가능성이 큽니다.${p.rev ? ' 다만 역방향이라 예상보다 늦어질 수 있습니다.' : ''}`;
   }
+  function whenNote(st) {
+    const w = st.analysis.when;
+    if (!w) return '';
+    return st.picks.some(p => p.rev) ? ` 글에 적은 ‘${w}’보다는 조금 늦어질 수 있습니다.` : ` 글에 적은 ‘${w}’ 무렵의 흐름도 이 카드와 같은 방향입니다.`;
+  }
 
   function conclusion(st) {
     const { picks, spread, analysis } = st;
@@ -177,12 +194,21 @@
     const last = picks[picks.length - 1];
     const lv = level(avg);
     const parts = [];
+    const sit = analysis.situation;
+    if (sit && window.TarotAI) {
+      const lvl = window.TarotAI.levelOf(avg);
+      const who = analysis.who[0];
+      const about = who ? `${who}${josa(who, '과', '와')} 관련된 ${sit.label} 문제는` : `${sit.label} 문제는`;
+      parts.push(`${about} 카드 전체로 보면 ${sit.out[lvl]}.`);
+      if (analysis.second) parts.push(`함께 적은 ${analysis.second.label} 문제는 ${analysis.second.out[lvl]}.`);
+    }
     switch (qtype.id) {
       case 'possible':
-        parts.push(`${topic.goal} 가능성은 ${lv.word}.`, pickOne(TONE_TAIL[lv.tone]));
+        if (!analysis.situation) parts.push(`${topic.goal} 가능성은 ${lv.word}.`);
+        parts.push(pickOne(TONE_TAIL[lv.tone]));
         break;
       case 'timing':
-        parts.push(timingText(last), `${topic.goal} 흐름 자체는 ${lv.tone >= 1 ? '밝은 편입니다' : lv.tone === 0 ? '아직 열려 있습니다' : '시간이 더 필요해 보입니다'}.`);
+        parts.push(timingText(last) + whenNote(st), `${topic.goal} 흐름 자체는 ${lv.tone >= 1 ? '밝은 편입니다' : lv.tone === 0 ? '아직 열려 있습니다' : '시간이 더 필요해 보입니다'}.`);
         break;
       case 'feeling': {
         const i = spread.positions.findIndex(pos => pos.use === 'feel');
@@ -214,10 +240,12 @@
       default:
         parts.push(`전체 흐름은 ${lv.tone >= 1 ? '밝은 편입니다' : lv.tone === 0 ? '좋고 나쁨이 섞여 있습니다' : '조심스러운 편입니다'}.`, pickOne(TONE_TAIL[lv.tone]));
     }
-    // Deck pattern notes
+    // Card combinations from the reader module, then general deck patterns
+    const combos = window.TarotAI ? window.TarotAI.combinations(picks) : [];
+    combos.forEach(t => parts.push(t + '.'));
     if (picks.length > 1) {
       const majors = picks.filter(p => p.card.arcana === 'major').length;
-      if (majors >= 2) parts.push(`메이저 카드가 ${majors}장이나 나와, 이 고민은 일상의 작은 일이 아니라 삶의 큰 전환과 이어져 있습니다.`);
+      if (majors >= 2 && majors < picks.length) parts.push(`메이저 카드가 ${majors}장이나 나와, 이 고민은 일상의 작은 일이 아니라 삶의 큰 전환과 이어져 있습니다.`);
       const counts = {};
       picks.forEach(p => { if (p.card.suit) counts[p.card.suit] = (counts[p.card.suit] || 0) + 1; });
       const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
@@ -235,7 +263,10 @@
     if (analysis.emotion) parts.push(pickOne(analysis.emotion.lines));
     if (!analysis.empty) {
       const q = question.length > 60 ? question.slice(0, 58) + '…' : question;
-      parts.push(`“${q}” 이 고민을 ${analysis.topic.label} 주제로, ‘${analysis.qtype.label}’${josa(analysis.qtype.label, '을', '를')} 묻는 질문으로 읽었습니다.`);
+      const what = analysis.situation ? `${analysis.topic.label} 중에서도 ‘${analysis.situation.label}’ 문제로` : `${analysis.topic.label} 주제로`;
+      parts.push(`“${q}” 이 고민을 ${what}, ‘${analysis.qtype.label}’${josa(analysis.qtype.label, '을', '를')} 묻는 질문으로 읽었습니다.`);
+      const words = [...analysis.who, analysis.when].filter(Boolean);
+      if (words.length) parts.push(`글에 나온 ${words.map(w => `‘${w}’`).join(', ')}${josa(words[words.length - 1], '을', '를')} 함께 보며 카드를 읽겠습니다.`);
     } else parts.push('질문 없이 뽑은 카드는 지금 당신에게 가장 필요한 메시지를 보여 줍니다.');
     return parts.join(' ');
   }
@@ -257,7 +288,10 @@
 
   function currentAnalysis() {
     const a = analyze(questionEl.value);
-    if (topicTouched) a.topic = TOPICS.find(t => t.id === topicSel.value);
+    if (topicTouched) {
+      a.topic = TOPICS.find(t => t.id === topicSel.value);
+      if (a.situation && a.situation.topic !== a.topic.id) a.situation = null;
+    }
     if (qtypeTouched) a.qtype = QTYPES.find(q => q.id === qtypeSel.value);
     return a;
   }
@@ -266,6 +300,8 @@
     if (!topicTouched) topicSel.value = a.topic.id;
     if (!qtypeTouched) qtypeSel.value = a.qtype.id;
     $('charCount').textContent = `${questionEl.value.length} / 300`;
+    const found = [a.situation && `상황: ${a.situation.label}`, a.who.length && `사람: ${a.who.join(', ')}`, a.when && `시점: ${a.when}`].filter(Boolean);
+    $('aiFound').textContent = found.length ? found.join(' · ') : '';
     if (!spreadTouched && !state) {
       const key = questionEl.value.trim() ? a.qtype.spread : 'one';
       document.querySelector(`input[name=spread][value=${key}]`).checked = true;
@@ -345,10 +381,10 @@
     $('readingOpening').textContent = opening(state);
     $('readingList').innerHTML = state.picks.map((p, i) => {
       const pos = spread.positions[i];
-      return `<li><img src="${BASE + p.card.img}" alt="${esc(p.card.ko)} 카드"${p.rev ? ' class="reversed"' : ''}><div><span class="tag">${esc(slotName(spread, i, analysis))}</span><b>${esc(p.card.ko)}${p.rev ? ' · 역방향' : ''} <small style="font-weight:400;color:#9a93b8">${esc(p.card.en)}</small></b><p>${esc(positionText(p, pos, analysis.topic))}</p></div></li>`;
+      return `<li><img src="${BASE + p.card.img}" alt="${esc(p.card.ko)} 카드"${p.rev ? ' class="reversed"' : ''}><div><span class="tag">${esc(slotName(spread, i, analysis))}</span><b>${esc(p.card.ko)}${p.rev ? ' · 역방향' : ''} <small style="font-weight:400;color:#9a93b8">${esc(p.card.en)}</small></b><p>${esc(positionText(p, pos, analysis.topic, analysis.situation))}</p></div></li>`;
     }).join('');
     state.summary = conclusion(state);
-    state.tip = pickOne(analysis.topic.tips);
+    state.tip = analysis.situation ? analysis.situation.tip : pickOne(analysis.topic.tips);
     $('readingSummary').textContent = state.summary;
     $('readingTip').textContent = state.tip;
     reading.hidden = false;
