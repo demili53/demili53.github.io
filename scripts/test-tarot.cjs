@@ -34,6 +34,11 @@ assert.equal(read('다음 달 공무원 시험 합격할까요').when, '다음 �
 const ids = new Set(cards.map(c => c.id));
 const pair = combinations([{ card: { id: 'major_16_tower', arcana: 'major' } }, { card: { id: 'major_17_star', arcana: 'major' } }]);
 assert.equal(pair.length, 1);
+const { flavor, shape, numberEcho } = ai.window.TarotAI;
+for (const c of cards) assert(flavor(c).length > 10, c.id + ': flavour');
+assert.equal(shape([-1, 0, 2]).kind, 'rising');
+assert.equal(shape([2, -1, 2]).kind, 'valley');
+assert(numberEcho([{ card: { id: 'cups_05_five', arcana: 'minor' } }, { card: { id: 'wands_05_five', arcana: 'minor' } }]).includes('숫자 5는'));
 const src = fs.readFileSync(path.join(__dirname, 'tarot-ai.js'), 'utf8');
 for (const m of src.matchAll(/\['((?:major|wands|cups|swords|pentacles)_\w+)', '(\w+)', '/g)) assert(ids.has(m[1]) && ids.has(m[2]), `pair ${m[1]} ${m[2]}`);
 const js = fs.readFileSync(path.join(__dirname, 'tarot.js'), 'utf8');

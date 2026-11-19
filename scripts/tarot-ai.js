@@ -12,7 +12,7 @@
     { id: 'newlove', topic: 'crush', label: '새 인연', words: ['소개팅', '인연', '솔로', '연애하고 싶', '만남', '이상형', '외롭', '애인이 없', '연애를 못'], out: ['지금은 새 인연보다 나를 돌보는 시간이 먼저입니다', '인연이 오기까지 시간이 조금 더 걸립니다', '만남의 기회는 있지만 마음을 열어야 이어집니다', '새로운 인연이 가까이 와 있습니다', '좋은 인연을 만날 가능성이 아주 큽니다'], tip: '평소와 다른 모임이나 취미 활동에 나가 보면 인연의 폭이 넓어집니다.' },
     { id: 'boredom', topic: 'couple', label: '권태기', words: ['권태', '식었', '설렘이 없', '지루', '예전 같지', '사랑이 식', '무덤덤'], out: ['관계가 많이 식어 있어 진지한 대화가 꼭 필요합니다', '권태가 길어질 수 있으니 서로의 노력이 필요합니다', '권태는 지나가는 시기일 수도, 신호일 수도 있습니다', '작은 변화로 다시 설렘을 찾을 수 있습니다', '권태를 넘어 더 깊은 관계로 나아갑니다'], tip: '처음 만났을 때 좋아했던 장소나 활동을 함께 다시 해 보세요.' },
     { id: 'cheating', topic: 'couple', label: '바람 · 의심', words: ['바람', '외도', '의심', '다른 여자', '다른 남자', '양다리', '숨기는', '몰래'], out: ['의심할 만한 일이 실제로 있을 수 있으니 사실을 확인하세요', '신뢰가 흔들리고 있어 솔직한 대화가 필요합니다', '불안이 사실인지 상상인지 차분히 구분해야 합니다', '걱정과 달리 큰 문제는 없을 가능성이 큽니다', '의심이 풀리고 오히려 신뢰가 깊어집니다'], tip: '추측으로 몰아붙이기보다 내가 느낀 불안을 그대로 이야기하세요.' },
-    { id: 'lovefight', topic: 'couple', label: '연인과의 다툼', need: ['남자친구', '여자친구', '남친', '여친', '애인', '연인', '커플', '데이트'], words: ['싸웠', '싸움', '다퉜', '다툼', '말다툼', '삐졌', '화해'], out: ['다툼이 깊어져 한동안 냉랭할 수 있습니다', '자존심 싸움이 길어질 수 있으니 먼저 한발 물러서세요', '누가 먼저 손을 내미느냐에 따라 화해가 갈립니다', '대화로 오해가 풀리고 화해할 가능성이 큽니다', '다툼 뒤에 오히려 더 가까워집니다'], tip: '“너는 왜”보다 “나는 이래서 서운했어”로 말을 시작해 보세요.' },
+    { id: 'lovefight', topic: 'couple', label: '연인과의 다툼', need: ['남자친구', '여자친구', '남친', '여친', '애인', '연인', '커플', '데이트'], words: ['싸웠', '싸워', '싸움', '다퉜', '다투', '다툼', '말다툼', '삐졌', '화해'], out: ['다툼이 깊어져 한동안 냉랭할 수 있습니다', '자존심 싸움이 길어질 수 있으니 먼저 한발 물러서세요', '누가 먼저 손을 내미느냐에 따라 화해가 갈립니다', '대화로 오해가 풀리고 화해할 가능성이 큽니다', '다툼 뒤에 오히려 더 가까워집니다'], tip: '“너는 왜”보다 “나는 이래서 서운했어”로 말을 시작해 보세요.' },
     { id: 'breakup', topic: 'reunion', label: '이별 고민', words: ['헤어질까', '헤어져야', '헤어지고 싶', '이별할까', '그만 만날', '정리할까'], out: ['이 관계는 나를 지치게 하고 있어 정리를 생각할 때입니다', '관계를 이어 가려면 큰 변화가 필요합니다', '헤어질지 말지는 서로의 노력 의지에 달려 있습니다', '아직 관계를 지킬 힘이 남아 있습니다', '위기를 넘기고 관계가 다시 단단해집니다'], tip: '결정을 내리기 전에 내가 이 관계에서 진짜 원하는 것이 무엇인지 적어 보세요.' },
     { id: 'reunion', topic: 'reunion', label: '재회', words: ['재회', '다시 만', '돌아올', '다시 시작', '잡고 싶', '붙잡'], out: ['지금은 재회보다 각자의 길을 가는 흐름이 강합니다', '재회까지는 시간이 오래 걸리고 쉽지 않습니다', '재회의 여지는 있지만 헤어진 이유가 풀려야 합니다', '재회의 기운이 살아 있습니다', '다시 만나 새롭게 시작할 가능성이 큽니다'], tip: '다시 연락하기 전에 헤어진 이유가 정말 달라졌는지 먼저 돌아보세요.' },
     { id: 'excontact', topic: 'reunion', label: '전 연인의 연락', words: ['전남친', '전여친', '전 남친', '전 여친', '헤어진 사람', '구남친', '구여친', '전 애인'], out: ['상대에게서 연락이 올 가능성은 낮습니다', '연락이 오더라도 짧고 가벼운 안부일 수 있습니다', '연락은 올 수 있지만 다시 이어질지는 알 수 없습니다', '상대도 당신을 떠올리고 있어 연락이 올 수 있습니다', '머지않아 반가운 연락이 올 가능성이 큽니다'], tip: '연락을 기다리는 동안에도 내 일상을 단단히 지키세요.' },
@@ -40,7 +40,7 @@
     { id: 'illness', topic: 'health', label: '질병 · 회복', words: ['아프', '아파', '병', '수술', '치료', '통증', '입원', '검사', '진단'], out: ['몸이 보내는 신호가 강하니 꼭 진료를 받으세요', '회복에 시간이 걸리니 무리하지 마세요', '꾸준히 관리하면 조금씩 나아집니다', '회복의 흐름이 보입니다', '빠르게 회복될 기운이 강합니다'], tip: '증상과 날짜를 적어 두었다가 진료 때 보여 주세요.' },
     { id: 'diet', topic: 'health', label: '다이어트 · 운동', words: ['다이어트', '살 빼', '살빼', '체중', '운동', '헬스', '식단', '살이'], out: ['무리한 방법은 몸을 해치니 방식을 바꾸세요', '결과가 더디니 조급해하지 마세요', '꾸준함만 지키면 변화가 시작됩니다', '노력한 만큼 몸이 달라집니다', '목표를 이룰 가능성이 큽니다'], tip: '하루 한 가지, 오늘 지킬 수 있는 작은 습관부터 시작하세요.' },
     { id: 'sleep', topic: 'health', label: '수면 · 스트레스', words: ['잠', '불면', '스트레스', '우울', '불안해서', '예민', '두통'], out: ['마음의 피로가 크니 혼자 견디지 말고 도움을 받으세요', '스트레스가 쌓여 있어 쉬는 시간이 꼭 필요합니다', '생활 리듬을 바로잡으면 나아질 수 있습니다', '마음이 차츰 편해지는 흐름입니다', '푹 쉬고 회복하는 시기가 옵니다'], tip: '잠들기 한 시간 전에는 화면을 끄고 몸을 따뜻하게 하세요.' },
-    { id: 'friend', topic: 'people', label: '친구 관계', words: ['친구', '절친', '우정', '손절', '서운한 친구'], out: ['이 관계는 나를 지치게 하니 거리를 두는 것도 방법입니다', '오해가 풀리기까지 시간이 걸립니다', '솔직한 대화 한 번이 관계를 바꿀 수 있습니다', '관계가 회복될 가능성이 큽니다', '더 깊은 우정으로 이어집니다'], tip: '하고 싶은 말을 상대를 탓하지 않고 내 감정 중심으로 전해 보세요.' },
+    { id: 'friend', topic: 'people', label: '친구 관계', avoid: ['남자친구', '여자친구', '남친', '여친', '전남친', '전여친'], words: ['친구', '절친', '우정', '손절', '서운한 친구'], out: ['이 관계는 나를 지치게 하니 거리를 두는 것도 방법입니다', '오해가 풀리기까지 시간이 걸립니다', '솔직한 대화 한 번이 관계를 바꿀 수 있습니다', '관계가 회복될 가능성이 큽니다', '더 깊은 우정으로 이어집니다'], tip: '하고 싶은 말을 상대를 탓하지 않고 내 감정 중심으로 전해 보세요.' },
     { id: 'lonely', topic: 'people', label: '외로움 · 소외', words: ['외로', '소외', '친구가 없', '혼자', '왕따', '겉도', '어울리'], out: ['지금은 외로움이 깊으니 믿을 만한 사람에게 마음을 털어놓으세요', '사람을 사귀기까지 시간이 조금 걸립니다', '작은 모임 하나가 관계의 문을 열어 줍니다', '나를 이해해 주는 사람이 나타납니다', '좋은 사람들과 연결되는 흐름입니다'], tip: '관심사가 같은 작은 모임에 한 번 나가 보세요.' },
     { id: 'parents', topic: 'family', label: '부모님과의 관계', words: ['엄마', '아빠', '어머니', '아버지', '부모', '부모님'], out: ['지금은 부딪히기 쉬우니 잠시 거리를 두세요', '서로의 입장 차이가 커서 시간이 필요합니다', '한 걸음 물러서 대화하면 풀릴 수 있습니다', '마음이 통하고 관계가 따뜻해집니다', '오해가 풀리고 더 가까워집니다'], tip: '말로 하기 어렵다면 짧은 메시지로 마음을 먼저 전해 보세요.' },
     { id: 'kids', topic: 'family', label: '자녀 · 육아', words: ['아이', '자식', '아들', '딸', '육아', '애가', '사춘기', '자녀'], out: ['지금은 아이와 부딪히기 쉬우니 말보다 들어 주기가 먼저입니다', '아이의 변화에 적응할 시간이 필요합니다', '대화 방식을 조금 바꾸면 관계가 달라집니다', '아이와의 관계가 좋아집니다', '아이가 잘 자라고 기쁜 일이 생깁니다'], tip: '하루 10분, 아이가 좋아하는 이야기를 판단 없이 들어 주세요.' },
@@ -59,8 +59,9 @@
 
   function findSituations(raw) {
     const text = lower(raw);
-    return SITUATIONS.filter(s => (!s.need || s.need.some(w => hit(text, w))) && !(s.avoid && s.avoid.some(w => hit(text, w))))
-      .map(s => ({ s, n: s.words.reduce((n, w) => n + (hit(text, w) ? 1 + Math.min(w.length, 4) / 4 : 0), 0) * (s.weak ? 0.4 : 1) }))
+    const plain = text.replace(/남자친구|여자친구|남친|여친|전남친|전여친/g, ' ');
+    return SITUATIONS.filter(s => (!s.need || s.need.some(w => hit(text, w))) && !(s.avoid && s.avoid.some(w => hit(plain, w))))
+      .map(s => ({ s, n: s.words.reduce((n, w) => n + (hit(group(s.topic) === 'love' ? text : plain, w) ? 1 + Math.min(w.length, 4) / 4 : 0), 0) * (s.weak ? 0.4 : 1) }))
       .filter(x => x.n > 0).sort((a, b) => b.n - a.n).map(x => x.s);
   }
   function findWho(raw) {
@@ -161,7 +162,58 @@
     ['pentacles_07_seven', 'pentacles_08_eight', '펜타클 7과 펜타클 8이 함께 나와 꾸준한 노력이 천천히 결실을 맺습니다'],
     ['pentacles_02_two', 'wands_10_ten', '펜타클 2와 완드 10이 함께 나와 일과 돈 문제를 한꺼번에 떠안고 있습니다'],
     ['pentacles_03_three', 'cups_03_three', '펜타클 3과 컵 3이 함께 나와 함께하는 사람들과 좋은 성과를 냅니다'],
-    ['pentacles_09_nine', 'cups_09_nine', '펜타클 9와 컵 9가 함께 나와 몸과 마음, 금전 모두 만족스러운 시기입니다']
+    ['pentacles_09_nine', 'cups_09_nine', '펜타클 9와 컵 9가 함께 나와 몸과 마음, 금전 모두 만족스러운 시기입니다'],
+    ['major_00_fool', 'major_01_magician', '바보와 마법사가 함께 나와 경험은 적어도 재능으로 새 일을 시작할 수 있습니다'],
+    ['major_00_fool', 'major_16_tower', '바보와 탑이 함께 나와 준비 없는 도전이 큰 충격으로 돌아올 수 있으니 조심하세요'],
+    ['major_00_fool', 'cups_01_ace', '바보와 컵 에이스가 함께 나와 순수하고 설레는 새 사랑이 시작됩니다'],
+    ['major_01_magician', 'major_06_lovers', '마법사와 연인이 함께 나와 먼저 표현하면 마음이 이어지는 흐름입니다'],
+    ['major_01_magician', 'swords_07_seven', '마법사와 소드 7이 함께 나와 말솜씨가 좋은 사람의 속임수를 조심해야 합니다'],
+    ['major_02_high_priestess', 'major_06_lovers', '여사제와 연인이 함께 나와 아직 드러나지 않은 마음이 서로를 향하고 있습니다'],
+    ['major_02_high_priestess', 'swords_02_two', '여사제와 소드 2가 함께 나와 답을 알면서도 결정을 미루고 있습니다'],
+    ['major_03_empress', 'major_06_lovers', '여황제와 연인이 함께 나와 사랑이 깊어지고 풍요로워집니다'],
+    ['major_03_empress', 'pentacles_10_ten', '여황제와 펜타클 10이 함께 나와 가정과 재산이 함께 넉넉해집니다'],
+    ['major_04_emperor', 'major_11_justice', '황제와 정의가 함께 나와 원칙대로 처리하면 유리한 결과가 나옵니다'],
+    ['major_04_emperor', 'wands_05_five', '황제와 완드 5가 함께 나와 권위를 가진 사람과 부딪힐 수 있습니다'],
+    ['major_05_hierophant', 'swords_05_five', '교황과 소드 5가 함께 나와 규칙이나 관습 때문에 갈등이 생깁니다'],
+    ['major_07_chariot', 'wands_08_eight', '전차와 완드 8이 함께 나와 일이 아주 빠르게 앞으로 나아갑니다'],
+    ['major_07_chariot', 'swords_06_six', '전차와 소드 6이 함께 나와 이동이나 환경 변화가 좋은 쪽으로 이어집니다'],
+    ['major_07_chariot', 'major_16_tower', '전차와 탑이 함께 나와 무리하게 밀어붙이면 부딪힐 수 있습니다'],
+    ['major_08_strength', 'major_15_devil', '힘과 악마가 함께 나와 유혹이나 나쁜 습관을 이겨 낼 힘이 있습니다'],
+    ['major_08_strength', 'cups_14_king', '힘과 컵 왕이 함께 나와 감정을 다스리는 성숙함이 문제를 풉니다'],
+    ['major_09_hermit', 'major_06_lovers', '은둔자와 연인이 함께 나와 혼자만의 시간이 관계를 더 깊게 합니다'],
+    ['major_09_hermit', 'pentacles_08_eight', '은둔자와 펜타클 8이 함께 나와 혼자 몰입하는 공부와 연마가 큰 실력이 됩니다'],
+    ['major_10_wheel_of_fortune', 'major_06_lovers', '운명의 수레바퀴와 연인이 함께 나와 운명 같은 인연을 만날 수 있습니다'],
+    ['major_10_wheel_of_fortune', 'pentacles_01_ace', '운명의 수레바퀴와 펜타클 에이스가 함께 나와 뜻밖의 금전 기회가 옵니다'],
+    ['major_11_justice', 'major_06_lovers', '정의와 연인이 함께 나와 관계에서 공정한 선택과 책임이 필요합니다'],
+    ['major_11_justice', 'pentacles_06_six', '정의와 펜타클 6이 함께 나와 정당한 보상이나 돈 문제가 바르게 정리됩니다'],
+    ['major_12_hanged_man', 'major_13_death', '매달린 사람과 죽음이 함께 나와 오래 멈춰 있던 일이 끝나고 새로 시작됩니다'],
+    ['major_12_hanged_man', 'major_17_star', '매달린 사람과 별이 함께 나와 기다림 끝에 희망이 보입니다'],
+    ['major_13_death', 'major_19_sun', '죽음과 태양이 함께 나와 끝난 자리에서 밝은 새 출발이 시작됩니다'],
+    ['major_13_death', 'cups_08_eight', '죽음과 컵 8이 함께 나와 지금 자리를 떠나 새 길을 찾을 때입니다'],
+    ['major_14_temperance', 'major_20_judgement', '절제와 심판이 함께 나와 천천히 회복된 관계가 다시 살아납니다'],
+    ['major_14_temperance', 'pentacles_02_two', '절제와 펜타클 2가 함께 나와 돈과 시간의 균형을 잘 맞추면 됩니다'],
+    ['major_15_devil', 'major_16_tower', '악마와 탑이 함께 나와 묶여 있던 관계나 습관이 한순간에 무너집니다'],
+    ['major_15_devil', 'cups_02_two', '악마와 컵 2가 함께 나와 강하게 끌리지만 서로를 묶는 관계가 될 수 있습니다'],
+    ['major_16_tower', 'major_20_judgement', '탑과 심판이 함께 나와 무너진 뒤 진실이 드러나고 새롭게 일어섭니다'],
+    ['major_17_star', 'major_06_lovers', '별과 연인이 함께 나와 순수한 마음이 통하는 희망적인 사랑입니다'],
+    ['major_17_star', 'wands_01_ace', '별과 완드 에이스가 함께 나와 꿈꾸던 일을 시작할 용기가 생깁니다'],
+    ['major_18_moon', 'major_06_lovers', '달과 연인이 함께 나와 마음은 있지만 확신이 없어 흔들리는 관계입니다'],
+    ['major_18_moon', 'major_16_tower', '달과 탑이 함께 나와 숨겨진 사실이 갑자기 드러날 수 있습니다'],
+    ['major_18_moon', 'cups_07_seven', '달과 컵 7이 함께 나와 환상과 착각이 판단을 흐리고 있습니다'],
+    ['major_19_sun', 'cups_10_ten', '태양과 컵 10이 함께 나와 가족과 함께하는 큰 행복이 찾아옵니다'],
+    ['major_19_sun', 'wands_06_six', '태양과 완드 6이 함께 나와 성공하고 인정받는 기쁜 흐름입니다'],
+    ['major_20_judgement', 'major_06_lovers', '심판과 연인이 함께 나와 지난 인연과 다시 이어질 기운이 강합니다'],
+    ['major_20_judgement', 'swords_03_three', '심판과 소드 3이 함께 나와 지난 상처를 정리하고 다시 시작할 때입니다'],
+    ['major_21_world', 'pentacles_10_ten', '세계와 펜타클 10이 함께 나와 오래 바란 목표가 안정된 결실로 완성됩니다'],
+    ['wands_01_ace', 'cups_01_ace', '완드 에이스와 컵 에이스가 함께 나와 열정과 사랑이 동시에 시작됩니다'],
+    ['wands_03_three', 'swords_06_six', '완드 3과 소드 6이 함께 나와 먼 곳으로 나아가는 이동이나 해외 기회가 있습니다'],
+    ['wands_07_seven', 'wands_09_nine', '완드 7과 완드 9가 함께 나와 계속 버티고 지켜야 하는 힘든 시기입니다'],
+    ['cups_06_six', 'cups_11_page', '컵 6과 컵 시종이 함께 나와 옛 인연에게서 반가운 연락이 옵니다'],
+    ['cups_09_nine', 'cups_10_ten', '컵 9와 컵 10이 함께 나와 바라던 행복이 가정의 기쁨으로 완성됩니다'],
+    ['swords_02_two', 'swords_08_eight', '소드 2와 소드 8이 함께 나와 스스로 갇혀 결정을 못 하고 있습니다'],
+    ['swords_09_nine', 'swords_04_four', '소드 9와 소드 4가 함께 나와 걱정을 멈추고 몸과 마음을 쉬게 해야 합니다'],
+    ['pentacles_05_five', 'swords_10_ten', '펜타클 5와 소드 10이 함께 나와 지금이 가장 어려운 바닥입니다. 이제 도움을 구하면 올라갈 수 있습니다'],
+    ['pentacles_08_eight', 'pentacles_03_three', '펜타클 8과 펜타클 3이 함께 나와 꾸준히 갈고닦은 실력이 인정받습니다']
   ];
   const pairMap = new Map(PAIRS.map(([a, b, t]) => [[a, b].sort().join('|'), t]));
   const COURT = ['11', '12', '13', '14'];
@@ -190,10 +242,81 @@
     return notes;
   }
 
-  function read(raw) {
-    const situations = findSituations(raw);
-    return { situation: situations[0] || null, second: situations.find(s => situations[0] && s.topic !== situations[0].topic) || null, who: findWho(raw), when: findWhen(raw) };
+
+  // ---------- Card flavour: suit, stage and court persona ----------
+  const SUIT_WAY = {
+    wands: ['행동과 열정이 앞서는', '먼저 움직이는 쪽이 흐름을 잡는'],
+    cups: ['마음과 감정이 움직이는', '서로의 감정이 결과를 좌우하는'],
+    swords: ['말과 판단이 갈림길이 되는', '생각을 정리하는 것이 열쇠인'],
+    pentacles: ['돈과 현실 조건이 걸린', '눈에 보이는 결과가 중요한']
+  };
+  const STAGE = n => n === 1 ? '이제 막 시작되는 단계' : n <= 3 ? '방향을 정하고 키워 가는 단계' : n <= 6 ? '자리를 잡고 균형을 찾는 단계' : n <= 9 ? '고비를 넘기며 결과가 가까워지는 단계' : '한 흐름이 끝나고 정리되는 단계';
+  const MAJOR_STAGE = n => n <= 7 ? '내가 어떤 사람으로 설지 정하는' : n <= 14 ? '안으로 단단해지며 버티는' : '큰 변화를 지나 완성으로 가는';
+  const COURT_PERSONA = { 11: '새 소식을 가져오는 젊거나 서툰 사람', 12: '빠르게 움직이며 일을 몰고 오는 사람', 13: '마음을 헤아리며 곁을 지키는 사람', 14: '결정권을 쥔 책임 있는 사람' };
+  const pickVariant = (list, seed) => list[Math.abs(seed) % list.length];
+  const seedOf = id => [...id].reduce((a, c) => a + c.charCodeAt(0), 0);
+
+  function flavor(card, who) {
+    const n = numberOf(card.id);
+    if (card.arcana === 'major') return `메이저 카드라 개인의 노력을 넘어 ${MAJOR_STAGE(n)} 큰 흐름 위에 놓여 있습니다.`;
+    if (n >= 11) {
+      const whoNote = who ? ` 글에 나온 ‘${who}’의 모습일 수도 있습니다.` : '';
+      return `인물 카드라 이 일에 얽힌 ${COURT_PERSONA[n]}을 가리킵니다.${whoNote}`;
+    }
+    return `${pickVariant(SUIT_WAY[card.suit], seedOf(card.id))} 흐름 속에서 ${STAGE(n)}에 있습니다.`;
   }
 
-  window.TarotAI = { SITUATIONS, read, levelOf, combinations };
+  // ---------- Shape of the spread ----------
+  const TREND = {
+    rising: ['흐름이 점점 좋아지는 모양입니다. 처음이 힘들어도 갈수록 풀립니다', '뒤로 갈수록 카드가 밝아집니다. 지금 버티는 것이 의미가 있습니다'],
+    falling: ['처음보다 뒤로 갈수록 기운이 약해지는 모양입니다. 지금 좋은 흐름을 너무 믿지 말고 미리 대비하세요', '시작은 좋지만 끝으로 갈수록 힘이 빠집니다. 마무리에 더 신경 쓰세요'],
+    valley: ['가운데가 가장 낮은 V자 흐름입니다. 지금이 바닥이고 이후 다시 올라갑니다', '중간에 한 번 꺾이지만 다시 회복하는 모양입니다. 지금의 어려움은 지나갑니다'],
+    peak: ['가운데가 가장 높은 산 모양입니다. 지금이 가장 좋은 때이니 기회를 놓치지 마세요', '중간에 정점을 찍고 내려오는 흐름입니다. 지금 움직이는 것이 가장 유리합니다'],
+    flat: ['세 장의 기운이 비슷하게 이어지는 고른 흐름입니다. 큰 반전보다 지금의 방향이 계속됩니다', '흐름에 큰 굴곡이 없습니다. 지금 하는 방식이 그대로 결과를 만듭니다']
+  };
+  function shape(scores) {
+    if (scores.length < 3) return null;
+    const [a, b, c] = scores;
+    let kind = 'flat';
+    if (b <= a - 1 && b <= c - 1) kind = 'valley';
+    else if (b >= a + 1 && b >= c + 1) kind = 'peak';
+    else if (c >= a + 1.5) kind = 'rising';
+    else if (c <= a - 1.5) kind = 'falling';
+    const spread = Math.max(...scores) - Math.min(...scores);
+    const sure = spread <= 1 ? '카드들이 한목소리를 내고 있어 이 흐름은 꽤 분명합니다' : spread >= 3 ? '카드들의 기운이 크게 엇갈려 결과가 아직 정해지지 않았습니다. 앞으로의 선택이 더 중요합니다' : '';
+    return { kind, text: pickVariant(TREND[kind], Math.round(a * 7 + b * 3 + c)), sure };
+  }
+
+  // ---------- Repeated numbers across suits ----------
+  const NUMBER_MEANING = { 1: '새로운 시작', 2: '선택과 협력', 3: '성장과 확장', 4: '안정과 머무름', 5: '갈등과 변화', 6: '조화와 회복', 7: '시험과 인내', 8: '움직임과 노력', 9: '완성 직전의 마지막 고비', 10: '마무리와 다음 순환' };
+  function numberEcho(picks) {
+    const counts = {};
+    picks.forEach(p => { if (p.card.arcana === 'minor') { const n = numberOf(p.card.id); if (n <= 10) counts[n] = (counts[n] || 0) + 1; } });
+    const hit = Object.entries(counts).find(([, c]) => c >= 2);
+    if (!hit) return null;
+    const n = hit[0], meaning = NUMBER_MEANING[n];
+    const eun = '013678'.includes(String(n).slice(-1)) ? '은' : '는';
+    const last = meaning.charCodeAt(meaning.length - 1);
+    const eul = last >= 0xac00 && last <= 0xd7a3 && (last - 0xac00) % 28 !== 0 ? '을' : '를';
+    return `숫자 ${n} 카드가 ${hit[1]}장 겹쳤습니다. 숫자 ${n}${eun} ‘${meaning}’${eul} 뜻해 이 주제가 지금 고민의 핵심입니다`;
+  }
+
+  // ---------- Closing that answers the writer's feeling ----------
+  const EMOTION_CLOSE = {
+    anxious: { up: '걱정했던 것보다 흐름은 나쁘지 않습니다. 불안은 내려놓아도 괜찮습니다', down: '불안한 마음이 크겠지만 카드는 준비할 시간을 주고 있습니다. 하나씩 대비하면 됩니다' },
+    tired: { up: '지친 만큼 보상이 다가오고 있습니다. 조금만 더 힘을 내 보세요', down: '지금은 결과보다 회복이 먼저입니다. 쉬어 가도 늦지 않습니다' },
+    sad: { up: '아픈 마음 뒤에 따뜻한 흐름이 기다리고 있습니다', down: '슬픔이 다 지나갈 때까지 스스로를 다그치지 마세요. 마음이 먼저 회복되어야 합니다' },
+    angry: { up: '서운함을 솔직하게 풀면 상황이 좋아질 수 있습니다', down: '화가 난 상태로 결정하면 후회할 수 있습니다. 감정이 가라앉은 뒤에 움직이세요' },
+    hopeful: { up: '설레는 기대가 현실이 될 가능성이 큽니다. 그 마음을 행동으로 옮기세요', down: '기대가 큰 만큼 속도를 조절하세요. 천천히 가면 실망도 줄어듭니다' }
+  };
+  const emotionClose = (emotionId, avg) => (EMOTION_CLOSE[emotionId] ? EMOTION_CLOSE[emotionId][avg >= 0 ? 'up' : 'down'] : null);
+
+  const GROUP = { crush: 'love', couple: 'love', reunion: 'love', marriage: 'love', money: 'money', invest: 'money', work: 'work', job: 'work', business: 'work', people: 'people', family: 'people' };
+  const group = t => GROUP[t] || t;
+  function read(raw) {
+    const situations = findSituations(raw);
+    return { situation: situations[0] || null, second: situations.find(s => situations[0] && !s.weak && group(s.topic) !== group(situations[0].topic)) || null, who: findWho(raw), when: findWhen(raw) };
+  }
+
+  window.TarotAI = { SITUATIONS, read, levelOf, combinations, flavor, shape, numberEcho, emotionClose };
 })();

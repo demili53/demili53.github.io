@@ -149,11 +149,13 @@
     if (!sit || pos.use === 'advice' || pos.use === 'feel' || !window.TarotAI) return '';
     if (pos.name === '선택 B') return ''; // situation outcomes describe doing it, which is choice A
     const out = sit.out[window.TarotAI.levelOf(score(p))];
-    const lead = pos.name.startsWith('선택') ? '이 길을 고르면' : pos.name === '과거' ? `${sit.label} 문제에서 지난 흐름은` : `${sit.label} 문제로 보면`;
+    const LEADS = { '과거': `${sit.label} 문제에서 지난 흐름은`, '현재': `${sit.label} 문제의 지금 모습은`, '미래': `${sit.label} 문제가 앞으로 흘러가면`, '상황': `${sit.label} 문제의 핵심을 보면`, '결과': `조언대로 움직였을 때 ${sit.label} 문제는`, '나의 마음': `${sit.label} 문제에서 당신 쪽 흐름은`, '관계의 앞날': `${sit.label} 문제의 앞날은` };
+    const lead = pos.name.startsWith('선택') ? '이 길을 고르면' : LEADS[pos.name] || `${sit.label} 문제로 보면`;
     return ` ${lead} ${out.replace(/니다$/, '니다')}.`;
   }
-  function positionText(p, pos, topic, sit) {
-    return `${pos.lead} ${p.rev ? '역방향 ' : ''}‘${p.card.ko}’입니다. ${cardBody(p, pos.use, topic.domain)}${situationClause(p, pos, sit)}`;
+  function positionText(p, pos, topic, sit, who) {
+    const extra = window.TarotAI && window.TarotAI.flavor && pos.use !== 'advice' ? ' ' + window.TarotAI.flavor(p.card, who) : '';
+    return `${pos.lead} ${p.rev ? '역방향 ' : ''}‘${p.card.ko}’입니다. ${cardBody(p, pos.use, topic.domain)}${situationClause(p, pos, sit)}${extra}`;
   }
 
   function level(avg) {
@@ -243,6 +245,12 @@
     // Card combinations from the reader module, then general deck patterns
     const combos = window.TarotAI ? window.TarotAI.combinations(picks) : [];
     combos.forEach(t => parts.push(t + '.'));
+    if (window.TarotAI && window.TarotAI.shape && ['time', 'advice', 'relation'].includes(st.key)) {
+      const sh = window.TarotAI.shape(scores);
+      if (sh) { parts.push(sh.text + '.'); if (sh.sure) parts.push(sh.sure + '.'); }
+    }
+    const echo = window.TarotAI && window.TarotAI.numberEcho ? window.TarotAI.numberEcho(picks) : null;
+    if (echo) parts.push(echo + '.');
     if (picks.length > 1) {
       const majors = picks.filter(p => p.card.arcana === 'major').length;
       if (majors >= 2 && majors < picks.length) parts.push(`메이저 카드가 ${majors}장이나 나와, 이 고민은 일상의 작은 일이 아니라 삶의 큰 전환과 이어져 있습니다.`);
@@ -253,6 +261,8 @@
       const revs = picks.filter(p => p.rev).length;
       if (revs >= 2) parts.push(`역방향 카드가 ${revs}장이라 아직 막힌 부분이 많습니다. 결과를 서두르지 마세요.`);
     }
+    const close = analysis.emotion && window.TarotAI && window.TarotAI.emotionClose ? window.TarotAI.emotionClose(analysis.emotion.id, avg) : null;
+    if (close) parts.push(close + '.');
     if (topic.id === 'health') parts.push('몸이 계속 불편하다면 카드보다 병원 진료를 먼저 받으세요.');
     return parts.join(' ');
   }
@@ -386,7 +396,7 @@
     $('readingOpening').textContent = opening(state);
     $('readingList').innerHTML = state.picks.map((p, i) => {
       const pos = spread.positions[i];
-      return `<li><img src="${BASE + p.card.img}" alt="${esc(p.card.ko)} 카드"${p.rev ? ' class="reversed"' : ''}><div><span class="tag">${esc(slotName(spread, i, analysis))}</span><b>${esc(p.card.ko)}${p.rev ? ' · 역방향' : ''} <small style="font-weight:400;color:#9a93b8">${esc(p.card.en)}</small></b><p>${esc(positionText(p, pos, analysis.topic, analysis.situation))}</p></div></li>`;
+      return `<li><img src="${BASE + p.card.img}" alt="${esc(p.card.ko)} 카드"${p.rev ? ' class="reversed"' : ''}><div><span class="tag">${esc(slotName(spread, i, analysis))}</span><b>${esc(p.card.ko)}${p.rev ? ' · 역방향' : ''} <small style="font-weight:400;color:#9a93b8">${esc(p.card.en)}</small></b><p>${esc(positionText(p, pos, analysis.topic, analysis.situation, analysis.who[0]))}</p></div></li>`;
     }).join('');
     state.summary = conclusion(state);
     state.tip = analysis.situation ? analysis.situation.tip : pickOne(analysis.topic.tips);
