@@ -263,10 +263,9 @@
     if (analysis.emotion) parts.push(pickOne(analysis.emotion.lines));
     if (!analysis.empty) {
       const q = question.length > 60 ? question.slice(0, 58) + '…' : question;
-      const what = analysis.situation ? `${analysis.topic.label} 중에서도 ‘${analysis.situation.label}’ 문제로` : `${analysis.topic.label} 주제로`;
-      parts.push(`“${q}” 이 고민을 ${what}, ‘${analysis.qtype.label}’${josa(analysis.qtype.label, '을', '를')} 묻는 질문으로 읽었습니다.`);
+      parts.push(`“${q}” 이 고민을 마음에 두고 카드를 읽었습니다.`);
       const words = [...analysis.who, analysis.when].filter(Boolean);
-      if (words.length) parts.push(`글에 나온 ${words.map(w => `‘${w}’`).join(', ')}${josa(words[words.length - 1], '을', '를')} 함께 보며 카드를 읽겠습니다.`);
+      if (words.length) parts.push(`글에 나온 ${words.map(w => `‘${w}’`).join(', ')}${josa(words[words.length - 1], '도', '도')} 함께 살폈습니다.`);
     } else parts.push('질문 없이 뽑은 카드는 지금 당신에게 가장 필요한 메시지를 보여 줍니다.');
     return parts.join(' ');
   }
@@ -377,7 +376,7 @@
 
   function showReading() {
     const { analysis, spread } = state;
-    $('readingQuestion').textContent = `${spread.label} · ${analysis.topic.label} · ${analysis.qtype.label}`;
+    $('readingQuestion').textContent = spread.label;
     $('readingOpening').textContent = opening(state);
     $('readingList').innerHTML = state.picks.map((p, i) => {
       const pos = spread.positions[i];
@@ -393,7 +392,7 @@
   }
 
   function resultText() {
-    const lines = [`[타로점] ${state.spread.label} / ${state.analysis.topic.label}`];
+    const lines = [`[타로점] ${state.spread.label}`];
     if (state.question) lines.push(`고민: ${state.question}`);
     state.picks.forEach((p, i) => lines.push(`${slotName(state.spread, i, state.analysis)}: ${p.card.ko}${p.rev ? '(역방향)' : ''} - ${p.card.meaning}`));
     lines.push(state.summary, `조언: ${state.tip}`, location.origin + location.pathname);

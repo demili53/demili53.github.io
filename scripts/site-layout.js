@@ -63,6 +63,7 @@
         }
         @media(max-width:360px){.wrap{padding-left:12px;padding-right:12px}.brand{font-size:13px}.brand-icon{margin-right:6px}.account a,.account button{padding:10px 7px;font-size:10px}.account svg{display:none}nav a{padding:10px;gap:8px}.menu-title{font-size:12px}.menu-description{font-size:10px}}
         @media(max-width:300px){.top{flex-wrap:wrap}.account{margin-left:auto}.menu-items{grid-template-columns:1fr}.menu-panel{max-height:50dvh}}
+        @media(min-width:761px){.top{min-height:56px;padding-top:6px;padding-bottom:6px}nav{display:flex!important;flex-wrap:wrap;align-items:center;gap:6px;padding-top:7px!important;padding-bottom:7px!important}.menu-group,.menu-items{display:contents}.group-heading,.menu-description{display:none}.menu-group-tools{border-left:0;padding-left:0}.menu-group-tools a:first-child{margin-left:auto}nav a{flex-direction:row!important;align-items:center!important;min-height:38px;padding:5px 12px 5px 6px;gap:8px;border-radius:9px}nav a[aria-current]::after{display:none}.menu-icon{width:26px!important;height:26px!important;border-radius:7px}.menu-icon svg{width:15px!important;height:15px!important}.menu-title{font-size:12.5px!important;white-space:nowrap}}
         @keyframes menu-appear{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
         @media(prefers-reduced-motion:reduce){nav a,.chevron{transition:none}.menu-panel.is-open{animation:none}}
       </style><header>

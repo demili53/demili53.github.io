@@ -90,8 +90,8 @@ body{margin:0}button{font:inherit;cursor:pointer}button:disabled{opacity:.45;cur
 <section class="panel setup" aria-label="타로점 준비">
   <div class="field"><label for="question">나의 고민 <span class="count" id="charCount">0 / 300</span></label>
     <textarea id="question" maxlength="300" rows="5" placeholder="지금 마음에 걸리는 고민을 편하게 적어 주세요. 누구와의 일인지, 무엇이 궁금한지 적을수록 해석이 고민에 맞춰집니다."></textarea>
-    <div class="detect" aria-live="polite"><label>주제 <select id="topicSelect" aria-label="고민 주제"></select></label><label>질문 <select id="qtypeSelect" aria-label="질문 유형"></select></label><span class="ai-found" id="aiFound"></span></div>
-    <p class="hint">적은 글에서 주제와 질문을 자동으로 알아내며, 틀리면 직접 바꿀 수 있습니다. 글은 이 화면 안에서만 쓰이고 어디에도 저장되거나 전송되지 않습니다.</p></div>
+    <div class="detect" hidden><label>주제 <select id="topicSelect" aria-label="고민 주제"></select></label><label>질문 <select id="qtypeSelect" aria-label="질문 유형"></select></label><span class="ai-found" id="aiFound"></span></div>
+    <p class="hint">적은 글은 이 화면 안에서만 해석에 쓰이고 어디에도 저장되거나 전송되지 않습니다.</p></div>
   <div class="field"><fieldset><legend>카드 배열 <span style="font-weight:400;color:#8d9cb8">(고민에 맞춰 자동 선택)</span></legend>
     <div class="spreads" id="spreads">
       <label class="spread"><input type="radio" name="spread" value="one" checked><span><b>한 장 답</b><small>한 장으로 바로 답 보기</small></span></label>
