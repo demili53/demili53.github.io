@@ -1,237 +1,353 @@
 'use strict';
-const RIFT_DIFFICULTIES={
- story:{name:'탐험',desc:'적 체력 80% · 받는 피해 65% · 전투 점수 85%',hp:.8,damage:.65,score:.85},
- normal:{name:'일반',desc:'기본 체력과 피해 · 전투 점수 100%',hp:1,damage:1,score:1},
- veteran:{name:'숙련',desc:'적 체력·받는 피해 135% · 전투 점수 140%',hp:1.35,damage:1.35,score:1.4}
+// 균열의 검 — pure game rules. No DOM, no canvas: the renderer reads state and drains `events`.
+const RIFT_FLOOR={left:40,right:920,top:290,bottom:505};
+const RIFT_HEROES={
+ blade:{name:'검사',title:'균열의 검사',role:'근접 · 연속 베기',desc:'세 번째 베기로 적을 띄우고, 회전베기로 포위를 뚫습니다.',color:'#7fe6d3',hp:190,mp:100,speed:235,atk:23,
+  basic:[{dur:.28,at:.11,kind:'melee',range:105,width:42,mult:1,kb:70},{dur:.28,at:.11,kind:'melee',range:105,width:42,mult:1.15,kb:70},{dur:.44,at:.17,kind:'melee',range:125,width:48,mult:2,kb:180,launch:470,heavy:true}],
+  skill:{name:'회전베기',cost:30,cd:2.4,dur:.52,hits:[{at:.16,kind:'ring',rx:135,ry:58,mult:1.5,kb:120},{at:.34,kind:'ring',rx:145,ry:62,mult:1.7,kb:190,launch:380,heavy:true}]},
+  ult:{name:'균열참',dur:.95,hits:[{at:.25,kind:'lane',range:620,width:70,mult:2.6,kb:60},{at:.5,kind:'lane',range:620,width:70,mult:2.6,kb:60},{at:.75,kind:'lane',range:640,width:80,mult:4,kb:260,launch:560,heavy:true}]}},
+ arcanist:{name:'마법사',title:'별빛 마법사',role:'원거리 · 빙결 제어',desc:'마력탄으로 거리를 벌리고, 서리 폭발로 적을 얼립니다.',color:'#b9a2ff',hp:120,mp:140,speed:215,atk:18,
+  basic:[{dur:.3,at:.12,kind:'shot',speed:640,mult:1.1,r:11,shot:'bolt'},{dur:.3,at:.12,kind:'shot',speed:640,mult:1.2,r:11,shot:'bolt'},{dur:.46,at:.2,kind:'shot',speed:560,mult:2.1,r:18,shot:'orb',pierce:3,kb:150,heavy:true}],
+  skill:{name:'서리 폭발',cost:34,cd:3,dur:.5,hits:[{at:.22,kind:'ring',rx:175,ry:78,mult:2.1,kb:90,freeze:1.8,heavy:true}]},
+  ult:{name:'유성우',dur:1,hits:[{at:.2,kind:'meteors',count:7,r:80,mult:3.3}]}},
+ ranger:{name:'궁수',title:'바람 궁수',role:'원거리 · 관통 사격',desc:'가장 빠른 영웅. 관통 화살로 일렬의 적을 꿰뚫습니다.',color:'#a6eb8f',hp:130,mp:110,speed:255,atk:16,
+  basic:[{dur:.24,at:.09,kind:'shot',speed:980,mult:1,r:8,shot:'arrow'},{dur:.24,at:.09,kind:'shot',speed:980,mult:1.05,r:8,shot:'arrow'},{dur:.4,at:.15,kind:'fan',count:3,spread:.14,speed:980,mult:1.1,r:8,shot:'arrow',heavy:true}],
+  skill:{name:'관통 사격',cost:26,cd:2.1,dur:.48,hits:[{at:.24,kind:'shot',speed:1250,mult:3,r:14,shot:'lance',pierce:99,kb:200,heavy:true}]},
+  ult:{name:'화살비',dur:1.15,hits:[{at:.15,kind:'rain',width:430,duration:1.6,ticks:9,mult:1.15}]}}
 };
-const RIFT_COMBAT_ACTIONS={
- guard:{name:'방어 · 반격',desc:'0.55초 방어 · 시작 0.18초에 받아내면 다음 기본 공격 피해 +60%',cost:8,cooldown:3,range:0,width:0,mult:0},
- focus:{name:'집중 해방',desc:'집중 100 소모 · 6초간 공격 피해 +20%',cost:0,cooldown:0,range:0,width:0,mult:0}
+const RIFT_ENEMIES={
+ grunt:{name:'균열 병사',hp:105,speed:105,dmg:16,range:78,wind:.5,cd:1.35,score:100},
+ archer:{name:'그림자 궁수',hp:78,speed:92,dmg:14,range:440,wind:.72,cd:2.1,score:120,ranged:true},
+ brute:{name:'철갑 거인',hp:320,speed:66,dmg:30,range:120,wind:.85,cd:2.4,score:220,armor:true},
+ wraith:{name:'망령',hp:95,speed:130,dmg:19,range:330,wind:.6,cd:2.3,score:150,float:true}
 };
-const RIFT_PASSIVES={
- warrior:{name:'갑옷 분쇄',desc:'기본 공격 3타 명중 시 3초 파쇄: 이후 피해 +15%'},
- mage:{name:'비전 환류',desc:'스킬 사용 후 다음 기본 공격 명중 시 마력 6 회복'},
- brawler:{name:'불굴의 호흡',desc:'기본 공격 5회 명중마다 체력 8 회복'},
- archer:{name:'원거리 조준',desc:'220 거리 밖의 적에게 기본 공격 피해 +20%'},
- assassin:{name:'등 뒤의 그림자',desc:'적이 바라보는 반대쪽에서 공격하면 피해 +25%'},
- paladin:{name:'빛의 보답',desc:'실제 피격 후 다음 기본 명중 시 체력 12 회복 · 발동 대기 4초'}
-};
-const RIFT_STAGES=[
- {name:'잿빛 성문',sub:'THE ASHEN GATE',color:'#78b6b4',boss:'철갑 수문장',desc:'무너진 성문을 지키는 철갑 군단',hint:'수문장의 망치가 들리면 원형 충격파 밖으로 이동하세요.',enemies:['guard','guard','mage','brute']},
- {name:'심연의 회랑',sub:'HALL OF ECHOES',color:'#ac96ef',boss:'회랑의 파수꾼',desc:'비전 문양과 그림자가 떠도는 회랑',hint:'연속으로 빛나는 세 마법진의 빈틈을 찾으세요.',enemies:['mage','wraith','guard','ranger','acolyte']},
- {name:'붉은 왕좌',sub:'THE CRIMSON THRONE',color:'#f09c7c',boss:'붉은 왕',desc:'왕의 근위대와 불꽃이 가로막는 알현실',hint:'십자형 불길의 대각선 공간으로 회피하세요.',enemies:['brute','ranger','sentinel','acolyte','brute','guard']},
- {name:'독안개 숲',sub:'TOXIC WILDS',color:'#94c887',boss:'가시의 여왕',desc:'독안개 아래 가시와 사냥꾼이 숨은 숲',hint:'독꽃이 피는 위치를 확인하고 좁은 틈으로 이동하세요.',enemies:['ranger','wraith','acolyte','ranger','sentinel','wraith']},
- {name:'서리 감옥',sub:'FROZEN PRISON',color:'#8ed9ef',boss:'빙결 거인',desc:'얼어붙은 중갑병이 지키는 고대 감옥',hint:'가로로 뻗는 빙결선은 위아래로, 얼음 낙하는 옆으로 피하세요.',enemies:['brute','mage','wraith','sentinel','ranger','acolyte','guard']},
- {name:'균열의 심장',sub:'HEART OF THE RIFT',color:'#ffad73',boss:'균열 포식자',desc:'모든 군단이 모이는 균열의 마지막 심장',hint:'바깥 균열이 열린 뒤 중앙이 폭발합니다. 예고 순서에 맞춰 이동하세요.',enemies:['wraith','brute','ranger','mage','sentinel','brute','ranger','acolyte']}
+const RIFT_BOSSES=[
+ {id:'warden',name:'철갑 수문장',hp:1700,speed:85,dmg:26,cd:1.7,patterns:['slam','charge','quake'],color:'#f1b46a'},
+ {id:'treant',name:'고목 수호자',hp:2300,speed:60,dmg:26,cd:1.7,patterns:['erupt','volley','slam','summon'],color:'#9be07a'},
+ {id:'witch',name:'서리 마녀',hp:2800,speed:100,dmg:28,cd:1.6,patterns:['beam','erupt','nova','volley'],color:'#9fe2ff'},
+ {id:'knight',name:'화염 기사',hp:3400,speed:110,dmg:31,cd:1.5,patterns:['charge','slam','beam','erupt'],color:'#ff9a5c'},
+ {id:'devourer',name:'균열 포식자',hp:4300,speed:75,dmg:34,cd:1.4,patterns:['beam','nova','erupt','volley','summon','quake'],color:'#ff6fa8'}
 ];
-const RIFT_RELICS=[
- {id:'power',name:'검의 맹세',desc:'공격력 +8',bonuses:{damage:8}},
- {id:'vital',name:'수호의 맹세',desc:'최대 체력 +40',bonuses:{maxHp:40}},
- {id:'mana',name:'심연의 맹세',desc:'최대 마력 +30',bonuses:{maxMp:30}},
- {id:'wind',name:'바람의 장화',desc:'이동 속도 +25 · 대시 대기 0.2초 감소',bonuses:{speed:25,dashReduction:.2}},
- {id:'blood',name:'붉은 이빨',desc:'명중 피해의 5% 체력 흡수',bonuses:{leech:.05}},
- {id:'lens',name:'별빛 렌즈',desc:'모든 공격 사거리 +35',bonuses:{range:35}},
- {id:'spring',name:'마력의 샘',desc:'초당 마력 회복 +3',bonuses:{regen:3}},
- {id:'aegis',name:'고대 수호석',desc:'받는 피해 10% 감소',bonuses:{reduction:.1}},
- {id:'sigil',name:'순환의 인장',desc:'마력 소모 10% 감소',bonuses:{costReduction:.1}}
+const RIFT_REGIONS=[
+ {name:'잿빛 성문',sub:'THE ASHEN GATE',color:'#e9b77d',fights:[['grunt','grunt','grunt','grunt'],['grunt','grunt','archer','grunt','archer']]},
+ {name:'이끼 숲',sub:'MOSSWOOD',color:'#9be07a',fights:[['grunt','archer','wraith','grunt','archer'],['brute','grunt','grunt','wraith','archer']]},
+ {name:'서리 동굴',sub:'FROST HOLLOW',color:'#9fe2ff',fights:[['wraith','wraith','archer','grunt','grunt','archer'],['brute','archer','wraith','grunt','brute']]},
+ {name:'화염 제단',sub:'EMBER ALTAR',color:'#ff9a5c',fights:[['brute','grunt','archer','wraith','grunt','archer'],['brute','brute','wraith','archer','wraith','grunt']]},
+ {name:'균열의 심장',sub:'HEART OF THE RIFT',color:'#ff6fa8',fights:[['brute','wraith','archer','wraith','grunt','archer','grunt'],['brute','brute','archer','archer','wraith','wraith','grunt']]}
 ];
-const RIFT_SHOP=[{id:'heal',name:'응급 치료',desc:'체력 80 회복',cost:70},{id:'potion',name:'회복 물약',desc:'물약 1개 추가 · 최대 5개',cost:55},{id:'training',name:'전투 훈련',desc:'이번 원정 공격력 +3',cost:100}];
-const RIFT_WEAPONS=[
- {id:'edge',name:'칼날 조율',desc:'랭크당 공격력 +4',bonuses:{damage:4}},
- {id:'focus',name:'비전 조율',desc:'랭크당 스킬 피해 +8% · 마력 회복 +0.5',bonuses:{skillDamage:.08,regen:.5}},
- {id:'ward',name:'수호 조율',desc:'랭크당 받는 피해 5% 감소 · 마력 회복 +1',bonuses:{reduction:.05,regen:1}}
+const RIFT_BLESSINGS=[
+ {id:'edge',name:'예리한 칼날',desc:'모든 피해 +15%',max:3,icon:'⚔'},
+ {id:'swift',name:'질풍',desc:'이동 속도 +12% · 대시 대기 −0.15초',max:2,icon:'➶'},
+ {id:'leech',name:'피의 맹약',desc:'준 피해의 3%만큼 체력 회복',max:3,icon:'♥'},
+ {id:'flow',name:'마력의 샘',desc:'마력 회복 +45%',max:2,icon:'✦'},
+ {id:'resonance',name:'균열 공명',desc:'균열 게이지 충전 +35%',max:2,icon:'◈'},
+ {id:'guard',name:'강철 피부',desc:'받는 피해 −12%',max:3,icon:'⛨'},
+ {id:'execute',name:'처형자',desc:'체력 30% 이하의 적에게 피해 +40%',max:2,icon:'✖'},
+ {id:'afterimage',name:'잔상',desc:'대시로 통과한 적에게 공격력의 80% 피해',max:2,icon:'≋'},
+ {id:'chain',name:'연쇄 번개',desc:'기본 공격 4회마다 주변 적 2명에게 번개',max:2,icon:'ϟ'},
+ {id:'vigor',name:'생명력',desc:'최대 체력 +25 · 즉시 25 회복',max:3,icon:'✚'},
+ {id:'riposte',name:'반격의 호흡',desc:'완벽 회피 후 다음 공격 피해 2배',max:1,icon:'↺'},
+ {id:'artistry',name:'기술 연마',desc:'기술 마력 −20% · 기술 피해 +20%',max:2,icon:'✧'}
 ];
-const RIFT_ROUTES=[
- {id:'standard',name:'정규 진군',desc:'기본 전투와 전리품',hp:1,damage:1,gold:1,extraElite:false},
- {id:'sanctuary',name:'성역의 길',desc:'받는 피해 10% 감소 · 적 골드 20% 감소',hp:1,damage:.9,gold:.8,extraElite:false},
- {id:'treasure',name:'보물의 길',desc:'적 골드 35% 증가 · 적 체력 15% 증가',hp:1.15,damage:1,gold:1.35,extraElite:false},
- {id:'hunt',name:'사냥의 길',desc:'웨이브마다 정예 1명 추가 · 적 골드 20% 증가 · 받는 피해 10% 증가',hp:1,damage:1.1,gold:1.2,extraElite:true}
-];
-const RIFT_SHRINES=[
- {id:'mercy',name:'자비의 제단',desc:'무료로 체력 40 회복'},
- {id:'sacrifice',name:'헌신의 제단',desc:'최대 체력의 25%를 소모하고 120 골드 획득'},
- {id:'wisdom',name:'지혜의 제단',desc:'80 골드를 바쳐 스킬 포인트 2 획득'}
-];
-const RIFT_COMPANIONS=[
- {id:'wisp',name:'비전 위습',desc:'3초마다 가까운 적에게 12 + 레벨 × 3 피해',cost:120,interval:3,color:'#b9a4ff'},
- {id:'sprite',name:'숲의 요정',desc:'전투 중 5초마다 체력 8 회복',cost:120,interval:5,color:'#a8edba'},
- {id:'sentinel',name:'빛의 파수꾼',desc:'전투 중 7초마다 1.2초 보호막',cost:120,interval:7,color:'#ffe2a5'}
-];
-const RIFT_SYNERGIES=[
- {id:'blood_oath',name:'혈검의 맹약',desc:'검의 맹세 + 붉은 이빨: 공격력 +5 · 추가 흡혈 3%',relics:['power','blood'],bonuses:{damage:5,leech:.03}},
- {id:'arcane_flow',name:'비전의 순환',desc:'심연의 맹세 + 순환의 인장: 마력 회복 +2 · 재사용 시간 8% 감소',relics:['mana','sigil'],bonuses:{regen:2,cooldownReduction:.08}},
- {id:'iron_guard',name:'철벽의 수호',desc:'수호의 맹세 + 고대 수호석: 받는 피해 추가 8% 감소 · 대시 보호막 0.8초',relics:['vital','aegis'],bonuses:{reduction:.08,dashShield:.8}}
-];
-const RIFT_CLASSES={
- warrior:{name:'검사',desc:'넓은 검격 · 균형 잡힌 생존력',color:'#86e8db',hp:160,mp:100,damage:22,speed:205,regen:8,skills:{
-  attack:{name:'삼연 베기',cost:0,cooldown:.29,range:92,width:36,mult:1},skill:{name:'질풍참',cost:24,cooldown:2.7,range:175,width:60,mult:2},burst:{name:'검의 폭풍',cost:48,cooldown:7,range:205,width:120,mult:3.3,area:true},special:{name:'강철의 맹세',cost:20,cooldown:8,range:0,width:0,mult:0,desc:'4초간 받는 피해 65% 감소'},ultimate:{name:'천공 파쇄',cost:65,cooldown:12,range:310,width:155,mult:5.8,area:true}}},
- mage:{name:'마법사',desc:'긴 사거리 · 강력한 광역 마법',color:'#c9a0ff',hp:125,mp:130,damage:20,speed:185,regen:11,skills:{
-  attack:{name:'비전 탄환',cost:0,cooldown:.4,range:290,width:27,mult:1.1},skill:{name:'서리 광선',cost:25,cooldown:3.2,range:350,width:45,mult:2.1},burst:{name:'별빛 붕괴',cost:45,cooldown:7.5,range:275,width:115,mult:3.4,area:true},special:{name:'빙결 고리',cost:28,cooldown:8,range:230,width:120,mult:1.3,area:true,desc:'주변 적 3초 둔화'},ultimate:{name:'초신성',cost:65,cooldown:13,range:420,width:170,mult:5.4,area:true}}},
- brawler:{name:'격투가',desc:'빠른 연타 · 강인한 근접 전투',color:'#ffbb7d',hp:185,mp:100,damage:18,speed:235,regen:9,skills:{
-  attack:{name:'파쇄 연권',cost:0,cooldown:.2,range:70,width:34,mult:1.2},skill:{name:'철산 붕격',cost:20,cooldown:2.4,range:125,width:55,mult:2.5},burst:{name:'대지 진동',cost:42,cooldown:6.5,range:175,width:105,mult:4,area:true},special:{name:'투기 폭발',cost:24,cooldown:9,range:0,width:0,mult:0,desc:'5초간 이동·연타 속도 증가'},ultimate:{name:'멸룡 연무',cost:65,cooldown:12,range:245,width:140,mult:7,area:true}}},
- archer:{name:'궁수',desc:'정밀한 원거리 사격 · 다중 화살',color:'#9fe8a6',hp:135,mp:110,damage:20,speed:225,regen:9,skills:{attack:{name:'속사',cost:0,cooldown:.32,range:345,width:24,mult:1.1},skill:{name:'관통 화살',cost:22,cooldown:3,range:430,width:32,mult:2.3},burst:{name:'화살비',cost:45,cooldown:7,range:315,width:135,mult:3.3,area:true},special:{name:'삼중 사격',cost:25,cooldown:6,range:370,width:90,mult:.9,hits:3,desc:'전방의 적에게 3연속 명중'},ultimate:{name:'별무리 폭우',cost:65,cooldown:12,range:450,width:180,mult:5.6,area:true}}},
- assassin:{name:'암살자',desc:'그림자 이동 · 치명적인 급습',color:'#eaa0d8',hp:130,mp:105,damage:24,speed:255,regen:9,skills:{attack:{name:'그림자 연격',cost:0,cooldown:.23,range:80,width:30,mult:1},skill:{name:'쌍월 베기',cost:22,cooldown:2.6,range:150,width:48,mult:2.4},burst:{name:'그림자 회오리',cost:42,cooldown:6,range:190,width:100,mult:3.6,area:true},special:{name:'그림자 급습',cost:28,cooldown:7,range:135,width:65,mult:3.2,area:true,desc:'전방 순간이동 후 치명타'},ultimate:{name:'백야의 처형',cost:65,cooldown:12,range:285,width:150,mult:6.8,area:true}}},
- paladin:{name:'성기사',desc:'신성한 방벽 · 치유와 중갑',color:'#ffe1a1',hp:210,mp:115,damage:23,speed:175,regen:8,skills:{attack:{name:'성광 강타',cost:0,cooldown:.38,range:100,width:42,mult:1.2},skill:{name:'빛의 망치',cost:25,cooldown:3.4,range:160,width:75,mult:2.7},burst:{name:'성역 심판',cost:48,cooldown:8,range:215,width:130,mult:3.8,area:true},special:{name:'구원의 방벽',cost:32,cooldown:10,range:0,width:0,mult:0,desc:'체력 45 회복 · 3초 보호막'},ultimate:{name:'여명의 심판',cost:65,cooldown:13,range:325,width:170,mult:6.1,area:true}}}
-};
-// Each class has three branches, with one foundation and one advanced specialization.
-const RIFT_BRANCH_DATA={
- warrior:[['검기 확장','모든 공격 사거리 +25',{range:25}],['검기 파열','스킬 피해 +25%',{skillDamage:.25}],['호흡 조절','마력 소모 15% 감소',{costReduction:.15}],['전장의 흐름','초당 마력 회복 +3',{regen:3}],['방벽 걸음','대시 후 보호막 1.2초',{dashShield:1.2}],['불굴','받는 피해 12% 감소',{reduction:.12}]],
- mage:[['얼음 각인','공격 명중 시 1.5초 둔화',{slow:1.5}],['장거리 술식','모든 공격 사거리 +80',{range:80}],['마력 절약','마력 소모 20% 감소',{costReduction:.2}],['비전 증폭','스킬 피해 +30%',{skillDamage:.3}],['생명 문양','최대 체력 +25',{maxHp:25}],['보호의 순간','대시 후 보호막 1.4초',{dashShield:1.4}]],
- brawler:[['강권','기본 공격 피해 +20%',{basicDamage:.2}],['생명 연타','명중 피해의 6% 체력 회복',{leech:.06}],['투기 연장','투기 폭발 지속시간 +2초',{hasteDuration:2}],['가속 호흡','모든 공격 재사용 시간 15% 감소',{cooldownReduction:.15}],['단련','최대 체력 +35',{maxHp:35}],['금강체','받는 피해 12% 감소',{reduction:.12}]],
- archer:[['장궁 숙련','기본 공격 사거리 +80',{attackRange:80}],['급소 조준','기본 공격 피해 +25%',{basicDamage:.25}],['사냥꾼의 호흡','마력 소모 15% 감소',{costReduction:.15}],['폭풍 화살','스킬 피해 +30%',{skillDamage:.3}],['바람 걸음','이동 속도 +25',{speed:25}],['잔상 회피','대시 재사용 시간 0.4초 감소',{dashReduction:.4}]],
- assassin:[['예리한 칼날','기본 공격 피해 +25%',{basicDamage:.25}],['생명 약탈','명중 피해의 10% 체력 회복',{leech:.1}],['그림자 호흡','모든 공격 재사용 시간 12% 감소',{cooldownReduction:.12}],['완벽한 급습','그림자 급습 피해 +50%',{specialDamage:.5}],['잔영','대시 무적시간 +0.15초',{dashInv:.15}],['밤의 장막','대시 후 보호막 1.4초',{dashShield:1.4}]],
- paladin:[['신성 무기','공격력 +4',{damage:4}],['심판의 권능','스킬 피해 +25%',{skillDamage:.25}],['치유의 기도','구원의 방벽 회복량 +25',{heal:25}],['신성 순환','마력 소모 20% 감소',{costReduction:.2}],['방벽 강화','보호막 지속시간 +2초',{shieldDuration:2}],['성스러운 갑옷','받는 피해 15% 감소',{reduction:.15}]]
-};
-const RIFT_BRANCHES=Object.fromEntries(Object.entries(RIFT_BRANCH_DATA).map(([id,rows])=>[id,rows.map(([name,desc,bonus],i)=>({id:['technique','technique2','focus','focus2','survival','survival2'][i],name,desc,bonus,parent:i%2?['technique','focus','survival'][(i-1)/2]:null,level:i%2?4:2,max:1}))]));
-const RIFT_LOCKED_AWAKENING={name:'전직 각성기',desc:'레벨 5에 전직하면 해금',cost:75,cooldown:18,range:0,width:0,mult:0,area:true};
-const RIFT_SPECIALIZATIONS={
- warrior:[
-  {id:'berserker',name:'광전사',desc:'기본 피해 +30% · 흡혈 8%',color:'#ff8885',bonuses:{basicDamage:.3,leech:.08},awakening:{name:'혈월 난무',desc:'주변 적을 3번 베며 생명력 흡수',cost:75,cooldown:18,range:270,width:155,mult:3,hits:3,area:true}},
-  {id:'guardian',name:'검의 수호자',desc:'받는 피해 20% 감소 · 보호막 +2초',color:'#a8e6ff',bonuses:{reduction:.2,shieldDuration:2},awakening:{name:'수호성의 심판',desc:'광역 심판과 6초 보호막',cost:75,cooldown:18,range:310,width:165,mult:7.6,shield:6,area:true}}
- ],
- mage:[
-  {id:'frost',name:'빙결술사',desc:'모든 명중 2초 둔화 · 마력 회복 +2',color:'#a4e8ff',bonuses:{slow:2,regen:2},awakening:{name:'영원의 겨울',desc:'넓은 범위 피해와 6초 둔화',cost:75,cooldown:19,range:430,width:180,mult:7,slow:6,area:true}},
-  {id:'fire',name:'화염술사',desc:'스킬 피해 +35% · 기본 마력 소모 10% 감소',color:'#ffac77',bonuses:{skillDamage:.35,costReduction:.1},awakening:{name:'태양의 종말',desc:'화염 폭발로 광범위한 피해',cost:80,cooldown:20,range:380,width:170,mult:9,area:true}}
- ],
- brawler:[
-  {id:'striker',name:'질풍권사',desc:'재사용 시간 18% 감소 · 이동 속도 +25',color:'#ffd586',bonuses:{cooldownReduction:.18,speed:25},awakening:{name:'무영 백열권',desc:'5연타와 6초 투기 가속',cost:75,cooldown:17,range:210,width:130,mult:2,hits:5,haste:6,area:true}},
-  {id:'iron',name:'금강투사',desc:'최대 체력 +60 · 받는 피해 18% 감소',color:'#d4c9ad',bonuses:{maxHp:60,reduction:.18},awakening:{name:'금강 지축붕괴',desc:'지진 타격과 5초 보호막',cost:75,cooldown:19,range:310,width:170,mult:8,shield:5,area:true}}
- ],
- archer:[
-  {id:'sniper',name:'신궁',desc:'사거리 +100 · 기본 피해 +25%',color:'#b4f5d1',bonuses:{range:100,basicDamage:.25},awakening:{name:'천궁 관통',desc:'전방을 끝까지 꿰뚫는 일격',cost:75,cooldown:17,range:650,width:75,mult:10}},
-  {id:'ranger',name:'바람추적자',desc:'기본 공격 2연사 · 각 화살 피해 80%',color:'#daee8f',bonuses:{extraHits:1,basicDamage:-.2,speed:15},awakening:{name:'천공 화살폭풍',desc:'세 번 쏟아지는 광역 화살',cost:75,cooldown:18,range:420,width:190,mult:3,hits:3,area:true}}
- ],
- assassin:[
-  {id:'reaper',name:'밤의 처형자',desc:'급습 피해 +50% · 스킬 피해 +12%',color:'#f7a4f0',bonuses:{specialDamage:.5,skillDamage:.12},awakening:{name:'무월 처형식',desc:'주변을 베는 강력한 처형',cost:75,cooldown:18,range:305,width:150,mult:10,area:true}},
-  {id:'vampire',name:'혈영 추적자',desc:'명중 피해 14% 흡혈 · 최대 체력 +25',color:'#f58aaf',bonuses:{leech:.14,maxHp:25},awakening:{name:'선혈의 연회',desc:'흡혈 4연격으로 전장을 지배',cost:75,cooldown:19,range:250,width:145,mult:2.2,hits:4,area:true}}
- ],
- paladin:[
-  {id:'saint',name:'빛의 성인',desc:'회복 스킬 +40 · 초당 마력 회복 +3',color:'#fff1bd',bonuses:{heal:40,regen:3},awakening:{name:'여명의 기적',desc:'체력 100 회복·5초 보호막·빛의 심판',cost:75,cooldown:20,range:280,width:160,mult:6,heal:100,shield:5,area:true}},
-  {id:'judge',name:'천벌의 심판관',desc:'공격력 +6 · 스킬 피해 +30%',color:'#ffca88',bonuses:{damage:6,skillDamage:.3},awakening:{name:'천벌의 성창',desc:'거대한 성창으로 광역 심판',cost:80,cooldown:19,range:370,width:165,mult:9,area:true}}
- ]
-};
-class RiftGame{
- constructor(classId='warrior',random=Math.random,options={}){this.runId=Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);this.startedAt=0;this.difficultyId=Object.hasOwn(RIFT_DIFFICULTIES,options?.difficulty)?options.difficulty:'normal';this.random=typeof random==='function'?random:Math.random;this.state='ready';this.stage=0;this.wave=0;this.time=0;this.score=0;this.kills=0;this.combo=0;this.comboTime=0;this.effects=[];this.enemies=[];this.projectiles=[];this.hazards=[];this.relics=[];this.upgradeOptions=[];this.skillPoints=1;this.talents={power:0,flow:0,guard:0,mastery:0};this.setClass(Object.hasOwn(RIFT_CLASSES,classId)?classId:'warrior');}
- setClass(id){if(this.state!=='ready'||!Object.hasOwn(RIFT_CLASSES,id))return false;this.classId=id;const c=RIFT_CLASSES[id];this.coins=0;this.shrineChoice=null;this.weaponId=null;this.weaponRank=0;this.routeId='standard';this.pendingRouteId='standard';this.objective=null;this.shopPurchases=[];this.rerollsRemaining=1;this.pickups=[];this.pickupSerial=0;this.containers=[];this.companionId=null;this.companionCooldown=0;this.stats={damageDealt:0,damageTaken:0,maxCombo:0,perfectDodges:0,parries:0,counters:0,focusUses:0,breaks:0,elitesKilled:0,goldEarned:0,stagesCleared:0};this.relics=[];this.upgradeOptions=[];this.hazards=[];this.skillPoints=1;this.pendingLevelRewards=0;this.specializationId=null;this.skillRanks={skill:0,burst:0,special:0,ultimate:0,awakening:0};this.branchRanks=Object.fromEntries(RIFT_BRANCHES[id].map(n=>[n.id,0]));this.talents={power:0,flow:0,guard:0,mastery:0};this.player={classId:id,x:240,y:340,hp:c.hp,maxHp:c.hp,mp:c.mp,maxMp:c.mp,level:1,xp:0,damage:c.damage,face:1,inv:0,perfectWindow:0,perfectUsed:true,guardWindow:0,parryWindow:0,counterWindow:0,focus:0,focusTime:0,attack:0,step:0,dash:0,shield:0,haste:0,bonusRegen:0,passiveCharge:0,passiveReady:false,passiveCooldown:0,cd:{attack:0,skill:0,burst:0,special:0,ultimate:0,awakening:0,dash:0,potion:0,guard:0,focus:0},potions:3};return true;}
- get difficulty(){return RIFT_DIFFICULTIES[this.difficultyId];}
- get route(){return RIFT_ROUTES.find(route=>route.id===this.routeId);}
- selectRoute(id){if(this.state!=='upgrade'||!RIFT_ROUTES.some(route=>route.id===id))return false;this.pendingRouteId=id;return true;}
- setDifficulty(id){if(this.state!=='ready'||!Object.hasOwn(RIFT_DIFFICULTIES,id))return false;this.difficultyId=id;return true;}
- get xpNeeded(){return 30+this.player.level*20;}
- get specialUnlocked(){return this.player.level>=2;}
- get passiveInfo(){const p=this.player,always=['archer','assassin'].includes(this.classId),max=this.classId==='warrior'?3:this.classId==='brawler'?5:1;return{...RIFT_PASSIVES[this.classId],progress:always?1:p.passiveCharge,max,ready:always||p.passiveReady||max>1&&p.passiveCharge===max-1};}
- get ultimateUnlocked(){return this.player.level>=3||this.talents.mastery>0;}
- get specialization(){return RIFT_SPECIALIZATIONS[this.classId].find(s=>s.id===this.specializationId)||null;}
- get awakeningUnlocked(){return this.player.level>=5&&!!this.specialization;}
- get guardInfo(){const p=this.player;return{active:p.guardWindow>0,perfect:p.parryWindow>0,counterReady:p.counterWindow>0,remaining:p.guardWindow};}
- get focusInfo(){const p=this.player;return{value:p.focus,max:100,active:p.focusTime>0,remaining:p.focusTime,ready:p.focus>=100&&p.focusTime<=0&&this.state==='playing'};}
- getSkill(name){if(Object.hasOwn(RIFT_COMBAT_ACTIONS,name))return RIFT_COMBAT_ACTIONS[name];if(name==='awakening')return this.specialization?.awakening||RIFT_LOCKED_AWAKENING;return Object.hasOwn(RIFT_CLASSES[this.classId].skills,name)?RIFT_CLASSES[this.classId].skills[name]:null;}
- chooseSpecialization(id){const spec=RIFT_SPECIALIZATIONS[this.classId].find(s=>s.id===id);if(this.state!=='talents'||this.player.level<5||this.specializationId||!spec)return false;this.specializationId=id;this.player.specializationId=id;if(spec.bonuses.maxHp){this.player.maxHp+=spec.bonuses.maxHp;this.player.hp+=spec.bonuses.maxHp;}this.effect(this.player.x,this.player.y,'',spec.color,'levelup',1.5);this.effect(this.player.x,this.player.y-110,spec.name+' 전직',spec.color,'text',1.7);return true;}
- skillRankStatus(name){if(!Object.hasOwn(this.skillRanks,name))return{rank:0,available:false,reason:'강화할 수 없는 기술'};const rank=this.skillRanks[name],level=(rank+1)*2;const reason=rank>=3?'최대 랭크':name==='awakening'&&!this.awakeningUnlocked?'레벨 5 전직 필요':name==='ultimate'&&!this.ultimateUnlocked?'궁극기 해금 필요':this.player.level<level?`레벨 ${level} 필요`:this.skillPoints<1?'포인트 부족':this.state!=='talents'?'스킬트리에서 투자':'';return{rank,available:!reason,reason};}
- canUpgradeSkill(name){return this.skillRankStatus(name).available;}
- upgradeSkill(name){if(!this.canUpgradeSkill(name))return false;this.skillRanks[name]++;this.skillPoints--;return true;}
- branchBonus(key){return RIFT_BRANCHES[this.classId].reduce((sum,n)=>sum+(this.branchRanks[n.id]?n.bonus[key]||0:0),0);}
- get activeSynergies(){return RIFT_SYNERGIES.filter(s=>s.relics.every(id=>this.relics.includes(id)));}
- bonus(key){return this.branchBonus(key)+(this.specialization?.bonuses[key]||0)+this.relics.reduce((sum,id)=>sum+(RIFT_RELICS.find(r=>r.id===id)?.bonuses[key]||0),0)+this.activeSynergies.reduce((sum,s)=>sum+(s.bonuses[key]||0),0)+(RIFT_WEAPONS.find(w=>w.id===this.weaponId)?.bonuses[key]||0)*this.weaponRank;}
- get effectiveDamage(){return this.player.damage+this.bonus('damage');}
- get damageReduction(){return 1-(1-this.talents.guard*.06)*(1-this.bonus('reduction'))*(this.player.shield>0?.35:1);}
- get regenRate(){return RIFT_CLASSES[this.classId].regen+this.talents.flow*2+this.player.bonusRegen+this.bonus('regen');}
- effectiveRange(name){const skill=this.getSkill(name);return (skill?.range||0)+(skill?.range?this.bonus('range')+(name==='attack'?this.bonus('attackRange'):0):0);}
- damageMultiplier(name){const skill=this.getSkill(name);if(!skill)return 0;return skill.mult*(name==='attack'?(1+(Math.max(1,this.player.step)-1)*.22)*(1+this.bonus('basicDamage')):(1+this.talents.mastery*.15)*(1+this.bonus('skillDamage')))*(name==='special'?1+this.bonus('specialDamage'):1)*(1+(this.skillRanks[name]||0)*.15)*(this.player.focusTime>0?1.2:1);}
- skillCost(name){return Math.ceil((this.getSkill(name)?.cost??0)*(1-this.bonus('costReduction'))*(1-(this.skillRanks[name]||0)*.05));}
- skillCooldown(name){return (this.getSkill(name)?.cooldown??0)*(1-this.talents.flow*.08)*(1-this.bonus('cooldownReduction'))*(name==='attack'&&this.player.haste>0?.62:1);}
- branchStatus(id){const n=RIFT_BRANCHES[this.classId].find(n=>n.id===id);if(!n)return{rank:0,available:false,reason:'없는 전문화'};const rank=this.branchRanks[id];const reason=rank?'습득 완료':this.player.level<n.level?`레벨 ${n.level} 필요`:n.parent&&!this.branchRanks[n.parent]?'이전 노드 필요':this.skillPoints<1?'포인트 부족':this.state!=='talents'?'스킬트리에서 투자':'';return{rank,available:!reason,reason};}
- canLearnBranch(id){return this.branchStatus(id).available;}
- learnBranch(id){if(!this.canLearnBranch(id))return false;const n=RIFT_BRANCHES[this.classId].find(n=>n.id===id);this.branchRanks[id]=1;this.skillPoints--;if(n.bonus.maxHp){this.player.maxHp+=n.bonus.maxHp;this.player.hp+=n.bonus.maxHp;}return true;}
- chooseLevelReward(choice){if(this.pendingLevelRewards<1||!['playing','paused','talents'].includes(this.state)||!['power','vital','focus'].includes(choice))return false;const p=this.player;if(choice==='power')p.damage+=3;if(choice==='vital'){p.maxHp+=15;p.hp=Math.min(p.maxHp,p.hp+15);}if(choice==='focus'){p.maxMp+=10;p.mp=Math.min(p.maxMp,p.mp+10);p.bonusRegen+=1;}this.pendingLevelRewards--;return true;}
- toggleTalents(){if(this.state==='playing'){this.state='talents';return true;}if(this.state==='talents'){this.state='playing';return true;}return false;}
- canSpendPoint(node){return this.state==='talents'&&Object.hasOwn(this.talents,node)&&this.skillPoints>0&&this.talents[node]<3&&(node!=='mastery'||this.talents.power+this.talents.flow+this.talents.guard>=2);}
- spendPoint(node){if(!this.canSpendPoint(node))return false;this.skillPoints--;this.talents[node]++;const p=this.player;if(node==='power')p.damage+=5;if(node==='guard'){p.maxHp+=25;p.hp=Math.min(p.maxHp,p.hp+25);}if(node==='flow'){p.maxMp+=10;p.mp=Math.min(p.maxMp,p.mp+10);}return true;}
- start(){if(this.state!=='ready')return;this.startedAt=Date.now();this.state='playing';this.startObjective();this.spawn();}
- startObjective(){const id=['nohit','speed','combo'][this.stage%3],target=id==='nohit'?RIFT_STAGES[this.stage].enemies.length*2+1:id==='speed'?80+this.stage*5:12+this.stage*2;this.objective={id,name:id==='nohit'?'무결의 원정':id==='speed'?'신속한 돌파':'끊이지 않는 검격',desc:id==='nohit'?'피해를 받지 않고 두 웨이브 완료':id==='speed'?target+'초 안에 두 웨이브 완료':target+'연속 명중 달성 후 지역 완료',target,progress:0,complete:false,claimed:false,failed:false,startTime:this.time,startDamage:this.stats.damageTaken,reward:80+this.stage*15};this.combo=0;this.comboTime=0;}
- updateObjective(cleared=false){const o=this.objective;if(this.state!=='playing'||!o||o.claimed)return false;if(o.id==='nohit'){if(this.stats.damageTaken>o.startDamage)o.failed=true;if(cleared&&!o.failed)o.complete=true;}if(o.id==='speed'){const elapsed=Math.max(0,this.time-o.startTime);o.progress=Math.min(o.target,elapsed);if(elapsed>o.target)o.failed=true;if(cleared&&!o.failed)o.complete=true;}if(o.id==='combo'){o.progress=Math.min(o.target,Math.max(o.progress,this.combo));if(o.progress>=o.target)o.complete=true;if(cleared&&!o.complete)o.failed=true;}if(cleared&&o.complete&&!o.failed){o.claimed=true;this.coins+=o.reward;this.stats.goldEarned+=o.reward;this.effect(480,190,'지역 임무 완료 · +'+o.reward+' G','#bff0c6','text',1.8);return true;}return false;}
- spawn(){this.enemies=[];this.projectiles=[];this.hazards=[];if(this.wave===0)this.containers=[0,1].map(i=>{const kind=['barrel','urn','chest'][(this.stage+i)%3],hp={barrel:35,urn:25,chest:50}[kind];return{id:this.stage*10+i,x:[430,790][i],y:420,hp,maxHp:hp,kind,opened:false};});const roster=RIFT_STAGES[this.stage].enemies;for(let i=0;i<roster.length;i++){const type=roster[i],elite=this.stage>=1&&i===(this.stage+this.wave)%roster.length?['swift','armored','vampiric'][(this.stage-1)%3]:this.route.extraElite&&i===(this.stage+this.wave+1)%roster.length?['swift','armored','vampiric'][(this.stage+1)%3]:null,hp=Math.round((({guard:82,mage:60,brute:145,ranger:70,wraith:68,sentinel:120,acolyte:66}[type])+this.stage*(type==='brute'?23:16))*this.difficulty.hp*this.route.hp*(elite?1.4:1));this.enemies.push({id:i,x:575+(i%3)*120,y:260+(i%4)*62,hp,maxHp:hp,type,elite,face:-1,cd:.8+i*.3,wind:0,stun:0,flash:0,slow:0,fracture:0,burn:0,burnTick:0,burnDamage:0,healCast:0,healTargetId:null,attackX:0,attackY:0,patternHazards:false});}if(this.wave===1){const hp=Math.round((340+this.stage*155)*this.difficulty.hp*this.route.hp);this.enemies.push({id:99,x:810,y:350,hp,maxHp:hp,type:'boss',face:-1,cd:2,wind:0,stun:0,flash:0,slow:0,fracture:0,burn:0,burnTick:0,burnDamage:0,healCast:0,healTargetId:null,patternHazards:true,pattern:this.stage,enraged:false,stagger:0,broken:0,breakGuard:0});}}
- offerRelics(){const available=RIFT_RELICS.filter(r=>!this.relics.includes(r.id)).map(r=>r.id);for(let i=available.length-1;i>0;i--){const roll=Number(this.random()),j=Math.min(i,Math.max(0,Math.floor((Number.isFinite(roll)?roll:0)*(i+1))));[available[i],available[j]]=[available[j],available[i]];}this.upgradeOptions=available.slice(0,3);}
- get shopOffers(){return RIFT_SHOP.map(item=>{const reason=this.state!=='upgrade'?'휴식 구간에서 구매':this.shopPurchases.includes(item.id)?'이번 휴식에서 구매 완료':item.id==='heal'&&this.player.hp>=this.player.maxHp?'체력이 가득 찼습니다':item.id==='potion'&&this.player.potions>=5?'물약 최대 5개':this.coins<item.cost?'골드 부족':'';return{...item,available:!reason,reason};});}
- get forgeOffers(){return RIFT_WEAPONS.map(item=>{const rank=this.weaponId===item.id?this.weaponRank:0,cost=rank===0?80:rank===1?100:140,reason=this.state!=='upgrade'?'휴식 구간에서 조율':rank>=3?'최대 랭크':this.coins<cost?'골드 부족':'';return{...item,cost,rank,available:!reason,reason};});}
- forge(id){const offer=this.forgeOffers.find(o=>o.id===id);if(!offer?.available)return false;this.coins-=offer.cost;this.weaponId=id;this.weaponRank=offer.rank+1;this.effect(this.player.x,this.player.y-90,offer.name+' '+this.weaponRank+'단계','#d8c8a6','text',1);return true;}
- get companionOffers(){return RIFT_COMPANIONS.map(item=>{const reason=this.state!=='upgrade'?'휴식 구간에서 고용':this.companionId===item.id?'이미 함께하는 동료':this.coins<item.cost?'골드 부족':'';return{...item,available:!reason,reason};});}
- recruit(id){const offer=this.companionOffers.find(item=>item.id===id);if(!offer?.available)return false;this.coins-=offer.cost;this.companionId=id;this.companionCooldown=offer.interval;this.effect(this.player.x,this.player.y-100,offer.name+' 합류',offer.color,'text',1.2);return true;}
- updateCompanion(dt){if(this.state!=='playing'||!this.companionId)return;const companion=RIFT_COMPANIONS.find(item=>item.id===this.companionId),living=this.enemies.filter(enemy=>enemy.hp>0);if(!companion||!living.length)return;this.companionCooldown=Math.max(0,this.companionCooldown-dt);if(this.companionCooldown>0)return;const p=this.player;if(companion.id==='wisp'){const nearest=living.reduce((target,enemy)=>Math.hypot(enemy.x-p.x,enemy.y-p.y)<Math.hypot(target.x-p.x,target.y-p.y)?enemy:target);if(Math.hypot(nearest.x-p.x,nearest.y-p.y)>420)return;this.hurtEnemy(nearest,12+p.level*3,0,{direct:false});this.effect(p.x-24,p.y-70,'마력탄',companion.color,'text',.7);}else if(companion.id==='sprite'){const healed=Math.min(8,p.maxHp-p.hp);p.hp+=healed;if(healed>0)this.effect(p.x,p.y-80,'요정 +'+healed+' HP',companion.color,'text',1);}else{p.shield=Math.max(p.shield,1.2);this.effect(p.x,p.y-80,'파수꾼의 보호',companion.color,'text',1);}this.companionCooldown=companion.interval;}
- get shrineOffers(){return RIFT_SHRINES.map(item=>{const reason=this.state!=='upgrade'?'휴식 구간에서 기도':this.shrineChoice?'이번 휴식의 제단 선택 완료':item.id==='mercy'&&this.player.hp>=this.player.maxHp?'체력이 가득 찼습니다':item.id==='sacrifice'&&this.player.hp<=Math.ceil(this.player.maxHp*.25)?'헌신 후 생존할 체력이 필요합니다':item.id==='wisdom'&&this.coins<80?'골드 부족':'';return{...item,available:!reason,reason};});}
- chooseShrine(id){const offer=this.shrineOffers.find(o=>o.id===id);if(!offer?.available)return false;this.shrineChoice=id;if(id==='mercy')this.player.hp=Math.min(this.player.maxHp,this.player.hp+40);if(id==='sacrifice'){this.player.hp-=Math.ceil(this.player.maxHp*.25);this.coins+=120;this.stats.goldEarned+=120;}if(id==='wisdom'){this.coins-=80;this.skillPoints+=2;}this.effect(this.player.x,this.player.y-100,offer.name+' 축복','#e2d7b6','text',1.2);return true;}
- buy(id){const offer=this.shopOffers.find(item=>item.id===id);if(!offer?.available)return false;this.coins-=offer.cost;this.shopPurchases.push(id);if(id==='heal')this.player.hp=Math.min(this.player.maxHp,this.player.hp+80);if(id==='potion')this.player.potions++;if(id==='training')this.player.damage+=3;this.effect(this.player.x,this.player.y-95,offer.name+' 구매','#f3d594','text',1);return true;}
- rerollRelics(){if(this.state!=='upgrade'||this.rerollsRemaining<1||this.coins<60)return false;const previous=[...this.upgradeOptions];this.offerRelics();if(this.upgradeOptions.every(id=>previous.includes(id))){const alternative=RIFT_RELICS.find(r=>!this.relics.includes(r.id)&&!previous.includes(r.id));if(alternative)this.upgradeOptions[this.upgradeOptions.length-1]=alternative.id;}this.coins-=60;this.rerollsRemaining--;return true;}
- hazard(x,y,rx,ry,wind,kind,damage,color=RIFT_STAGES[this.stage].color,sourceId=null){const delay=Math.max(.75,wind);const h={x:Math.max(35,Math.min(925,x)),y:Math.max(245,Math.min(465,y)),rx,ry,wind:delay,maxWind:delay,life:.6,kind,color,damage,sourceId,triggered:false};this.hazards.push(h);return h;}
- enrageBoss(e){if(e.type!=='boss'||e.enraged||e.hp<=0||e.hp>e.maxHp*.45)return false;e.enraged=true;e.cd=Math.min(e.cd,.5);this.effect(e.x,e.y-125,'PHASE 2 · 격노','#ffb19a','text',1.6);return true;}
- staggerBoss(e,damage){if(e.type!=='boss'||e.hp<=0||(e.broken||0)>0||(e.breakGuard||0)>0)return false;e.stagger=Math.min(100,(e.stagger||0)+Math.min(18,3+damage*.08));if(e.stagger<100)return false;e.stagger=0;e.broken=2;e.breakGuard=4;e.wind=0;e.cd=Math.max(e.cd,1);this.hazards=this.hazards.filter(h=>h.sourceId!==e.id||h.wind<=0);this.stats.breaks++;this.effect(e.x,e.y-110,'BREAK · 피해 +25%','#ffe2a3','text',1.2);return true;}
- bossPattern(e){const p=this.player,s=this.stage,hazardStart=this.hazards.length;e.patternHazards=true;e.attackX=p.x;e.attackY=p.y;e.pattern=s;e.wind=1.05;
-  if(s===0)this.hazard(p.x,p.y,108,54,.9,'slam',26,'#e6b27b');
-  if(s===1)for(let i=-1;i<=1;i++)this.hazard(p.x+i*115,p.y+(i%2)*45,54,43,.85+(i+1)*.18,'rune',22,'#bca1f2');
-  if(s===2){this.hazard(p.x,p.y,220,25,1,'flame',28,'#f1a076');this.hazard(p.x,p.y,38,108,1,'flame',28,'#f1a076');}
-  if(s===3)for(let i=0;i<4;i++){const a=i*Math.PI/2;this.hazard(p.x+Math.cos(a)*83,p.y+Math.sin(a)*62,56,38,.9+i*.15,'poison',23,'#a8d57b');}
-  if(s===4){this.hazard(p.x,p.y,285,28,.95,'frost',27,'#a4e8ff');this.hazard(p.x,p.y,52,90,1.4,'frost',27,'#a4e8ff');}
-  if(s===5){for(let i=0;i<5;i++){const a=i*Math.PI*2/5;this.hazard(p.x+Math.cos(a)*120,p.y+Math.sin(a)*80,53,36,.85+i*.1,'rift',30,'#ffbc82');}this.hazard(p.x,p.y,76,47,1.55,'rift',34,'#ff8e88');}
-  if(e.enraged){const kind=['slam','rune','flame','poison','frost','rift'][s];this.hazard(p.x-125,p.y,54,37,.85,kind,25,'#ffb19a');this.hazard(p.x+125,p.y,54,37,1.15,kind,25,'#ffb19a');}
-  for(const h of this.hazards.slice(hazardStart))h.sourceId=e.id;
- }
- updateAcolyte(e,dt,pace=1){if(this.state!=='playing'||e.type!=='acolyte'||e.hp<=0)return false;if(e.healCast>0){e.healCast=Math.max(0,e.healCast-dt*pace);if(e.healCast===0){const target=this.enemies.find(other=>other.id===e.healTargetId&&other!==e&&other.hp>0&&Math.hypot(other.x-e.x,other.y-e.y)<=320);if(target){const healed=Math.min(target.maxHp-target.hp,24+this.stage*4);if(healed>0){target.hp+=healed;this.effect(target.x,target.y-80,'+'+healed+' 치유','#b5efb9','text',1);}}e.healTargetId=null;e.patternHazards=false;e.cd=3.8;}return true;}if(e.wind>0||e.cd>0)return false;const targets=this.enemies.filter(other=>other!==e&&other.hp>0&&other.hp<other.maxHp&&Math.hypot(other.x-e.x,other.y-e.y)<=280);if(!targets.length)return false;const target=targets.reduce((best,other)=>other.hp/other.maxHp<best.hp/best.maxHp?other:best);e.healTargetId=target.id;e.healCast=1.1;e.patternHazards=true;e.attackX=target.x;e.attackY=target.y;this.effect(e.x,e.y-90,'치유 준비','#b5efb9','text',1.1);return true;}
- fireEnemyProjectile(e,spread=0){const tx=e.attackX??this.player.x,ty=(e.attackY??this.player.y)-25,dx=tx-e.x,dy=ty-(e.y-25),angle=Math.atan2(dy,dx)+spread,speed=e.type==='ranger'?300:210;this.projectiles.push({x:e.x,y:e.y-25,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,life:4,damage:e.type==='ranger'?14:16,color:e.type==='ranger'?'#f0ce93':'#c7a3ef',kind:e.type==='ranger'?'arrow':'orb',sourceId:e.id});}
- updateHazards(dt){const p=this.player;for(const h of this.hazards){if(h.wind>0){h.wind=Math.max(0,h.wind-dt);if(h.wind>0)continue;}if(!h.triggered){h.triggered=true;if(((p.x-h.x)/h.rx)**2+((p.y-h.y)/h.ry)**2<=1)this.hitPlayer(h.damage,h.sourceId);}h.life-=dt;}this.hazards=this.hazards.filter(h=>h.wind>0||h.life>0);}
- pause(){if(this.state==='playing')this.state='paused';else if(this.state==='paused')this.state='playing';}
- dropLoot(e){const gold=Math.round((e.type==='boss'?90+this.stage*10:e.elite?45+this.stage*5:12+this.stage*3)*this.route.gold);const add=(kind,value,offset)=>this.pickups.push({id:++this.pickupSerial,x:Math.max(35,Math.min(925,e.x+offset)),y:e.y,kind,value,life:20});add('gold',gold,0);if(e.type==='boss'){add('health',45,-18);add('mana',40,18);}else if(this.kills%3===0)add('health',18,-15);else if(this.kills%3===1)add('mana',16,15);if(this.pickups.length>80)this.pickups.splice(0,this.pickups.length-80);}
- hurtContainer(container,damage){if(this.state!=='playing'||!this.containers.includes(container)||container.opened||!Number.isFinite(damage)||damage<=0)return 0;const dealt=Math.min(container.hp,Math.round(damage));container.hp=Math.max(0,container.hp-dealt);this.effect(container.x,container.y-35,String(dealt),'#dfc598');if(container.hp===0){container.opened=true;const kind={barrel:'health',urn:'mana',chest:'gold'}[container.kind],value=kind==='gold'?Math.round((35+this.stage*5)*this.route.gold):kind==='health'?20:25;this.pickups.push({id:++this.pickupSerial,x:container.x,y:container.y,kind,value,life:20});this.effect(container.x,container.y-55,'전리품 발견','#e5ce97');}return dealt;}
- collectPickup(loot){const index=this.pickups.indexOf(loot);if(this.state!=='playing'||index<0||loot.life<=0)return false;const p=this.player;if(loot.kind==='gold'){this.coins+=loot.value;this.stats.goldEarned+=loot.value;}if(loot.kind==='health')p.hp=Math.min(p.maxHp,p.hp+loot.value);if(loot.kind==='mana')p.mp=Math.min(p.maxMp,p.mp+loot.value);this.effect(loot.x,loot.y-30,loot.kind==='gold'?'+'+loot.value+' G':loot.kind==='health'?'+'+loot.value+' HP':'+'+loot.value+' MP',loot.kind==='gold'?'#f8d283':loot.kind==='health'?'#a8edb9':'#acaefa');this.pickups.splice(index,1);return true;}
- effect(x,y,text,color='#f6d7a4',kind='text',life=.7){const e={x,y,text,color,kind,life,max:life,classId:this.classId,specializationId:this.specializationId,facing:this.player.face};this.effects.push(e);if(this.effects.length>100)this.effects.shift();return e;}
- gainXP(amount){if(!Number.isFinite(amount)||amount<=0)return;const p=this.player;p.xp+=amount;while(p.xp>=this.xpNeeded){p.xp-=this.xpNeeded;p.level++;p.damage+=4;p.maxHp+=15;p.hp=Math.min(p.maxHp,p.hp+45);p.mp=Math.min(p.maxMp,p.mp+30);this.skillPoints+=2;this.pendingLevelRewards++;this.effect(p.x,p.y,'','#b0ffe3','levelup',1.1);this.effect(p.x,p.y-100,`LEVEL ${p.level} · SP +2`,'#a5ffe0','text',1.5);}}
- enemyShieldActive(e){return e.type==='sentinel'&&e.hp>0&&(e.stun||0)<=0&&(e.broken||0)<=0&&(e.wind||0)<=0;}
- hurtEnemy(e,damage,knock=16,{direct=true}={}){if(e.hp<=0)return 0;const blocked=direct&&this.enemyShieldActive(e)&&(this.player.x-e.x)*(e.face||-1)>0;damage=Math.max(1,Math.round(damage*((e.broken||0)>0?1.25:1)*((e.fracture||0)>0?1.15:1)*(e.type==='brute'?.78:1)*(e.elite==='armored'?.8:1)*(blocked?.4:1)));const dealt=Math.min(e.hp,damage);e.hp-=damage;this.enrageBoss(e);e.flash=.13;if(direct){if(e.healCast>0){e.healCast=0;e.healTargetId=null;e.patternHazards=false;e.cd=Math.max(e.cd||0,2);this.effect(e.x,e.y-100,'치유 차단','#ffce9e','text',.8);}e.stun=blocked?0:e.type==='boss'?.12:e.type==='brute'?.16:.35;e.wind=0;e.x=Math.max(35,Math.min(925,e.x+this.player.face*knock*(blocked?.25:e.type==='brute'?.45:1)));this.staggerBoss(e,dealt);this.combo++;this.stats.maxCombo=Math.max(this.stats.maxCombo,this.combo);this.comboTime=2.6;this.player.focus=Math.min(100,this.player.focus+Math.min(8,2+dealt*.05));}this.stats.damageDealt+=dealt;if(blocked)this.effect(e.x,e.y-85,'방패 방어','#b6ccdf','text',.5);this.effect(e.x,e.y-60,String(damage),direct?'#f6d7a4':'#ffbb82');const hit=this.effect(e.x,e.y-35,'',RIFT_CLASSES[this.classId].color,'hit',.25);hit.targetType=e.type;hit.seed=this.stage*1000+this.wave*100+(e.id||0);if(e.hp<=0){e.burn=0;e.healCast=0;e.healTargetId=null;this.kills++;if(this.objective?.id==='nohit')this.objective.progress=Math.min(this.objective.target,this.objective.progress+1);if(e.elite)this.stats.elitesKilled++;this.score+=Math.round((e.type==='boss'?600:100)*this.difficulty.score);this.gainXP(e.type==='boss'?70:22);const death=this.effect(e.x,e.y,'','#b1ddce','death',.55);death.actor={...e,hp:0};death.targetType=e.type;death.seed=hit.seed;this.dropLoot(e);}this.updateObjective();return dealt;}
+const RIFT_DASH={time:.2,speed:760,inv:.3,cd:.72,perfect:.2};
+const clampN=(v,a,b)=>Math.max(a,Math.min(b,v));
 
- action(name){if(this.state!=='playing')return false;const p=this.player;if(p.cd[name]>0)return false;
-  if(name==='potion'){if(!p.potions||p.hp===p.maxHp)return false;p.potions--;p.hp=Math.min(p.maxHp,p.hp+85);p.cd.potion=1;this.effect(p.x,p.y-70,'+85 HP','#a5ffe0');return true;}
-  if(name==='dash'){p.dash=.18;p.perfectWindow=.12;p.perfectUsed=false;p.inv=.3+this.bonus('dashInv');p.cd.dash=1.2-this.bonus('dashReduction');p.shield=Math.max(p.shield,this.bonus('dashShield'));this.effect(p.x,p.y,'','#a5e9e4','dash',.3);return true;}
-  if(name==='focus'){if(!this.focusInfo.ready)return false;p.focus=0;p.focusTime=6;p.lastAction=name;this.stats.focusUses++;this.effect(p.x,p.y-100,'집중 해방 · 피해 +20%','#ffe19c','text',1.2);return true;}
-  if(name==='guard'){const cost=this.skillCost(name);if(p.mp<cost)return false;p.mp-=cost;p.cd.guard=this.skillCooldown(name);p.guardWindow=.55;p.parryWindow=.18;p.lastAction=name;this.effect(p.x,p.y-75,'가드','#bbdef5','text',.55);return true;}
-  const skill=this.getSkill(name),cost=this.skillCost(name);if(!skill||name==='ultimate'&&!this.ultimateUnlocked||name==='special'&&!this.specialUnlocked||name==='awakening'&&!this.awakeningUnlocked||p.mp<cost)return false;p.mp-=cost;
-  if(this.classId==='mage'&&name!=='attack'){p.passiveReady=true;p.passiveCharge=1;}p.cd[name]=this.skillCooldown(name);p.attack=['ultimate','awakening'].includes(name)?.45:.22;p.lastAction=name;p.step=name==='attack'?(p.step%3)+1:3;const rank=this.skillRanks[name]||0;
-  if(name==='special'){if(this.classId==='warrior')p.shield=4+this.bonus('shieldDuration')+rank;if(this.classId==='brawler')p.haste=5+this.bonus('hasteDuration')+rank;if(this.classId==='paladin'){const heal=Math.min(p.maxHp-p.hp,45+this.bonus('heal')+rank*10);p.hp+=heal;p.shield=3+this.bonus('shieldDuration')+rank;this.effect(p.x,p.y-70,'+'+heal+' HP','#b4ffcc');}if(this.classId==='assassin'){const oldX=p.x;p.x=Math.max(35,Math.min(925,p.x+p.face*105));p.inv=Math.max(p.inv,.45);this.effect(oldX,p.y,String(p.face),RIFT_CLASSES[this.classId].color,'dash',.4);}}
-  if(name==='awakening'){if(skill.heal){const heal=Math.min(p.maxHp-p.hp,skill.heal+this.bonus('heal')+rank*15);p.hp+=heal;this.effect(p.x,p.y-70,'+'+heal+' HP','#b4ffcc');}if(skill.shield)p.shield=skill.shield+this.bonus('shieldDuration')+rank;if(skill.haste)p.haste=skill.haste+this.bonus('hasteDuration')+rank;}
-  const range=this.effectiveRange(name),wide=skill.width,mult=this.damageMultiplier(name),color=this.specialization?.color||RIFT_CLASSES[this.classId].color;
-  const visual=this.effect(p.x,p.y,String(p.face),color,name,name==='awakening'?1:name==='ultimate'?.8:.3);visual.range=range;visual.width=wide;visual.comboStep=p.step;visual.rank=rank;
-  if(['ultimate','awakening'].includes(name)){p.inv=Math.max(p.inv,name==='awakening'?1:.65);this.effect(p.x,p.y-110,skill.name,color,'text',1.2);}
-  const counterBoost=name==='attack'&&p.counterWindow>0?1.6:1,damage=Math.round(this.effectiveDamage*mult),hits=(skill.hits||1)+(name==='attack'?this.bonus('extraHits'):0);let struck=false;
-  for(const e of this.enemies){const dx=(e.x-p.x)*p.face;if(e.hp>0&&Math.abs(e.y-p.y)<wide&&(skill.area?Math.abs(dx)<range:dx>-15&&dx<range)){const slow=Math.max(this.bonus('slow'),name==='special'&&this.classId==='mage'?3+rank:0,skill.slow||0);if(slow)e.slow=Math.max(e.slow||0,slow);const passiveDamage=this.classId==='archer'&&name==='attack'&&Math.abs(e.x-p.x)>220?1.2:this.classId==='assassin'&&(p.x-e.x)*(e.face||-1)<0?1.25:1;for(let hit=0;hit<hits&&e.hp>0;hit++){const dealt=this.hurtEnemy(e,Math.round(damage*passiveDamage*counterBoost),name==='attack'?['mage','archer'].includes(this.classId)?5:12:['ultimate','awakening'].includes(name)?48:32);struck||=dealt>0;if(this.bonus('leech'))p.hp=Math.min(p.maxHp,p.hp+dealt*this.bonus('leech'));}if(this.classId==='warrior'&&name==='attack'&&p.step===3&&e.hp>0)e.fracture=3;if(this.classId==='mage'&&name==='skill'&&e.hp>0){const burnDamage=Math.min(1000,Math.max(2,Math.round(this.effectiveDamage*.24)));e.burnDamage=e.burn>0?Math.max(e.burnDamage||0,burnDamage):burnDamage;e.burn=3;e.burnTick=.6;}}}
-  if(damage>0)for(const container of this.containers){const dx=(container.x-p.x)*p.face;if(!container.opened&&Math.abs(container.y-p.y)<wide&&(skill.area?Math.abs(dx)<range:dx>-15&&dx<range))this.hurtContainer(container,damage*hits);}
-  if(name==='attack'&&struck&&counterBoost>1){p.counterWindow=0;this.stats.counters++;this.effect(p.x,p.y-95,'반격','#c6e8ff','text',.75);}
-  if(name==='attack'&&struck){if(this.classId==='warrior')p.passiveCharge=p.step%3;if(this.classId==='mage'&&p.passiveReady){p.mp=Math.min(p.maxMp,p.mp+6);p.passiveReady=false;p.passiveCharge=0;this.effect(p.x,p.y-80,'비전 환류 +6 MP','#baa9ff');}if(this.classId==='brawler'){p.passiveCharge++;if(p.passiveCharge>=5){p.passiveCharge=0;p.hp=Math.min(p.maxHp,p.hp+8);this.effect(p.x,p.y-80,'불굴의 호흡 +8 HP','#dfd5a4');}}if(this.classId==='paladin'&&p.passiveReady){p.hp=Math.min(p.maxHp,p.hp+12);p.passiveReady=false;p.passiveCharge=0;this.effect(p.x,p.y-80,'빛의 보답 +12 HP','#ffdfa5');}}
+class RiftGame{
+ constructor(heroId='blade',random=Math.random){
+  this.random=typeof random==='function'?random:Math.random;
+  this.state='ready';this.setHero(Object.hasOwn(RIFT_HEROES,heroId)?heroId:'blade');
+ }
+ setHero(id){
+  if(this.state!=='ready'||!Object.hasOwn(RIFT_HEROES,id))return false;
+  const h=RIFT_HEROES[id];this.heroId=id;this.hero=h;
+  this.region=0;this.fight=0;this.time=0;this.score=0;this.kills=0;this.combo=0;this.comboT=0;this.maxCombo=0;this.perfects=0;this.damageTaken=0;this.fightDamage=0;
+  this.blessings={};this.offers=[];this.enemies=[];this.hazards=[];this.shots=[];this.blasts=[];this.rains=[];this.queue=[];this.events=[];
+  this.hitstop=0;this.slow=0;this.clearT=0;this.serial=0;this.basicCount=0;
+  this.player={x:220,y:400,z:0,vz:0,vx:0,face:1,hp:h.hp,maxHp:h.hp,mp:h.mp,maxMp:h.mp,rift:0,inv:0,hurt:0,dash:0,dashCd:0,dashStart:-9,perfectUsed:true,riposte:false,skillCd:0,act:null,step:0,stepT:0,buffer:null,moving:false,dashHits:[]};
   return true;
  }
- hitPlayer(damage,sourceId=null){const p=this.player;if(this.state!=='playing'||!Number.isFinite(damage)||damage<=0)return 0;if(p.inv>0){if(p.perfectWindow>0&&!p.perfectUsed){p.perfectUsed=true;p.mp=Math.min(p.maxMp,p.mp+12);this.score+=50;this.stats.perfectDodges++;this.effect(p.x,p.y-85,'PERFECT DODGE · +12 MP','#b3ffeb','text',1);}return 0;}if(p.parryWindow>0){p.parryWindow=0;p.counterWindow=2;p.inv=.18;this.stats.parries++;const source=this.enemies.find(e=>sourceId!=null&&e.id===sourceId&&e.hp>0);if(source){source.stun=Math.max(source.stun||0,.8);source.wind=0;source.healCast=0;source.healTargetId=null;if(source.type==='acolyte')source.patternHazards=false;source.cd=Math.max(source.cd||0,1);}this.effect(p.x,p.y-85,'PARRY · 반격 준비','#c6e8ff','text',1);return 0;}damage=Math.max(1,Math.round(damage*this.difficulty.damage*this.route.damage*(1-this.damageReduction)*(p.guardWindow>0?.3:1)));const dealt=Math.min(p.hp,damage);p.hp=Math.max(0,p.hp-damage);this.stats.damageTaken+=dealt;if(this.classId==='paladin'&&p.passiveCooldown<=0){p.passiveReady=true;p.passiveCharge=1;p.passiveCooldown=4;}this.updateObjective();p.inv=.7;this.combo=0;this.effect(p.x,p.y-65,'−'+damage,'#ff8a91');const source=this.enemies.find(e=>sourceId!=null&&e.id===sourceId&&e.hp>0&&e.elite==='vampiric');if(source){const heal=Math.min(source.maxHp-source.hp,dealt*.4);source.hp+=heal;if(heal>0)this.effect(source.x,source.y-80,'+'+Math.ceil(heal),'#b7ef9c');}if(!p.hp)this.state='lost';return dealt;}
- upgrade(choice){const relic=RIFT_RELICS.find(r=>r.id===choice);if(this.state!=='upgrade'||this.stage>=RIFT_STAGES.length-1||!relic||!this.upgradeOptions.includes(choice)||this.relics.includes(choice))return false;const p=this.player;this.relics.push(choice);if(relic.bonuses.maxHp){p.maxHp+=relic.bonuses.maxHp;p.hp+=relic.bonuses.maxHp;}if(relic.bonuses.maxMp)p.maxMp+=relic.bonuses.maxMp;p.hp=Math.min(p.maxHp,p.hp+40);p.mp=p.maxMp;p.potions=Math.min(5,p.potions+1);this.upgradeOptions=[];this.routeId=this.pendingRouteId;this.pendingRouteId='standard';this.stage++;this.wave=0;p.x=160;p.y=340;this.state='playing';this.effects=[];this.startObjective();this.spawn();this.effect(480,170,RIFT_STAGES[this.stage].name,RIFT_STAGES[this.stage].color,'text',1.5);return true;}
- step(dt,input={}){if(this.state!=='playing')return;dt=Math.max(0,Math.min(.04,dt));this.time+=dt;const p=this.player;for(const k in p.cd)p.cd[k]=Math.max(0,p.cd[k]-dt);p.inv=Math.max(0,p.inv-dt);p.perfectWindow=Math.max(0,p.perfectWindow-dt);p.guardWindow=Math.max(0,p.guardWindow-dt);p.parryWindow=Math.max(0,p.parryWindow-dt);p.counterWindow=Math.max(0,p.counterWindow-dt);p.focusTime=Math.max(0,p.focusTime-dt);p.attack=Math.max(0,p.attack-dt);p.passiveCooldown=Math.max(0,p.passiveCooldown-dt);p.shield=Math.max(0,p.shield-dt);p.haste=Math.max(0,p.haste-dt);p.mp=Math.min(p.maxMp,p.mp+dt*this.regenRate);this.comboTime-=dt;if(this.comboTime<=0)this.combo=0;
-  const dx=Number(!!input.right)-Number(!!input.left),dy=Number(!!input.down)-Number(!!input.up),length=Math.hypot(dx,dy)||1;if(dx)p.face=dx;
-  if(p.dash>0){p.x+=p.face*760*dt;p.dash-=dt;}else{const haste=p.haste>0?1.35:1;p.x+=dx/length*(RIFT_CLASSES[this.classId].speed+this.bonus('speed'))*haste*dt;p.y+=dy/length*145*haste*dt;}
-  p.x=Math.max(35,Math.min(925,p.x));p.y=Math.max(245,Math.min(465,p.y));p.moving=!!(dx||dy);if(input.attack)this.action('attack');
-  this.effects=this.effects.filter(e=>(e.life-=dt)>0);
-  for(const loot of [...this.pickups]){loot.life-=dt;if(Math.hypot(p.x-loot.x,p.y-loot.y)<42)this.collectPickup(loot);}this.pickups=this.pickups.filter(loot=>loot.life>0);
-  this.updateHazards(dt);this.updateObjective();
-  for(const e of this.enemies){if(e.hp<=0)continue;const burning=Math.min(e.burn||0,dt);if(burning>0){e.burn=Math.max(0,e.burn-burning);e.burnTick=(e.burnTick??.6)-burning;if(e.burnTick<=1e-9){e.burnTick+=.6;this.hurtEnemy(e,e.burnDamage||1,0,{direct:false});}}if(e.hp<=0)continue;this.enrageBoss(e);e.flash=Math.max(0,e.flash-dt);e.stun=Math.max(0,e.stun-dt);e.slow=Math.max(0,(e.slow||0)-dt);e.fracture=Math.max(0,(e.fracture||0)-dt);e.broken=Math.max(0,(e.broken||0)-dt);e.breakGuard=Math.max(0,(e.breakGuard||0)-dt);const pace=e.slow>0?.45:1,movePace=pace*(e.elite==='swift'?1.45:1);if(e.stun>0||e.broken>0)continue;e.face=p.x<e.x?-1:1;if(this.updateAcolyte(e,dt,pace))continue;
-   if(e.wind>0){e.wind-=dt*pace;if(e.wind<=0){if(['mage','ranger','acolyte'].includes(e.type)){this.fireEnemyProjectile(e);if(e.type==='ranger'&&this.stage>=3){this.fireEnemyProjectile(e,-.14);this.fireEnemyProjectile(e,.14);}}else if(e.type==='wraith'){e.x=Math.max(35,Math.min(925,e.attackX));e.y=Math.max(245,Math.min(465,e.attackY));}else if(!e.patternHazards&&Math.abs(p.x-e.attackX)<52&&Math.abs(p.y-e.attackY)<35)this.hitPlayer(e.type==='sentinel'?18:12,e.id);e.cd=e.type==='boss'?(e.enraged?1.35:2.2):e.type==='brute'?2:e.type==='ranger'?1.9:e.type==='wraith'?1.65:e.type==='acolyte'?2.3:1.25;e.patternHazards=e.type==='boss';}continue;}
-   e.cd-=dt*pace;const dist=Math.abs(p.x-e.x),lane=Math.abs(p.y-e.y),ranged=['mage','ranger','acolyte'].includes(e.type),reach=e.type==='boss'?[145,600,420,550,500,600][this.stage]:e.type==='brute'?100:e.type==='wraith'?240:e.type==='sentinel'?60:ranged?480:46,lanes=e.type==='boss'?230:e.type==='wraith'?60:ranged?105:e.type==='brute'?60:e.type==='sentinel'?40:32;
-   if(dist<reach&&lane<lanes&&e.cd<=0){e.attackX=p.x;e.attackY=p.y;
-    if(e.type==='boss')this.bossPattern(e);
-    else if(e.type==='brute'){e.wind=.95;e.patternHazards=true;this.hazard(p.x,p.y,77,47,.95,'slam',20,'#d3a889',e.id);}
-    else if(e.type==='wraith'){e.wind=.8;e.patternHazards=true;this.hazard((e.x+p.x)/2,(e.y+p.y)/2,Math.abs(e.x-p.x)/2+28,27,.8,'charge',18,'#d3a6ec',e.id);}
-    else e.wind=e.type==='ranger'?.8:['mage','acolyte'].includes(e.type)?.65:e.type==='sentinel'?.75:.55;
-   }
-   else if(ranged&&dist<260){e.x-=e.face*45*dt*movePace;e.y+=Math.sign(p.y-e.y)*30*dt*movePace;}
-   else if(ranged&&dist<380){e.y+=Math.sign(p.y-e.y)*35*dt*movePace;}
-   else{const speed=e.type==='boss'?52:e.type==='brute'?42:e.type==='sentinel'?48:e.type==='wraith'?118:65+this.stage*5;e.x+=e.face*speed*dt*movePace;e.y+=Math.sign(p.y-e.y)*(e.type==='wraith'?68:45)*dt*movePace;}
-   e.x=Math.max(35,Math.min(925,e.x));e.y=Math.max(245,Math.min(465,e.y));
+ rank(id){return this.blessings[id]||0;}
+ get damageMult(){return 1+.15*this.rank('edge');}
+ get speed(){return this.hero.speed*(1+.12*this.rank('swift'));}
+ get dashCooldown(){return RIFT_DASH.cd-.15*this.rank('swift');}
+ get mpRegen(){return 9*(1+.45*this.rank('flow'));}
+ get guard(){return Math.min(.6,.12*this.rank('guard'));}
+ get skillCost(){return Math.round(this.hero.skill.cost*(1-.2*this.rank('artistry')));}
+ get regionData(){return RIFT_REGIONS[this.region];}
+ get isBossFight(){return this.fight===2;}
+ get enemyScale(){return{hp:1+this.region*.42,dmg:1+this.region*.22};}
+ get alive(){return this.enemies.filter(e=>!e.dead);}
+ emit(type,data={}){this.events.push({type,...data});if(this.events.length>300)this.events.splice(0,this.events.length-300);}
+ drainEvents(){const e=this.events;this.events=[];return e;}
+
+ start(){if(this.state!=='ready')return false;this.state='playing';this.beginFight();return true;}
+ pause(){if(this.state==='playing'){this.state='paused';return true;}if(this.state==='paused'){this.state='playing';return true;}return false;}
+ beginFight(){
+  this.enemies=[];this.hazards=[];this.shots=[];this.blasts=[];this.rains=[];this.queue=[];this.clearT=0;this.fightDamage=0;
+  const p=this.player;p.x=200;p.y=400;p.z=0;p.vz=0;p.act=null;p.buffer=null;
+  if(this.isBossFight){
+   const b=RIFT_BOSSES[this.region],s=this.enemyScale;
+   this.enemies.push(this.makeEnemy('boss',{x:780,y:390,hp:Math.round(b.hp*(1+this.region*.08)),boss:b,dmgMult:s.dmg}));
+   this.emit('boss',{name:b.name});
+  }else{
+   const roster=this.regionData.fights[this.fight],list=[...roster,...roster.slice(0,Math.ceil(roster.length/2))];list.forEach((type,i)=>this.queue.push({type,delay:.35+i*(i<3?.45:1.1),side:i%3===2?-1:1}));
+   this.emit('fight',{region:this.region,fight:this.fight});
   }
-  for(const b of this.projectiles){b.x+=b.vx*dt;b.y+=(b.vy||0)*dt;b.life-=dt;if(Math.abs(b.x-p.x)<22&&Math.abs(b.y-(p.y-25))<22){this.hitPlayer(b.damage??16,b.sourceId);b.life=0;}}this.projectiles=this.projectiles.filter(b=>b.life>0&&b.x>0&&b.x<960&&b.y>150&&b.y<520);
-  this.updateCompanion(dt);
-  if(this.state==='playing'&&this.enemies.every(e=>e.hp<=0)){for(const loot of [...this.pickups])this.collectPickup(loot);this.score+=Math.round(300*this.difficulty.score);if(this.wave===0){this.wave=1;this.spawn();this.effect(480,170,RIFT_STAGES[this.stage].boss+' 등장','#ffc18f','text',2);}else{this.stats.stagesCleared++;this.updateObjective(true);if(this.stage<RIFT_STAGES.length-1){this.state='upgrade';this.shrineChoice=null;this.shopPurchases=[];this.rerollsRemaining=1;this.offerRelics();}else{this.state='won';this.score+=Math.round(p.hp)*5;}}}
  }
+ makeEnemy(type,o={}){
+  const d=type==='boss'?o.boss:RIFT_ENEMIES[type],s=this.enemyScale,hp=o.hp||Math.round(d.hp*s.hp);
+  return{id:++this.serial,type,x:o.x??(o.side<0?-40:1000),y:o.y??clampN(300+this.random()*190,RIFT_FLOOR.top+10,RIFT_FLOOR.bottom-10),z:0,vz:0,vx:0,vy:0,face:-1,hp,maxHp:hp,
+   dmgMult:o.dmgMult||s.dmg,state:'enter',t:0,cd:.6+this.random()*.8,flash:0,stun:0,freeze:0,air:false,dead:false,deadT:0,boss:o.boss||null,enraged:false,pattern:0,dash:null,hitBy:{}};
+ }
+
+ // ---------- player actions ----------
+ canAct(){const p=this.player;return this.state==='playing'&&p.hurt<=0&&p.dash<=0&&p.z<=0;}
+ attack(){return this.tryAction('basic');}
+ skill(){return this.tryAction('skill');}
+ ultimate(){return this.tryAction('ult');}
+ tryAction(kind){
+  const p=this.player;if(this.state!=='playing')return false;
+  if(p.act&&!this.cancellable(kind)){p.buffer={kind,t:.3};return false;}
+  if(p.hurt>0||p.dash>0){p.buffer={kind,t:.3};return false;}
+  if(kind==='skill'&&(p.skillCd>0||p.mp<this.skillCost))return false;
+  if(kind==='ult'&&p.rift<100)return false;
+  let def;
+  if(kind==='basic'){if(p.stepT<=0)p.step=0;def=this.hero.basic[p.step];p.step=(p.step+1)%3;p.stepT=.75;this.basicCount++;}
+  else if(kind==='skill'){def=this.hero.skill;p.mp-=this.skillCost;p.skillCd=this.hero.skill.cd;}
+  else{def=this.hero.ult;p.rift=0;p.inv=Math.max(p.inv,def.dur);}
+  const target=this.nearestTarget(kind==='basic'?520:700);if(target&&Math.abs(target.x-p.x)>8)p.face=target.x>p.x?1:-1;
+  p.act={kind,step:kind==='basic'?(p.step+2)%3:0,t:0,dur:def.dur,hits:def.hits||[def],fired:0,def};p.buffer=null;
+  this.emit('act',{kind,step:p.act.step,hero:this.heroId});
+  return true;
+ }
+ cancellable(next){const a=this.player.act;if(!a)return true;if(a.kind==='ult')return false;const last=a.hits[a.hits.length-1];return a.fired>=a.hits.length&&a.t>=last.at+.06&&(next!=='basic'||a.kind==='basic'||a.t>=a.dur*.85);}
+ dashMove(){
+  const p=this.player;if(this.state!=='playing'||p.dashCd>0||p.hurt>0&&p.hurt>.12||p.act?.kind==='ult')return false;
+  p.act=null;p.dash=RIFT_DASH.time;p.dashCd=this.dashCooldown;p.inv=Math.max(p.inv,RIFT_DASH.inv);p.dashStart=this.time;p.perfectUsed=false;p.dashHits=[];p.hurt=0;
+  this.emit('dash',{x:p.x,y:p.y,face:p.face});return true;
+ }
+ nearestTarget(maxD){const p=this.player;let best=null,bd=maxD;for(const e of this.alive){if(e.state==='enter'&&(e.x<0||e.x>960))continue;const d=Math.abs(e.x-p.x)+Math.abs(e.y-p.y)*1.6;if(d<bd){bd=d;best=e;}}return best;}
+ fireHit(h){
+  const p=this.player,atk=this.hero.atk*this.damageMult,skill=p.act.kind!=='basic',mult=h.mult*(skill?1+.2*this.rank('artistry'):1);
+  const base={dmg:atk*mult,kb:h.kb||40,launch:h.launch||0,heavy:!!h.heavy,freeze:h.freeze||0,kind:p.act.kind};
+  if(h.kind==='melee'||h.kind==='lane'){
+   let n=0;for(const e of this.alive){const dx=(e.x-p.x)*p.face;if(dx>-25&&dx<h.range+(e.boss?45:0)&&Math.abs(e.y-p.y)<h.width+(e.boss?30:0)){this.damageEnemy(e,base);n++;}}
+   this.emit('slash',{x:p.x,y:p.y,face:p.face,range:h.range,kind:p.act.kind,step:p.act.step,hit:n>0});
+  }else if(h.kind==='ring'){
+   for(const e of this.alive)if(((e.x-p.x)/(h.rx+(e.boss?40:0)))**2+((e.y-p.y)/(h.ry+(e.boss?20:0)))**2<=1)this.damageEnemy(e,{...base,kb:base.kb,dir:Math.sign(e.x-p.x)||p.face});
+   this.emit('ring',{x:p.x,y:p.y,rx:h.rx,ry:h.ry,kind:this.heroId});
+  }else if(h.kind==='shot'||h.kind==='fan'){
+   const n=h.count||1;for(let i=0;i<n;i++){const a=(i-(n-1)/2)*(h.spread||0);this.shots.push({id:++this.serial,friendly:true,x:p.x+p.face*30,y:p.y,z:48,vx:Math.cos(a)*h.speed*p.face,vy:Math.sin(a)*h.speed*.35,r:h.r,life:1.1,dmg:base.dmg,kb:base.kb,launch:0,heavy:base.heavy,pierce:h.pierce||1,hit:[],kind:h.shot,skill:p.act.kind});}
+   this.emit('shoot',{x:p.x,y:p.y,face:p.face,kind:h.shot});
+  }else if(h.kind==='meteors'){
+   const targets=this.alive.slice().sort((a,b)=>Math.abs(a.x-p.x)-Math.abs(b.x-p.x));
+   for(let i=0;i<h.count;i++){const t=targets[i%Math.max(1,targets.length)],x=t?t.x+(i>=targets.length?(this.random()-.5)*160:0):p.x+p.face*(120+i*80),y=t?t.y+(i>=targets.length?(this.random()-.5)*60:0):p.y;this.blasts.push({x:clampN(x,40,920),y:clampN(y,RIFT_FLOOR.top,RIFT_FLOOR.bottom),r:h.r,t:.35+i*.12,max:.35+i*.12,dmg:base.dmg,kind:'meteor',launch:380});}
+  }else if(h.kind==='rain'){
+   this.rains.push({x:p.x+p.face*(h.width/2+40),y:p.y,w:h.width,h:150,t:h.duration,max:h.duration,tick:0,interval:h.duration/h.ticks,dmg:base.dmg});this.emit('rain',{x:p.x,face:p.face});
+  }
+ }
+ damageEnemy(e,o){
+  if(e.dead)return 0;const p=this.player;
+  let dmg=o.dmg*(e.hp<=e.maxHp*.3?1+.4*this.rank('execute'):1);
+  if(p.riposte&&o.kind!=='dot'){dmg*=2;p.riposte=false;}
+  dmg=Math.max(1,Math.round(dmg*(.92+this.random()*.16)));
+  const dealt=Math.min(e.hp,dmg);e.hp-=dmg;e.flash=.12;
+  const leech=.03*this.rank('leech');if(leech)p.hp=Math.min(p.maxHp,p.hp+dealt*leech);
+  if(o.kind!=='dot'&&o.kind!=='chain'){
+   p.rift=Math.min(100,p.rift+(o.kind==='ult'?0:(o.kind==='basic'?3.2:2.2))*(1+.35*this.rank('resonance')));
+   this.combo++;this.comboT=2.2;this.maxCombo=Math.max(this.maxCombo,this.combo);
+   this.hitstop=Math.max(this.hitstop,o.heavy?.085:.045);
+  }
+  const dir=o.dir||Math.sign(e.x-p.x)||p.face,armored=e.boss||e.type==='brute'&&e.state==='wind';
+  if(!armored){
+   e.vx=dir*o.kb*(e.type==='brute'?.45:1);e.stun=Math.max(e.stun,o.heavy?.5:.28);
+   if(e.state==='wind'){e.state='idle';e.cd=Math.max(e.cd,.6);this.cancelOwned(e);}
+   if(o.launch&&e.type!=='brute'){e.vz=o.launch;e.air=true;}
+  }else if(e.boss)this.staggerBoss(e,dealt);
+  if(o.freeze)e.freeze=Math.max(e.freeze,o.freeze);
+  this.emit('hit',{x:e.x,y:e.y,z:e.z,dmg,heavy:o.heavy,boss:!!e.boss,kind:o.kind,id:e.id,crit:dmg>=this.hero.atk*3});
+  if(e.hp<=0)this.killEnemy(e);
+  else if(e.boss&&!e.enraged&&e.hp<=e.maxHp*.5){e.enraged=true;this.emit('enrage',{x:e.x,y:e.y,name:e.boss.name});}
+  return dealt;
+ }
+ staggerBoss(e,dealt){e.poise=(e.poise||0)+dealt;if(e.poise>=e.maxHp*.12&&e.state!=='stagger'){e.poise=0;e.state='stagger';e.t=1.4;this.cancelOwned(e);e.dash=null;this.emit('stagger',{x:e.x,y:e.y});}}
+ cancelOwned(e){this.hazards=this.hazards.filter(h=>h.owner!==e.id||h.wind<=0);}
+ killEnemy(e){
+  e.dead=true;e.deadT=0;e.hp=0;this.kills++;this.cancelOwned(e);
+  const pts=e.boss?3000+this.region*1000:RIFT_ENEMIES[e.type].score;this.score+=Math.round(pts*(1+this.region*.25)*(1+Math.min(this.combo,50)/50));
+  this.hitstop=Math.max(this.hitstop,e.boss?.35:.07);if(e.boss)this.slow=Math.max(this.slow,1.1);
+  this.player.mp=Math.min(this.player.maxMp,this.player.mp+(e.boss?60:6));
+  this.emit('kill',{x:e.x,y:e.y,z:e.z,type:e.type,boss:!!e.boss,id:e.id});
+ }
+ hitPlayer(dmg,src={}){
+  const p=this.player;if(this.state!=='playing')return 0;
+  if(p.inv>0){
+   if(p.dash>0&&!p.perfectUsed&&this.time-p.dashStart<=RIFT_DASH.perfect){p.perfectUsed=true;this.perfects++;this.slow=Math.max(this.slow,.55);p.rift=Math.min(100,p.rift+18);p.mp=Math.min(p.maxMp,p.mp+10);if(this.rank('riposte')){p.riposte=true;p.dashCd=0;}this.score+=150;this.emit('perfect',{x:p.x,y:p.y});}
+   return 0;
+  }
+  const d=Math.max(1,Math.round(dmg*(1-this.guard)));p.hp=Math.max(0,p.hp-d);this.damageTaken+=d;this.fightDamage+=d;
+  p.inv=.75;p.hurt=.26;p.act=null;p.buffer=null;p.vx=(src.dir||(src.x!=null?Math.sign(p.x-src.x):-p.face)||1)*260;this.combo=0;
+  this.emit('hurt',{x:p.x,y:p.y,dmg:d});
+  if(p.hp<=0){this.state='lost';this.emit('defeat',{});}
+  return d;
+ }
+
+ // ---------- simulation ----------
+ step(rawDt,input={}){
+  if(this.state!=='playing')return;rawDt=clampN(rawDt,0,.05);
+  if(this.hitstop>0){this.hitstop=Math.max(0,this.hitstop-rawDt);return;}
+  let dt=rawDt;if(this.slow>0){this.slow=Math.max(0,this.slow-rawDt);dt*=.35;}
+  this.time+=dt;this.updatePlayer(dt,input);this.updateQueue(dt);
+  for(const e of this.enemies)this.updateEnemy(e,dt);
+  this.updateHazards(dt);this.updateShots(dt);this.updateBlasts(dt);
+  this.comboT-=dt;if(this.comboT<=0)this.combo=0;
+  this.enemies=this.enemies.filter(e=>!e.dead||(e.deadT+=dt)<.9);
+  this.checkClear(dt);
+ }
+ updatePlayer(dt,input){
+  const p=this.player;
+  for(const k of ['inv','hurt','skillCd','dashCd'])p[k]=Math.max(0,p[k]-dt);p.stepT-=dt;
+  p.mp=Math.min(p.maxMp,p.mp+this.mpRegen*dt);
+  if(p.buffer){p.buffer.t-=dt;if(p.buffer.t<=0)p.buffer=null;}
+  let mx=clampN(Number(input.x)||0,-1,1),my=clampN(Number(input.y)||0,-1,1);const len=Math.hypot(mx,my);if(len>1){mx/=len;my/=len;}
+  if(p.dash>0){p.dash-=dt;p.x+=p.face*RIFT_DASH.speed*dt;
+   if(this.rank('afterimage'))for(const e of this.alive)if(!p.dashHits.includes(e.id)&&Math.abs(e.x-p.x)<38&&Math.abs(e.y-p.y)<40){p.dashHits.push(e.id);this.damageEnemy(e,{dmg:this.hero.atk*this.damageMult*.8*this.rank('afterimage'),kb:20,kind:'dot'});}
+  }else if(p.hurt>0){p.x+=p.vx*dt;p.vx*=Math.pow(.02,dt);}
+  else if(p.act){
+   const a=p.act;a.t+=dt;
+   if(a.kind==='basic'&&a.t<a.def.at)p.x+=p.face*(this.heroId==='blade'?150:40)*dt;
+   while(a.fired<a.hits.length&&a.t>=a.hits[a.fired].at){this.fireHit(a.hits[a.fired]);a.fired++;
+    if(a.kind==='basic'&&this.rank('chain')&&this.basicCount%4===0&&a.fired===1)this.chainLightning();}
+   if(a.t>=a.dur)p.act=null;
+   else if(a.kind!=='ult'&&a.fired>=a.hits.length&&len>.3&&a.t>a.dur*.7)p.act=null;
+  }else{
+   p.x+=mx*this.speed*dt;p.y+=my*this.speed*.62*dt;if(Math.abs(mx)>.15)p.face=mx>0?1:-1;
+  }
+  p.moving=!p.act&&p.dash<=0&&p.hurt<=0&&len>.15;
+  if(!p.act&&p.buffer&&this.canAct()){const b=p.buffer;p.buffer=null;this.tryAction(b.kind);}
+  else if(p.act&&p.buffer&&this.cancellable(p.buffer.kind)){const b=p.buffer;p.buffer=null;p.act=null;this.tryAction(b.kind);}
+  if(input.attack&&!p.act&&this.canAct())this.attack();
+  p.x=clampN(p.x,RIFT_FLOOR.left,RIFT_FLOOR.right);p.y=clampN(p.y,RIFT_FLOOR.top,RIFT_FLOOR.bottom);
+ }
+ chainLightning(){
+  const p=this.player,targets=this.alive.slice().sort((a,b)=>Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y)).slice(0,2);
+  for(const t of targets){this.emit('chain',{x1:p.x,y1:p.y,x2:t.x,y2:t.y});this.damageEnemy(t,{dmg:this.hero.atk*this.damageMult*(.9+.6*this.rank('chain')),kb:30,kind:'chain'});}
+ }
+ updateQueue(dt){
+  if(!this.queue.length)return;const active=this.alive.length;
+  for(const q of this.queue)q.delay-=dt;
+  while(this.queue.length&&this.queue[0].delay<=0&&active+1<=6){const q=this.queue.shift();this.enemies.push(this.makeEnemy(q.type,{side:q.side}));if(this.alive.length>=6)break;}
+ }
+ updateEnemy(e,dt){
+  if(e.dead)return;const p=this.player;
+  e.flash=Math.max(0,e.flash-dt);e.stun=Math.max(0,e.stun-dt);
+  const frozen=e.freeze>0;if(frozen)e.freeze=Math.max(0,e.freeze-dt);
+  if(e.air||e.z>0){e.vz-=1500*dt;e.z+=e.vz*dt;e.x+=e.vx*dt;if(e.z<=0){e.z=0;e.vz=0;if(e.air){e.air=false;e.stun=Math.max(e.stun,.45);this.emit('land',{x:e.x,y:e.y});}}}
+  else if(e.vx){e.x+=e.vx*dt;e.vx*=Math.pow(.004,dt);if(Math.abs(e.vx)<5)e.vx=0;}
+  e.x=e.state==='enter'?e.x:clampN(e.x,RIFT_FLOOR.left,RIFT_FLOOR.right);
+  if(e.stun>0||e.air||e.z>0)return;
+  const pace=frozen?.25:e.enraged?1.25:1;dt*=pace;
+  if(e.boss)return this.updateBoss(e,dt);
+  const d=RIFT_ENEMIES[e.type],dx=p.x-e.x,dy=p.y-e.y;
+  if(e.state==='enter'){e.x+=Math.sign(480-e.x)*d.speed*1.3*dt;e.face=Math.sign(480-e.x)||-1;if(e.x>70&&e.x<890)e.state='idle';return;}
+  if(e.state==='dash'){const k=Math.min(1,dt/Math.max(.001,e.dash.t));e.x+=(e.dash.x-e.x)*k;e.y+=(e.dash.y-e.y)*k;e.dash.t-=dt;if(e.dash.t<=0){e.state='idle';e.dash=null;e.cd=d.cd;}return;}
+  if(e.state==='wind'){e.t-=dt;if(e.t<=0){e.state='recover';e.t=.35;}return;}
+  if(e.state==='recover'){e.t-=dt;if(e.t<=0){e.state='idle';e.cd=d.cd*(.8+this.random()*.4);}return;}
+  e.cd-=dt;e.face=dx>=0?1:-1;
+  const want=d.ranged?(Math.abs(dx)<220?-1:Math.abs(dx)>d.range?1:0):e.type==='wraith'?(Math.abs(dx)>d.range-30?1:0):(Math.abs(dx)>d.range-12?1:0);
+  // keep a little vertical spacing so groups don't stack on one lane
+  let sep=0;for(const o of this.alive)if(o!==e&&Math.abs(o.x-e.x)<40&&Math.abs(o.y-e.y)<26)sep+=e.y>=o.y?1:-1;
+  e.x+=want*Math.sign(dx)*d.speed*dt;e.y+=clampN(dy*(d.ranged?.6:1.4),-d.speed*.7,d.speed*.7)*dt+sep*30*dt;e.y=clampN(e.y,RIFT_FLOOR.top,RIFT_FLOOR.bottom);
+  const inRange=Math.abs(dx)<=d.range&&Math.abs(dy)<(d.ranged||e.type==='wraith'?70:34);
+  if(e.cd<=0&&inRange)this.enemyAttack(e,d);
+ }
+ enemyAttack(e,d){
+  const p=this.player,dmg=d.dmg*e.dmgMult;e.state='wind';e.t=d.wind+.05;
+  if(e.type==='grunt')this.addHazard({shape:'rect',x1:e.face>0?e.x:e.x-d.range,x2:e.face>0?e.x+d.range:e.x,y:e.y,h:30,wind:d.wind,dmg,owner:e.id,kind:'slash'});
+  else if(e.type==='brute')this.addHazard({shape:'circle',x:e.x+e.face*70,y:e.y,rx:95,ry:42,wind:d.wind,dmg,owner:e.id,kind:'slam'});
+  else if(e.type==='archer')this.addHazard({shape:'aim',x1:e.x,y1:e.y,x2:p.x,y2:p.y,wind:d.wind,dmg,owner:e.id,kind:'arrow'});
+  else if(e.type==='wraith'){const tx=clampN(e.x+Math.sign(p.x-e.x)*330,60,900),ty=clampN(p.y,RIFT_FLOOR.top,RIFT_FLOOR.bottom);this.addHazard({shape:'line',x1:e.x,y1:e.y,x2:tx,y2:ty,w:34,wind:d.wind,dmg,owner:e.id,kind:'dash'});}
+ }
+ addHazard(h){h.maxWind=h.wind;h.life=.35;h.done=false;this.hazards.push(h);return h;}
+ inHazard(h,x,y){
+  if(h.shape==='circle')return((x-h.x)/h.rx)**2+((y-h.y)/h.ry)**2<=1;
+  if(h.shape==='rect')return x>=h.x1-12&&x<=h.x2+12&&Math.abs(y-h.y)<=h.h;
+  if(h.shape==='line'){const vx=h.x2-h.x1,vy=h.y2-h.y1,l2=vx*vx+vy*vy||1,t=clampN(((x-h.x1)*vx+(y-h.y1)*vy)/l2,0,1);return Math.hypot(x-(h.x1+vx*t),(y-(h.y1+vy*t))*1.3)<=h.w;}
+  return false;
+ }
+ updateHazards(dt){
+  const p=this.player;
+  for(const h of this.hazards){
+   if(h.wind>0){h.wind-=dt;if(h.wind>0)continue;}
+   if(!h.done){h.done=true;const owner=this.enemies.find(e=>e.id===h.owner);
+    if(h.shape==='aim'){const a=Math.atan2(h.y2-h.y1,h.x2-h.x1),sp=h.speed||560;this.shots.push({id:++this.serial,friendly:false,x:h.x1,y:h.y1,z:46,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,r:12,life:1.6,dmg:h.dmg,kind:h.kind==='seed'?'seed':h.kind==='shard'?'shard':'arrow',hit:[]});}
+    else{if(h.kind==='dash'&&owner&&!owner.dead){owner.state='dash';owner.dash={x:h.x2,y:h.y2,t:.18};}
+     if(h.kind==='charge'&&owner&&!owner.dead){owner.state='dash';owner.dash={x:h.tx,y:owner.y,t:.3};}
+     if(this.inHazard(h,p.x,p.y))this.hitPlayer(h.dmg,{x:h.x??h.x1});
+     this.emit('impact',{kind:h.kind,x:h.x??(h.x1+h.x2)/2,y:h.y??h.y1,shape:h.shape,h});}
+   }
+   h.life-=dt;
+  }
+  this.hazards=this.hazards.filter(h=>h.wind>0||h.life>0);
+ }
+ updateShots(dt){
+  const p=this.player;
+  for(const s of this.shots){
+   s.x+=s.vx*dt;s.y+=s.vy*dt;s.life-=dt;
+   if(s.y<RIFT_FLOOR.top-30||s.y>RIFT_FLOOR.bottom+20||s.x<-60||s.x>1020)s.life=0;
+   if(s.life<=0)continue;
+   if(s.friendly){for(const e of this.alive){if(s.hit.includes(e.id))continue;const reach=s.r+(e.boss?55:22);if(Math.abs(e.x-s.x)<reach&&Math.abs(e.y-s.y)<reach*.9+(e.boss?20:8)){s.hit.push(e.id);this.damageEnemy(e,{dmg:s.dmg,kb:s.kb||45,heavy:s.heavy,kind:s.skill,dir:Math.sign(s.vx)});s.pierce--;if(s.pierce<=0){s.life=0;break;}}}}
+   else if(Math.abs(p.x-s.x)<s.r+16&&Math.abs(p.y-s.y)<s.r+18){const dealt=this.hitPlayer(s.dmg,{dir:Math.sign(s.vx)});if(dealt||p.dash<=0)s.life=0;}
+  }
+  this.shots=this.shots.filter(s=>s.life>0);
+ }
+ updateBlasts(dt){
+  for(const b of this.blasts){b.t-=dt;if(b.t<=0&&!b.done){b.done=true;for(const e of this.alive)if(((e.x-b.x)/(b.r+(e.boss?40:0)))**2+((e.y-b.y)/(b.r*.5+(e.boss?20:0)))**2<=1)this.damageEnemy(e,{dmg:b.dmg,kb:120,launch:b.launch,heavy:true,kind:'ult',dir:Math.sign(e.x-b.x)||1});this.emit('blast',{x:b.x,y:b.y,r:b.r});}}
+  this.blasts=this.blasts.filter(b=>!b.done||b.t>-.4);
+  for(const r of this.rains){r.t-=dt;r.tick-=dt;if(r.tick<=0&&r.t>0){r.tick=r.interval;for(const e of this.alive)if(Math.abs(e.x-r.x)<=r.w/2&&Math.abs(e.y-r.y)<=r.h)this.damageEnemy(e,{dmg:r.dmg,kb:10,kind:'dot'});}}
+  this.rains=this.rains.filter(r=>r.t>0);
+ }
+ // ---------- bosses ----------
+ updateBoss(e,dt){
+  const p=this.player,b=e.boss,dx=p.x-e.x;
+  if(e.state==='enter')e.state='idle';
+  if(e.state==='stagger'){e.t-=dt;if(e.t<=0){e.state='idle';e.cd=.8;}return;}
+  if(e.state==='dash'){const k=Math.min(1,dt/Math.max(.001,e.dash.t));e.x+=(e.dash.x-e.x)*k;e.y+=(e.dash.y-e.y)*k;e.dash.t-=dt;if(e.dash.t<=0){e.state='recover';e.t=.5;e.dash=null;}return;}
+  if(e.state==='wind'||e.state==='recover'){e.t-=dt;if(e.t<=0){if(e.state==='wind'){e.state='recover';e.t=.55;}else{e.state='idle';e.cd=b.cd*(e.enraged?.62:1);}}return;}
+  e.face=dx>=0?1:-1;e.cd-=dt;
+  const desired=150;if(Math.abs(dx)>desired)e.x+=Math.sign(dx)*b.speed*dt;e.y+=clampN(p.y-e.y,-b.speed*.6,b.speed*.6)*dt;e.y=clampN(e.y,RIFT_FLOOR.top+10,RIFT_FLOOR.bottom-10);
+  if(e.cd<=0){const list=b.patterns;const name=list[e.pattern%list.length];e.pattern+=1+(this.random()<.35?1:0);this.bossAttack(e,name);}
+ }
+ bossAttack(e,name){
+  const p=this.player,b=e.boss,dmg=b.dmg*e.dmgMult,fast=e.enraged?.8:1;let wind=.9*fast;
+  const H=o=>this.addHazard({owner:e.id,dmg,...o});
+  if(name==='slam'){H({shape:'circle',x:e.x+e.face*90,y:e.y,rx:150,ry:62,wind,kind:'slam'});if(e.enraged)H({shape:'circle',x:e.x-e.face*90,y:e.y,rx:120,ry:52,wind:wind+.35,kind:'slam'});}
+  else if(name==='charge'){const tx=e.face>0?900:60;H({shape:'rect',x1:Math.min(e.x,tx),x2:Math.max(e.x,tx),y:e.y,h:44,wind,kind:'charge',tx});}
+  else if(name==='quake'){for(let i=0;i<4;i++)H({shape:'circle',x:clampN(e.x+e.face*(110+i*150),60,900),y:clampN(e.y+(p.y-e.y)*(i+1)/4,RIFT_FLOOR.top,RIFT_FLOOR.bottom),rx:80,ry:36,wind:wind*.7+i*.22,kind:'quake'});wind+=.66;}
+  else if(name==='erupt'){const n=e.enraged?5:4;for(let i=0;i<n;i++)H({shape:'circle',x:clampN(p.x+(i?(this.random()-.5)*300:0),60,900),y:clampN(p.y+(i?(this.random()-.5)*130:0),RIFT_FLOOR.top,RIFT_FLOOR.bottom),rx:62,ry:28,wind:wind+i*.12,kind:b.id==='witch'?'ice':b.id==='knight'||b.id==='devourer'?'fire':'root'});wind+=n*.12;}
+  else if(name==='volley'){const n=e.enraged?7:5,base=Math.atan2(p.y-e.y,p.x-e.x);for(let i=0;i<n;i++){const a=base+(i-(n-1)/2)*.2;H({shape:'aim',x1:e.x,y1:e.y-10,x2:e.x+Math.cos(a)*700,y2:e.y+Math.sin(a)*700,wind:wind*.8,kind:b.id==='treant'?'seed':'shard',speed:430,dmg:dmg*.6});}}
+  else if(name==='beam'){H({shape:'rect',x1:40,x2:920,y:p.y,h:30,wind:wind+.15,kind:'beam'});if(e.enraged)H({shape:'rect',x1:40,x2:920,y:clampN(p.y+(p.y>400?-80:80),RIFT_FLOOR.top,RIFT_FLOOR.bottom),h:30,wind:wind+.55,kind:'beam'});wind+=.2;}
+  else if(name==='nova'){H({shape:'circle',x:e.x,y:e.y,rx:230,ry:100,wind:wind+.25,kind:'nova'});wind+=.25;}
+  else if(name==='summon'){if(this.alive.length<4)for(let i=0;i<2;i++)this.enemies.push(this.makeEnemy(i?'archer':'grunt',{side:i?-1:1}));wind=.6;}
+  e.state='wind';e.t=wind+.05;this.emit('bossCast',{name,x:e.x,y:e.y});
+ }
+ // ---------- progression ----------
+ checkClear(dt){
+  if(this.queue.length||this.alive.length)return;
+  this.clearT+=dt;if(this.clearT<1.1)return;
+  if(this.fightDamage===0)this.score+=500*(1+this.region);
+  if(this.isBossFight&&this.region===RIFT_REGIONS.length-1){this.score+=Math.max(0,Math.round(20000-this.time*12));this.state='won';this.emit('victory',{});return;}
+  if(this.isBossFight){const p=this.player;p.hp=Math.min(p.maxHp,p.hp+p.maxHp*.4);}
+  this.offers=this.rollOffers();this.state=this.offers.length?'choice':'playing';
+  if(this.state==='playing')this.advance();
+ }
+ rollOffers(){const pool=RIFT_BLESSINGS.filter(b=>this.rank(b.id)<b.max),out=[];while(pool.length&&out.length<3)out.push(pool.splice(Math.floor(this.random()*pool.length),1)[0].id);return out;}
+ choose(id){
+  if(this.state!=='choice'||!this.offers.includes(id))return false;const b=RIFT_BLESSINGS.find(x=>x.id===id);if(this.rank(id)>=b.max)return false;
+  this.blessings[id]=this.rank(id)+1;if(id==='vigor'){this.player.maxHp+=25;this.player.hp=Math.min(this.player.maxHp,this.player.hp+25);}
+  this.offers=[];this.state='playing';this.advance();return true;
+ }
+ advance(){if(this.fight<2)this.fight++;else{this.fight=0;this.region++;}this.beginFight();}
+ get progress(){return this.region*3+this.fight;}
 }
-if(typeof module!=='undefined')module.exports={RiftGame,RIFT_DIFFICULTIES,RIFT_COMBAT_ACTIONS,RIFT_PASSIVES,RIFT_WEAPONS,RIFT_ROUTES,RIFT_SHRINES,RIFT_COMPANIONS,RIFT_SHOP,RIFT_SYNERGIES,RIFT_STAGES,RIFT_RELICS,RIFT_CLASSES,RIFT_BRANCHES,RIFT_SPECIALIZATIONS};
+if(typeof module!=='undefined')module.exports={RiftGame,RIFT_HEROES,RIFT_ENEMIES,RIFT_BOSSES,RIFT_REGIONS,RIFT_BLESSINGS,RIFT_FLOOR,RIFT_DASH};
