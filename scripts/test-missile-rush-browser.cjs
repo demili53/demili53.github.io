@@ -38,88 +38,95 @@ const mode = page => page.evaluate(() => window.__missileRush.mode);
     await page.click('#startRush');
     await page.waitForTimeout(2500);
     let s = await game(page);
-    assert.equal(s.wave, 1); assert(s.missiles > 0, 'auto fire');
+    assert.equal(s.wave, 1); assert(s.shots > 0, 'auto fire');
+    assert.equal(s.units, 5); assert.deepEqual(s.fleet, { heavy: 0, fighter: 1, light: 0 });
     await page.keyboard.down('ArrowLeft'); await page.waitForTimeout(300); await page.keyboard.up('ArrowLeft');
-    await page.waitForTimeout(2500);
+    await page.waitForTimeout(3500);
     s = await game(page);
     assert(s.enemies > 0 || s.score > 0, 'enemies arrive');
     await page.screenshot({ path: path.join(out, 'missile-rush-wave1.png') });
 
-    // Operator capsules: each of + − × ÷ changes the squad size and the firepower with it.
-    assert.equal(s.units, 3);
+    // Operator gates: each of + − × ÷ changes the fleet size and the firepower with it.
     const power = async () => +(await page.locator('#powerHud').innerText()).replace(/,/g, '');
-    await page.evaluate(() => window.__missileRush.setUnits(4));
+    await page.evaluate(() => { const m = window.__missileRush; m.hold(); m.setUnits(4); });
     await page.waitForTimeout(250);
     const p4 = await power();
-    await page.evaluate(() => window.__missileRush.catchGate('+', 3)); assert.equal((await game(page)).units, 7);
-    await page.evaluate(() => window.__missileRush.catchGate('×', 2)); assert.equal((await game(page)).units, 14);
-    await page.evaluate(() => window.__missileRush.catchGate('-', 2)); assert.equal((await game(page)).units, 12);
-    await page.evaluate(() => window.__missileRush.catchGate('÷', 2)); assert.equal((await game(page)).units, 6);
-    await page.evaluate(() => window.__missileRush.catchGate('×', 2));
+    await page.evaluate(() => window.__missileRush.passGate('+', 3)); assert.equal((await game(page)).units, 7);
+    await page.evaluate(() => window.__missileRush.passGate('×', 2)); assert.equal((await game(page)).units, 14);
+    await page.evaluate(() => window.__missileRush.passGate('-', 2)); assert.equal((await game(page)).units, 12);
+    await page.evaluate(() => window.__missileRush.passGate('÷', 2)); assert.equal((await game(page)).units, 6);
+    await page.evaluate(() => window.__missileRush.passGate('×', 2));
     await page.waitForTimeout(250);
     s = await game(page);
     assert.equal(s.units, 12); assert.equal(s.peak, 14);
-    assert.deepEqual(s.log.slice(0, 5), ['×2', '÷2', '−2', '×2', '+3']);
+    assert.deepEqual(s.fleet, { heavy: 0, fighter: 2, light: 2 });
     assert(Math.abs(await power() - p4 * 3) <= 2, 'three times the units, three times the firepower');
-    assert.equal(await page.locator('#gateLog li:not(.empty)').count(), 5);
     assert.match(await page.locator('#unitsHud').innerText(), /12기/);
 
-    // A real capsule falls onto the squad and is applied on contact; pairs drop side by side.
-    await page.evaluate(() => { window.__missileRush.startWave(1); window.__missileRush.dropOnSquad('×', 3); });
-    await page.waitForFunction(() => window.__missileRush.snapshot().units === 36, null, { timeout: 5000 });
-    await page.evaluate(() => window.__missileRush.dropGates(true));
-    assert((await game(page)).gates.length >= 2, 'capsule pair on screen');
-    await page.waitForTimeout(1500);
+    // A real row spans the field: the fleet passes through exactly one lane, the one it is under.
+    await page.evaluate(() => { const m = window.__missileRush; m.hold(); m.setUnits(12); m.dropRow([{ op: '×', v: 3 }, { op: '×', v: 3 }, { op: '×', v: 3 }]); });
+    assert.deepEqual((await game(page)).rows, [['×3', '×3', '×3']]);
+    await page.waitForFunction(() => window.__missileRush.snapshot().units === 36, null, { timeout: 6000 });
+    await page.waitForTimeout(600);
+    assert.equal((await game(page)).units, 36, 'one row applies once');
+    await page.evaluate(() => window.__missileRush.dropRow([{ op: '+', v: 4 }, { op: '-', v: 3 }], 330));
+    await page.waitForTimeout(700);
     await page.locator('.rush-stage').screenshot({ path: path.join(out, 'missile-rush-levelup.png') });
 
-    // Missiles bend a − capsule toward +: −3 becomes something better while it is under fire.
-    await page.evaluate(() => { const m = window.__missileRush; m.startWave(1); m.setUnits(30); m.dropOnSquad('-', 3); });
-    await page.evaluate(() => new Promise(r => setTimeout(r, 0)));
-    await page.waitForFunction(() => { const g = window.__missileRush.snapshot().gates; return g.length && g.every(l => l !== '−3'); }, null, { timeout: 5000 }).catch(() => {});
+    // Fire bends a − gate toward +: −3 becomes something better while it is under fire.
+    await page.evaluate(() => { const m = window.__missileRush; m.hold(); m.pickWeapon('laser'); m.setUnits(30); m.dropRow([{ op: '-', v: 3 }, { op: '-', v: 3 }], 420); });
+    await page.waitForFunction(() => { const r = window.__missileRush.snapshot().rows; return !r.length || r[0].some(l => l !== '−3'); }, null, { timeout: 6000 });
+    await page.waitForFunction(() => !window.__missileRush.snapshot().rows.length, null, { timeout: 8000 });
     s = await game(page);
-    assert(s.units >= 28, `shot capsule lost its bite (units ${s.units}, log ${s.log[0]})`);
-    assert.notEqual(s.log[0], '−3');
+    assert(s.units >= 28, `shot gate lost its bite (units ${s.units})`);
 
     // Weapon crates: every weapon fires, the same crate levels it up, a falling crate is caught on contact.
-    await page.evaluate(() => { const m = window.__missileRush; m.holdCrates(); m.startWave(3); m.setUnits(40); });
-    for (const id of ['scatter', 'laser', 'homing', 'blast', 'missile']) {
-      await page.evaluate(w => { const m = window.__missileRush; m.pickWeapon(w); m.spawnAbove('drone'); m.spawnAbove('tank'); }, id);
-      const before = (await game(page)).score;
-      await page.waitForTimeout(2600);
+    const weapons = ['scatter', 'laser', 'homing', 'blast', 'chain', 'wave', 'missile'];
+    for (const id of weapons) {
+      const before = await page.evaluate(w => { const m = window.__missileRush; m.hold(); m.setUnits(40); m.pickWeapon(w); m.spawnAbove('drone', 300); m.spawnAbove('tank', 380); return m.snapshot().score; }, id);
+      let fired = false;
+      for (let i = 0; i < 26 && !fired; i++) { await page.waitForTimeout(100); fired = (await game(page)).shots > 0; }
+      await page.locator('.rush-stage').screenshot({ path: path.join(out, `missile-rush-weapon-${id}.png`) });
+      await page.waitForFunction(b => window.__missileRush.snapshot().score > b, before, { timeout: 8000 }).catch(() => {});
       s = await game(page);
       assert.equal(s.weapon, id);
-      assert(id === 'laser' || s.missiles > 0, `${id} fires`);
+      assert(fired, `${id} fires`);
       assert(s.score > before, `${id} destroys enemies (${before} -> ${s.score})`);
-      await page.locator('.rush-stage').screenshot({ path: path.join(out, `missile-rush-weapon-${id}.png`) });
-      await page.evaluate(() => { const m = window.__missileRush; m.startWave(3); m.setUnits(40); });
     }
+    assert.equal((await game(page)).wlevel, 1);
     await page.evaluate(() => window.__missileRush.pickWeapon('missile'));
     assert.equal((await game(page)).wlevel, 2);
     assert.match(await page.locator('#weaponName').innerText(), /미사일 Lv\.2/);
     await page.evaluate(() => window.__missileRush.dropCrate('laser'));
+    assert.deepEqual((await game(page)).crates, ['laser']);
     await page.waitForFunction(() => window.__missileRush.snapshot().weapon === 'laser', null, { timeout: 5000 });
     assert.match(await page.locator('#weaponName').innerText(), /관통 레이저 Lv\.1/);
+
+    // Kills in a row build a combo.
+    await page.evaluate(() => { const m = window.__missileRush; m.hold(); m.setUnits(60); for (let i = 0; i < 4; i++) m.spawnAbove('drone', 200 + i * 40); });
+    await page.waitForFunction(() => window.__missileRush.snapshot().combo >= 3, null, { timeout: 6000 });
 
     // Four bosses rotate; each one attacks in its own way.
     for (const [wave, id] of [[10, 'carrier'], [15, 'divider'], [20, 'hydra']]) {
       await page.evaluate(w => { const m = window.__missileRush; m.setUnits(60); m.startWave(w); }, wave);
-      await page.waitForTimeout(5200);
+      await page.waitForFunction(() => window.__missileRush.snapshot().boss, null, { timeout: 9000 });
+      await page.waitForFunction(() => { const g = window.__missileRush.snapshot(); return g.bullets > 0 || g.enemies > 1 || g.rows.length > 0; }, null, { timeout: 9000 }).catch(() => {});
       s = await game(page);
       assert.equal(s.boss, id);
-      assert(s.bullets > 0 || s.enemies > 1 || s.gates.length > 0, `${id} attacks`);
+      assert(s.bullets > 0 || s.enemies > 1 || s.rows.length > 0, `${id} attacks`);
       await page.locator('.rush-stage').screenshot({ path: path.join(out, `missile-rush-boss-${id}.png`) });
       if (await mode(page) !== 'play') break;
     }
-    assert.equal(await mode(page), 'play', 'squad of 60 survives the boss openings');
-    await page.evaluate(() => { const m = window.__missileRush; m.setUnits(20); m.pickWeapon('missile'); });
+    assert.equal(await mode(page), 'play', 'fleet of 60 survives the boss openings');
+    await page.evaluate(() => { const m = window.__missileRush; m.setUnits(200); m.pickWeapon('missile'); });
 
-    // Boss wave and missile evolution.
+    // Boss wave and warhead evolution.
     await page.evaluate(() => window.__missileRush.startWave(5));
-    await page.waitForTimeout(1800);
-    assert((await game(page)).enemies >= 1);
+    await page.waitForFunction(() => window.__missileRush.snapshot().boss === 'fortress', null, { timeout: 9000 });
     await page.screenshot({ path: path.join(out, 'missile-rush-boss.png') });
+    const tier = (await game(page)).tier;
     await page.evaluate(() => window.__missileRush.killBoss());
-    assert.equal((await game(page)).tier, 2);
+    assert.equal((await game(page)).tier, tier + 1);
     assert.match(await page.locator('#tierName').innerText(), /Mk\.II/);
 
     // Pause freezes the simulation.
@@ -165,7 +172,7 @@ const mode = page => page.evaluate(() => window.__missileRush.mode);
       await share.click('#startRush');
       await share.evaluate(() => window.__missileRush.setUnits(48));
       for (let i = 0; i < 2; i++) { await share.evaluate(() => window.__missileRush.startWave(5)); await share.evaluate(() => window.__missileRush.killBoss()); }
-      await share.evaluate(() => { window.__missileRush.startWave(10); window.__missileRush.dropGates(true); });
+      await share.evaluate(() => { window.__missileRush.startWave(10); window.__missileRush.dropRow([{ op: '+', v: 6 }, { op: '-', v: 4 }, { op: '×', v: 2 }], 330); });
       await share.waitForTimeout(3200);
       await share.evaluate(() => window.__missileRush.freeze());
       const shot = Buffer.from((await share.evaluate(() => document.getElementById('rushCanvas').toDataURL('image/png'))).split(',')[1], 'base64');
@@ -175,6 +182,6 @@ const mode = page => page.evaluate(() => window.__missileRush.mode);
       await share.screenshot({ path: path.join(root, 'assets/games/missile-rush/share.png') });
     }
     assert.deepEqual(errors, [], 'no page errors');
-    console.log('PASS: missile rush auto-fire, waves, operator capsules (+ − × ÷, falling catch, shot shifting), unit-proportional firepower, 5 weapons and crates, 4 bosses, boss evolution, pause freeze, game-over score event, mobile drag and layout');
+    console.log('PASS: missile rush auto-fire, waves, operator gate rows (+ − × ÷, lane pass, shot shifting), unit-proportional firepower, fleet composition, 7 weapons and crates, combo, 4 bosses, boss evolution, pause freeze, game-over score event, mobile drag and layout');
   } finally { await browser?.close(); server.close(); }
 })().catch(e => { console.error(e); process.exit(1); });
