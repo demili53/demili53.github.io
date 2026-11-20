@@ -1,4 +1,4 @@
-/* 비행기 게임 본체: 진행, 입력, 그리기, 소리. 규칙은 space-shooter-core.js, 기체 그림은 shooter-sprites.js. */
+/* 1945EX(비행기 게임) 본체: 진행, 입력, 그리기, 소리. 규칙은 space-shooter-core.js, 기체 그림은 shooter-sprites.js. */
 (function () {
   'use strict';
   const C = window.ShooterCore, Sprites = window.ShooterSprites, { W, H, clamp } = C;
@@ -759,7 +759,7 @@
     upgradePanel.classList.toggle('hidden', mode !== 'upgrade');
     startBtn.classList.toggle('hidden', mode === 'upgrade');
     quitBtn.classList.toggle('hidden', mode !== 'pause');
-    if (mode === 'title') { overlayTitle.textContent = '우주 슈팅 게임'; overlayText.textContent = `기체를 고르고 출격하세요. 최고 ${best.toLocaleString('en-US')}점`; startBtn.textContent = '출격'; }
+    if (mode === 'title') { overlayTitle.textContent = '1945EX'; overlayText.textContent = `기체를 고르고 출격하세요. 최고 ${best.toLocaleString('en-US')}점`; startBtn.textContent = '출격'; }
     else if (mode === 'pause') { overlayTitle.textContent = '일시정지'; overlayText.textContent = `점수 ${G.score.toLocaleString('en-US')} · 웨이브 ${G.wave}`; startBtn.textContent = '계속하기'; }
     else if (mode === 'upgrade') { overlayTitle.textContent = '보스 격파'; overlayText.textContent = '강화 하나를 고르세요.'; }
     else if (mode === 'over') {

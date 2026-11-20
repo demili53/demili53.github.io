@@ -35,7 +35,7 @@ const root = path.resolve(__dirname, '..');
     const run = (fn, arg) => page.evaluate(fn, arg);
 
     assert.equal(await run(() => ShooterGame.state), 'title');
-    assert.deepEqual(await run(() => window.__ranking), { gameId: 'space-shooter', gameName: '우주 슈팅' });
+    assert.deepEqual(await run(() => window.__ranking), { gameId: 'space-shooter', gameName: '1945EX' });
     assert.equal(await page.locator('h1').count(), 1);
     assert.equal(await page.locator('#gameOverlay').isVisible(), true);
     pass('대기 화면과 순위 연결');
