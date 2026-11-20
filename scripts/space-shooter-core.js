@@ -4,7 +4,7 @@
   else root.ShooterCore = factory();
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
-  const W = 480, H = 640, MAX_LEVEL = 5;
+  const W = 480, H = 640, MAX_LEVEL = 6;
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
   function rng(seed) {
     let a = seed >>> 0;
@@ -17,33 +17,51 @@
     speed: { name: '스피드형', note: '속도·연사 +20%', speed: 400, damage: .85, rate: .82, lives: 3 }
   };
   const WEAPONS = {
-    vulcan: { name: '발칸', letter: 'V', color: '#67e8f9', interval: .11 },
-    spread: { name: '스프레드', letter: 'S', color: '#fde047', interval: .17 },
-    laser: { name: '레이저', letter: 'L', color: '#86efac', interval: .16 },
-    missile: { name: '미사일', letter: 'M', color: '#fda4af', interval: .3 }
+    vulcan: { name: '발칸', letter: 'V', color: '#67e8f9', interval: .11, note: '정면 집중 연사', ex: '날개 사격 추가', bomb: '전방위 탄막' },
+    spread: { name: '스프레드', letter: 'S', color: '#fde047', interval: .17, note: '넓게 퍼지는 산탄', ex: '벽에 튕기는 탄', bomb: '도탄 산탄' },
+    laser: { name: '레이저', letter: 'L', color: '#86efac', interval: .16, note: '적을 꿰뚫는 광선', ex: '굵은 무한 관통', bomb: '레이저 포격' },
+    missile: { name: '미사일', letter: 'M', color: '#fda4af', interval: .3, note: '적을 쫓는 유도탄', ex: '명중 시 폭발', bomb: '미사일 일제 사격' },
+    plasma: { name: '플라즈마', letter: 'Z', color: '#c4b5fd', interval: .42, note: '느리지만 넓게 터지는 구체', ex: '폭발이 파편으로 갈라짐', bomb: '플라즈마 붕괴' },
+    chain: { name: '번개', letter: 'C', color: '#7dd3fc', interval: .2, note: '주변 적으로 옮겨 붙는 전격', ex: '5번 연쇄', bomb: '번개 폭풍' },
+    wave: { name: '파동', letter: 'W', color: '#f0abfc', interval: .26, note: '폭넓게 훑는 관통 파동', ex: '적탄을 지움', bomb: '대파동' }
   };
   const WEAPON_KEYS = Object.keys(WEAPONS);
 
-  /** 한 번 발사할 때 나가는 탄 목록. dx는 기체 중심에서의 가로 위치. */
+  /** 한 번 발사할 때 나가는 탄 목록. dx는 기체 중심에서의 가로 위치. 단계 6은 무기마다 성질이 바뀌는 EX 단계다. */
   function shots(weapon, level) {
-    const lv = clamp(Math.round(level), 1, MAX_LEVEL), out = [];
-    const add = (dx, vx, vy, r, dmg, extra) => out.push(Object.assign({ dx, vx, vy, r, dmg, pierce: 0 }, extra));
+    const lv = clamp(Math.round(level), 1, MAX_LEVEL), ex = lv >= MAX_LEVEL, out = [];
+    const add = (dx, vx, vy, r, dmg, extra) => out.push(Object.assign({ dx, vx, vy, r, dmg, pierce: 0, kind: weapon }, extra));
     if (weapon === 'spread') {
-      const count = [3, 5, 5, 7, 7][lv - 1];
-      for (let i = 0; i < count; i += 1) { const n = i - (count - 1) / 2; add(n * 4, n * 62, -560 + Math.abs(n) * 12, 4.5, lv >= 3 ? 1.3 : 1); }
+      const count = [3, 5, 5, 7, 7, 9][lv - 1];
+      for (let i = 0; i < count; i += 1) { const n = i - (count - 1) / 2; add(n * 4, n * 62, -560 + Math.abs(n) * 12, 4.5, lv >= 3 ? 1.3 : 1, ex ? { bounce: 2 } : null); }
     } else if (weapon === 'laser') {
-      const lanes = [1, 1, 2, 2, 3][lv - 1];
-      for (let i = 0; i < lanes; i += 1) add((i - (lanes - 1) / 2) * 12, 0, -900, 3.5, 1.4 + lv * .3, { pierce: 3 + lv });
+      const lanes = [1, 1, 2, 2, 3, 3][lv - 1];
+      for (let i = 0; i < lanes; i += 1) add((i - (lanes - 1) / 2) * (ex ? 16 : 12), 0, -900, ex ? 6 : 3.5, 1.4 + lv * .3, { pierce: ex ? 99 : 3 + lv });
     } else if (weapon === 'missile') {
-      const count = [2, 2, 4, 4, 6][lv - 1];
-      for (let i = 0; i < count; i += 1) { const n = i - (count - 1) / 2; add(n * 10, n * 70, -260, 5, 2.2 + lv * .2, { homing: 4 + lv * .4, speed: 430 + lv * 15 }); }
-      add(0, 0, -640, 3.5, 1);
+      const count = [2, 2, 4, 4, 6, 6][lv - 1];
+      for (let i = 0; i < count; i += 1) { const n = i - (count - 1) / 2; add(n * 10, n * 70, -260, 5, 2.2 + lv * .2, Object.assign({ homing: 4 + lv * .4, speed: 430 + lv * 15 }, ex ? { splash: 46 } : null)); }
+      add(0, 0, -640, 3.5, 1, { kind: 'vulcan' });
+    } else if (weapon === 'plasma') {
+      const count = [1, 1, 2, 2, 3, 3][lv - 1];
+      for (let i = 0; i < count; i += 1) { const n = i - (count - 1) / 2; add(n * 20, n * 46, -390, 8 + lv * .7, 3.6 + lv * 1.1, Object.assign({ splash: 42 + lv * 6 }, ex ? { shards: 6 } : null)); }
+    } else if (weapon === 'chain') {
+      const count = lv >= 4 ? 2 : 1;
+      for (let i = 0; i < count; i += 1) add((i - (count - 1) / 2) * 16, 0, -780, 5, 1.4 + lv * .32, { chain: ex ? 5 : 1 + Math.floor(lv / 2), range: ex ? 170 : 110 + lv * 6 });
+    } else if (weapon === 'wave') {
+      add(0, 0, -520, 6, 1.5 + lv * .4, Object.assign({ pierce: 99, width: 18 + lv * 6 }, ex ? { cancel: true } : null));
+      if (lv >= 4) for (const side of [-1, 1]) add(side * 8, side * 150, -480, 6, .9 + lv * .15, { pierce: 99, width: 14 + lv * 2 });
     } else {
-      const lanes = lv;
-      for (let i = 0; i < lanes; i += 1) add((i - (lanes - 1) / 2) * 9, (i - (lanes - 1) / 2) * 14, -680, 4, 1);
+      const lanes = Math.min(lv, 5);
+      for (let i = 0; i < lanes; i += 1) add((i - (lanes - 1) / 2) * 9, (i - (lanes - 1) / 2) * 14, -680, 4, ex ? 1.15 : 1);
+      if (ex) for (const side of [-1, 1]) add(side * 22, side * 210, -640, 4, 1.15);
     }
     return out;
   }
+  /** 보조 무기는 주 무기보다 두 단계 낮게, 최대 3단계로 나간다. */
+  const subLevel = level => clamp(level - 2, 1, 3);
+  /** 무기 숙련: 그 무기로 15 / 40 / 80기를 격추하면 한 단계씩 오른다. */
+  const MASTERY_STEPS = [15, 40, 80];
+  const masteryTier = kills => MASTERY_STEPS.filter(step => kills >= step).length;
   function fireInterval(weapon, ship, rateBonus) {
     return WEAPONS[weapon].interval * SHIPS[ship].rate * Math.pow(.92, rateBonus || 0);
   }
@@ -225,7 +243,12 @@
     { id: 'life', name: '긴급 수리', note: '라이프 +1', max: 99 },
     { id: 'bomb', name: '봄 보급', note: '봄 +2', max: 99 },
     { id: 'shield', name: '방어막', note: '다음 피격 1회 방어', max: 99 },
-    { id: 'magnet', name: '회수 자석', note: '아이템 흡수 범위 2배', max: 1 }
+    { id: 'magnet', name: '회수 자석', note: '아이템 흡수 범위 2배', max: 1 },
+    { id: 'option', name: '지원기', note: '함께 사격하는 지원기 +1 (최대 2)', max: 2 },
+    { id: 'pierce', name: '관통탄', note: '모든 탄이 적 1기를 더 꿰뚫음', max: 2 },
+    { id: 'crit', name: '치명타', note: '15% 확률로 2배 피해 (중첩 +10%)', max: 3 },
+    { id: 'sub', name: '보조 무기 증폭', note: '보조 무기 화력 +25%', max: 2 },
+    { id: 'keep', name: '화력 보존', note: '피격해도 화력이 내려가지 않음', max: 1 }
   ];
   /** 보스 격파 후 고를 강화 세 가지. 이미 한도에 닿은 것은 빼고 고른다. */
   function upgradeChoices(owned, state, random) {
@@ -236,6 +259,6 @@
   }
   const grade = score => score >= 200000 ? 'S' : score >= 80000 ? 'A' : score >= 25000 ? 'B' : 'C';
 
-  return Object.freeze({ W, H, MAX_LEVEL, SHIPS, WEAPONS, WEAPON_KEYS, ENEMIES, BOSSES, ATTACK_NAMES, UPGRADES, clamp, rng, shots, fireInterval, makeEnemy, stepEnemy, wavePlan, isBossWave,
+  return Object.freeze({ W, H, MAX_LEVEL, SHIPS, WEAPONS, WEAPON_KEYS, ENEMIES, BOSSES, ATTACK_NAMES, UPGRADES, clamp, rng, shots, subLevel, masteryTier, MASTERY_STEPS, fireInterval, makeEnemy, stepEnemy, wavePlan, isBossWave,
     makeBoss, bossKind, bossKindFor, bossTier, bossEnraged, nextAttack, stepBoss, stepBullet, chainMultiplier, upgradeChoices, grade, aimed, ringOf });
 });

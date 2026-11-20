@@ -54,10 +54,10 @@ const root = path.resolve(__dirname, '..');
     assert.deepEqual(await run(() => { const G = ShooterGame.run; return [G.kills, G.chain >= 1, G.score > 0, G.shots.length > 0]; }), [1, true, true, true]);
     pass('자동 발사로 격추하면 점수와 연쇄가 오른다');
 
-    await run(() => { const G = ShooterGame.run; G.plan = { boss: false, events: [{ t: 99, type: 'grunt', x: 0, y: 0 }] }; G.planI = 0; G.planT = 0; G.gems = []; G.items = [{ x: G.player.x, y: G.player.y - 30, kind: 'power', age: 0, offset: 0 }]; });
+    await run(() => { const G = ShooterGame.run; G.plan = { boss: false, events: [{ t: 99, type: 'grunt', x: 0, y: 0 }] }; G.planI = 0; G.planT = 0; G.gems = []; G.items = [{ x: G.player.x, y: G.player.y - 30, kind: 'power', age: 0, cycle: ['spread'] }]; });
     await tick(.5);
     assert.equal(await run(() => ShooterGame.run.level), 2);
-    await run(() => { const G = ShooterGame.run; G.weapon = 'vulcan'; G.items = [{ x: G.player.x, y: G.player.y - 30, kind: 'weapon', age: 1.5, offset: 0 }]; });   // 1.4초가 지나 확산으로 바뀐 상자
+    await run(() => { const G = ShooterGame.run; G.weapon = 'vulcan'; G.items = [{ x: G.player.x, y: G.player.y - 30, kind: 'weapon', age: 1.5, cycle: ['laser', 'spread', 'wave'] }]; });   // 1.4초가 지나 두 번째 무기로 바뀐 상자
     await tick(.4);
     assert.equal(await run(() => ShooterGame.run.weapon), 'spread');
     pass('강화 아이템과 무기 교체 아이템');
@@ -79,6 +79,40 @@ const root = path.resolve(__dirname, '..');
     assert.deepEqual(await run(() => { const G = ShooterGame.run; return [G.bombs, G.bullets.length, G.gems.length >= 12, G.player.invuln > 0]; }), [1, 0, true, true]);
     assert.match(await page.locator('#bombBtn').textContent(), /1/);
     pass('봄은 적탄을 보석으로 바꾼다');
+
+    // 무기: 교체하면 직전 무기가 보조 무기가 되고, 6단계에서 EX가 된다.
+    await run(() => { const G = ShooterGame.run; G.enemies = []; G.weapon = 'vulcan'; G.sub = null; G.level = 5; G.items = [{ x: G.player.x, y: G.player.y - 30, kind: 'weapon', age: 0, cycle: ['chain'] }]; });
+    await tick(.4);
+    assert.deepEqual(await run(() => [ShooterGame.run.weapon, ShooterGame.run.sub]), ['chain', 'vulcan']);
+    await tick(.6);
+    assert.ok(await run(() => ShooterGame.run.shots.some(s => s.kind === 'vulcan') && ShooterGame.run.shots.some(s => s.kind === 'chain')));
+    await run(() => ShooterGame.give('power'));
+    assert.equal(await run(() => ShooterGame.run.level), 6);
+    await run(() => ShooterGame.give('power'));
+    assert.equal(await run(() => ShooterGame.run.level), 6);
+    pass('보조 무기와 EX 단계');
+
+    await run(() => { const G = ShooterGame.run; G.shots = []; G.sub = null; G.player.x = 240; const a = ShooterGame.spawn('armored', 240, 300, { move: 'hover', holdY: 300 }), b = ShooterGame.spawn('armored', 300, 280, { move: 'hover', holdY: 280 }); a.hp = a.maxHp = b.hp = b.maxHp = 900; });
+    await tick(1);
+    assert.ok(await run(() => ShooterGame.run.enemies.every(e => e.hp < 900)));   // 번개가 옆의 적으로 옮겨 붙었다
+    await run(() => { const G = ShooterGame.run; G.weapon = 'plasma'; G.shots = []; G.enemies.forEach(e => { e.hp = 900; }); });
+    await tick(1.5);
+    assert.ok(await run(() => ShooterGame.run.enemies.every(e => e.hp < 900)));   // 폭발이 옆의 적까지 닿았다
+    pass('번개 연쇄와 플라즈마 폭발');
+
+    for (const weapon of await run(() => ShooterCore.WEAPON_KEYS)) {
+      const left = await run(w => { const G = ShooterGame.run; G.weapon = w; G.bombs = 1; G.shots = []; G.player.invuln = 0; G.player.x = 240; G.player.y = 540; G.enemies = []; for (const x of [200, 280]) { const e = ShooterGame.spawn('armored', x, 300, { move: 'hover', holdY: 300 }); e.hp = e.maxHp = 900; } ShooterGame.useBomb(); return G.bombs; }, weapon);
+      assert.equal(left, 0, weapon);
+      await tick(1.6);
+      assert.ok(await run(() => ShooterGame.run.enemies.some(e => e.hp < 885)), weapon);   // 기본 피해 15보다 더 들어갔다
+    }
+    pass('무기 7종마다 다른 봄');
+
+    await run(() => { const G = ShooterGame.run; G.weapon = 'laser'; G.mastery = { laser: 14 }; G.enemies = []; G.shots = []; G.beam = null; G.storm = null; ShooterGame.spawn('grunt', G.player.x, 300, { move: 'hover', holdY: 300 }).hp = 1; });
+    await tick(1);
+    assert.equal(await run(() => ShooterCore.masteryTier(ShooterGame.run.mastery.laser)), 1);
+    await run(() => { const G = ShooterGame.run; G.enemies = []; G.bullets = []; G.bombs = 2; G.weapon = 'vulcan'; G.gems = []; });
+    pass('무기 숙련');
 
     await page.keyboard.press('KeyP');
     assert.equal(await run(() => ShooterGame.state), 'paused');

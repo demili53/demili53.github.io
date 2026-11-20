@@ -13,10 +13,28 @@ check('편성표는 시간순이고 뒤 웨이브일수록 적이 많다', () =>
   assert.ok(C.wavePlan(12).events.length > C.wavePlan(1).events.length);
 });
 check('수송기는 3웨이브 주기로 나온다', () => { assert.ok(C.wavePlan(2).events.some(e => e.type === 'carrier')); assert.ok(!C.wavePlan(3).events.some(e => e.type === 'carrier')); });
-check('무기 4종은 강화 단계마다 화력이 줄지 않는다', () => {
+check('무기 7종은 강화 단계마다 화력이 줄지 않는다', () => {
   for (const key of C.WEAPON_KEYS) { let before = 0; for (let level = 1; level <= C.MAX_LEVEL; level += 1) { const total = C.shots(key, level).reduce((sum, s) => sum + s.dmg, 0) / C.fireInterval(key, 'balanced', 0); assert.ok(total >= before, `${key} ${level}`); before = total; } }
   assert.ok(C.shots('missile', 3).some(s => s.homing)); assert.ok(C.shots('laser', 1).every(s => s.pierce > 0));
 });
+check('EX 단계에서 무기마다 성질이 바뀐다', () => {
+  assert.equal(C.MAX_LEVEL, 6); assert.equal(C.WEAPON_KEYS.length, 7);
+  const ex = key => C.shots(key, 6), before = key => C.shots(key, 5);
+  assert.ok(ex('vulcan').length > before('vulcan').length);
+  assert.ok(ex('spread').every(s => s.bounce > 0) && before('spread').every(s => !s.bounce));
+  assert.ok(ex('laser').every(s => s.pierce >= 99));
+  assert.ok(ex('missile').some(s => s.splash) && !before('missile').some(s => s.splash));
+  assert.ok(ex('plasma').every(s => s.shards) && before('plasma').every(s => s.splash && !s.shards));
+  assert.ok(ex('chain')[0].chain > before('chain')[0].chain);
+  assert.ok(ex('wave')[0].cancel && !before('wave')[0].cancel);
+  for (const key of C.WEAPON_KEYS) for (const field of ['name', 'letter', 'color', 'note', 'ex', 'bomb']) assert.ok(C.WEAPONS[key][field], `${key}.${field}`);
+  assert.equal(new Set(C.WEAPON_KEYS.map(key => C.WEAPONS[key].letter)).size, 7);
+});
+check('보조 무기 단계와 무기 숙련 단계', () => {
+  assert.deepEqual([1, 2, 3, 4, 5, 6].map(C.subLevel), [1, 1, 1, 2, 3, 3]);
+  assert.deepEqual([0, 14, 15, 40, 79, 80, 500].map(C.masteryTier), [0, 0, 1, 2, 2, 3, 3]);
+});
+check('무기 강화 선택지가 있다', () => { for (const id of ['option', 'pierce', 'crit', 'sub', 'keep']) assert.ok(C.UPGRADES.some(u => u.id === id), id); });
 check('연사 강화와 기체 특성이 발사 간격에 반영된다', () => { assert.ok(C.fireInterval('vulcan', 'speed', 0) < C.fireInterval('vulcan', 'balanced', 0)); assert.ok(C.fireInterval('vulcan', 'balanced', 2) < C.fireInterval('vulcan', 'balanced', 0)); });
 check('적 체력은 웨이브에 따라 오른다', () => assert.ok(C.makeEnemy('grunt', 10, 0, 0).hp > C.makeEnemy('grunt', 1, 0, 0).hp));
 check('모든 적 종류가 움직이고 화면 밖으로 나가면 사라진다', () => {
