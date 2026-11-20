@@ -1,125 +1,154 @@
-const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
-const box=vm.createContext({});vm.runInContext(fs.readFileSync(path.join(__dirname,'sniper-core.js'),'utf8')+';this.Game=SniperGame;this.missions=SNIPER_MISSIONS;',box);
-const fresh=()=>new box.Game();const advance=(g,seconds)=>{for(let i=0;i<Math.ceil(seconds/.05);i++)g.step(.05);};
-function fire(g,a){g.scoped=true;g.cooldown=0;g.aimAt(a.x,a.y-24);return g.shoot();}
-function hit(g,a){const result=fire(g,a);advance(g,2.6);return result;}
-let g=fresh();assert.equal(g.actors.length,27);g.start();const actor=g.actors[0],time=g.remaining;
-assert.equal(fire(g,actor).kind,'target');assert.equal(g.state,'shot');assert.equal(actor.dead,false);assert.equal(g.score,0);assert.equal(g.shoot().kind,'blocked');assert.equal(g.reload(),false);assert.equal(g.scope(),false);
-advance(g,.5);assert.equal(actor.dead,false);assert.equal(g.remaining,time);g.pause();const frozen=JSON.stringify(g.shot);advance(g,1);assert.equal(JSON.stringify(g.shot),frozen);g.pause();assert.equal(g.state,'shot');advance(g,.65);assert.equal(actor.dead,true);assert.equal(g.state,'shot');assert(g.particles.length>0);assert.equal(g.totalHits,1);
-g.pause();const fall=actor.fallTime,particles=JSON.stringify(g.particles);advance(g,.5);assert.equal(actor.fallTime,fall);assert.equal(JSON.stringify(g.particles),particles);g.pause();advance(g,1.5);assert.equal(g.state,'success');assert(actor.fallTime>=1);assert.equal(g.targetsLeft,0);const score=g.score;assert.equal(g.shoot().kind,'blocked');assert.equal(g.score,score);
-g.next();assert.equal(g.actors.length,44);g.start();hit(g,g.actors[0]);assert.equal(g.state,'success');g.next();assert.equal(g.actors.length,52);g.start();advance(g,1);assert(g.actors[0].hidden);const prior=g.score;assert.equal(hit(g,g.actors[0]).kind,'miss');assert.equal(g.score,prior);advance(g,3);assert.equal(g.actors[0].hidden,false);hit(g,g.actors[0]);assert.equal(g.state,'success');for(let stage=3;stage<box.missions.length;stage++){g.next();g.start();hit(g,g.actors[0]);}assert.equal(g.state,'won');assert.equal(g.totalHits,box.missions.length);
-g=fresh();g.start();hit(g,g.actors.find(a=>!a.target));assert.equal(g.state,'failed');assert(g.failure.includes('오인'));assert(g.retry());assert.equal(g.score,0);assert.equal(g.mag,3);assert.equal(g.state,'briefing');
-g=fresh();g.start();hit(g,g.actors[0]);g.next();const checkpoint=g.score;g.start();hit(g,g.actors.find(a=>!a.target));g.retry();assert.equal(g.score,checkpoint);assert.equal(g.totalShots,1);assert.equal(g.totalHits,1);
-g=fresh();g.start();g.scoped=true;g.aimAt(30,40);for(let i=0;i<3;i++){g.cooldown=0;g.shoot();advance(g,2.6);}assert.equal(g.mag,0);assert.equal(g.alert,72);g.cooldown=0;assert.equal(g.shoot().kind,'empty');assert(g.reload());assert.equal(g.shoot().kind,'blocked');const remaining=g.remaining;g.pause();advance(g,2);assert.equal(g.reloadLeft,1.6);assert.equal(g.remaining,remaining);g.pause();advance(g,1.7);assert.equal(g.mag,3);assert.equal(g.reserve,6);for(let i=0;i<2;i++){g.cooldown=0;g.shoot();advance(g,2.6);}assert.equal(g.state,'failed');assert(g.failure.includes('노출'));
-g=fresh();g.start();g.scoped=true;g.holding=true;advance(g,4);assert.equal(g.holding,false);assert(g.focus<20);advance(g,5);assert(g.focus>75);g.remaining=.01;g.step(.05);assert.equal(g.state,'failed');
-g=fresh();g.start();g.scoped=true;for(let i=0;i<35;i++){const a=g.actors[0];g.aimAt(a.x,a.y-24);g.step(.05);}assert(g.identification>=1);assert(g.inspected.target);g.aimAt(-100,1000);assert.equal(g.aim.x,25);assert.equal(g.aim.y,510);
-for(const [i,m]of box.missions.entries()){const crowd=m.extras;assert.equal(crowd.length,[26,43,51,47,51,55][i]);assert(new Set(crowd.map(a=>a.role)).size>=10);assert.equal(m.targets.length,1);assert(m.targets[0].stripes&&m.targets[0].glasses&&m.targets[0].hat==='beanie');}
-g=fresh();g.start();for(let i=0;i<20;i++){g.mag=3;g.reserve=9;g.alert=0;g.cooldown=0;g.scoped=true;g.aimAt(30,40);g.shoot();advance(g,2.6);assert(g.particles.length<=18);}assert(g.actors.every(a=>Number.isFinite(a.x)));
-for(let stage=0;stage<box.missions.length;stage++){
- const game=fresh();game.mission=stage;game.loadMission();game.start();
- assert(new Set(game.actors.map(a=>a.action)).size>=9);
- const initial=game.actors.map(a=>JSON.stringify(a.pose)),animated=new Set();
- for(let frame=0;frame<90;frame++){game.step(.05);game.actors.forEach((a,i)=>{if(JSON.stringify(a.pose)!==initial[i])animated.add(i);assert.equal(a.x,a.pose.x);assert.equal(a.y,a.pose.y);});}
- assert.equal(animated.size,game.actors.length,`${stage}: every character should animate over a full activity cycle`);
- game.pause();const stopped=JSON.stringify(game.actors);advance(game,.8);assert.equal(JSON.stringify(game.actors),stopped);game.pause();
- fire(game,game.actors[0]);const flightPoses=JSON.stringify(game.actors.map(a=>a.pose));advance(game,.5);assert.equal(JSON.stringify(game.actors.map(a=>a.pose)),flightPoses);
- const bounds=fresh();bounds.mission=stage;bounds.loadMission();bounds.start();for(let n=0;n<500;n++){bounds.step(.05);assert(bounds.actors.every(a=>a.x>30&&a.x<930&&a.y>170&&a.y<510));}
+// Rules tests for "윌리를 찾아서 저격해라" (scripts/sniper-core.js). Run: node scripts/test-shadow-sniper.cjs
+const assert = require('assert');
+const C = require('./sniper-core.js');
+
+let passed = 0;
+function test(name, fn) { fn(); passed++; console.log('ok -', name); }
+
+// A point on a person that a bullet actually reaches (not hidden by a prop).
+function openPoint(stage, p, headOnly = false) {
+  const b = C.personBox(stage, p);
+  for (let fy = 0.08; fy < 0.95; fy += 0.04) for (let fx = -0.3; fx <= 0.3; fx += 0.1) {
+    const x = p.x + fx * b.w, y = p.y - b.h + fy * b.h, hit = C.hitTest(stage, x, y);
+    if (hit.kind === 'person' && hit.person === p && (!headOnly || hit.head)) return { x, y };
+  }
+  return null;
 }
-// Seeded crowd simulations cover long-running steering, reaction timing and recovery.
-function seeded(seed){return ()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};}
-for(let stage=0;stage<box.missions.length;stage++)for(let seed=1;seed<=4;seed++){
- const game=new box.Game(seeded(seed));game.mission=stage;game.loadMission();game.start();
- const initial=game.actors.map(a=>({x:a.x,y:a.y})),traveled=new Set(),states=new Set();
- for(let frame=0;frame<1000;frame++){
-  const previous=game.actors.map(a=>({x:a.x,y:a.y}));game.step(.05);
-  game.actors.forEach((a,i)=>{
-   states.add(a.motion.state);assert(Number.isFinite(a.x)&&Number.isFinite(a.y));
-   assert(a.x>=48&&a.x<=912&&a.y>=178&&a.y<=498);
-   assert(Math.hypot(a.x-previous[i].x,a.y-previous[i].y)<3,'no teleport while steering');
-   assert.equal(a.x,a.pose.x);assert.equal(a.y,a.pose.y);
-   if(Math.hypot(a.x-initial[i].x,a.y-initial[i].y)>20)traveled.add(i);
-   for(const o of game.obstacles)assert(!(Math.abs(a.x-o.x)<o.rx+11.99&&Math.abs(a.y-o.y)<o.ry+7.99),'avoid solid props');
-  });
- }
- assert(traveled.size>=game.actors.length/3,'crowd should explore destinations');
- assert(states.has('activity')&&states.has('travel')&&states.has('observe'));
- game.alertCrowd(480,300);const delays=game.actors.map(a=>a.motion.reaction.delay);
- assert(Math.max(...delays)-Math.min(...delays)>.2,'stagger reactions');
- game.pause();const paused=JSON.stringify(game.actors);advance(game,1);assert.equal(JSON.stringify(game.actors),paused);game.pause();
- const reacted=new Set(),fled=new Set();for(let frame=0;frame<140;frame++){game.step(.05);for(const a of game.actors){if(a.motion.state==='startled')reacted.add(a.id);if(a.motion.state==='flee')fled.add(a.id);}}
- assert.equal(reacted.size,game.actors.length);assert.equal(fled.size,game.actors.length);
- advance(game,12);assert(game.actors.every(a=>!['startled','flee','recover'].includes(a.motion.state)),'resume everyday routines');
+function noSway(run) { run.sway = () => ({ x: 0, y: 0 }); return run; }
+function playUntilDone(run) { for (let i = 0; i < 400 && run.state === 'shot'; i++) run.update(0.05); }
+// Move the target into the open so it can be shot, then return an aim point.
+function exposeTarget(run) {
+  const t = run.target; t.x = 800; t.y = 800; t.state = 'idle'; t.timer = 99;
+  for (const p of run.stage.people) if (p !== t && Math.abs(p.x - t.x) < 40 && p.y > t.y - 10) p.x = 200;
+  run.stage.props = run.stage.props.filter(o => !(Math.abs(o.x - t.x) < 200 && o.y > t.y - 60));
+  return openPoint(run.stage, t);
 }
-// A missed shot schedules a response without moving the frozen cinematic crowd.
-g=new box.Game(seeded(3));g.mission=1;g.loadMission();g.start();g.actors=g.actors.slice(0,2);
-g.actors.forEach((a,i)=>{Object.assign(a.motion,{x:400+i*40,y:300,vx:0,vy:0,goal:{x:440-i*40,y:300},pace:20,state:'travel',timer:7});});
-let minGap=Infinity;for(let frame=0;frame<80;frame++){g.step(.05);minGap=Math.min(minGap,Math.hypot(g.actors[0].x-g.actors[1].x,g.actors[0].y-g.actors[1].y));}
-assert(minGap>18,'approaching walkers must give each other room');
-g=new box.Game(seeded(7));g.start();g.scoped=true;g.aimAt(30,40);g.shoot();advance(g,1.1);
-assert(g.actors.every(a=>a.motion.reaction));const shotActors=JSON.stringify(g.actors);advance(g,.5);assert.equal(JSON.stringify(g.actors),shotActors);
-// Hit selection follows the visible front character and uses the body's transformed center.
-g=new box.Game(seeded(9));const back=g.actors[0],front=g.actors[1];
-for(const a of g.actors.slice(2))a.hidden=true;
-Object.assign(back,{x:400,y:300,hidden:false});Object.assign(front,{x:400,y:305,hidden:false});
-back.pose={...back.pose,bob:0,lean:0};front.pose={...front.pose,bob:3,lean:.2};
-assert.equal(g.actorAt(400+24*Math.sin(.2),308-24*Math.cos(.2)),front);
-// A walker reaches the other side of a blocking table without entering its footprint.
-g=new box.Game(seeded(31));g.mission=1;g.loadMission();g.start();g.actors=g.actors.slice(0,1);
-const walker=g.actors[0];g.obstacles=[{x:400,y:300,rx:20,ry:20}];
-Object.assign(walker.motion,{x:340,y:300,vx:0,vy:0,pace:24});
-assert(g.planRoute(walker,{x:460,y:300}));assert(walker.motion.route.length>1);
-g.setBehavior(walker,'travel','walk',20);
-for(let i=0;i<240;i++){g.step(.05);assert(!(Math.abs(walker.x-400)<34&&Math.abs(walker.y-300)<30));}
-assert(Math.hypot(walker.x-460,walker.y-300)<8,'complete the detour');
-// Conversations are reciprocal, pause safely, and are interrupted by danger.
-g=new box.Game(seeded(41));g.mission=1;g.loadMission();g.start();g.actors=g.actors.slice(0,2);
-g.actors.forEach((a,i)=>{Object.assign(a,{x:400+i*55,y:300,hidden:false});Object.assign(a.motion,{x:a.x,y:a.y,stationary:false,socialCooldown:0,state:'activity',timer:3});});
-assert(g.tryConversation(g.actors[0]));assert.equal(g.actors[0].motion.partner,g.actors[1].id);assert.equal(g.actors[1].motion.partner,g.actors[0].id);
-assert.equal(g.actors[0].motion.facing,1);assert.equal(g.actors[1].motion.facing,-1);
-g.pause();const socialSnapshot=JSON.stringify(g.actors);advance(g,1);assert.equal(JSON.stringify(g.actors),socialSnapshot);g.pause();
-g.alertCrowd(400,300);const fear=g.actors[0].motion.fear;advance(g,1.2);assert(g.actors.every(a=>a.motion.partner===null));assert(g.actors.every(a=>['startled','flee'].includes(a.motion.state)));
-advance(g,20);assert(g.actors.every(a=>a.motion.fear<fear*.1),'threat memory fades');
-// Ordinary unmodified crowds also form conversations, rather than only test fixtures.
-g=new box.Game(seeded(13));g.mission=1;g.loadMission();g.start();let socialCount=0;
-for(let i=0;i<1000;i++){g.step(.05);socialCount+=g.actors.filter(a=>a.motion.state==='social').length;}
-assert(socialCount>0);
-// Prediction begins before the short-range separation radius; receding walkers do not yield.
-function approachingPair(){const game=new box.Game(seeded(72));game.mission=1;game.loadMission();game.start();game.actors=game.actors.slice(0,2);
- game.actors.forEach((a,i)=>{Object.assign(a,{x:350+i*65,y:300});Object.assign(a.motion,{x:a.x,y:a.y,vx:i?-24:24,vy:0,pace:24,state:'travel',timer:10,route:[],goal:{x:i?300:480,y:300}});});return game;}
-g=approachingPair();g.step(.05);assert(g.actors[1].motion.yielding>0);assert(g.actors[0].motion.yielding===0);assert(Math.abs(g.actors[0].x-g.actors[1].x)>38);
-g.pause();const yieldSnapshot=JSON.stringify(g.actors);advance(g,1);assert.equal(JSON.stringify(g.actors),yieldSnapshot);
-g=approachingPair();g.actors.forEach((a,i)=>{a.motion.vx=i?24:-24;a.motion.goal.x=i?480:300;});g.step(.05);assert(g.actors.every(a=>a.motion.yielding===0));
-// Repeated shots extend vigilance; waiting does not immediately resume a cheerful activity.
-g=new box.Game(seeded(73));g.start();g.alertCrowd(450,300);const firstVigilance=g.actors[0].motion.vigilance;g.alertCrowd(450,300);
-const cautious=g.actors[0];assert(cautious.motion.vigilance>firstVigilance);cautious.motion.reaction=null;g.setBehavior(cautious,'observe','look',.01);g.step(.05);assert.equal(cautious.motion.state,'observe');
-advance(g,18);assert.equal(cautious.motion.alarmCount,0);assert.equal(cautious.motion.vigilance,0);
-// Running intensity eases in and remains frozen when the game is paused.
-g=new box.Game(seeded(74));g.mission=1;g.loadMission();g.start();g.actors=g.actors.slice(0,1);const runner=g.actors[0];
-Object.assign(runner.motion,{x:400,y:300,vx:38,vy:0,state:'flee',pace:24,timer:3,escapeLeft:3,fear:1,goal:{x:500,y:300},route:[]});
-g.step(.05);assert(runner.motion.runBlend>0&&runner.motion.runBlend<.4);advance(g,.5);assert(runner.motion.runBlend>.6);
-g.pause();const runSnapshot=JSON.stringify(runner);advance(g,1);assert.equal(JSON.stringify(runner),runSnapshot);
-// Two distinct visitor places can be reserved; a third visitor must choose elsewhere.
-g=new box.Game(seeded(81));g.mission=1;g.loadMission();g.start();g.actors=g.actors.slice(0,4);g.obstacles=[];
-g.actors.forEach((a,i)=>{const x=[400,330,470,400][i],y=[300,350,350,365][i];Object.assign(a,{x,y,origin:x,originY:y,hidden:false,camera:i===1});Object.assign(a.motion,{x,y,vx:0,vy:0,stationary:i===0,state:i===0?'activity':'observe',timer:100,visitCooldown:0});});
-g.interests=[{id:g.actors[0].id,x:400,y:300,kind:'play'}];
-assert(g.chooseInterest(g.actors[1]));assert(g.chooseInterest(g.actors[2]));assert.notEqual(g.actors[1].motion.visit.slot,g.actors[2].motion.visit.slot);assert.equal(g.chooseInterest(g.actors[3]),false);
-let visited=false;for(let i=0;i<240;i++){g.step(.05);if(g.actors[1].motion.state==='visiting'){assert.equal(g.actors[1].action,'photo');visited=true;break;}}
-assert(visited,'reserved destination should be reached before photography starts');
-g.pause();const visitSnapshot=JSON.stringify(g.actors);advance(g,1);assert.equal(JSON.stringify(g.actors),visitSnapshot);g.pause();
-g.alertCrowd(400,300);advance(g,1.5);assert(g.actors.every(a=>a.motion.visit===null),'danger releases all visitor reservations');
-// Fatigue recovers through a real resting state and does not advance while paused.
-g=new box.Game(seeded(82));g.mission=1;g.loadMission();g.start();g.actors=g.actors.slice(0,1);g.interests=[];
-const tired=g.actors[0];Object.assign(tired.motion,{fatigue:.9,state:'activity',timer:.01,vx:0,vy:0});g.step(.05);assert.equal(tired.motion.state,'resting');assert.equal(tired.action,'rest');
-g.pause();const fatigue=tired.motion.fatigue;advance(g,1);assert.equal(tired.motion.fatigue,fatigue);g.pause();advance(g,4);assert(tired.motion.fatigue<.5);
-assert.equal(box.missions.length,6);assert.equal(new Set(box.missions.map(m=>m.theme)).size,6);
-const addedRoles=['정원사','독서가','낚시꾼','풍선 상인','과학자','운동선수','드러머','제빵사'];
-const addedActions=['water','read','fish','balloon','inspect','stretch','drum','knead'];
-for(let stage=0;stage<box.missions.length;stage++){
- const game=new box.Game(seeded(100+stage));game.mission=stage;game.loadMission();game.start();
- assert.equal(game.actors.length,[27,44,52,48,52,56][stage]);
- for(let i=0;i<addedRoles.length;i++){const a=game.actors.find(a=>a.role===addedRoles[i]);assert(a,`${stage}: ${addedRoles[i]}`);assert.equal(a.homeAction,addedActions[i]);}
- const poses=game.actors.filter(a=>addedRoles.includes(a.role)).map(a=>JSON.stringify(a.pose));advance(game,.5);
- game.actors.filter(a=>addedRoles.includes(a.role)).forEach((a,i)=>assert.notEqual(JSON.stringify(a.pose),poses[i]));
- assert.equal(game.actors.filter(a=>a.target).length,1);assert.equal(game.actors[0].desc,game.config.clues.join(' · '));
-}
-console.log('PASS: six-map campaign, 21 crowd roles, eight new animated activities, map bounds/obstacles, visits, fatigue, yielding, conversations, hit alignment and pause/flight freeze');
+
+test('every stage has exactly one person matching all four clues', () => {
+  for (let level = 0; level < 18; level++) for (const seed of [1, 7, 99, 2026]) {
+    const stage = C.makeStage(level, seed), look = C.targetLook(stage.loc);
+    const matches = stage.people.filter(p => C.sameLook(p.look, look));
+    assert.strictEqual(matches.length, 1, `level ${level} seed ${seed}`);
+    assert.ok(matches[0].target);
+    assert.strictEqual(stage.people.length, stage.loc.crowd);
+  }
+});
+
+test('decoys differ by exactly one clue and the rest of the crowd by two or more', () => {
+  for (let level = 0; level < 12; level++) {
+    const stage = C.makeStage(level, 5 + level), look = C.targetLook(stage.loc);
+    const decoys = stage.people.filter(p => p.decoy);
+    assert.strictEqual(decoys.length, stage.loc.decoys);
+    for (const d of decoys) assert.strictEqual(C.differingTraits(d.look, look).length, 1);
+    for (const p of stage.people.filter(q => !q.decoy && !q.target)) assert.ok(C.differingTraits(p.look, look).length >= 2);
+  }
+});
+
+test('stages are reproducible from the seed', () => {
+  const a = C.makeStage(3, 1234), b = C.makeStage(3, 1234);
+  assert.deepStrictEqual(a.people.map(p => [p.x, p.y, p.look]), b.people.map(p => [p.x, p.y, p.look]));
+});
+
+test('later rounds of the six locations get harder', () => {
+  const a = C.locationFor(0), b = C.locationFor(6), c = C.locationFor(30);
+  assert.strictEqual(a.name, b.name);
+  assert.ok(b.time < a.time && b.crowd > a.crowd && b.decoys > a.decoys);
+  assert.ok(c.time >= 55 && c.decoys <= 9);
+});
+
+test('a prop in front hides a person and stops the bullet', () => {
+  const stage = C.makeStage(0, 3), p = stage.people[1];
+  p.x = 800; p.y = 600;
+  stage.props = [{ kind: 'crates', x: 800, y: 640, ...C.PROP_SHAPES.crates }];
+  const b = C.personBox(stage, p), lowY = p.y - b.h * 0.15;
+  assert.ok(C.propSolid(stage, stage.props[0], 800, lowY));
+  assert.strictEqual(C.hitTest(stage, 800, lowY).kind, 'prop');
+  const top = C.hitTest(stage, 800, p.y - b.h + 3);
+  assert.strictEqual(top.kind, 'person'); assert.ok(top.head);
+});
+
+test('shooting Willy clears the level and scores the breakdown', () => {
+  const run = noSway(new C.SniperRun({ seed: 11 })); run.begin();
+  const pt = exposeTarget(run); assert.ok(pt);
+  run.setAim(pt.x, pt.y);
+  assert.strictEqual(run.fire().kind, 'target');
+  assert.strictEqual(run.state, 'shot');
+  run.update(0.5); assert.strictEqual(run.shot.resolved, false, 'bullet still flying');
+  playUntilDone(run);
+  assert.strictEqual(run.state, 'clear');
+  const r = run.result;
+  assert.strictEqual(r.gained, Object.values(r.breakdown).reduce((a, b) => a + b, 0));
+  assert.strictEqual(r.stars, 3); assert.strictEqual(run.score, r.gained);
+  assert.ok(run.next()); assert.strictEqual(run.level, 1); assert.strictEqual(run.state, 'brief');
+});
+
+test('a head shot adds the precision bonus', () => {
+  const run = noSway(new C.SniperRun({ seed: 12 })); run.begin();
+  exposeTarget(run); const pt = openPoint(run.stage, run.target, true); assert.ok(pt);
+  run.setAim(pt.x, pt.y); run.fire(); playUntilDone(run);
+  assert.strictEqual(run.result.breakdown.head, 600);
+});
+
+test('shooting a decoy fails with the differing clue named', () => {
+  const run = noSway(new C.SniperRun({ seed: 13 })); run.begin();
+  const d = run.stage.people.find(p => p.decoy); d.x = 800; d.y = 800; d.timer = 99;
+  run.stage.props = []; for (const p of run.stage.people) if (p !== d && Math.abs(p.x - 800) < 40) p.x = 150;
+  const pt = openPoint(run.stage, d); run.setAim(pt.x, pt.y);
+  assert.strictEqual(run.fire().kind, 'innocent'); playUntilDone(run);
+  assert.strictEqual(run.state, 'failed'); assert.strictEqual(run.lives, 2);
+  assert.match(run.message, /가짜/);
+  const before = run.stage; assert.ok(run.next()); assert.notStrictEqual(run.stage, before, 'retry gets a new crowd');
+  assert.strictEqual(run.level, 0);
+});
+
+test('three misses lose a life, and losing every life ends the run', () => {
+  const run = noSway(new C.SniperRun({ seed: 14 }));
+  for (let life = 3; life > 0; life--) {
+    run.begin(); run.stage.people.forEach(p => { p.x = 60; p.y = 880; p.timer = 99; }); run.stage.props = [];
+    for (let i = 0; i < 3; i++) { run.setAim(1500, run.stage.horizon + 30); assert.strictEqual(run.fire().kind, 'miss'); playUntilDone(run); }
+    assert.strictEqual(run.lives, life - 1);
+    if (life > 1) { assert.strictEqual(run.state, 'failed'); run.next(); }
+  }
+  assert.strictEqual(run.state, 'over'); assert.strictEqual(run.next(), false);
+});
+
+test('running out of time costs a life', () => {
+  const run = new C.SniperRun({ seed: 15 }); run.begin(); run.time = 0.04; run.update(0.05);
+  assert.strictEqual(run.state, 'failed'); assert.match(run.message, /시간/);
+});
+
+test('skipping bullet time resolves the shot exactly once', () => {
+  const run = noSway(new C.SniperRun({ seed: 16 })); run.begin();
+  run.stage.people.forEach(p => { p.x = 60; p.y = 880; p.timer = 99; }); run.stage.props = [];
+  run.setAim(1500, run.stage.horizon + 30); run.fire();
+  assert.ok(run.skip()); assert.strictEqual(run.misses, 1); assert.strictEqual(run.state, 'play');
+  assert.strictEqual(run.skip(), false); assert.strictEqual(run.misses, 1);
+});
+
+test('pause freezes the clock and fire is blocked', () => {
+  const run = new C.SniperRun({ seed: 17 }); run.begin(); const t = run.time;
+  assert.ok(run.pause()); run.update(0.05); assert.strictEqual(run.time, t);
+  assert.strictEqual(run.fire().kind, 'blocked');
+  assert.ok(run.pause()); run.update(0.05); assert.ok(run.time < t);
+});
+
+test('holding breath shrinks sway and the breath meter runs out', () => {
+  const run = new C.SniperRun({ seed: 18 }); run.begin(); run.elapsed = 0.4;
+  const loose = Math.hypot(run.sway().x, run.sway().y); run.setSteady(true);
+  const tight = Math.hypot(run.sway().x, run.sway().y); assert.ok(tight < loose);
+  for (let i = 0; i < 64 && run.steady; i++) run.update(0.05);
+  assert.strictEqual(run.steady, false); assert.ok(run.breath < 0.02, 'breath used up');
+  run.setSteady(true); assert.strictEqual(run.steady, false, 'cannot hold an empty breath');
+  for (let i = 0; i < 60; i++) run.update(0.05); assert.ok(run.breath > 0.9, 'breath refills');
+});
+
+test('the crowd moves and never walks off the square', () => {
+  const run = new C.SniperRun({ seed: 19 }); run.begin();
+  const start = run.stage.people.map(p => [p.x, p.y]);
+  for (let i = 0; i < 400; i++) run.update(0.05);
+  if (run.state !== 'play') return;
+  assert.ok(run.stage.people.some((p, i) => Math.hypot(p.x - start[i][0], p.y - start[i][1]) > 20));
+  for (const p of run.stage.people) { assert.ok(p.x >= 40 && p.x <= C.WORLD.width - 40); assert.ok(p.y > run.stage.horizon && p.y <= C.WORLD.height); }
+});
+
+console.log(`\n${passed} tests passed`);

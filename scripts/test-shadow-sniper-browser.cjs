@@ -1,65 +1,100 @@
-// NODE_PATH must provide Playwright. The real Phaser renderer is used; cloud writes are mocked.
-const http=require('node:http'),fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
-const {chromium}=require('playwright');const root=path.resolve(__dirname,'..');
-(async()=>{const server=http.createServer((req,res)=>{const uri=new URL(req.url,'http://localhost').pathname;const file=path.resolve(root,'.'+(uri.endsWith('/')?uri+'index.html':uri));if(!file.startsWith(root+path.sep)){res.writeHead(403);res.end();return;}try{res.setHeader('Content-Type',({'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.png':'image/png'})[path.extname(file)]||'application/octet-stream');res.end(fs.readFileSync(file));}catch{res.writeHead(404);res.end();}});await new Promise(r=>server.listen(0,'127.0.0.1',r));let browser;
-try{browser=await chromium.launch(process.env.PLAYWRIGHT_EXECUTABLE_PATH?{executablePath:process.env.PLAYWRIGHT_EXECUTABLE_PATH}:undefined);const page=await browser.newPage({viewport:{width:1440,height:1050},hasTouch:true});const errors=[];page.on('pageerror',e=>{errors.push(e.message);console.error(e.stack);});await page.route(/googletagmanager|googlesyndication|google-analytics/,r=>r.abort());await page.route('**/scripts/firebase-client.js',r=>r.fulfill({contentType:'text/javascript',body:'export const app={},auth={currentUser:null},authReady=Promise.resolve();export function onAuthStateChanged(a,cb){queueMicrotask(()=>cb(null));return()=>{}}export async function signOut(){}'}));await page.route('**/scripts/firebase-game-ranking.js*',r=>r.fulfill({contentType:'text/javascript',body:'export function initializeGameRanking(){}'}));await page.goto(`http://127.0.0.1:${server.address().port}/arcade/shadow-sniper.html`);await page.waitForFunction(()=>sniperReady);if(await page.locator('#sniperSettings').isHidden())await page.click('#settingsToggle');assert.equal(await page.locator('site-header nav a[href="/arcade/shadow-sniper.html"]').count(),1);await page.click('#missionAction');
-// Activity frames change in every environment and freeze completely when paused.
-fs.mkdirSync(path.join(root,'test-results'),{recursive:true});
-const stageCount=await page.evaluate(()=>SNIPER_MISSIONS.length);
-for(let stage=0;stage<stageCount;stage++){
- await page.evaluate(stage=>{sniper.mission=stage;sniper.loadMission();sniper.state='running';},stage);
- await page.waitForTimeout(120);const moving=await page.locator('#gameCanvas').screenshot();
- await page.waitForTimeout(450);const moved=await page.locator('#gameCanvas').screenshot({path:path.join(root,'test-results/willy-activities-'+stage+'.png')});assert(!moving.equals(moved));
- await page.evaluate(()=>{sniper.pause();return new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));});
- const paused=await page.evaluate(()=>sniperCanvas.toDataURL());
- await page.waitForTimeout(120);assert(paused===await page.evaluate(()=>sniperCanvas.toDataURL()),'paused canvas must stay unchanged in stage '+stage);
-}
-// Inspect AI movement and alarm poses in the actual renderer, using deterministic simulation time.
-for(let stage=0;stage<stageCount;stage++){
- await page.evaluate(stage=>{sniper.mission=stage;sniper.loadMission();sniper.state='running';for(let i=0;i<160;i++)sniper.step(.05);sniper.pause();},stage);
- await page.locator('#gameCanvas').screenshot({path:path.join(root,`test-results/willy-ai-roam-${stage}.png`),style:'#missionOverlay{visibility:hidden!important}'});
- await page.evaluate(()=>{sniper.pause();sniper.alertCrowd(480,300);for(let i=0;i<22;i++)sniper.step(.05);sniper.pause();});
- assert(await page.evaluate(()=>sniper.actors.some(a=>['startled','flee'].includes(a.motion.state))));
- await page.locator('#gameCanvas').screenshot({path:path.join(root,`test-results/willy-ai-alarm-${stage}.png`),style:'#missionOverlay{visibility:hidden!important}'});
- const snapshot=await page.evaluate(()=>JSON.stringify(sniper.actors));await page.waitForTimeout(100);
- assert.equal(await page.evaluate(()=>JSON.stringify(sniper.actors)),snapshot);
-}
-// Capture a conversation that emerges in a normal crowd and confirm both partners face each other.
-const socialPair=await page.evaluate(()=>{
- let seed=13;sniper=new SniperGame(()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;});
- sniper.mission=1;sniper.loadMission();sniper.start();
- for(let i=0;i<1000;i++){sniper.step(.05);const a=sniper.actors.find(a=>a.motion.state==='social');if(a){const b=sniper.actors.find(b=>b.id===a.motion.partner);sniper.pause();return {reciprocal:b?.motion.partner===a.id,facing:a.motion.facing===-b?.motion.facing};}}
- return null;
-});
-assert(socialPair?.reciprocal&&socialPair.facing);
-await page.locator('#gameCanvas').screenshot({path:path.join(root,'test-results/willy-ai-social.png'),style:'#missionOverlay{visibility:hidden!important}'});
-await page.evaluate(()=>{sniper.mission=0;sniper.loadMission();sniper.state='running';});await page.click('#scopeBtn');assert.equal(await page.evaluate(()=>sniper.scoped),true);
-await page.evaluate(()=>{const a=sniper.actors[0];sniper.aimAt(a.x,a.y-24);});await page.click('#focusBtn');await page.waitForTimeout(100);fs.mkdirSync(path.join(root,'test-results'),{recursive:true});await page.screenshot({path:path.join(root,'test-results/shadow-sniper-desktop.png'),fullPage:true});const shareShot=await page.locator('#gameCanvas').screenshot();await page.evaluate(()=>{const a=sniper.actors[0];sniper.aimAt(a.x,a.y-24);});await page.click('#fireBtn');await page.waitForFunction(()=>sniper.state==='shot');assert(!(await page.locator('#missionOverlay').isVisible()));assert.equal(await page.evaluate(()=>sniper.actors[0].dead),false);await page.click('#pauseSniper');const flightClock=await page.evaluate(()=>sniper.shot.clock);const frame=await page.locator('#gameCanvas').screenshot();await page.waitForTimeout(150);assert.equal(await page.evaluate(()=>sniper.shot.clock),flightClock);assert(frame.equals(await page.locator('#gameCanvas').screenshot()));await page.click('#missionAction');await page.waitForFunction(()=>sniper.shot?.clock>.35&&!sniper.shot.impacted);await page.locator('#gameCanvas').screenshot({path:path.join(root,'test-results/willy-bullet-flight.png')});await page.waitForFunction(()=>sniper.shot?.impacted);assert((await page.evaluate(()=>sniper.particles.length))>0);await page.waitForTimeout(150);await page.locator('#gameCanvas').screenshot({path:path.join(root,'test-results/willy-impact-fall.png')});await page.waitForFunction(()=>sniper.state==='success');await page.click('#missionAction');assert.equal(await page.evaluate(()=>sniper.mission),1);assert(await page.locator('#missionOverlay').isVisible());await page.click('#missionAction');await page.click('#pauseSniper');const frozen=await page.evaluate(()=>sniper.remaining);await page.waitForTimeout(200);assert.equal(await page.evaluate(()=>sniper.remaining),frozen);await page.click('#missionAction');
-// Confirm a protected target causes a visible failure, then retry rolls back mission score.
-await page.evaluate(()=>{const a=sniper.actors.find(a=>!a.target);sniper.scoped=true;sniper.aimAt(a.x,a.y-24);});await page.click('#fireBtn');await page.waitForFunction(()=>sniper.state==='failed');assert((await page.locator('#missionBrief').textContent()).includes('오인'));await page.click('#missionAction');assert.equal(await page.evaluate(()=>sniper.state),'briefing');await page.click('#missionAction');await page.setViewportSize({width:390,height:844});assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.locator('#gameCanvas').scrollIntoViewIfNeeded();const rect=await page.locator('#gameCanvas').boundingBox(),cdp=await page.context().newCDPSession(page);const x=rect.x+rect.width/2,y=rect.y+rect.height/2,before=await page.evaluate(()=>sniper.aim.x);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x+30,y}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});assert((await page.evaluate(()=>sniper.aim.x))>before);assert.equal(await page.evaluate(()=>sniper.totalShots),1);await page.click('#scopeBtn');await page.screenshot({path:path.join(root,'test-results/shadow-sniper-mobile.png'),fullPage:true});
-// Resolve the remaining actual core campaign and verify end-of-game recording/event once.
-await page.evaluate(()=>{window.scoreEvents=[];window.addEventListener('partygame:score',e=>window.scoreEvents.push(e.detail));});
-for(let n=0;n<stageCount-1;n++){await page.evaluate(()=>{for(const a of sniper.actors.filter(a=>a.target)){a.hidden=false;sniper.scoped=true;sniper.cooldown=0;sniper.aimAt(a.x,a.y-24);sniper.shoot();for(let i=0;i<52;i++)sniper.step(.05);}if(sniper.state==='success'){sniper.next();sniper.start();sniper.scoped=false;}});if(n===0){await page.waitForTimeout(100);await page.locator('#gameCanvas').screenshot({path:path.join(root,'test-results/willy-snow-village.png')});}}
-await page.waitForFunction(()=>sniper.state==='won'&&window.scoreEvents.length===1);assert.equal(await page.evaluate(()=>window.scoreEvents.length),1);assert.equal(await page.evaluate(()=>window.scoreEvents[0].gameId),'shadow-sniper');assert((await page.evaluate(()=>Number(localStorage.getItem('shadowSniperBest'))))>0);await page.click('#missionAction');assert.equal(await page.evaluate(()=>sniper.score),0);assert.equal(await page.evaluate(()=>sniper.mission),0);assert.deepEqual(errors,[]);if(process.env.UPDATE_SHARE_IMAGES==='1'){const cover=await browser.newPage({viewport:{width:1200,height:630}});await cover.setContent('<html lang="ko"><meta charset="utf-8"><style>*{box-sizing:border-box}body{margin:0;background:#101c2b;width:1200px;height:630px;color:#eef4ff;font-family:system-ui,sans-serif;display:flex;align-items:center;padding:54px;gap:35px}.copy{width:450px;flex-shrink:0}.brand{color:#ffad66;font-size:17px;letter-spacing:4px}h1{font-size:55px;line-height:1.2;letter-spacing:-3px;margin:26px 0 18px}p{color:#aec3da;font-size:22px;line-height:1.8}.tag{color:#ffbd8a;font-size:17px}.url{font-size:16px;color:#809bb9;margin-top:40px}img{width:620px;height:420px;object-fit:cover;border:1px solid #466478;border-radius:20px}</style><div class="copy"><div class="brand">PARTYGAME / NEW OPERATION</div><h1>윌리를 찾아서<br>저격해라</h1><p>관찰하고, 식별하고,<br>결정적인 순간을 기다려라.</p><div class="tag">6개 장소 · 군중 속 찾기 · 총알 슬로모션</div><div class="url">partygame.pe.kr</div></div><img src="data:image/png;base64,'+shareShot.toString('base64')+'"></html>');await cover.locator('img').evaluate(img=>img.decode());const out=path.join(root,'assets/games/shadow-sniper');fs.mkdirSync(out,{recursive:true});await cover.screenshot({path:path.join(out,'share.png')});await cover.close();}await page.locator('#reduceMotion').check();assert.equal(await page.evaluate(()=>localStorage.getItem('shadowSniperReducedMotion')),'1');assert.equal(await page.evaluate(()=>sniperReducedMotion),true);await page.locator('#reduceMotion').uncheck();assert.equal(await page.evaluate(()=>localStorage.getItem('shadowSniperReducedMotion')),'0');await page.click('#missionAction');await page.focus('#scopeBtn');await page.keyboard.press('Space');assert.equal(await page.evaluate(()=>sniper.scoped),true);await page.keyboard.press('Space');assert.equal(await page.evaluate(()=>sniper.scoped),false);await page.locator('#reduceMotion').focus();await page.keyboard.press('Space');assert.equal(await page.evaluate(()=>sniperReducedMotion),true);await page.evaluate(()=>{const a=sniper.actors[0];sniper.scoped=true;sniper.aimAt(a.x,a.y-24);sniper.shoot();});await page.click('#skipShotBtn');assert.equal(await page.evaluate(()=>sniper.state),'success');assert.equal(await page.evaluate(()=>document.activeElement.id),'gameCanvas');assert((await page.locator('#overlayClues').textContent()).includes('등급'));await page.evaluate(()=>{sniperRestart();sniper.start();sniperSync();});await page.locator('#requireObservation').check();assert.equal(await page.evaluate(()=>sniper.requireObservation),true);assert.equal(await page.evaluate(()=>{sniper.scoped=true;sniper.aimAt(30,40);return sniper.shoot().kind;}),'unobserved');await page.evaluate(()=>{sniper.updateObservation(sniper.actors[2],1.2);sniperSync();});assert.equal(await page.locator('#observationList li').count(),1);await page.locator('#autoReload').check();assert.equal(await page.evaluate(()=>sniper.autoReload),true);await page.selectOption('#dragSensitivity','0.7');assert.equal(await page.evaluate(()=>localStorage.getItem('shadowSniperDragSensitivity')),'0.7');await page.evaluate(()=>{sniper.scoped=false;sniper.aimAt(480,285);});await page.locator('#gameCanvas').scrollIntoViewIfNeeded();const touchRect=await page.locator('#gameCanvas').boundingBox(),touchX=touchRect.x+touchRect.width/2,touchY=touchRect.y+touchRect.height/2;await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:touchX,y:touchY}]});assert.equal(await page.evaluate(()=>drag.gain),.7);await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:touchX+20,y:touchY}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});assert((await page.evaluate(()=>sniper.aim.x))>480);assert.deepEqual(errors,[]);await page.evaluate(()=>{sniper.mag=1;sniper.reload();for(let i=0;i<16;i++)sniper.step(.05);sniper.pause();sniperSync();});
-assert(await page.locator('#reloadMeter').isVisible());assert(Math.abs(await page.locator('#reloadProgress').evaluate(el=>el.value)-.5)<.1);
-await page.evaluate(()=>{sniper.pause();for(let i=0;i<20;i++)sniper.step(.05);sniper.requireObservation=false;sniper.scoped=true;const a=sniper.actors[0];sniper.aimAt(a.x,a.y-24);sniper.shoot();sniper.skipShot();sniperSync();});
-assert(await page.locator('#reloadMeter').isHidden());assert.equal(await page.locator('#missionHistoryList li').count(),1);assert((await page.locator('#campaignSummary').textContent()).includes('완료 1/6'));assert((await page.locator('#missionBest').textContent()).includes('S'));
-assert(await page.evaluate(()=>JSON.parse(localStorage.getItem('shadowSniperMissionBests'))[0].grade==='S'));
-await page.reload();await page.waitForFunction(()=>sniperReady);assert.equal(await page.evaluate(()=>sniper.requireObservation&&sniper.autoReload&&sniperDragSensitivity===.7),true);assert((await page.locator('#missionBest').textContent()).includes('S'));assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
-await page.screenshot({path:path.join(root,'test-results/willy-options-mobile.png'),fullPage:true});assert.deepEqual(errors,[]);
-// Iterations 21-30: actual UI, contrast rendering, journal and notebook controls.
-await page.evaluate(()=>{sniperRestart();sniper.start();sniper.scoped=true;sniper.pause();sniperSync();});
-const thinReticle=await page.locator('#gameCanvas').screenshot({style:'#missionOverlay{visibility:hidden!important}'});
-await page.locator('#highContrast').check();await page.waitForTimeout(80);
-assert.equal(await page.evaluate(()=>sniperHighContrast),true);assert(!thinReticle.equals(await page.locator('#gameCanvas').screenshot({style:'#missionOverlay{visibility:hidden!important}'})));
-await page.evaluate(()=>{sniper.updateObservation(sniper.actors[0],1.2);sniper.updateObservation(sniper.actors[1],1.2);document.getElementById('observationNotes').open=true;sniperSync();});
-await page.locator('#noteSearch').fill('존재하지않는단서');assert.equal(await page.locator('#observationList li').count(),0);await page.locator('#noteSearch').fill('');assert.equal(await page.locator('#observationList li').count(),2);
-await page.locator('#noteSearch').press('f');assert.equal(await page.evaluate(()=>sniper.totalShots),0);await page.locator('#noteSearch').fill('');
-await page.evaluate(()=>{sniper.pause();sniper.requireObservation=false;sniper.aimAt(30,40);sniper.shoot();sniper.skipShot();sniper.remaining=14;sniper.pause();sniperSync();});
-assert.equal(await page.locator('#shotHistoryList li').count(),1);assert((await page.locator('#shotHistoryList').textContent()).includes('빗나감'));assert((await page.locator('#tacticalWarning').textContent()).includes('시간'));assert((await page.locator('#shotReadiness').textContent()).includes('작전'));
-await page.reload();await page.waitForFunction(()=>sniperReady);assert.equal(await page.evaluate(()=>sniperHighContrast),true);assert(await page.locator('#highContrast').isChecked());assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));assert.deepEqual(errors,[]);
-await page.evaluate(()=>window.scrollTo(0,0));await page.waitForTimeout(100);await page.screenshot({path:path.join(root,'test-results/willy-third-upgrade-mobile.png'),fullPage:true});
-console.log('PASS 29 and UI 25-30: contrast pixels/persistence, notebook input, journal and warnings');
-await require('./test-shadow-sniper-tools.cjs')(page,assert);assert.deepEqual(errors,[]);
-console.log('PASS: real Phaser themed crowds, bullet flight, fall and blood, shot pause freeze, scope/shoot, mission transitions, protected-target failure/retry, pause, mobile touch, viewport, campaign victory, score event and restart');
-}finally{if(browser)await browser.close();server.close();}})().catch(e=>{console.error(e);process.exitCode=1;});
+// Browser test for "윌리를 찾아서 저격해라". Run: node scripts/test-shadow-sniper-browser.cjs (needs playwright)
+const http = require('http'), fs = require('fs'), path = require('path'), assert = require('assert');
+const { chromium } = require('playwright');
+const root = path.resolve(__dirname, '..');
+const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png' };
+
+(async () => {
+  const server = http.createServer((req, res) => {
+    const file = path.join(root, decodeURIComponent(new URL(req.url, 'http://x').pathname));
+    if (!file.startsWith(root) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) { res.writeHead(404); res.end(); return; }
+    res.setHeader('Content-Type', types[path.extname(file)] || 'application/octet-stream'); res.end(fs.readFileSync(file));
+  });
+  await new Promise(r => server.listen(0, '127.0.0.1', r));
+  const url = `http://127.0.0.1:${server.address().port}/arcade/shadow-sniper.html`;
+  const browser = await chromium.launch();
+  const errors = [];
+  const open = async options => {
+    const page = await browser.newPage(options);
+    page.on('pageerror', e => errors.push(e.message));
+    await page.route(/googletagmanager|googlesyndication|gstatic|firebase/, r => r.abort());
+    await page.route('**/scripts/firebase-game-ranking.js*', r => r.fulfill({ contentType: 'text/javascript', body: 'export function initializeGameRanking(){}' }));
+    await page.goto(url); await page.waitForFunction(() => window.__shadowSniper?.ready);
+    return page;
+  };
+  try {
+    const page = await open({ viewport: { width: 1280, height: 900 } });
+    assert.strictEqual(await page.locator('h1').count(), 1);
+    assert.strictEqual(await page.locator('#ssSound').isChecked(), false, 'sound starts off');
+    assert.match(await page.locator('#ssClues').innerText(), /털모자/);
+    assert.strictEqual(await page.locator('#ssOverlay').isVisible(), true);
+
+    // Start, aim with the mouse, and shoot Willy once he is in the open.
+    await page.click('#ssAction');
+    assert.strictEqual(await page.evaluate(() => window.__shadowSniper.run.state), 'play');
+    const target = await page.evaluate(() => {
+      const S = window.__shadowSniper, run = S.run, t = run.target;
+      run.sway = () => ({ x: 0, y: 0 });
+      t.x = 800; t.y = 760; t.state = 'idle'; t.timer = 99;
+      run.stage.props = run.stage.props.filter(o => !(Math.abs(o.x - 800) < 220 && o.y > 700));
+      for (const p of run.stage.people) if (p !== t && Math.abs(p.x - 800) < 60) p.x = 150;
+      const b = SniperCore.personBox(run.stage, t);
+      return S.toScreen(t.x, t.y - b.h * 0.55);
+    });
+    const box = await page.locator('#ssCanvas').boundingBox();
+    await page.mouse.move(box.x + target.x, box.y + target.y);
+    await page.mouse.down(); await page.mouse.up();
+    assert.strictEqual(await page.evaluate(() => window.__shadowSniper.run.state), 'shot');
+    assert.strictEqual(await page.locator('#ssSkip').isVisible(), true);
+    await page.click('#ssSkip');
+    await page.waitForFunction(() => window.__shadowSniper.run.state === 'clear');
+    assert.match(await page.locator('#ssKicker').innerText(), /STAGE CLEAR/);
+    await page.click('#ssAction');
+    assert.strictEqual(await page.evaluate(() => window.__shadowSniper.run.level), 1);
+
+    // Keyboard: Enter starts, arrows aim, P pauses and resumes.
+    await page.keyboard.press('Enter');
+    const before = await page.evaluate(() => ({ ...window.__shadowSniper.run.aim }));
+    await page.keyboard.down('ArrowRight'); await page.waitForTimeout(300); await page.keyboard.up('ArrowRight');
+    assert.ok(await page.evaluate(x => window.__shadowSniper.run.aim.x > x, before.x), 'arrow keys move the scope');
+    await page.keyboard.press('p');
+    assert.strictEqual(await page.evaluate(() => window.__shadowSniper.run.state), 'paused');
+    const t0 = await page.evaluate(() => window.__shadowSniper.run.time); await page.waitForTimeout(300);
+    assert.strictEqual(await page.evaluate(() => window.__shadowSniper.run.time), t0, 'clock frozen while paused');
+    await page.keyboard.press('p');
+    assert.strictEqual(await page.evaluate(() => window.__shadowSniper.run.state), 'play');
+
+    // Game over sends the score event once and stores the best score.
+    const detail = await page.evaluate(() => new Promise(resolve => {
+      const got = []; addEventListener('partygame:score', e => got.push(e.detail));
+      const run = window.__shadowSniper.run; run.lives = 1; run.time = 0.01; window.__shadowSniper.step(0.05);
+      window.__shadowSniper.run = run; setTimeout(() => resolve(got), 200);
+    }));
+    assert.strictEqual(detail.length, 1); assert.strictEqual(detail[0].gameId, 'shadow-sniper');
+    assert.match(await page.locator('#ssKicker').innerText(), /GAME OVER/);
+    assert.match(await page.locator('#ssBest').innerText(), /점/);
+    await page.click('#ssAction');
+    assert.strictEqual(await page.evaluate(() => window.__shadowSniper.run.state), 'brief');
+
+    // Phone: the page fits, touch drags the scope.
+    await page.close();
+    const phone = await open({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+    assert.ok(await phone.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'no sideways scroll at 390px');
+    await phone.tap('#ssAction'); await phone.waitForTimeout(150);
+    const cbox = await phone.locator('#ssCanvas').boundingBox(); assert.ok(cbox.width > 300 && cbox.height > 150);
+    const aim0 = await phone.evaluate(() => ({ ...window.__shadowSniper.run.aim }));
+    const cdp = await phone.context().newCDPSession(phone);
+    const pt = (x, y) => [{ x: cbox.x + x, y: cbox.y + y, id: 1 }];
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: pt(100, 80) });
+    for (let i = 1; i <= 5; i++) await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: pt(100 + i * 12, 80) });
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    assert.ok(await phone.evaluate(x => window.__shadowSniper.run.aim.x > x + 10, aim0.x), 'touch drag moves the scope');
+    assert.strictEqual(await phone.evaluate(() => window.__shadowSniper.run.state), 'play', 'a drag does not fire');
+    await phone.waitForTimeout(150);
+    await phone.tap('#ssFire'); await phone.waitForTimeout(50);
+    assert.strictEqual(await phone.evaluate(() => window.__shadowSniper.run.state), 'shot');
+
+    assert.deepStrictEqual(errors, []);
+    console.log('shadow-sniper browser test passed');
+  } finally { await browser.close(); server.close(); }
+})().catch(e => { console.error(e); process.exit(1); });

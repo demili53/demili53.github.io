@@ -1,544 +1,295 @@
-/* Fictional hidden-character arcade missions. */
+/* 윌리를 찾아서 저격해라 — game rules. No DOM access; runs in the browser and in Node tests. */
 'use strict';
-function makeWillyCrowd(stage){
- const roles=[
- {role:'선원',coat:0x669ab5,hat:'sailor',desc:'선원 모자 · 파란 외투'},
- {role:'요리사',coat:0xe6d8ba,hat:'chef',desc:'높은 요리사 모자 · 흰 앞치마'},
- {role:'화가',coat:0xb398ca,hat:'beret',case:true,desc:'보라 베레모 · 화구 가방'},
- {role:'관광객',coat:0xebbd78,hat:'sunhat',camera:true,desc:'밀짚모자 · 카메라'},
- {role:'정비사',coat:0xd79268,helmet:true,desc:'노란 안전모 · 주황 작업복'},
- {role:'광대',coat:0x7fb3aa,hat:'clown',desc:'무지개 머리 · 초록 의상'},
- {role:'탐험가',coat:0x9aa16a,hat:'explorer',case:true,desc:'탐험 모자 · 갈색 가방'},
- {role:'음악가',coat:0x6a84b5,hat:'tophat',instrument:true,desc:'높은 검은 모자 · 악기'},
- {role:'우편배달부',coat:0x8499ae,cap:true,case:true,desc:'푸른 모자 · 우편 가방'},
- {role:'스키어',coat:0xe7a7aa,visor:true,desc:'분홍 외투 · 초록 고글'},
- {role:'줄무늬 관광객',coat:0xca727a,stripes:true,hat:'sunhat',glasses:true,desc:'빨강 줄무늬 · 밀짚모자 · 안경'},
- {role:'빨간 모자 관광객',coat:0x7fa0b4,hat:'beanie',glasses:true,desc:'빨간 털모자 · 파란 옷 · 안경'},
- {role:'닮은 관광객',coat:0xd4656a,stripes:true,hat:'beanie',glasses:true,desc:'빨강 줄무늬 · 빨간 털모자 · 안경 · 가방과 스카프 없음'},
- {role:'정원사',coat:0x79a573,hat:'garden',desc:'초록 챙모자 · 멜빵 작업복'},
- {role:'독서가',coat:0xb889ad,hat:'beret',glasses:true,desc:'자주색 외투 · 책 · 베레모'},
- {role:'낚시꾼',coat:0xc6a16b,hat:'fisher',desc:'갈색 낚시 모자 · 낚싯대'},
- {role:'풍선 상인',coat:0xeab27c,hat:'boater',desc:'리본 모자 · 색색의 풍선'},
- {role:'과학자',coat:0xe0e9df,glasses:true,hat:'none',desc:'흰 실험 가운 · 확대경'},
- {role:'운동선수',coat:0x65babc,hat:'headband',desc:'청록 운동복 · 흰 머리띠'},
- {role:'드러머',coat:0xc78594,hat:'band',desc:'군악대 모자 · 작은 북'},
- {role:'제빵사',coat:0xe3c8a4,hat:'baker',desc:'갈색 앞치마 · 둥근 제빵 모자'}];
- const cols=[9,11,13,12,13,14][stage],rows=[3,4,4,4,4,4][stage],gap=820/(cols-1),people=[];
- for(let row=0;row<rows;row++)for(let col=0;col<cols;col++){const i=row*cols+col,role=roles[(i*5+stage*3)%roles.length];people.push({...role,x:70+col*gap+(i*11%17)-8,y:(stage===0?265+row*94:196+row*89)+(i*17%23)-11,range:4+(i*7%8),speed:.16+(i%4)*.05,skin:[0xe6c6a2,0xbe917a,0x947767,0xf2d4b5][i%4]});}
- const slot=people.splice([15,28,20,31,35,43][stage],1)[0];
- return {extras:people,position:slot};
+(function (root) {
+const WORLD = { width: 1600, height: 900 };
+
+function sniperRandom(seed) {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
 }
-const SNIPER_MISSIONS = [
- {name:'북적이는 항구 시장',code:'01 / HARBOR MARKET',theme:'harbor',time:100,color:0x8fbdc8,accent:0xf5ba83,brief:'항구 시장의 사람들 속에서 윌리를 찾아보세요. 빨강·흰 줄무늬 옷, 빨간 털모자, 둥근 안경에 검은 가방까지 모두 확인해야 합니다.',clues:['빨강·흰 줄무늬 + 빨간 털모자','둥근 안경','검은 서류 가방'],targets:[],extras:[]},
- {name:'한밤의 별빛 축제',code:'02 / STARLIGHT FESTIVAL',theme:'festival',time:110,color:0x302b59,accent:0xe2b2ec,brief:'불빛과 공연으로 가득한 축제에서 윌리를 찾아보세요. 이번에는 줄무늬 옷과 빨간 털모자, 둥근 안경에 노란 스카프를 두르고 있습니다. 닮은 관광객에게 주의하세요.',clues:['빨강·흰 줄무늬 + 빨간 털모자','둥근 안경','노란 스카프'],targets:[],extras:[]},
- {name:'눈꽃 산장 마을',code:'03 / SNOWY VILLAGE',theme:'snow',time:120,color:0x9bb6cf,accent:0xb5e7e1,brief:'눈 내리는 산장 마을에 윌리가 숨어 있습니다. 빨간 줄무늬 옷과 털모자, 안경, 초록 스카프를 찾아보세요. 때때로 이동식 가림막 뒤에 숨으니 모습을 드러낼 때를 기다리세요.',clues:['빨강·흰 줄무늬 + 빨간 털모자','둥근 안경','초록 스카프 · 가림막 주의'],targets:[],extras:[]}
+const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+const pick = (rand, list) => list[Math.floor(rand() * list.length)];
+
+// Visible traits. Labels are what the wanted poster and decoy messages say.
+const TRAITS = {
+  hat: { beanie: '빨간 털모자', cap: '파란 야구모자', straw: '밀짚모자', beret: '검은 베레모', bowler: '갈색 중절모', none: '모자 없음' },
+  top: { stripe: '빨강·흰 줄무늬 옷', green: '초록 옷', blue: '파란 옷', yellow: '노란 옷', purple: '보라 옷', check: '체크무늬 옷', white: '흰 옷', orange: '주황 옷' },
+  glasses: { round: '둥근 안경', sun: '선글라스', none: '안경 없음' },
+  item: { bag: '검은 가방', scarfY: '노란 스카프', backpack: '초록 배낭', camera: '목에 건 카메라', balloon: '빨간 풍선', scarfB: '파란 스카프', none: '소지품 없음' }
+};
+const TRAIT_KEYS = ['hat', 'top', 'glasses', 'item'];
+
+// Locations: the ground below the horizon is walkable; props are drawn in depth order and block walking and bullets.
+const LOCATIONS = [
+  { id: 'harbor', name: '항구 시장', time: 90, crowd: 30, decoys: 2, item: 'bag', horizon: 360,
+    props: [['stall', 330, 520], ['stall', 820, 470], ['stall', 1290, 540], ['crates', 560, 700], ['crates', 1080, 760], ['barrel', 200, 760], ['lamp', 1460, 690], ['barrel', 1500, 830]] },
+  { id: 'festival', name: '별빛 야시장', time: 95, crowd: 38, decoys: 3, item: 'scarfY', horizon: 340, night: true,
+    props: [['tent', 300, 480], ['tent', 780, 450], ['tent', 1260, 480], ['lantern', 560, 640], ['lantern', 1040, 660], ['bench', 260, 790], ['bench', 1350, 790], ['drum', 800, 830]] },
+  { id: 'snow', name: '눈꽃 마을', time: 100, crowd: 42, decoys: 3, item: 'backpack', horizon: 350,
+    props: [['pine', 180, 520], ['pine', 1430, 500], ['snowman', 620, 640], ['sled', 980, 600], ['pine', 820, 470], ['signpost', 1220, 720], ['snowman', 330, 800], ['pine', 1150, 860]] },
+  { id: 'garden', name: '유리 온실 식물원', time: 105, crowd: 44, decoys: 4, item: 'camera', horizon: 370,
+    props: [['planter', 380, 540], ['planter', 1220, 540], ['fountain', 800, 660], ['palm', 160, 640], ['palm', 1460, 660], ['planter', 560, 830], ['planter', 1040, 840]] },
+  { id: 'pier', name: '노을 해변', time: 110, crowd: 48, decoys: 4, item: 'balloon', horizon: 380,
+    props: [['umbrella', 300, 560], ['umbrella', 760, 520], ['umbrella', 1250, 580], ['lifeguard', 1460, 470], ['boat', 560, 770], ['umbrella', 1020, 790], ['cooler', 210, 845]] },
+  { id: 'station', name: '중앙역', time: 120, crowd: 54, decoys: 5, item: 'scarfB', horizon: 360,
+    props: [['pillar', 300, 560], ['pillar', 800, 560], ['pillar', 1300, 560], ['kiosk', 560, 720], ['bench', 1060, 720], ['clockPost', 1450, 820], ['bench', 200, 845], ['pillar', 820, 880]] }
 ];
-SNIPER_MISSIONS.push(
- {name:'햇살 가득 식물원',code:'04 / BOTANICAL GARDEN',theme:'garden',time:125,color:0xb2d4bb,accent:0xe5c583,brief:'온실과 화단 사이에서 윌리를 찾으세요. 정원사와 독서가, 나비를 관찰하는 과학자가 모였습니다. 파란 스카프를 확인하세요.',clues:['빨강·흰 줄무늬 + 빨간 털모자','둥근 안경','파란 스카프']},
- {name:'노을빛 해변 산책로',code:'05 / SUNSET PIER',theme:'pier',time:130,color:0xe8b99e,accent:0xf2d38b,brief:'노을이 지는 해변 산책로에서 윌리를 찾으세요. 낚시와 풍선, 북 연주에 시선을 빼앗기지 마세요. 보라 스카프가 마지막 단서입니다.',clues:['빨강·흰 줄무늬 + 빨간 털모자','둥근 안경','보라 스카프']},
- {name:'분주한 중앙역',code:'06 / CENTRAL STATION',theme:'station',time:140,color:0x9eafba,accent:0xe7bd72,brief:'열차가 도착한 중앙역에서 마지막 윌리를 찾으세요. 책을 읽는 승객과 빵을 만드는 상인 사이, 주황 스카프를 찾아보세요.',clues:['빨강·흰 줄무늬 + 빨간 털모자','둥근 안경','주황 스카프']}
-);
-const SNIPER_SCARVES={yellow:[0xf5d16a,'노란 스카프'],green:[0x6ed2a3,'초록 스카프'],blue:[0x6ba8e5,'파란 스카프'],purple:[0xbc91d9,'보라 스카프'],orange:[0xf1a261,'주황 스카프']};
-// Disguised decoys copy the target but change exactly one clue. Wrong scarves avoid look-alike hues.
-const SNIPER_DECOYS=[['case','glasses'],['scarf:green','glasses'],['scarf:yellow','glasses'],['scarf:orange','glasses','scarf:green'],['scarf:green','glasses','scarf:yellow'],['scarf:blue','glasses','scarf:purple']];
-function makeSniperDecoy(base,mission,variant,slot){
- const decoy={...slot,...base,x:slot.x,y:slot.y,range:slot.range,speed:slot.speed,skin:slot.skin,role:'변장 인물',cover:false,target:false,decoy:variant.split(':')[0]};
- const parts=[mission.clues[0],'둥근 안경',mission.clues[2].split(' · ')[0]];decoy.caseColor=0x19202b;
- if(variant==='glasses'){decoy.glasses=false;parts[1]='안경 없음';}
- else if(variant==='case'){decoy.caseColor=0x9a5f35;parts[2]='갈색 서류 가방';}
- else{const [color,name]=SNIPER_SCARVES[variant.split(':')[1]];decoy.scarf=color;parts[2]=name;}
- decoy.desc=parts.join(' · ');return decoy;
+// Ground footprint (ellipse radii) and visual box (width, height at depth scale 1) of each prop kind.
+const PROP_SHAPES = {
+  stall: { rx: 95, ry: 26, w: 200, h: 170 }, crates: { rx: 48, ry: 18, w: 100, h: 70 }, barrel: { rx: 22, ry: 10, w: 44, h: 56 }, lamp: { rx: 10, ry: 6, w: 30, h: 190 },
+  tent: { rx: 100, ry: 28, w: 210, h: 190 }, lantern: { rx: 12, ry: 7, w: 50, h: 180 }, bench: { rx: 60, ry: 14, w: 124, h: 52 }, drum: { rx: 34, ry: 12, w: 70, h: 64 },
+  pine: { rx: 34, ry: 14, w: 130, h: 230 }, snowman: { rx: 28, ry: 12, w: 64, h: 100 }, sled: { rx: 46, ry: 14, w: 96, h: 40 }, signpost: { rx: 16, ry: 8, w: 90, h: 150 },
+  planter: { rx: 80, ry: 24, w: 170, h: 120 }, fountain: { rx: 95, ry: 30, w: 200, h: 150 }, palm: { rx: 22, ry: 10, w: 170, h: 250 },
+  umbrella: { rx: 18, ry: 8, w: 170, h: 170 }, lifeguard: { rx: 46, ry: 16, w: 110, h: 220 }, boat: { rx: 90, ry: 24, w: 190, h: 80 }, cooler: { rx: 30, ry: 12, w: 62, h: 44 },
+  pillar: { rx: 30, ry: 12, w: 62, h: 420 }, kiosk: { rx: 70, ry: 22, w: 150, h: 160 }, clockPost: { rx: 12, ry: 8, w: 70, h: 230 }
+};
+// Solid parts of each prop as [left, right, bottom, top] fractions of its visual box (x from -0.5 to 0.5, y from ground 0 to top 1).
+// The renderer draws the same parts, so what hides a person is exactly what stops a bullet.
+const PROP_SOLIDS = {
+  stall: [[-0.5, 0.5, 0, 0.45], [-0.52, 0.52, 0.75, 1], [-0.48, -0.44, 0, 1], [0.44, 0.48, 0, 1]],
+  tent: [[-0.5, 0.5, 0, 0.72], [-0.4, 0.4, 0.72, 1]],
+  lamp: [[-0.12, 0.12, 0, 0.9], [-0.5, 0.5, 0.84, 1]],
+  lantern: [[-0.08, 0.08, 0, 0.85], [-0.4, 0.4, 0.68, 1]],
+  pine: [[-0.08, 0.08, 0, 0.15], [-0.5, 0.5, 0.12, 0.6], [-0.35, 0.35, 0.6, 0.85], [-0.18, 0.18, 0.85, 1]],
+  signpost: [[-0.08, 0.08, 0, 1], [-0.5, 0.5, 0.62, 0.9]],
+  palm: [[-0.08, 0.08, 0, 0.86], [-0.5, 0.5, 0.8, 1]],
+  umbrella: [[-0.03, 0.03, 0, 0.86], [-0.5, 0.5, 0.72, 0.94]],
+  lifeguard: [[-0.45, -0.35, 0, 0.6], [0.35, 0.45, 0, 0.6], [-0.5, 0.5, 0.55, 1]],
+  pillar: [[-0.4, 0.4, 0, 1]],
+  clockPost: [[-0.08, 0.08, 0, 0.8], [-0.5, 0.5, 0.72, 1]],
+  fountain: [[-0.5, 0.5, 0, 0.35], [-0.1, 0.1, 0.35, 0.8], [-0.3, 0.3, 0.75, 0.86]]
+};
+const PERSON = { width: 26, height: 70 };
+const LOOK_POOL = {
+  skin: ['#f1d2b6', '#e3b48f', '#c48a62', '#9a6a4a', '#f5dcc7', '#d9a37c'],
+  hair: ['#2a1f1a', '#5a3a22', '#8a5a2b', '#c9a15a', '#1c1c22', '#7b7b7b', '#a33d22'],
+  pants: ['#2e3d5c', '#3c3c44', '#5b4636', '#6a7a8a', '#2f4a3a', '#7a5a7a']
+};
+const MAX_MISSES = 3, FLIGHT = 0.95, AFTERMATH = 1.6;
+
+function depthScale(stage, y) { return 0.62 + 0.58 * clamp((y - stage.horizon) / (WORLD.height - stage.horizon), 0, 1); }
+
+function locationFor(level) {
+  const base = LOCATIONS[level % LOCATIONS.length], tier = Math.floor(level / LOCATIONS.length);
+  return { ...base, tier, time: Math.max(55, Math.round(base.time * Math.pow(0.88, tier))), crowd: base.crowd + tier * 6, decoys: Math.min(9, base.decoys + tier * 2) };
 }
-SNIPER_MISSIONS.forEach((m,i)=>{const c=makeWillyCrowd(i);m.extras=c.extras;m.targets=[{...c.position,role:'윌리',coat:0xd85b61,stripes:true,hat:'beanie',glasses:true,case:i===0,scarf:[null,0xf5d16a,0x6ed2a3,0x6ba8e5,0xbc91d9,0xf1a261][i],camera:false,instrument:false,visor:false,helmet:false,cap:false,cover:i===2,desc:m.clues.join(' · '),target:true}];
- // Replace only roles that appear more than once so every crowd keeps its full role variety.
- const counts=new Map();for(const a of m.extras)counts.set(a.role,(counts.get(a.role)||0)+1);
- const base=m.targets[0],{x,y,range,speed,skin,...look}=base;let cursor=Math.floor(m.extras.length*.3);
- m.decoys=SNIPER_DECOYS[i].length;
- for(const variant of SNIPER_DECOYS[i]){
-  for(let n=0;n<m.extras.length;n++){const k=(cursor+n*7)%m.extras.length,slot=m.extras[k];
-   if(slot.decoy||slot.role==='닮은 관광객'||counts.get(slot.role)<2)continue;
-   counts.set(slot.role,counts.get(slot.role)-1);m.extras[k]=makeSniperDecoy(look,m,variant,slot);cursor=k+Math.floor(m.extras.length/3);break;
+function targetLook(loc) { return { hat: 'beanie', top: 'stripe', glasses: 'round', item: loc.item }; }
+function sameLook(a, b) { return TRAIT_KEYS.every(k => a[k] === b[k]); }
+function differingTraits(a, b) { return TRAIT_KEYS.filter(k => a[k] !== b[k]); }
+function describe(look) { return TRAIT_KEYS.map(k => TRAITS[k][look[k]]); }
+
+function insideProp(stage, x, y, pad = 0) {
+  return stage.props.some(p => { const dx = (x - p.x) / (p.rx + pad), dy = (y - p.y) / (p.ry + pad * 0.5); return dx * dx + dy * dy < 1; });
+}
+function randomSpot(stage, rand, near, radius) {
+  for (let i = 0; i < 40; i++) {
+    const x = near ? near.x + (rand() * 2 - 1) * radius : 60 + rand() * (WORLD.width - 120);
+    const y = near ? near.y + (rand() * 2 - 1) * radius * 0.45 : stage.horizon + 40 + rand() * (WORLD.height - stage.horizon - 70);
+    const cx = clamp(x, 50, WORLD.width - 50), cy = clamp(y, stage.horizon + 30, WORLD.height - 25);
+    if (!insideProp(stage, cx, cy, 14)) return { x: cx, y: cy };
   }
- }
-});
-// Activity poses drive both movement and rendering, so visible bodies and hit tests stay together.
-function sniperActivity(actor,theme){
- const byTheme={
-  harbor:{'선원':'carry','요리사':'cook','화가':'paint','관광객':'photo','정비사':'repair','광대':'juggle','탐험가':'shop','음악가':'play','우편배달부':'walk','스키어':'sip','줄무늬 관광객':'photo','빨간 모자 관광객':'shop','닮은 관광객':'talk','윌리':'walk'},
-  festival:{'선원':'clap','요리사':'serve','화가':'paint','관광객':'photo','정비사':'repair','광대':'juggle','탐험가':'dance','음악가':'play','우편배달부':'dance','스키어':'clap','줄무늬 관광객':'photo','빨간 모자 관광객':'sip','닮은 관광객':'wave','윌리':'dance'},
-  snow:{'선원':'shovel','요리사':'serve','화가':'paint','관광객':'photo','정비사':'shovel','광대':'snowman','탐험가':'skate','음악가':'play','우편배달부':'walk','스키어':'ski','줄무늬 관광객':'snowman','빨간 모자 관광객':'sip','닮은 관광객':'wave','윌리':'walk'}
- };const newRoles={'정원사':'water','독서가':'read','낚시꾼':'fish','풍선 상인':'balloon','과학자':'inspect','운동선수':'stretch','드러머':'drum','제빵사':'knead'};
- return newRoles[actor.role]||(byTheme[theme]||byTheme[theme==='pier'?'harbor':'festival'])[actor.role]||'walk';
+  return { x: WORLD.width / 2, y: WORLD.height - 40 };
 }
-const sniperClamp=(n,min,max)=>Math.max(min,Math.min(max,n));
-function sniperAmbient(theme,time,reduced=false){
- if(reduced||!Number.isFinite(time))return [];
- if(theme==='garden')return Array.from({length:7},(_,i)=>({kind:'butterfly',x:85+i*125+Math.sin(time*.65+i)*17,y:116+Math.cos(time*.9+i*2)*12,wing:2+Math.abs(Math.sin(time*6+i))*3,color:i%2?0xefca82:0xcda5c9}));
- if(theme==='harbor'||theme==='pier')return Array.from({length:10},(_,i)=>({kind:'water',x:(30+i*97+time*6)%940,y:(theme==='pier'?115:145)+i%3*10,alpha:.15+(Math.sin(time*1.5+i)+1)*.16}));
- if(theme==='festival')return Array.from({length:12},(_,i)=>({kind:'light',x:15+i*76,y:20+(15+i*76)/38,alpha:.08+(Math.sin(time*1.1+i)+1)*.08}));
- if(theme==='station')return Array.from({length:4},(_,i)=>({kind:'signal',x:400+i*22,y:45,alpha:.3+(Math.sin(time*.8+i)+1)*.3}));
- return [];
-}
-// Ground footprints of the tables, planters and benches drawn by buildCity.
-function sniperObstacles(theme){
- if(theme==='harbor')return Array.from({length:5},(_,i)=>{const x=120+i*170,y=298+(i%2)*94;return[{x,y,rx:26,ry:14},{x:x+49,y,rx:13,ry:16}];}).flat();
- if(theme==='snow')return Array.from({length:4},(_,i)=>({x:140+i*215,y:222+(i%3)*89,rx:22,ry:14}));
- if(['garden','pier','station'].includes(theme))return Array.from({length:4},(_,i)=>({x:150+i*220,y:245+(i%2)*160,rx:theme==='garden'?30:23,ry:theme==='garden'?19:12}));
- return [];
-}
-// Visibility graph paths go around inflated ground footprints, not through furniture.
-function sniperClearPath(from,to,obstacles){
- return !obstacles.some(o=>{
-  let enter=0,leave=1;
-  for(const [axis,radius] of [['x',o.rx+14],['y',o.ry+10]]){
-   const delta=to[axis]-from[axis],min=o[axis]-radius,max=o[axis]+radius;
-   if(Math.abs(delta)<1e-8){if(from[axis]<=min||from[axis]>=max)return false;}
-   else{let a=(min-from[axis])/delta,b=(max-from[axis])/delta;if(a>b)[a,b]=[b,a];enter=Math.max(enter,a);leave=Math.min(leave,b);if(enter>=leave)return false;}
+
+// Builds one location: props, the target, one-clue decoys and a crowd that never fully matches the target.
+function makeStage(level, seed) {
+  const loc = locationFor(level), rand = sniperRandom(seed), stage = { level, loc, seed, horizon: loc.horizon, props: [], people: [] };
+  stage.props = loc.props.map(([kind, x, y], i) => ({ id: i, kind, x, y, ...PROP_SHAPES[kind] }));
+  const target = targetLook(loc), looks = [{ ...target }];
+  for (let i = 0; i < loc.decoys; i++) {
+    const key = TRAIT_KEYS[i % TRAIT_KEYS.length], options = Object.keys(TRAITS[key]).filter(v => v !== target[key] && v !== 'none');
+    looks.push({ ...target, [key]: options[Math.floor(rand() * options.length)] });
   }
-  return enter<leave&&leave>0&&enter<1;
- });
-}
-function sniperRoute(from,to,obstacles,minY){
- if(sniperClearPath(from,to,obstacles))return [{...to}];
- const nodes=[{x:from.x,y:from.y},{...to}];
- for(const o of obstacles)for(const sx of [-1,1])for(const sy of [-1,1]){
-  const p={x:o.x+sx*(o.rx+16),y:o.y+sy*(o.ry+12)};
-  if(p.x>=48&&p.x<=912&&p.y>=minY&&p.y<=498&&sniperClearPath(p,p,obstacles))nodes.push(p);
- }
- const costs=nodes.map(()=>Infinity),previous=nodes.map(()=>-1),visited=new Set();costs[0]=0;
- for(let step=0;step<nodes.length;step++){
-  let current=-1;for(let i=0;i<nodes.length;i++)if(!visited.has(i)&&(current<0||costs[i]<costs[current]))current=i;
-  if(current<0||!Number.isFinite(costs[current]))break;if(current===1){const route=[];for(let i=1;i!==0;i=previous[i])route.unshift(nodes[i]);return route;}
-  visited.add(current);
-  for(let next=0;next<nodes.length;next++)if(!visited.has(next)&&sniperClearPath(nodes[current],nodes[next],obstacles)){
-   const cost=costs[current]+Math.hypot(nodes[current].x-nodes[next].x,nodes[current].y-nodes[next].y);
-   if(cost<costs[next]){costs[next]=cost;previous[next]=current;}
+  while (looks.length < loc.crowd) {
+    const look = { hat: pick(rand, Object.keys(TRAITS.hat)), top: pick(rand, Object.keys(TRAITS.top)), glasses: pick(rand, ['none', 'none', 'round', 'sun']), item: pick(rand, Object.keys(TRAITS.item)) };
+    // Partial look-alikes are common; anyone sharing three or more clues is a deliberate decoy only.
+    if (rand() < 0.25) look.hat = 'beanie';
+    if (rand() < 0.22) look.top = 'stripe';
+    if (differingTraits(look, target).length < 2) continue;
+    looks.push(look);
   }
- }
- return [];
+  looks.forEach((look, id) => {
+    const spot = randomSpot(stage, rand);
+    stage.people.push({
+      id, look, target: id === 0, decoy: id > 0 && differingTraits(look, target).length === 1,
+      skin: pick(rand, LOOK_POOL.skin), hair: pick(rand, LOOK_POOL.hair), pants: pick(rand, LOOK_POOL.pants), build: 0.9 + rand() * 0.22,
+      x: spot.x, y: spot.y, home: { ...spot }, goal: null, facing: rand() < 0.5 ? -1 : 1,
+      speed: 26 + rand() * 18, stride: rand() * 6, state: 'idle', timer: rand() * 3, fear: 0, alarm: 0, dead: false, fall: 0, fallDir: 1, phase: rand() * 6,
+      action: pick(rand, ['look', 'look', 'phone', 'chat', 'wave'])
+    });
+  });
+  // Willy likes standing just behind props, half hidden.
+  stage.hideSpots = stage.props.filter(p => p.y - p.ry - 18 > stage.horizon + 25).map(p => ({ x: p.x + (rand() * 2 - 1) * p.rx * 0.5, y: p.y - p.ry - 14 }));
+  stage.rand = rand;
+  return stage;
 }
-function sniperCollisionCourse(position,velocity,neighbor){
- const rx=neighbor.x-position.x,ry=neighbor.y-position.y,vx=velocity.x-neighbor.vx,vy=velocity.y-neighbor.vy,v2=vx*vx+vy*vy;
- if(v2<1)return null;
- const time=(rx*vx+ry*vy)/v2;
- if(time<=0||time>1.6)return null;
- const clearance=Math.hypot(rx-vx*time,(ry-vy*time)*1.4);
- return clearance<30?{time,clearance}:null;
+
+// Visual rectangle of a prop that stops bullets and hides people behind it.
+function propSolid(stage, p, x, y) {
+  const s = depthScale(stage, p.y), w = p.w * s, h = p.h * s, fx = (x - p.x) / w, fy = (p.y + 4 - y) / (h + 4);
+  if (fx < -0.55 || fx > 0.55 || fy < 0 || fy > 1) return false;
+  return (PROP_SOLIDS[p.kind] || [[-0.5, 0.5, 0, 1]]).some(([l, r, b, t]) => fx >= l && fx <= r && fy >= b && fy <= t);
 }
-function sniperActorPose(a,time){
- const t=time+a.phase,beat=Math.sin(t*3.2),cycle=(t%4)/4;
- const pose={x:a.motion?.x??a.origin,y:a.motion?.y??a.originY,lean:0,bob:0,left:{x:-11,y:-18},right:{x:11,y:-19},legL:{x:-5,y:0},legR:{x:5,y:0},prop:cycle,action:a.action,facing:a.motion?.facing??1};
- if(['walk','carry','ski','skate'].includes(a.action)){
-  const travel=Math.sin(time*.48+a.phase),range=a.action==='ski'?25:a.action==='skate'?20:17;
-  if(!a.motion){pose.x+=travel*range;pose.y+=Math.sin(time*.68+a.phase)*3;pose.facing=Math.cos(time*.48+a.phase)<0?-1:1;}
-  const pace=a.motion?Math.min(1.5,Math.hypot(a.motion.vx,a.motion.vy)/18):1,stride=Math.sin(a.motion?.gait??t*5.5)*pace;
-  pose.legL.x-=stride*5;pose.legR.x+=stride*5;pose.legL.y=-Math.max(0,stride)*3;pose.legR.y=-Math.max(0,-stride)*3;pose.bob=-Math.abs(stride)*1.1;pose.left.y+=stride*4;pose.right.y-=stride*4;pose.lean=(a.motion?.state==='flee'?.12:.045)*pose.facing*pace;
-  const run=a.motion?.runBlend||0;pose.lean+=run*.06*pose.facing;pose.legL.y-=Math.max(0,stride)*run*2;pose.legR.y-=Math.max(0,-stride)*run*2;pose.left.y-=run*(5+stride*2);pose.right.y-=run*(5-stride*2);
-  if(a.action==='carry'){pose.left={x:-13,y:-25};pose.right={x:13,y:-25};pose.lean=-.06;}
-  if(a.action==='ski'||a.action==='skate'){pose.lean=pose.facing*.1*pace;pose.left={x:-18,y:-24+stride*3};pose.right={x:18,y:-21-stride*3};pose.legL={x:-8,y:0};pose.legR={x:8,y:-1};}
- }else if(a.action==='photo'){
-  const raised=cycle>.2&&cycle<.8;pose.left={x:-5,y:raised?-39:-24};pose.right={x:5,y:raised?-39:-24};pose.lean=raised?-.04:.04;pose.prop=raised?1:0;
- }else if(a.action==='paint'){
-  pose.left={x:-13,y:-23};pose.right={x:24+Math.sin(t*2)*2,y:-33+Math.cos(t*2.4)*7};pose.lean=.08;
- }else if(a.action==='cook'||a.action==='serve'){
-  pose.left={x:-14,y:-25};pose.right={x:18+Math.sin(t*3)*4,y:-24-Math.abs(beat)*9};pose.lean=.08;pose.prop=(t%2.5)/2.5;
- }else if(a.action==='repair'){
-  pose.right={x:21,y:-18-Math.max(0,beat)*15};pose.left={x:13,y:-20};pose.lean=.2;pose.bob=2;
- }else if(a.action==='dance'){
-  pose.lean=beat*.16;pose.bob=-Math.abs(Math.sin(t*4))*3;pose.left={x:-17-Math.cos(t*4)*3,y:-36+beat*10};pose.right={x:17,y:-36-beat*10};pose.legL={x:-9+beat*4,y:-Math.max(0,beat)*4};pose.legR={x:9+beat*4,y:-Math.max(0,-beat)*4};
- }else if(a.action==='juggle'){
-  pose.left={x:-12,y:-28+beat*6};pose.right={x:12,y:-28-beat*6};pose.bob=beat*.5;
- }else if(a.action==='play'){
-  pose.left={x:-4,y:-30+beat*2};pose.right={x:15,y:-30-beat*2};pose.lean=beat*.07;
- }else if(a.action==='clap'){
-  const spread=2+Math.abs(beat)*10;pose.left={x:-spread,y:-32};pose.right={x:spread,y:-32};pose.bob=-Math.abs(beat);
- }else if(a.action==='wave'||a.action==='talk'){
-  pose.right={x:15+beat*5,y:a.action==='wave'?-48:-31+beat*4};pose.left={x:-12,y:-22};pose.lean=beat*.04;
-  if(a.action==='talk'&&pose.facing<0){pose.left={x:-pose.right.x,y:pose.right.y};pose.right={x:12,y:-22};}
- }else if(a.action==='sip'){
-  const lift=(1-Math.cos(cycle*Math.PI*2))/2;pose.right={x:13-lift*8,y:-24-lift*14};pose.left={x:-10,y:-22};pose.lean=beat*.025;pose.prop=lift;
- }else if(a.action==='shop'){
-  pose.right={x:14+Math.max(0,beat)*9,y:-24+beat*5};pose.left={x:-12,y:-20};pose.lean=Math.max(0,beat)*.12;
- }else if(a.action==='shovel'||a.action==='snowman'){
-  const bend=(Math.sin(t*2)+1)/2;pose.lean=bend*.28;pose.bob=bend*4;pose.left={x:6+bend*3,y:-23+bend*7};pose.right={x:17,y:-29+bend*16};pose.prop=bend;
- }else if(a.action==='startle'){
-  pose.left={x:-14,y:-40};pose.right={x:14,y:-40};pose.bob=3;pose.lean=-.08*pose.facing;
- }else if(a.action==='look'){
-  pose.right={x:12,y:-30};pose.lean=Math.sin(t*1.4)*.04;
- }else if(a.action==='water'){
-  pose.right={x:19+beat*2,y:-22};pose.left={x:4,y:-22};pose.lean=.1;pose.prop=(t%2)/2;
- }else if(a.action==='read'){
-  pose.left={x:-8,y:-28};pose.right={x:8,y:-28+Math.sin(t*1.5)};pose.lean=.035;pose.prop=(t%5)/5;
- }else if(a.action==='fish'){
-  pose.left={x:6,y:-26};pose.right={x:16,y:-30+Math.sin(t*1.8)*3};pose.lean=beat*.03;
- }else if(a.action==='balloon'){
-  pose.left={x:-12,y:-25};pose.right={x:12,y:-32+beat*2};pose.prop=Math.sin(t*1.4);
- }else if(a.action==='inspect'){
-  pose.right={x:10+beat*3,y:-39};pose.left={x:-9,y:-22};pose.lean=.08+beat*.03;
- }else if(a.action==='stretch'){
-  pose.left={x:-13,y:-45-beat*7};pose.right={x:13,y:-45+beat*7};pose.lean=beat*.14;pose.legL.x=-8;pose.legR.x=8;
- }else if(a.action==='drum'){
-  pose.left={x:-12,y:-23+beat*7};pose.right={x:12,y:-23-beat*7};pose.bob=-Math.abs(beat);
- }else if(a.action==='knead'){
-  pose.left={x:12,y:-20+beat*3};pose.right={x:22,y:-20+beat*3};pose.lean=.1+Math.max(0,beat)*.1;
- }else if(a.action==='rest'){
-  pose.left={x:-8,y:-16};pose.right={x:8,y:-16};pose.lean=.1;pose.bob=1+Math.sin(t*2.6)*.7;
- }
- if(a.motion&&!['travel','flee','return'].includes(a.motion.state))pose.bob+=Math.sin(t*1.8)*.35;
- // Blend changes of posture while keeping the authoritative ground position exact.
- if(a.motion?.blend<1&&a.motion.fromPose){const old=a.motion.fromPose,k=a.motion.blend;
-  for(const key of ['lean','bob'])pose[key]=old[key]+(pose[key]-old[key])*k;
-  for(const key of ['left','right','legL','legR'])for(const axis of ['x','y'])pose[key][axis]=old[key][axis]+(pose[key][axis]-old[key][axis])*k;
- }
- return pose;
+function propCovers(stage, person, x, y) {
+  return stage.props.find(p => p.y > person.y && propSolid(stage, p, x, y)) || null;
 }
-class SniperGame {
-  constructor(random=Math.random){this.random=random;this.state='briefing';this.mission=0;this.score=0;this.totalShots=0;this.totalHits=0;this.streak=0;this.bestStreak=0;this.checkpoint={score:0,shots:0,hits:0,streak:0,bestStreak:0};this.aim={x:480,y:285};this.loadMission();}
-  loadMission(){const m=SNIPER_MISSIONS[this.mission];this.elapsed=0;this.remaining=m.time;this.mag=3;this.reserve=9;this.reloadLeft=0;this.cooldown=0;this.alert=0;this.focus=100;this.holding=false;this.scoped=false;this.identification=0;this.inspected=null;this.identifyId=null;this.feedback='표적을 확인한 뒤 스코프를 켜고 사격하세요.';this.shotFlash=0;this.impact=null;this.shot=null;this.particles=[];this.pausedFrom='running';this.failure='';this.actors=[...m.targets,...m.extras].map((a,i)=>({...a,id:i,origin:a.x,originY:a.y,x:a.x,action:sniperActivity(a,m.theme),phase:i*1.3,speed:a.speed||.32,range:a.range||35,dead:false,hidden:false,fallTime:0,hitX:0,hitY:0}));const swap=1+Math.floor(this.random()*(this.actors.length-1)),target=this.actors[0],other=this.actors[swap];for(const k of ['origin','originY','x','y','phase']){const v=target[k];target[k]=other[k];other[k]=v;}this.hintUsed=false;this.hintLeft=0;this.hintZone=null;this.bonus={hit:0,precision:0,time:0,stealth:0,streak:0,hint:0};this.initCrowd();for(const a of this.actors){a.pose=sniperActorPose(a,0);a.x=a.pose.x;a.y=a.pose.y;}this.aim={x:480,y:285};}
-  initCrowd(){
-    this.observations=new Set();this.identifyGrace=0;
-    this.steadiness=0;this.shotHistory=[];
-    this.requireObservation??=false;
-    this.autoReload??=false;
-    this.report=null;this.missionHistory??=[];
-    this.obstacles=sniperObstacles(this.config.theme);
-    for(const a of this.actors){
-      a.homeAction=a.action;
-      const stationary=['paint','cook','repair','shop','snowman','shovel','play','water','fish','knead','drum'].includes(a.action);
-      a.motion={x:a.origin,y:a.originY,vx:0,vy:0,gait:a.phase,facing:a.id%2?1:-1,
-        state:'activity',timer:1+this.random()*4,pace:(14+this.random()*11)*({'운동선수':1.1,'우편배달부':1.08,'독서가':.85,'낚시꾼':.88,'정원사':.92}[a.role]||1),
-        curiosity:.75+((a.id*7)%5)*.125,sociability:.6+(a.id%5)*.15,courage:this.random(),stationary,goal:{x:a.origin,y:a.originY},blend:1,fromPose:null,
-        reaction:null,escapeLeft:0,stuck:0,route:[],replans:0,fear:0,socialCooldown:3+this.random()*5,partner:null,recentPartners:[],
-        yielding:0,runBlend:0,gaze:a.id%2?1:-1,vigilance:0,alarmCount:0,progressDistance:Infinity,
-        fatigue:0,fatigueRate:a.role==='운동선수'?.65:a.case?1.12:1,visit:null,visitCooldown:2+(a.id%4),lastVisit:null,recentVisits:[]};
-      // Some initial crowd slots border a prop. Resolve before the first visible frame.
-      this.constrainActor(a);
-      a.origin=a.motion.x;a.originY=a.motion.y;
-    }
-    this.interests=this.actors.filter(a=>['play','paint','cook','snowman','water','knead','drum'].includes(a.homeAction))
-      .map(a=>({id:a.id,x:a.origin,y:a.originY,kind:a.homeAction}));
-  }
-  setBehavior(a,state,action,seconds){
-    const b=a.motion;if(state!=='social'&&b.partner!==null){const partner=this.actors.find(n=>n.id===b.partner);b.partner=null;b.socialCooldown=8;if(partner?.motion.partner===a.id){partner.motion.partner=null;partner.motion.timer=0;}}
-    if(b.visit&&!['travel','visiting'].includes(state)){
-      b.lastVisit=b.visit.id;
-      b.recentVisits=[{id:b.visit.id,until:this.elapsed+25},...b.recentVisits.filter(v=>v.id!==b.visit.id&&v.until>this.elapsed)].slice(0,3);
-      b.visit=null;b.visitCooldown=7;
-    }
-    b.state=state;b.timer=seconds;b.stuck=0;
-    if(a.action!==action){b.fromPose=a.pose;b.blend=0;a.action=action;}
-  }
-  constrainActor(a){
-    const b=a.motion,minY=this.config.theme==='harbor'?235:178;
-    b.x=sniperClamp(b.x,48,912);b.y=sniperClamp(b.y,minY,498);
-    for(const o of this.obstacles){const rx=o.rx+16,ry=o.ry+12,dx=b.x-o.x,dy=b.y-o.y;
-      if(Math.abs(dx)<rx&&Math.abs(dy)<ry){
-        if(rx-Math.abs(dx)<ry-Math.abs(dy)){b.x=o.x+(dx<0?-rx:rx);b.vx=0;}
-        else{b.y=o.y+(dy<0?-ry:ry);b.vy=0;}
-      }
+function personBox(stage, p) {
+  const s = depthScale(stage, p.y) * p.build, h = PERSON.height * s;
+  return { x: p.x, y: p.y, w: PERSON.width * s, h, head: h * 0.27 };
+}
+function hitTest(stage, x, y) {
+  const order = stage.people.filter(p => !p.dead).sort((a, b) => b.y - a.y);
+  for (const p of order) {
+    const b = personBox(stage, p);
+    if (Math.abs(x - b.x) <= b.w / 2 && y <= b.y && y >= b.y - b.h) {
+      const prop = propCovers(stage, p, x, y);
+      if (prop) return { kind: 'prop', prop, person: p };
+      return { kind: 'person', person: p, head: y < b.y - b.h + b.head };
     }
   }
-  chooseDestination(a,away){
-    const b=a.motion,minY=this.config.theme==='harbor'?235:178;
-    const candidates=[];
-    for(let attempt=0;attempt<12;attempt++){
-      const angle=away?Math.atan2(b.y-away.y,b.x-away.x)+(this.random()-.5)*1.4:this.random()*Math.PI*2;
-      const distance=away?55+this.random()*50:(25+this.random()*65)*b.curiosity;
-      const x=sniperClamp(b.x+Math.cos(angle)*distance,Math.max(48,a.origin-100),Math.min(912,a.origin+100));
-      const y=sniperClamp(b.y+Math.sin(angle)*distance*.45,Math.max(minY,a.originY-30),Math.min(498,a.originY+30));
-      if(Math.hypot(x-b.x,y-b.y)<12)continue;
-      if(this.obstacles.some(o=>Math.abs(x-o.x)<o.rx+16&&Math.abs(y-o.y)<o.ry+12))continue;
-      const goal={x,y},crowding=this.actors.reduce((sum,n)=>sum+(n.id!==a.id&&!n.dead?Math.max(0,45-Math.hypot(n.x-x,n.y-y)):0),0);
-      const danger=away||b.fear>.2&&b.threat;
-      const score=(danger?Math.hypot(x-danger.x,y-danger.y)-Math.hypot(b.x-danger.x,b.y-danger.y):Math.hypot(x-b.x,y-b.y)*.2)-crowding;
-      candidates.push({goal,score});
-    }
-    candidates.sort((left,right)=>right.score-left.score);
-    for(const candidate of candidates)if(this.planRoute(a,candidate.goal)){b.replans=0;return true;}
-    b.goal={x:b.x,y:b.y};b.route=[];return false;
+  const prop = stage.props.find(p => propSolid(stage, p, x, y));
+  return prop ? { kind: 'prop', prop } : { kind: 'miss' };
+}
+
+class SniperRun {
+  constructor({ seed = (Date.now() >>> 0) } = {}) {
+    this.seed = seed >>> 0; this.level = 0; this.lives = 3; this.score = 0; this.clears = []; this.attempt = 0;
+    this.state = 'brief'; this.aim = { x: WORLD.width / 2, y: WORLD.height * 0.62 }; this.steady = false; this.breath = 1;
+    this.loadLevel();
   }
-  planRoute(a,goal){
-    const b=a.motion,route=sniperRoute(b,goal,this.obstacles,this.config.theme==='harbor'?235:178);
-    if(!route.length)return false;b.goal={...goal};b.route=route;b.progressDistance=Math.hypot(route[0].x-b.x,route[0].y-b.y);return true;
+  loadLevel() {
+    this.stage = makeStage(this.level, (this.seed + this.level * 7919 + this.attempt * 104729) >>> 0);
+    this.time = this.stage.loc.time; this.elapsed = 0; this.misses = 0; this.shot = null; this.result = null; this.message = '';
+    this.pausedFrom = null; this.breath = 1; this.steady = false;
   }
-  advanceRoute(a){
-    const b=a.motion;
-    // Follow the farthest currently visible waypoint to avoid stopping at every corner.
-    for(let i=b.route.length-1;i>0;i--)if(sniperClearPath(b,b.route[i],this.obstacles)){
-      b.route.splice(0,i);b.progressDistance=Infinity;b.stuck=0;break;
-    }
-    while(b.route.length>1&&Math.hypot(b.route[0].x-b.x,b.route[0].y-b.y)<5){b.route.shift();b.progressDistance=Infinity;b.stuck=0;}
-  }
-  interestHost(spot){
-    const host=this.actors.find(n=>n.id===spot.id),focus=spot.focus||spot;
-    return host&&!host.dead&&!host.hidden&&['activity','observe'].includes(host.motion.state)&&Math.hypot(host.motion.x-focus.x,host.motion.y-focus.y)<14?host:null;
-  }
-  restDuration(a){return sniperClamp((a.motion.fatigue-.3)/.12,2,6);}
-  interestPreference(a,kind){
-    const favorites={'독서가':['paint','water'],'과학자':['repair','water'],'운동선수':['play','drum'],'우편배달부':['cook','knead']};
-    return (a.camera?25:['play','drum'].includes(kind)?18:8)+(favorites[a.role]?.includes(kind)?22:0);
-  }
-  chooseInterest(a){
-    const b=a.motion;if(b.stationary||b.reaction||b.fatigue>.65||b.fear>.2||b.vigilance>0||b.visitCooldown>0||a.hidden)return false;
-    const candidates=[];
-    for(const spot of this.interests){
-      const host=this.interestHost(spot);
-      if(spot.id===a.id||!host)continue;
-      for(const slot of [-1,1]){
-        const goal={x:spot.x+slot*48,y:spot.y+12};
-        if(goal.x<48||goal.x>912||goal.y>498||Math.abs(goal.x-a.origin)>120||Math.abs(goal.y-a.originY)>60)continue;
-        if(this.actors.some(n=>!n.dead&&n.id!==a.id&&(n.motion.visit?.id===spot.id&&n.motion.visit.slot===slot||Math.hypot(n.x-goal.x,n.y-goal.y)<24)))continue;
-        if(!sniperClearPath(goal,goal,this.obstacles))continue;
-        const distance=Math.hypot(goal.x-b.x,goal.y-b.y);
-        const preference=this.interestPreference(a,spot.kind);
-        candidates.push({spot,slot,goal,score:preference-distance*.2-(b.recentVisits.some(v=>v.id===spot.id&&v.until>this.elapsed)?35:0)+this.random()*8});
-      }
-    }
-    candidates.sort((a,b)=>b.score-a.score);
-    for(const c of candidates){if(!this.planRoute(a,c.goal))continue;
-      b.visit={id:c.spot.id,slot:c.slot,focus:{x:c.spot.x,y:c.spot.y},action:a.camera?'photo':['play','drum'].includes(c.spot.kind)?'clap':'look'};b.replans=0;
-      this.setBehavior(a,'travel','walk',12);return true;
-    }
+  get location() { return this.stage.loc; }
+  get target() { return this.stage.people[0]; }
+  get clues() { return describe(targetLook(this.location)); }
+  begin() { if (this.state !== 'brief') return false; this.state = 'play'; return true; }
+  pause() {
+    if (this.state === 'play' || this.state === 'shot') { this.pausedFrom = this.state; this.state = 'paused'; this.steady = false; return true; }
+    if (this.state === 'paused') { this.state = this.pausedFrom; this.pausedFrom = null; return true; }
     return false;
   }
-  tryConversation(a){
-    const b=a.motion;if(a.dead||a.hidden||b.stationary||b.fear>.2||b.socialCooldown>0||b.fatigue>.65||b.reaction||b.vigilance>0||!['activity','observe'].includes(b.state))return false;
-    const partner=this.actors.filter(n=>n.id!==a.id&&!b.recentPartners.some(v=>v.id===n.id&&v.until>this.elapsed)&&!n.motion.recentPartners.some(v=>v.id===a.id&&v.until>this.elapsed)&&!n.dead&&!n.hidden&&!n.motion.stationary&&!n.motion.reaction&&n.motion.fatigue<=.65&&n.motion.fear<.2&&n.motion.vigilance===0&&n.motion.socialCooldown<=0&&['activity','observe'].includes(n.motion.state))
-      .sort((p,q)=>Math.hypot(p.x-a.x,p.y-a.y)-Math.hypot(q.x-a.x,q.y-a.y))
-      .find(n=>{const distance=Math.hypot(n.x-a.x,n.y-a.y);return distance>28&&distance<78&&Math.abs(n.y-a.y)<25&&sniperClearPath(b,n.motion,this.obstacles);});
-    if(!partner)return false;
-    const duration=(1.8+this.random()*1.7)*(b.sociability+partner.motion.sociability)/2;this.setBehavior(a,'social','talk',duration);this.setBehavior(partner,'social','talk',duration);
-    for(const [person,other] of [[a,partner],[partner,a]])person.motion.recentPartners=[{id:other.id,until:this.elapsed+30},...person.motion.recentPartners.filter(v=>v.id!==other.id&&v.until>this.elapsed)].slice(0,2);
-    b.partner=partner.id;partner.motion.partner=a.id;b.facing=partner.x>a.x?1:-1;partner.motion.facing=-b.facing;return true;
+  setAim(x, y) { if (!Number.isFinite(x) || !Number.isFinite(y)) return false; this.aim.x = clamp(x, 0, WORLD.width); this.aim.y = clamp(y, 0, WORLD.height); return true; }
+  setSteady(on) { this.steady = Boolean(on) && this.state === 'play' && this.breath > 0.05; }
+  // Breathing sway; holding breath (steady) shrinks it until the breath meter runs out.
+  sway() {
+    const amp = this.steady ? 1.4 : 6.5, t = this.elapsed;
+    return { x: Math.sin(t * 1.9) * amp + Math.sin(t * 4.3) * amp * 0.25, y: Math.cos(t * 1.5) * amp * 0.7 };
   }
-  alertCrowd(x,y){
-    for(const a of this.actors){if(a.dead)continue;const b=a.motion,d=Math.hypot(a.x-x,a.y-y);
-      b.reaction={delay:.12+d/800+this.random()*.35,x,y};b.fear=Math.min(1,b.fear+.4+Math.max(0,1-d/500)*.6);
-      b.alarmCount++;b.vigilance=Math.min(16,6+b.alarmCount*2);
+  fire() {
+    if (this.state !== 'play') return { kind: 'blocked' };
+    const d = this.sway(), x = clamp(this.aim.x + d.x, 0, WORLD.width), y = clamp(this.aim.y + d.y, 0, WORLD.height), hit = hitTest(this.stage, x, y);
+    this.shot = { x, y, hit, clock: 0, resolved: false, outcome: null };
+    this.state = 'shot'; this.steady = false;
+    return { kind: hit.kind === 'person' ? (hit.person.target ? 'target' : 'innocent') : hit.kind, x, y };
+  }
+  update(dt) {
+    if (!Number.isFinite(dt) || dt <= 0) return;
+    dt = Math.min(dt, 0.05);
+    if (this.state === 'shot') { this.updateShot(dt); return; }
+    if (this.state !== 'play') return;
+    this.elapsed += dt; this.time = Math.max(0, this.time - dt);
+    this.breath = this.steady ? Math.max(0, this.breath - dt / 3.2) : Math.min(1, this.breath + dt / 2.4);
+    if (this.breath === 0) this.steady = false;
+    this.updateCrowd(dt);
+    if (this.time === 0) this.fail('시간이 다 됐습니다. 윌리가 군중 속으로 사라졌어요.');
+  }
+  // Skip the rest of the bullet-time sequence; the outcome is resolved exactly once.
+  skip() { if (this.state !== 'shot') return false; this.updateShot(FLIGHT + AFTERMATH); for (const p of this.stage.people) if (p.dead) p.fall = 1; return true; }
+  updateShot(dt) {
+    const s = this.shot; s.clock += dt;
+    for (const p of this.stage.people) if (p.dead) p.fall = Math.min(1, p.fall + dt * 2.2);
+    if (!s.resolved && s.clock >= FLIGHT) this.resolveShot();
+    if (s.clock >= FLIGHT + AFTERMATH) {
+      if (s.outcome === 'clear') this.clearLevel();
+      else if (s.outcome === 'fail') this.fail(s.reason, true);
+      else { this.state = 'play'; this.shot = null; }
     }
   }
-  stepCrowd(dt){
-    // Snapshot positions so avoidance is independent of actor update order.
-    const neighbors=this.actors.filter(a=>!a.dead).map(a=>({id:a.id,x:a.motion.x,y:a.motion.y,vx:a.motion.vx,vy:a.motion.vy}));
-    for(const a of this.actors){
-      if(a.dead){a.fallTime=Math.min(1.2,a.fallTime+dt);continue;}
-      const b=a.motion;b.timer-=dt;b.blend=Math.min(1,b.blend+dt*4);b.fear=Math.max(0,b.fear-dt*.055);b.socialCooldown=Math.max(0,b.socialCooldown-dt);
-      b.visitCooldown=Math.max(0,b.visitCooldown-dt);
-      if(b.visit&&!this.interestHost(b.visit))this.setBehavior(a,'observe','look',.8);
-      b.yielding=Math.max(0,b.yielding-dt);b.vigilance=Math.max(0,b.vigilance-dt);if(b.vigilance===0)b.alarmCount=0;
-      if(b.state==='social'){const partner=this.actors.find(n=>n.id===b.partner);if(a.hidden||!partner||partner.dead||partner.hidden||partner.motion.partner!==a.id||Math.hypot(partner.motion.x-b.x,partner.motion.y-b.y)>90||Math.abs(partner.motion.y-b.y)>35||!sniperClearPath(b,partner.motion,this.obstacles))b.timer=0;else b.facing=partner.x>a.x?1:-1;}
-      if(b.reaction){b.reaction.delay-=dt;if(b.reaction.delay<=0){
-        b.threat={x:b.reaction.x,y:b.reaction.y};b.reaction=null;
-        this.setBehavior(a,'startled','startle',.35+b.courage*.4);
-      }}
-      if(b.state==='startled'&&b.timer<=0){
-        this.chooseDestination(a,b.threat);b.escapeLeft=1.8+(1-b.courage)*1.8;
-        this.setBehavior(a,'flee','walk',b.escapeLeft);
-      }else if(b.state==='social'&&b.timer<=0){
-        this.setBehavior(a,'observe','look',1);
-      }else if(b.state==='resting'&&b.timer<=0&&b.fatigue>.4&&!b.reaction&&b.fear<=.2){
-        b.timer=this.restDuration(a);
-      }else if(['visiting','resting'].includes(b.state)&&b.timer<=0){
-        this.setBehavior(a,'observe','look',.8);
-      }else if(b.state==='activity'&&b.timer<=0){
-        if(b.fatigue>.68&&b.vigilance===0&&!b.reaction&&b.fear<=.2)this.setBehavior(a,'resting','rest',this.restDuration(a));
-        else if(!this.tryConversation(a)&&!this.chooseInterest(a)){
-          if(b.stationary){this.setBehavior(a,'observe','look',.8+this.random()*1.4);}
-          else if(this.chooseDestination(a)){this.setBehavior(a,'travel',['carry','ski','skate'].includes(a.homeAction)?a.homeAction:'walk',7);}
-          else this.setBehavior(a,'observe','look',1);
-        }
-      }else if(b.state==='observe'&&b.timer<=0){
-        if(b.alarmCount>=2&&b.vigilance>0)this.setBehavior(a,'observe','look',1.5);
-        else this.setBehavior(a,'activity',a.homeAction,2+this.random()*4);
-      }else if(b.state==='recover'&&b.timer<=0){
-        const homeDanger=b.threat&&Math.hypot(a.origin-b.threat.x,a.originY-b.threat.y);
-        if(b.fear>.35&&b.threat&&homeDanger<90&&homeDanger+10<Math.hypot(b.x-b.threat.x,b.y-b.threat.y))b.timer=1.2;
-        else if(this.planRoute(a,{x:a.origin,y:a.originY})){b.replans=0;this.setBehavior(a,'return','walk',12);}
-        else this.setBehavior(a,'observe','look',1);
-      }
-      const moving=['travel','flee','return'].includes(b.state);
-      if(moving)this.advanceRoute(a);
-      if(moving&&b.stuck>.75&&b.replans<2){this.planRoute(a,b.goal);b.replans++;b.stuck=0;}
-      const waypoint=b.route[0]||b.goal,dx=waypoint.x-b.x,dy=waypoint.y-b.y,dist=Math.hypot(b.goal.x-b.x,b.goal.y-b.y),wayDistance=Math.hypot(dx,dy);
-      if(moving&&(dist<4||b.timer<=0||b.stuck>1.4)&&(b.state!=='flee'||b.timer<b.escapeLeft-.4)){
-        if(b.state==='flee')this.setBehavior(a,'recover','look',1.2+this.random()*1.5);
-        else if(b.visit&&dist<4){b.facing=b.visit.focus.x>b.x?1:-1;this.setBehavior(a,'visiting',b.visit.action,2.5+this.random()*2);}
-        else if(b.state==='return'||b.stationary)this.setBehavior(a,'activity',a.homeAction,2+this.random()*3);
-        else this.setBehavior(a,'observe',this.random()<.45?'wave':'look',.8+this.random()*1.8);
-      }
-      const walking=['travel','flee','return'].includes(b.state),speed=b.pace*(b.state==='flee'?1.5+b.fear*.4:1+b.fear*.15)*(a.homeAction==='ski'||a.homeAction==='skate'?1.25:1)*(1-b.fatigue*.22);
-      let vx=walking?dx/Math.max(1,wayDistance)*Math.min(speed,wayDistance*2):0,vy=walking?dy/Math.max(1,wayDistance)*Math.min(speed,wayDistance*2):0;
-      if(walking){
-        // Predict the closest approach; one walker yields while the other keeps priority.
-        const desiredVelocity={x:vx,y:vy};
-        for(const n of neighbors){if(n.id===a.id)continue;
-          const course=sniperCollisionCourse(b,desiredVelocity,n);
-          if(course&&(a.id>n.id||Math.hypot(n.vx,n.vy)<2)){
-            b.yielding=.3;const side=a.id<n.id?-1:1;
-            vx*=.55;vy*=.55;
-            if(Math.abs(desiredVelocity.x)>=Math.abs(desiredVelocity.y))vy+=side*speed*.35;
-            else vx+=side*speed*.35;
-          }
-        }
-        for(const n of neighbors){if(n.id===a.id)continue;const nx=b.x-n.x,ny=(b.y-n.y)*1.6,d=Math.hypot(nx,ny);
-          if(d<38){const strength=(38-d)/38*speed*1.8;vx+=(d>.01?nx/d:a.id<n.id?-1:1)*strength;vy+=ny/Math.max(1,d)*strength;
-            // Pick opposite passing sides instead of getting stuck face-to-face.
-            if(Math.abs(ny)<18)vy+=(a.id<n.id?-1:1)*strength*.55;
-          }
-        }
-        for(const o of this.obstacles){const nx=b.x+vx*.45-o.x,ny=b.y+vy*.45-o.y;
-          if(Math.abs(nx)<o.rx+22&&Math.abs(ny)<o.ry+16){vy+=(b.y<o.y?-1:1)*speed;vx*=.65;}
-        }
-      }
-      const desired=Math.hypot(vx,vy);if(desired>speed){vx*=speed/desired;vy*=speed/desired;}
-      const smooth=1-Math.exp(-dt*(b.state==='flee'?7:4));b.vx+=(vx-b.vx)*smooth;b.vy+=(vy-b.vy)*smooth;
-      const oldX=b.x,oldY=b.y;b.x+=b.vx*dt;b.y+=b.vy*dt;this.constrainActor(a);
-      const traveled=Math.hypot(b.x-oldX,b.y-oldY);b.gait+=traveled*.28;
-      const effort=traveled/Math.max(dt,.001);b.fatigue=sniperClamp(b.fatigue+dt*(effort>28?.085*b.fatigueRate:effort>4?.012*b.fatigueRate:b.state==='resting'?-.12:-.055),0,1);
-      // Detect circling as well as complete stops, using progress toward the next waypoint.
-      const progress=Math.hypot(waypoint.x-b.x,waypoint.y-b.y);
-      if(!walking||progress<b.progressDistance-.3){b.stuck=0;b.progressDistance=progress;}
-      else if(b.yielding===0)b.stuck+=dt;
-      if(walking&&Math.abs(b.vx)>3)b.facing=b.vx<0?-1:1;
-      b.runBlend+=(sniperClamp((Math.hypot(b.vx,b.vy)-24)/16,0,1)-b.runBlend)*(1-Math.exp(-dt*6));
-      const gaze= !walking&&b.vigilance>0&&b.threat?(b.threat.x>b.x?1:-1):b.facing;
-      b.gaze+=(gaze-b.gaze)*(1-Math.exp(-dt*5));
-      a.pose=sniperActorPose(a,this.elapsed);a.x=a.pose.x;a.y=a.pose.y;
-      a.hidden=Boolean(a.cover&&Math.sin(this.elapsed*.9)>.3);
+  resolveShot() {
+    const s = this.shot, hit = s.hit, target = targetLook(this.location); s.resolved = true;
+    if (hit.kind === 'person') {
+      const p = hit.person; p.dead = true; p.fall = 0; p.fallDir = s.x < p.x ? 1 : -1;
+      if (p.target) { s.outcome = 'clear'; s.head = hit.head; return; }
+      s.outcome = 'fail';
+      const diff = differingTraits(p.look, target);
+      s.reason = p.decoy ? `변장한 가짜였습니다. 윌리는 '${TRAITS[diff[0]][target[diff[0]]]}'인데 이 사람은 '${TRAITS[diff[0]][p.look[diff[0]]]}'였어요.` : '엉뚱한 사람을 쐈습니다. 수배 전단의 단서 네 가지를 모두 확인하세요.';
+      return;
+    }
+    this.misses++; s.outcome = this.misses >= MAX_MISSES ? 'fail' : 'miss';
+    s.reason = '세 번 빗나가자 윌리가 눈치채고 달아났습니다.';
+    this.panic(s.x, s.y);
+  }
+  panic(x, y) {
+    for (const p of this.stage.people) {
+      if (p.dead) continue;
+      const d = Math.hypot(p.x - x, (p.y - y) * 1.6);
+      p.fear = Math.min(1, p.fear + 0.35 + Math.max(0, 1 - d / 700) * 0.6);
+      p.alarm = 1.3; p.state = 'flee'; p.timer = 1.2 + p.fear * 2;
+      const away = Math.atan2(p.y - y, p.x - x), dist = 160 + p.fear * 160;
+      p.goal = randomSpot(this.stage, this.stage.rand, { x: p.x + Math.cos(away) * dist, y: p.y + Math.sin(away) * dist }, 60);
     }
   }
-  actorAt(x,y,inspect=false){
-    // Match the rendered lean/bob and front-to-back painter order.
-    return [...this.actors].sort((a,b)=>b.y-a.y||b.id-a.id).find(a=>{
-      if(a.dead||a.hidden)return false;const p=a.pose,dx=x-a.x,dy=y-a.y-p.bob,c=Math.cos(p.lean),s=Math.sin(p.lean);
-      const localX=dx*c+dy*s,localY=-dx*s+dy*c;
-      return Math.abs(localX)<(inspect?23:10)&&localY>(inspect?-55:-46)&&localY<(inspect?8:2);
-    });
-  }
-  actorLocal(a,x,y){const p=a.pose,dx=x-a.x,dy=y-a.y-p.bob,c=Math.cos(p.lean),s=Math.sin(p.lean);return{x:dx*c+dy*s,y:-dx*s+dy*c};}
-  // The head and hat sit above the shoulders (-35) in the same local frame as actorAt.
-  isPrecisionHit(a,x,y){return Boolean(a)&&this.actorLocal(a,x,y).y<-35;}
-  radioHint(){
-    if(this.state!=='running'||this.hintUsed)return false;
-    const target=this.actors.find(a=>a.target&&!a.dead);if(!target)return false;
-    this.hintUsed=true;this.hintLeft=5;this.hintZone=sniperClamp(Math.floor(target.motion.x/320),0,2);
-    this.feedback=`무전 지원: 윌리는 화면 ${['왼쪽','가운데','오른쪽'][this.hintZone]} 구역에 있습니다. 미션 보상 200점 차감, S 등급 불가.`;
-    return true;
-  }
-  updateObservation(a,dt){
-    if(a){
-      if(a.id!==this.identifyId){this.identifyId=a.id;this.identification=0;}
-      this.identification=this.observations.has(a.id)?1:Math.min(1,this.identification+dt/1.1);
-      this.identifyGrace=.22;if(this.identification===1)this.observations.add(a.id);
-    }else{
-      this.identifyGrace=Math.max(0,this.identifyGrace-dt);
-      if(this.identifyGrace===0){this.identification=0;this.identifyId=null;}
-    }
-    this.inspected=a;
-  }
-  observationNotes(query=''){
-    return [...this.observations].map(id=>this.actors.find(a=>a.id===id)).filter(Boolean).map((a,i)=>({number:i+1,description:a.desc})).filter(note=>note.description.toLocaleLowerCase().includes(String(query).trim().toLocaleLowerCase()));
-  }
-  get campaignSummary(){
-    const completed=this.missionHistory.length,shots=this.missionHistory.reduce((n,r)=>n+r.shots,0);
-    return {completed,shots,accuracy:shots?Math.round(completed/shots*100):0,seconds:Math.round(this.missionHistory.reduce((n,r)=>n+r.seconds,0)*10)/10,perfect:this.missionHistory.filter(r=>r.grade==='S').length};
-  }
-  get config(){return SNIPER_MISSIONS[this.mission];}
-  get targetsLeft(){return this.actors.filter(a=>a.target&&!a.dead).length;}
-  start(){if(this.state!=='briefing')return false;this.state='running';return true;}
-  pause(){if(this.state==='running'||this.state==='shot'){this.pausedFrom=this.state;this.state='paused';this.holding=false;return true;}if(this.state==='paused'){this.state=this.pausedFrom;return true;}return false;}
-  scope(){if(this.state!=='running')return false;this.scoped=!this.scoped;this.identification=0;this.holding=false;return true;}
-  reload(){if(this.state!=='running'||this.reloadLeft>0||this.mag===3||this.reserve<=0)return false;this.reloadLeft=1.6;this.holding=false;this.feedback='재장전 중…';return true;}
-  maybeAutoReload(){return Boolean(this.autoReload&&this.mag===0&&this.reload());}
-  get reloadProgress(){return this.reloadLeft>0?sniperClamp(1-this.reloadLeft/1.6,0,1):0;}
-  fail(reason){if(this.state!=='running')return;this.state='failed';this.failure=reason;this.holding=false;}
-  retry(){if(this.state!=='failed')return false;Object.assign(this,{score:this.checkpoint.score,totalShots:this.checkpoint.shots,totalHits:this.checkpoint.hits,streak:this.checkpoint.streak??0,bestStreak:this.checkpoint.bestStreak??0});this.loadMission();this.state='briefing';return true;}
-  next(){if(this.state!=='success'||this.mission>=SNIPER_MISSIONS.length-1)return false;this.mission++;this.checkpoint={score:this.score,shots:this.totalShots,hits:this.totalHits,streak:this.streak,bestStreak:this.bestStreak};this.loadMission();this.state='briefing';return true;}
-  sway(){const strength=5.2-4.1*this.steadiness;return{x:Math.sin(this.elapsed*2.3)*strength,y:Math.cos(this.elapsed*1.7)*strength*.65};}
-  moveAim(dx,dy,dt){
-    if(this.state!=='running'||![dx,dy,dt].every(Number.isFinite)||dt<=0)return false;
-    const length=Math.max(1,Math.hypot(dx,dy)),speed=(this.scoped?95:220)*(this.holding?.5:1)*Math.min(dt,.05);
-    return this.aimAt(this.aim.x+dx/length*speed,this.aim.y+dy/length*speed);
-  }
-  aimAt(x,y){if(!Number.isFinite(x)||!Number.isFinite(y))return false;this.aim.x=Math.max(25,Math.min(935,x));this.aim.y=Math.max(35,Math.min(510,y));return true;}
-  step(dt){if(!Number.isFinite(dt)||dt<=0)return;dt=Math.min(.05,dt);if(this.state==='shot'){this.stepShot(dt);return;}if(this.state!=='running')return;this.updateParticles(dt);this.elapsed+=dt;this.remaining=Math.max(0,this.remaining-dt);this.cooldown=Math.max(0,this.cooldown-dt);this.shotFlash=Math.max(0,this.shotFlash-dt);if(this.impact)this.impact.life-=dt;this.hintLeft=Math.max(0,this.hintLeft-dt);
-    if(this.reloadLeft>0){this.reloadLeft-=dt;if(this.reloadLeft<=0){this.reloadLeft=0;const n=Math.min(3-this.mag,this.reserve);this.mag+=n;this.reserve-=n;this.feedback='재장전 완료. 표적을 확인하세요.';}}
-    if(this.holding&&this.scoped&&this.reloadLeft===0){this.focus=Math.max(0,this.focus-dt*32);if(this.focus===0)this.holding=false;}else this.focus=Math.min(100,this.focus+dt*18);
-    const steadyTarget=this.holding&&this.scoped&&this.focus>0&&this.reloadLeft===0?1:0;
-    this.steadiness+=(steadyTarget-this.steadiness)*(1-Math.exp(-dt*(steadyTarget?5:9)));
-    this.stepCrowd(dt);
-    const a=this.scoped?this.actorAt(this.aim.x,this.aim.y,true):null;
-    this.updateObservation(a,dt);
-    if(this.remaining===0)this.fail('작전 시간이 초과되었습니다.');
-  }
-  updateParticles(dt){for(const p of this.particles){p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=75*dt;}this.particles=this.particles.filter(p=>p.life>0);}
-  stepShot(dt){const shot=this.shot;shot.clock+=dt;this.shotFlash=Math.max(0,this.shotFlash-dt);this.updateParticles(dt);for(const a of this.actors)if(a.dead)a.fallTime=Math.min(1.2,a.fallTime+dt);
-    if(!shot.impacted&&shot.clock>=shot.flight){shot.impacted=true;this.resolveShot();}
-    if(shot.clock>=shot.duration){
-      if(!this.report&&['success','won'].includes(shot.outcome)){
-        const shots=this.totalShots-this.checkpoint.shots;
-        this.report={mission:this.mission,shots,accuracy:Math.round(100/Math.max(1,shots)),observed:this.observations.size,seconds:Math.round((this.config.time-this.remaining)*10)/10,grade:shots===1?(this.remaining>=this.config.time*.5&&!this.hintUsed?'S':'A'):'B',hint:this.hintUsed,streak:this.streak,bonus:{...this.bonus}};
-        this.missionHistory.push({...this.report});
+  updateCrowd(dt) {
+    const stage = this.stage, rand = stage.rand;
+    for (const p of stage.people) {
+      if (p.dead) continue;
+      p.timer -= dt; p.alarm = Math.max(0, p.alarm - dt); p.fear = Math.max(0, p.fear - dt * 0.06);
+      if (p.state === 'idle' && p.timer <= 0) {
+        const hide = p.target && stage.hideSpots.length && rand() < 0.45;
+        p.goal = hide ? randomSpot(stage, rand, pick(rand, stage.hideSpots), 30) : randomSpot(stage, rand, rand() < 0.7 ? p.home : null, 260);
+        p.state = 'walk';
       }
-      this.state=shot.outcome;this.feedback=shot.message;this.shot=null;this.cooldown=.15;
-      const message=this.feedback;if(this.maybeAutoReload())this.feedback=message+' 빈 탄창을 자동 재장전합니다.';
+      if ((p.state === 'walk' || p.state === 'flee') && p.goal) {
+        const dx = p.goal.x - p.x, dy = p.goal.y - p.y, d = Math.hypot(dx, dy);
+        const speed = p.speed * (p.state === 'flee' ? 2.4 : 1) * (0.7 + 0.3 * depthScale(stage, p.y));
+        if (d < 4 || (p.state === 'flee' && p.timer <= 0 && d < 30)) {
+          p.state = 'idle'; p.timer = p.target ? 1.5 + rand() * 3 : 1.5 + rand() * 5; p.goal = null;
+          p.action = p.fear > 0.3 ? 'look' : pick(rand, ['look', 'look', 'phone', 'chat', 'wave']);
+          continue;
+        }
+        let nx = p.x + dx / d * speed * dt, ny = p.y + dy / d * speed * dt;
+        if (insideProp(stage, nx, ny, 10)) {
+          // Slide along the prop instead of walking through it; pick a new goal if still blocked.
+          const prop = stage.props.find(o => { const ex = (nx - o.x) / (o.rx + 10), ey = (ny - o.y) / (o.ry + 5); return ex * ex + ey * ey < 1; });
+          const side = Math.sign(p.y - prop.y) || 1;
+          nx = p.x + Math.sign(dx || 1) * speed * dt * 0.6; ny = p.y + side * speed * dt * 0.8;
+          if (insideProp(stage, nx, ny, 10)) { p.goal = randomSpot(stage, rand, p, 140); continue; }
+        }
+        p.x = clamp(nx, 40, WORLD.width - 40); p.y = clamp(ny, stage.horizon + 25, WORLD.height - 20);
+        p.stride += speed * dt * 0.11; if (Math.abs(dx) > 1) p.facing = dx < 0 ? -1 : 1;
+      }
     }
   }
-  skipShot(){
-    if(this.state!=='shot'||!this.shot)return false;
-    this.stepShot(Math.max(0,this.shot.duration-this.shot.clock)+.001);
-    for(const a of this.actors)if(a.dead)a.fallTime=1.2;
-    this.particles=[];this.shotFlash=0;return true;
+  clearLevel() {
+    const loc = this.location, s = this.shot;
+    const breakdown = { base: 1000, time: Math.round(this.time * 12), misses: (MAX_MISSES - this.misses) * 250, head: s.head ? 600 : 0, tier: loc.tier * 500 };
+    const gained = Object.values(breakdown).reduce((a, b) => a + b, 0);
+    const stars = this.misses === 0 && this.time >= loc.time * 0.4 ? 3 : this.misses <= 1 ? 2 : 1;
+    this.score += gained;
+    this.result = { level: this.level, name: loc.name, gained, stars, head: Boolean(s.head), breakdown, seconds: Math.round((loc.time - this.time) * 10) / 10 };
+    this.clears.push(this.result); this.state = 'clear'; this.shot = null;
   }
-  resolveShot(){const shot=this.shot,a=shot.actor;this.impact={x:shot.x,y:shot.y,life:.55};shot.outcome='running';
-    this.shotHistory.push({number:this.shotHistory.length+1,result:a?(a.target?(this.isPrecisionHit(a,shot.x,shot.y)?'정밀 명중':'표적 명중'):a.decoy?'가짜 윌리 사격':'오인 사격'):'빗나감',seconds:Math.round(this.elapsed*10)/10});if(this.shotHistory.length>12)this.shotHistory.shift();
-    if(a){a.dead=true;a.fallTime=0;a.hitX=shot.x;a.hitY=shot.y;a.fallDir=a.id%2?-1:1;
-      for(let i=0;i<18;i++){const angle=-1.45+i*.115,speed=15+(i*13%34);this.particles.push({x:shot.x,y:shot.y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed-15,life:.45+(i%5)*.14,max:1.1,size:1+(i%3)*.45});}
-      if(!a.target){shot.outcome='failed';this.streak=0;
-        const reason={glasses:'안경이 없었습니다',case:'가방 색이 달랐습니다',scarf:'스카프 색이 달랐습니다'}[a.decoy];
-        this.failure=reason?`변장한 가짜 윌리였습니다. ${reason}. 단서를 하나씩 대조하세요.`:'다른 인물을 오인 사격했습니다. 윌리의 단서를 모두 확인하세요.';shot.message=this.failure;return;}
-      const precise=this.isPrecisionHit(a,shot.x,shot.y);shot.precise=precise;
-      this.totalHits++;this.score+=500;this.bonus.hit+=500;if(precise){this.score+=250;this.bonus.precision+=250;}
-      this.alert=Math.min(100,this.alert+8);shot.message=precise?'정밀 명중! 머리를 정확히 맞혔습니다. +250':'윌리 명중 확인. 다음 장소를 확인하세요.';
-      if(this.targetsLeft===0){
-        const time=Math.ceil(this.remaining)*8,stealth=Math.max(0,100-Math.round(this.alert))*3,firstShot=this.totalShots-this.checkpoint.shots===1;
-        this.streak=firstShot?this.streak+1:0;this.bestStreak=Math.max(this.bestStreak,this.streak);
-        const streak=this.streak>=2?Math.min(600,150*(this.streak-1)):0;
-        const hint=this.hintUsed?-Math.min(200,this.bonus.hit+this.bonus.precision+time+stealth+streak):0;
-        Object.assign(this.bonus,{time,stealth,streak,hint});this.score+=time+stealth+streak+hint;
-        if(streak)shot.message+=` 첫발 명중 ${this.streak}연속! +${streak}`;
-        shot.outcome=this.mission===SNIPER_MISSIONS.length-1?'won':'success';}
-    }else{this.alert=Math.min(100,this.alert+24);this.alertCrowd(shot.x,shot.y);shot.message='빗나갔습니다. 놀란 사람들이 흩어집니다. 경계도가 상승했습니다.';if(this.alert>=100){shot.outcome='failed';this.failure='발사 위치가 노출되어 작전을 중단합니다.';}}
-    if(shot.outcome==='running'&&this.mag===0&&this.reserve===0){shot.outcome='failed';this.failure='탄약을 모두 소진했습니다.';}
+  fail(reason, fromShot = false) {
+    if (!['play', 'shot'].includes(this.state) || (this.state === 'shot' && !fromShot)) return;
+    this.lives--; this.message = reason; this.shot = null; this.steady = false;
+    this.state = this.lives > 0 ? 'failed' : 'over';
   }
-  get tacticalWarning(){
-    if(!['running','paused','shot'].includes(this.state))return '';
-    const messages=[];if(this.remaining<=15)messages.push('시간 주의: 15초 이하');
-    if(this.alert>=72)messages.push('노출 주의: 추가 실수가 작전을 끝낼 수 있습니다');
-    if(this.mag+this.reserve<=3)messages.push('탄약 주의: 남은 탄약 3발 이하');
-    return messages.join(' · ');
-  }
-  get shotReadiness(){
-    if(this.state!=='running')return '작전 진행 중에 사격할 수 있습니다.';
-    if(!this.scoped)return '스코프를 켜세요.';
-    if(this.reloadLeft>0)return '재장전 중입니다.';
-    if(this.cooldown>0)return '다음 사격을 준비하고 있습니다.';
-    if(this.mag<=0)return this.reserve?'탄창이 비었습니다. 재장전하세요.':'남은 탄약이 없습니다.';
-    if(this.requireObservation){const drift=this.sway(),actor=this.actorAt(this.aim.x+drift.x/2.3,this.aim.y+drift.y/2.3);if(!actor||!this.observations.has(actor.id))return '조준한 인물의 관찰을 완료하세요.';}
-    return '사격 준비 완료 · 외형 단서를 다시 확인하세요.';
-  }
-  shoot(){if(this.state!=='running'||!this.scoped||this.cooldown>0||this.reloadLeft>0)return {kind:'blocked'};if(this.mag<=0){this.feedback=this.reserve?'탄창이 비었습니다. R 또는 재장전을 누르세요.':'남은 탄약이 없습니다.';return {kind:'empty'};}
-    const drift=this.sway(),x=this.aim.x+drift.x/2.3,y=this.aim.y+drift.y/2.3;const a=this.actorAt(x,y);
-    if(this.requireObservation&&(!a||!this.observations.has(a.id))){this.feedback='관찰을 완료한 인물에게만 발사할 수 있습니다. 스코프로 외형을 확인하세요.';return {kind:'unobserved'};}
-    this.mag--;this.totalShots++;this.shotFlash=.16;
-    this.holding=false;this.shot={x,y,actor:a||null,clock:0,flight:1.05,duration:2.45,impacted:false,outcome:'running',message:'',startAim:{...this.aim}};this.state='shot';this.feedback='BULLET TIME · 총알이 날아갑니다…';return {kind:a?(a.target?'target':'protected'):'miss',actor:a,x,y};
+  next() {
+    if (this.state === 'clear') { this.level++; this.attempt = 0; this.loadLevel(); this.state = 'brief'; return true; }
+    if (this.state === 'failed') { this.attempt++; this.loadLevel(); this.state = 'brief'; return true; }
+    return false;
   }
 }
 
-// Local records contain only validated mission results; ranking is grade, shots, then time.
-function sniperBestRecord(previous, candidate, mission){
- const clean=r=>r&&r.mission===mission&&Number.isInteger(mission)&&mission>=0&&mission<SNIPER_MISSIONS.length&&['S','A','B'].includes(r.grade)&&Number.isInteger(r.shots)&&r.shots>=1&&r.shots<=12&&Number.isFinite(r.seconds)&&r.seconds>=0?{mission,grade:r.grade,shots:r.shots,seconds:r.seconds}:null;
- const old=clean(previous),next=clean(candidate);if(!old)return next;if(!next)return old;
- const rank={S:3,A:2,B:1};
- return rank[next.grade]>rank[old.grade]||(next.grade===old.grade&&(next.shots<old.shots||(next.shots===old.shots&&next.seconds<old.seconds)))?next:old;
-}
+const api = { WORLD, TRAITS, TRAIT_KEYS, LOCATIONS, PROP_SHAPES, PROP_SOLIDS, PERSON, MAX_MISSES, FLIGHT, AFTERMATH, sniperRandom, makeStage, locationFor, targetLook, describe, differingTraits, sameLook, depthScale, hitTest, personBox, propCovers, propSolid, insideProp, SniperRun };
+if (typeof module === 'object' && module.exports) module.exports = api; else root.SniperCore = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
