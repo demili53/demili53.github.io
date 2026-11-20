@@ -1,5 +1,5 @@
 'use strict';
-// 균열의 검 — pure game rules. No DOM, no canvas: the renderer reads state and drains `events`.
+// 던전엔드레곤 (formerly 균열의 검) — pure game rules. No DOM, no canvas: the renderer reads state and drains `events`.
 const RIFT_FLOOR={left:40,right:920,top:290,bottom:505};
 const RIFT_HEROES={
  blade:{name:'검사',title:'균열의 검사',role:'근접 · 연속 베기',desc:'세 번째 베기로 적을 띄우고, 회전베기로 포위를 뚫습니다.',color:'#7fe6d3',hp:190,mp:100,speed:235,atk:23,
@@ -58,21 +58,32 @@ const RIFT_ENEMIES={
  grunt:{name:'균열 병사',hp:105,speed:105,dmg:16,range:78,wind:.5,cd:1.35,score:100},
  archer:{name:'그림자 궁수',hp:78,speed:92,dmg:14,range:440,wind:.72,cd:2.1,score:120,ranged:true},
  brute:{name:'철갑 거인',hp:320,speed:66,dmg:30,range:120,wind:.85,cd:2.4,score:220,armor:true},
- wraith:{name:'망령',hp:95,speed:130,dmg:19,range:330,wind:.6,cd:2.3,score:150,float:true}
+ wraith:{name:'망령',hp:95,speed:130,dmg:19,range:330,wind:.6,cd:2.3,score:150,float:true,dasher:true},
+ imp:{name:'불씨 임프',hp:62,speed:120,dmg:15,range:380,wind:.85,cd:2.5,score:110,ranged:true,float:true},
+ shaman:{name:'해골 주술사',hp:125,speed:80,dmg:12,range:320,wind:1,cd:3.4,score:220,ranged:true},
+ slime:{name:'균열 점액',hp:150,speed:72,dmg:18,range:74,wind:.55,cd:1.6,score:90},
+ hound:{name:'그림자 사냥개',hp:82,speed:175,dmg:15,range:250,wind:.45,cd:1.9,score:120,dasher:true}
+};
+// Elite enemies (region 2+) carry one affix; they are bigger, glow gold and heal the player a little when killed.
+const RIFT_AFFIXES={
+ swift:{name:'신속',color:'#9fe8ff',desc:'빠르게 움직이고 자주 공격'},
+ iron:{name:'강철',color:'#c8d0e0',desc:'받는 피해 −30%, 강타에만 밀림'},
+ volatile:{name:'폭발',color:'#ff8a3a',desc:'쓰러지면 폭발'},
+ vampiric:{name:'흡혈',color:'#ff5a7a',desc:'공격이 맞으면 체력 회복'}
 };
 const RIFT_BOSSES=[
- {id:'warden',name:'철갑 수문장',hp:1700,speed:85,dmg:26,cd:1.7,patterns:['slam','charge','quake'],color:'#f1b46a'},
- {id:'treant',name:'고목 수호자',hp:2300,speed:60,dmg:26,cd:1.7,patterns:['erupt','volley','slam','summon'],color:'#9be07a'},
- {id:'witch',name:'서리 마녀',hp:2800,speed:100,dmg:28,cd:1.6,patterns:['beam','erupt','nova','volley'],color:'#9fe2ff'},
- {id:'knight',name:'화염 기사',hp:3400,speed:110,dmg:31,cd:1.5,patterns:['charge','slam','beam','erupt'],color:'#ff9a5c'},
- {id:'devourer',name:'균열 포식자',hp:4300,speed:75,dmg:34,cd:1.4,patterns:['beam','nova','erupt','volley','summon','quake'],color:'#ff6fa8'}
+ {id:'warden',name:'철갑 수문장',hp:1700,speed:85,dmg:26,cd:1.7,patterns:['slam','charge','quake'],rage:['ripple'],color:'#f1b46a'},
+ {id:'treant',name:'고목 수호자',hp:2300,speed:60,dmg:26,cd:1.7,patterns:['erupt','volley','slam','summon'],rage:['thorns'],color:'#9be07a'},
+ {id:'witch',name:'서리 마녀',hp:2800,speed:100,dmg:28,cd:1.6,patterns:['beam','erupt','nova','volley'],rage:['blizzard'],color:'#9fe2ff'},
+ {id:'knight',name:'화염 기사',hp:3400,speed:110,dmg:31,cd:1.5,patterns:['charge','slam','beam','erupt'],rage:['meteor'],color:'#ff9a5c'},
+ {id:'dragon',name:'심연의 용',hp:4600,speed:72,dmg:34,cd:1.45,patterns:['breath','tail','fireball','wing','dive'],rage:['inferno','summon'],color:'#ff6a4a'}
 ];
 const RIFT_REGIONS=[
- {name:'잿빛 성문',sub:'THE ASHEN GATE',color:'#e9b77d',fights:[['grunt','grunt','grunt','grunt'],['grunt','grunt','archer','grunt','archer']]},
- {name:'이끼 숲',sub:'MOSSWOOD',color:'#9be07a',fights:[['grunt','archer','wraith','grunt','archer'],['brute','grunt','grunt','wraith','archer']]},
- {name:'서리 동굴',sub:'FROST HOLLOW',color:'#9fe2ff',fights:[['wraith','wraith','archer','grunt','grunt','archer'],['brute','archer','wraith','grunt','brute']]},
- {name:'화염 제단',sub:'EMBER ALTAR',color:'#ff9a5c',fights:[['brute','grunt','archer','wraith','grunt','archer'],['brute','brute','wraith','archer','wraith','grunt']]},
- {name:'균열의 심장',sub:'HEART OF THE RIFT',color:'#ff6fa8',fights:[['brute','wraith','archer','wraith','grunt','archer','grunt'],['brute','brute','archer','archer','wraith','wraith','grunt']]}
+ {name:'잿빛 성문',sub:'THE ASHEN GATE',color:'#e9b77d',fights:[['grunt','grunt','hound','grunt'],['grunt','slime','archer','grunt','archer']]},
+ {name:'이끼 숲',sub:'MOSSWOOD',color:'#9be07a',fights:[['slime','archer','hound','grunt','slime'],['brute','grunt','hound','wraith','archer']]},
+ {name:'서리 동굴',sub:'FROST HOLLOW',color:'#9fe2ff',fights:[['wraith','imp','archer','slime','grunt','hound'],['brute','shaman','wraith','grunt','imp']]},
+ {name:'화염 제단',sub:'EMBER ALTAR',color:'#ff9a5c',fights:[['brute','imp','shaman','hound','grunt','archer'],['brute','slime','wraith','imp','shaman','hound']]},
+ {name:'용의 둥지',sub:"THE DRAGON'S END",color:'#ff6a4a',fights:[['brute','hound','imp','wraith','shaman','archer','hound'],['brute','brute','shaman','imp','wraith','hound','slime']]}
 ];
 const RIFT_BLESSINGS=[
  {id:'edge',name:'예리한 칼날',desc:'모든 피해 +15%',max:3,icon:'⚔'},
@@ -140,14 +151,16 @@ class RiftGame{
    this.enemies.push(this.makeEnemy('boss',{x:780,y:390,hp:Math.round(b.hp*(1+this.region*.08)),boss:b,dmgMult:s.dmg}));
    this.emit('boss',{name:b.name});
   }else{
-   const roster=this.regionData.fights[this.fight],list=[...roster,...roster.slice(0,Math.ceil(roster.length/2))];list.forEach((type,i)=>this.queue.push({type,delay:.35+i*(i<3?.45:1.1),side:i%3===2?-1:1}));
+   const roster=this.regionData.fights[this.fight],list=[...roster,...roster.slice(0,Math.ceil(roster.length/2))];const eliteRate=this.region>=2?.1+.05*this.region:this.region===1&&this.fight===1?.12:0;let forced=this.region>=1&&this.fight===1?Math.floor(list.length*.6):-1;
+   list.forEach((type,i)=>this.queue.push({type,delay:.35+i*(i<3?.45:1.1),side:i%3===2?-1:1,elite:i===forced||i>2&&this.random()<eliteRate}));
    this.emit('fight',{region:this.region,fight:this.fight});
   }
  }
  makeEnemy(type,o={}){
-  const d=type==='boss'?o.boss:RIFT_ENEMIES[type],s=this.enemyScale,hp=o.hp||Math.round(d.hp*s.hp);
+  const d=type==='boss'?o.boss:RIFT_ENEMIES[type],s=this.enemyScale,affix=o.elite?Object.keys(RIFT_AFFIXES)[Math.floor(this.random()*4)]:null;
+  const hp=o.hp||Math.round(d.hp*s.hp*(o.small?.4:1)*(affix?2.3:1));
   return{id:++this.serial,type,x:o.x??(o.side<0?-40:1000),y:o.y??clampN(300+this.random()*190,RIFT_FLOOR.top+10,RIFT_FLOOR.bottom-10),z:0,vz:0,vx:0,vy:0,face:-1,hp,maxHp:hp,
-   dmgMult:o.dmgMult||s.dmg,state:'enter',t:0,cd:.6+this.random()*.8,flash:0,stun:0,freeze:0,air:false,dead:false,deadT:0,boss:o.boss||null,enraged:false,pattern:0,dash:null,hitBy:{}};
+   dmgMult:(o.dmgMult||s.dmg)*(affix?1.15:1),affix,small:!!o.small,scale:(o.small?.62:1)*(affix?1.22:1),ward:0,wardMax:0,state:'enter',t:0,cd:.6+this.random()*.8,flash:0,stun:0,freeze:0,air:false,dead:false,deadT:0,boss:o.boss||null,enraged:false,pattern:0,dash:null,hitBy:{}};
  }
 
  // ---------- player actions ----------
@@ -236,7 +249,9 @@ class RiftGame{
   let dmg=o.dmg*(e.hp<=e.maxHp*.3?1+.4*this.rank('execute'):1);
   if(this.weapon.id==='frost'&&this.awakened&&(e.freeze>0||e.chill))dmg*=1.3;
   if(p.riposte&&o.kind!=='dot'){dmg*=2;p.riposte=false;}
+  if(e.affix==='iron')dmg*=.7;
   dmg=Math.max(1,Math.round(dmg*(.92+this.random()*.16)));
+  if(e.ward>0){const ab=Math.min(e.ward,dmg);e.ward-=ab;dmg-=ab;e.flash=.08;if(e.ward<=0)this.emit('wardBreak',{x:e.x,y:e.y-e.z,id:e.id});else if(!o.status)this.emit('wardHit',{x:e.x,y:e.y-e.z});if(dmg<=0){if(!o.status&&o.kind!=='dot'){this.combo++;this.comboT=2.2;this.hitstop=Math.max(this.hitstop,.03);}return 0;}}
   const dealt=Math.min(e.hp,dmg);e.hp-=dmg;e.flash=.12;
   const leech=o.status||o.kind==='dot'?0:.03*this.rank('leech');if(leech)p.hp=Math.min(p.maxHp,p.hp+dealt*leech);
   if(o.kind!=='dot'&&o.kind!=='chain'){
@@ -244,12 +259,12 @@ class RiftGame{
    this.combo++;this.comboT=2.2;this.maxCombo=Math.max(this.maxCombo,this.combo);
    this.hitstop=Math.max(this.hitstop,o.heavy?.085:.045);
   }
-  const dir=o.dir||Math.sign(e.x-p.x)||p.face,armored=e.boss||e.type==='brute'&&e.state==='wind';
+  const dir=o.dir||Math.sign(e.x-p.x)||p.face,armored=e.boss||e.type==='brute'&&e.state==='wind'||e.affix==='iron'&&!o.heavy;
   if(o.status){if(e.boss)this.staggerBoss(e,dealt*.5);}
   else if(!armored){
    e.vx=dir*o.kb*(e.type==='brute'?.45:1);e.stun=Math.max(e.stun,o.heavy?.5:.28);
    if(e.state==='wind'){e.state='idle';e.cd=Math.max(e.cd,.6);this.cancelOwned(e);}
-   if(o.launch&&e.type!=='brute'){e.vz=o.launch;e.air=true;}
+   if(o.launch&&e.type!=='brute'&&e.affix!=='iron'){e.vz=o.launch*(e.small?1.15:1);e.air=true;}
   }else if(e.boss)this.staggerBoss(e,dealt);
   if(o.freeze){e.freeze=Math.max(e.freeze,o.freeze*(e.boss?.5:1));e.chill=null;}
   this.emit('hit',{x:e.x,y:e.y,z:e.z,dmg,heavy:o.heavy,boss:!!e.boss,kind:o.kind,id:e.id,crit:dmg>=this.hero.atk*3,elem:o.elem||null,status:!!o.status});
@@ -263,7 +278,10 @@ class RiftGame{
  killEnemy(e){
   e.dead=true;e.deadT=0;e.hp=0;this.kills++;this.cancelOwned(e);
   if(e.poison&&this.weapon.id==='venom'&&this.awakened){const ids=[];for(const t of this.alive)if(Math.hypot(t.x-e.x,t.y-e.y)<160){const st=Math.min(6,(t.poison?.stacks||0)+3);t.poison={t:4,tick:t.poison?.tick??.5,stacks:st,dps:this.hero.atk*this.weaponMult*.13*this.elemPower};ids.push(t.id);}this.emit('cloud',{x:e.x,y:e.y,n:ids.length});}
-  const pts=e.boss?3000+this.region*1000:RIFT_ENEMIES[e.type].score;this.score+=Math.round(pts*(1+this.region*.25)*(1+Math.min(this.combo,50)/50));
+  if(e.type==='slime'&&!e.small)for(const sd of [-1,1]){const m=this.makeEnemy('slime',{x:clampN(e.x+sd*24,50,910),y:clampN(e.y+sd*18,RIFT_FLOOR.top,RIFT_FLOOR.bottom),small:true});m.state='idle';m.cd=.8+this.random()*.5;m.vx=sd*160;m.stun=.3;this.enemies.push(m);this.emit('split',{x:e.x,y:e.y});}
+  if(e.affix==='volatile')this.addHazard({shape:'circle',x:e.x,y:e.y,rx:100,ry:42,wind:.75,dmg:RIFT_ENEMIES[e.type].dmg*e.dmgMult*1.2,owner:-1,kind:'burst'});
+  if(e.affix){const p=this.player;p.hp=Math.min(p.maxHp,p.hp+p.maxHp*.08);this.emit('elite',{x:e.x,y:e.y,affix:e.affix});}
+  const pts=(e.boss?3000+this.region*1000:RIFT_ENEMIES[e.type].score*(e.small?.4:1))*(e.affix?2.5:1);this.score+=Math.round(pts*(1+this.region*.25)*(1+Math.min(this.combo,50)/50));
   this.hitstop=Math.max(this.hitstop,e.boss?.35:.07);if(e.boss)this.slow=Math.max(this.slow,1.1);
   this.player.mp=Math.min(this.player.maxMp,this.player.mp+(e.boss?60:6));
   this.emit('kill',{x:e.x,y:e.y,z:e.z,type:e.type,boss:!!e.boss,id:e.id,frozen:e.freeze>0,burning:!!e.burn});
@@ -325,7 +343,7 @@ class RiftGame{
  updateQueue(dt){
   if(!this.queue.length)return;const active=this.alive.length;
   for(const q of this.queue)q.delay-=dt;
-  while(this.queue.length&&this.queue[0].delay<=0&&active+1<=6){const q=this.queue.shift();this.enemies.push(this.makeEnemy(q.type,{side:q.side}));if(this.alive.length>=6)break;}
+  while(this.queue.length&&this.queue[0].delay<=0&&active+1<=6){const q=this.queue.shift();this.enemies.push(this.makeEnemy(q.type,{side:q.side,elite:q.elite}));if(this.alive.length>=6)break;}
  }
  updateEnemy(e,dt){
   if(e.dead)return;const p=this.player;
@@ -336,19 +354,28 @@ class RiftGame{
   else if(e.vx){e.x+=e.vx*dt;e.vx*=Math.pow(.004,dt);if(Math.abs(e.vx)<5)e.vx=0;}
   e.x=e.state==='enter'?e.x:clampN(e.x,RIFT_FLOOR.left,RIFT_FLOOR.right);
   if(e.stun>0||e.air||e.z>0)return;
-  const pace=(frozen?.25:e.enraged?1.25:1)*(e.chill?1-.09*e.chill.stacks:1);dt*=pace;
+  const pace=(frozen?.25:e.enraged?1.25:1)*(e.chill?1-.09*e.chill.stacks:1)*(e.affix==='swift'?1.3:1);dt*=pace;
   if(e.boss)return this.updateBoss(e,dt);
   const d=RIFT_ENEMIES[e.type],dx=p.x-e.x,dy=p.y-e.y;
   if(e.state==='enter'){e.x+=Math.sign(480-e.x)*d.speed*1.3*dt;e.face=Math.sign(480-e.x)||-1;if(e.x>70&&e.x<890)e.state='idle';return;}
   if(e.state==='dash'){const k=Math.min(1,dt/Math.max(.001,e.dash.t));e.x+=(e.dash.x-e.x)*k;e.y+=(e.dash.y-e.y)*k;e.dash.t-=dt;if(e.dash.t<=0){e.state='idle';e.dash=null;e.cd=d.cd;}return;}
   if(e.state==='wind'){e.t-=dt;if(e.t<=0){e.state='recover';e.t=.35;}return;}
-  if(e.state==='recover'){e.t-=dt;if(e.t<=0){e.state='idle';e.cd=d.cd*(.8+this.random()*.4);}return;}
+  if(e.state==='recover'){e.t-=dt;if(e.t<=0){e.state='idle';e.cd=d.cd*(.8+this.random()*.4)*(e.affix==='swift'?.7:1);}return;}
   e.cd-=dt;e.face=dx>=0?1:-1;
-  const want=d.ranged?(Math.abs(dx)<220?-1:Math.abs(dx)>d.range?1:0):e.type==='wraith'?(Math.abs(dx)>d.range-30?1:0):(Math.abs(dx)>d.range-12?1:0);
+  const adx=Math.abs(dx),melee=!d.ranged&&!d.dasher;let mx=0,ty=p.y;
+  if(d.ranged){const keep=e.type==='shaman'?280:220;mx=adx<keep?-Math.sign(dx):adx>d.range?Math.sign(dx):0;}
+  else if(e.type==='hound'){if(e.cd>.4){const orbit=190;mx=adx<orbit-30?-Math.sign(dx):adx>orbit+30?Math.sign(dx):0;ty=p.y+Math.sin(this.time*2+e.id)*70;}else mx=adx>d.range-20?Math.sign(dx):0;}
+  else if(d.dasher)mx=adx>d.range-30?Math.sign(dx):0;
+  else{
+   // melee flank: when several melee enemies are up, every other one walks around to the player's far side
+   let crowd=0;for(const o of this.alive)if(!o.boss&&o!==e&&!RIFT_ENEMIES[o.type].ranged&&!RIFT_ENEMIES[o.type].dasher&&Math.sign(o.x-p.x)===Math.sign(e.x-p.x)&&Math.abs(o.x-p.x)<260)crowd++;
+   if(crowd>=2&&e.id%2===0&&!e.flank)e.flank=-Math.sign(e.x-p.x)||1;if(crowd<1)e.flank=0;
+   if(e.flank){const tx=p.x+e.flank*(d.range-16),fdx=tx-e.x;mx=Math.abs(fdx)>10?Math.sign(fdx):0;if(Math.sign(e.x-p.x)!==e.flank&&adx<110)ty=p.y+(e.id%4<2?60:-60);if(Math.sign(e.x-p.x)===e.flank&&adx<d.range)e.face=dx>=0?1:-1;}
+   else mx=adx>d.range-12?Math.sign(dx):0;}
   // keep a little vertical spacing so groups don't stack on one lane
   let sep=0;for(const o of this.alive)if(o!==e&&Math.abs(o.x-e.x)<40&&Math.abs(o.y-e.y)<26)sep+=e.y>=o.y?1:-1;
-  e.x+=want*Math.sign(dx)*d.speed*dt;e.y+=clampN(dy*(d.ranged?.6:1.4),-d.speed*.7,d.speed*.7)*dt+sep*30*dt;e.y=clampN(e.y,RIFT_FLOOR.top,RIFT_FLOOR.bottom);
-  const inRange=Math.abs(dx)<=d.range&&Math.abs(dy)<(d.ranged||e.type==='wraith'?70:34);
+  const sp=d.speed*(e.small?1.25:1);e.x+=mx*sp*dt;e.y+=clampN((ty-e.y)*(d.ranged?.6:1.4),-sp*.7,sp*.7)*dt+sep*30*dt;e.y=clampN(e.y,RIFT_FLOOR.top,RIFT_FLOOR.bottom);
+  e.moving=mx!==0;const inRange=adx<=d.range*(e.small?.8:1)&&Math.abs(dy)<(d.ranged||d.dasher?70:34);
   if(e.cd<=0&&inRange)this.enemyAttack(e,d);
  }
  enemyAttack(e,d){
@@ -356,11 +383,17 @@ class RiftGame{
   if(e.type==='grunt')this.addHazard({shape:'rect',x1:e.face>0?e.x:e.x-d.range,x2:e.face>0?e.x+d.range:e.x,y:e.y,h:30,wind:d.wind,dmg,owner:e.id,kind:'slash'});
   else if(e.type==='brute')this.addHazard({shape:'circle',x:e.x+e.face*70,y:e.y,rx:95,ry:42,wind:d.wind,dmg,owner:e.id,kind:'slam'});
   else if(e.type==='archer')this.addHazard({shape:'aim',x1:e.x,y1:e.y,x2:p.x,y2:p.y,wind:d.wind,dmg,owner:e.id,kind:'arrow'});
-  else if(e.type==='wraith'){const tx=clampN(e.x+Math.sign(p.x-e.x)*330,60,900),ty=clampN(p.y,RIFT_FLOOR.top,RIFT_FLOOR.bottom);this.addHazard({shape:'line',x1:e.x,y1:e.y,x2:tx,y2:ty,w:34,wind:d.wind,dmg,owner:e.id,kind:'dash'});}
+  else if(e.type==='wraith'||e.type==='hound'){const L=e.type==='hound'?260:330,tx=clampN(e.x+Math.sign(p.x-e.x)*L,60,900),ty=clampN(p.y,RIFT_FLOOR.top,RIFT_FLOOR.bottom);this.addHazard({shape:'line',x1:e.x,y1:e.y,x2:tx,y2:ty,w:e.type==='hound'?30:34,wind:d.wind,dmg,owner:e.id,kind:e.type==='hound'?'pounce':'dash'});}
+  else if(e.type==='slime'){const sc=e.small?.65:1;this.addHazard({shape:'circle',x:e.x+e.face*30*sc,y:e.y,rx:82*sc,ry:34*sc,wind:d.wind,dmg:dmg*sc,owner:e.id,kind:'slime'});}
+  else if(e.type==='imp')this.addHazard({shape:'circle',x:clampN(p.x+(this.random()-.5)*30,50,910),y:p.y,rx:64,ry:28,wind:d.wind+.15,dmg,owner:e.id,kind:'bomb',fromX:e.x,fromY:e.y});
+  else if(e.type==='shaman'){const allies=this.alive.filter(o=>o!==e&&!o.boss&&o.type!=='shaman'&&o.ward<=0&&o.state!=='enter').sort((a,b)=>Math.hypot(a.x-e.x,a.y-e.y)-Math.hypot(b.x-e.x,b.y-e.y)).slice(0,2);
+   if(allies.length){const w=Math.round(38*this.enemyScale.hp);for(const o of allies){o.ward=o.wardMax=w;}this.emit('ward',{x:e.x,y:e.y,targets:allies.map(o=>({x:o.x,y:o.y,id:o.id}))});}
+   else this.addHazard({shape:'aim',x1:e.x,y1:e.y,x2:p.x,y2:p.y,wind:d.wind*.8,dmg,owner:e.id,kind:'skull',speed:330});}
  }
+ vampHeal(e,dealt){if(e.affix!=='vampiric'||e.dead)return;const h=Math.min(e.maxHp-e.hp,Math.round(e.maxHp*.15));if(h>0){e.hp+=h;this.emit('vamp',{x:e.x,y:e.y,heal:h});}}
  addHazard(h){h.maxWind=h.wind;h.life=.35;h.done=false;this.hazards.push(h);return h;}
  inHazard(h,x,y){
-  if(h.shape==='circle')return((x-h.x)/h.rx)**2+((y-h.y)/h.ry)**2<=1;
+  if(h.shape==='circle'){const d=((x-h.x)/h.rx)**2+((y-h.y)/h.ry)**2;return d<=1&&(!h.ring||d>=(h.ring/h.rx)**2);}
   if(h.shape==='rect')return x>=h.x1-12&&x<=h.x2+12&&Math.abs(y-h.y)<=h.h;
   if(h.shape==='line'){const vx=h.x2-h.x1,vy=h.y2-h.y1,l2=vx*vx+vy*vy||1,t=clampN(((x-h.x1)*vx+(y-h.y1)*vy)/l2,0,1);return Math.hypot(x-(h.x1+vx*t),(y-(h.y1+vy*t))*1.3)<=h.w;}
   return false;
@@ -370,10 +403,10 @@ class RiftGame{
   for(const h of this.hazards){
    if(h.wind>0){h.wind-=dt;if(h.wind>0)continue;}
    if(!h.done){h.done=true;const owner=this.enemies.find(e=>e.id===h.owner);
-    if(h.shape==='aim'){const a=Math.atan2(h.y2-h.y1,h.x2-h.x1),sp=h.speed||560;this.shots.push({id:++this.serial,friendly:false,x:h.x1,y:h.y1,z:46,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,r:12,life:1.6,dmg:h.dmg,kind:h.kind==='seed'?'seed':h.kind==='shard'?'shard':'arrow',hit:[]});}
-    else{if(h.kind==='dash'&&owner&&!owner.dead){owner.state='dash';owner.dash={x:h.x2,y:h.y2,t:.18};}
+    if(h.shape==='aim'){const a=Math.atan2(h.y2-h.y1,h.x2-h.x1),sp=h.speed||560;this.shots.push({id:++this.serial,friendly:false,x:h.x1,y:h.y1,z:46,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,r:12,life:1.6,dmg:h.dmg,kind:['seed','shard','skull','fireball'].includes(h.kind)?h.kind:'arrow',hit:[],owner:h.owner});}
+    else{if((h.kind==='dash'||h.kind==='pounce')&&owner&&!owner.dead){owner.state='dash';owner.dash={x:h.x2,y:h.y2,t:h.kind==='pounce'?.16:.18};}
      if(h.kind==='charge'&&owner&&!owner.dead){owner.state='dash';owner.dash={x:h.tx,y:owner.y,t:.3};}
-     if(this.inHazard(h,p.x,p.y))this.hitPlayer(h.dmg,{x:h.x??h.x1});
+     if(this.inHazard(h,p.x,p.y)){const dealt=this.hitPlayer(h.dmg,{x:h.x??h.x1});if(dealt&&owner)this.vampHeal(owner,dealt);if(h.push&&dealt)p.vx=Math.sign(p.x-(owner?.x??480))*520;}
      this.emit('impact',{kind:h.kind,x:h.x??(h.x1+h.x2)/2,y:h.y??h.y1,shape:h.shape,h});}
    }
    h.life-=dt;
@@ -391,7 +424,7 @@ class RiftGame{
     for(const e of this.alive){if(s.hit.includes(e.id))continue;const reach=s.r+(e.boss?55:22);if(Math.abs(e.x-s.x)<reach&&Math.abs(e.y-s.y)<reach*.9+(e.boss?20:8)){s.hit.push(e.id);this.damageEnemy(e,{dmg:s.dmg,kb:s.kb||45,heavy:s.heavy,kind:s.skill,dir:Math.sign(s.vx),elem:s.elem});
      if(s.splash){for(const o of this.alive)if(o!==e&&((o.x-e.x)/s.splash)**2+((o.y-e.y)/(s.splash*.5))**2<=1)this.damageEnemy(o,{dmg:s.dmg*s.splashMult,kb:60,kind:s.skill,dir:Math.sign(o.x-e.x)||1,elem:s.elem});this.emit('blast',{x:e.x,y:e.y,r:s.splash,elem:s.elem,small:true});}
      s.pierce--;if(s.pierce<=0){s.life=0;break;}}}}
-   else if(Math.abs(p.x-s.x)<s.r+16&&Math.abs(p.y-s.y)<s.r+18){const dealt=this.hitPlayer(s.dmg,{dir:Math.sign(s.vx)});if(dealt||p.dash<=0)s.life=0;}
+   else if(Math.abs(p.x-s.x)<s.r+16&&Math.abs(p.y-s.y)<s.r+18){const dealt=this.hitPlayer(s.dmg,{dir:Math.sign(s.vx)});if(dealt&&s.owner){const o=this.enemies.find(e=>e.id===s.owner);if(o)this.vampHeal(o,dealt);}if(dealt||p.dash<=0)s.life=0;}
   }
   this.shots=this.shots.filter(s=>s.life>0);
  }
@@ -410,7 +443,7 @@ class RiftGame{
   if(e.state==='wind'||e.state==='recover'){e.t-=dt;if(e.t<=0){if(e.state==='wind'){e.state='recover';e.t=.55;}else{e.state='idle';e.cd=b.cd*(e.enraged?.62:1);}}return;}
   e.face=dx>=0?1:-1;e.cd-=dt;
   const desired=150;if(Math.abs(dx)>desired)e.x+=Math.sign(dx)*b.speed*dt;e.y+=clampN(p.y-e.y,-b.speed*.6,b.speed*.6)*dt;e.y=clampN(e.y,RIFT_FLOOR.top+10,RIFT_FLOOR.bottom-10);
-  if(e.cd<=0){const list=b.patterns;const name=list[e.pattern%list.length];e.pattern+=1+(this.random()<.35?1:0);this.bossAttack(e,name);}
+  if(e.cd<=0){const list=e.enraged&&b.rage?[...b.patterns,...b.rage,...b.rage]:b.patterns;const name=list[e.pattern%list.length];e.pattern+=1+(this.random()<.35?1:0);this.bossAttack(e,name);}
  }
  bossAttack(e,name){
   const p=this.player,b=e.boss,dmg=b.dmg*e.dmgMult,fast=e.enraged?.8:1;let wind=.9*fast;
@@ -422,8 +455,20 @@ class RiftGame{
   else if(name==='volley'){const n=e.enraged?7:5,base=Math.atan2(p.y-e.y,p.x-e.x);for(let i=0;i<n;i++){const a=base+(i-(n-1)/2)*.2;H({shape:'aim',x1:e.x,y1:e.y-10,x2:e.x+Math.cos(a)*700,y2:e.y+Math.sin(a)*700,wind:wind*.8,kind:b.id==='treant'?'seed':'shard',speed:430,dmg:dmg*.6});}}
   else if(name==='beam'){H({shape:'rect',x1:40,x2:920,y:p.y,h:30,wind:wind+.15,kind:'beam'});if(e.enraged)H({shape:'rect',x1:40,x2:920,y:clampN(p.y+(p.y>400?-80:80),RIFT_FLOOR.top,RIFT_FLOOR.bottom),h:30,wind:wind+.55,kind:'beam'});wind+=.2;}
   else if(name==='nova'){H({shape:'circle',x:e.x,y:e.y,rx:230,ry:100,wind:wind+.25,kind:'nova'});wind+=.25;}
-  else if(name==='summon'){if(this.alive.length<4)for(let i=0;i<2;i++)this.enemies.push(this.makeEnemy(i?'archer':'grunt',{side:i?-1:1}));wind=.6;}
-  e.state='wind';e.t=wind+.05;this.emit('bossCast',{name,x:e.x,y:e.y});
+  else if(name==='summon'){if(this.alive.length<4){const kinds=b.id==='dragon'?['imp','imp']:b.id==='treant'?['slime','archer']:['grunt','archer'];kinds.forEach((k,i)=>this.enemies.push(this.makeEnemy(k,{side:i?-1:1})));}wind=.6;}
+  // phase-two patterns (added to the rotation after the boss enrages)
+  else if(name==='ripple'){for(let i=0;i<3;i++)H({shape:'circle',x:e.x,y:e.y,rx:110+i*95,ry:46+i*40,wind:wind*.8+i*.38,kind:'quake',ring:i?110+(i-1)*95:0});wind+=.8;}
+  else if(name==='thorns'){const rows=[RIFT_FLOOR.top+25,(RIFT_FLOOR.top+RIFT_FLOOR.bottom)/2,RIFT_FLOOR.bottom-25],safe=Math.floor(this.random()*3);rows.forEach((y,i)=>{if(i!==safe)H({shape:'rect',x1:40,x2:920,y,h:34,wind:wind+.2+i*.05,kind:'thorn'});});wind+=.3;}
+  else if(name==='blizzard'){for(let i=0;i<7;i++)H({shape:'circle',x:clampN(80+this.random()*800,60,900),y:clampN(RIFT_FLOOR.top+this.random()*(RIFT_FLOOR.bottom-RIFT_FLOOR.top),RIFT_FLOOR.top,RIFT_FLOOR.bottom),rx:70,ry:30,wind:wind+i*.16,kind:'ice'});H({shape:'circle',x:p.x,y:p.y,rx:70,ry:30,wind:wind+1.2,kind:'ice'});wind+=1.2;}
+  else if(name==='meteor'){for(let i=0;i<4;i++)H({shape:'circle',x:clampN(p.x+(i?(this.random()-.5)*120:0),60,900),y:clampN(p.y+(i?(this.random()-.5)*60:0),RIFT_FLOOR.top,RIFT_FLOOR.bottom),rx:85,ry:36,wind:wind+.15+i*.45,kind:'fire',meteor:true});wind+=1.5;}
+  // dragon
+  else if(name==='breath'){const x1=e.face>0?e.x+60:40,x2=e.face>0?920:e.x-60;H({shape:'rect',x1,x2,y:clampN(p.y,RIFT_FLOOR.top,RIFT_FLOOR.bottom),h:46,wind:wind+.2,kind:'breath'});if(e.enraged)H({shape:'rect',x1,x2,y:clampN(p.y+(p.y>400?-95:95),RIFT_FLOOR.top,RIFT_FLOOR.bottom),h:46,wind:wind+.65,kind:'breath'});wind+=.35;}
+  else if(name==='tail'){H({shape:'circle',x:e.x-e.face*110,y:e.y,rx:170,ry:66,wind:wind*.85,kind:'slam'});H({shape:'circle',x:e.x+e.face*60,y:e.y,rx:120,ry:50,wind:wind*.85+.45,kind:'slam'});wind+=.45;}
+  else if(name==='fireball'){const n=e.enraged?5:3;for(let i=0;i<n;i++){const ty=clampN(p.y+(i-(n-1)/2)*55,RIFT_FLOOR.top,RIFT_FLOOR.bottom);H({shape:'aim',x1:e.x+e.face*90,y1:e.y-40,x2:p.x,y2:ty,wind:wind*.7+i*.18,kind:'fireball',speed:520,dmg:dmg*.7});}wind+=n*.18;}
+  else if(name==='wing'){H({shape:'rect',x1:e.face>0?e.x:40,x2:e.face>0?920:e.x,y:(RIFT_FLOOR.top+RIFT_FLOOR.bottom)/2,h:(RIFT_FLOOR.bottom-RIFT_FLOOR.top)/2+10,wind:wind+.3,kind:'gust',push:true,dmg:dmg*.45});wind+=.3;}
+  else if(name==='dive'){const tx=e.face>0?880:80;H({shape:'rect',x1:Math.min(e.x,tx),x2:Math.max(e.x,tx),y:e.y,h:58,wind:wind+.1,kind:'charge',tx});}
+  else if(name==='inferno'){for(let i=0;i<9;i++)H({shape:'circle',x:clampN(60+((i*97+this.random()*60)%840),60,900),y:clampN(RIFT_FLOOR.top+((i*53)%(RIFT_FLOOR.bottom-RIFT_FLOOR.top)),RIFT_FLOOR.top,RIFT_FLOOR.bottom),rx:66,ry:28,wind:wind+.1+i*.1,kind:'fire'});H({shape:'circle',x:p.x,y:p.y,rx:66,ry:28,wind:wind+1,kind:'fire'});wind+=1;}
+  e.cast=name;e.state='wind';e.t=wind+.05;this.emit('bossCast',{name,x:e.x,y:e.y});
  }
  // ---------- progression ----------
  checkClear(dt){
@@ -446,4 +491,4 @@ class RiftGame{
  advance(){if(this.fight<2)this.fight++;else{this.fight=0;this.region++;}this.beginFight();}
  get progress(){return this.region*3+this.fight;}
 }
-if(typeof module!=='undefined')module.exports={RiftGame,RIFT_HEROES,RIFT_WEAPONS,RIFT_ELEMENTS,RIFT_WEAPON_MAX,RIFT_WEAPON_LEVELS,RIFT_ENEMIES,RIFT_BOSSES,RIFT_REGIONS,RIFT_BLESSINGS,RIFT_FLOOR,RIFT_DASH};
+if(typeof module!=='undefined')module.exports={RIFT_AFFIXES,RiftGame,RIFT_HEROES,RIFT_WEAPONS,RIFT_ELEMENTS,RIFT_WEAPON_MAX,RIFT_WEAPON_LEVELS,RIFT_ENEMIES,RIFT_BOSSES,RIFT_REGIONS,RIFT_BLESSINGS,RIFT_FLOOR,RIFT_DASH};

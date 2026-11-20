@@ -1,5 +1,5 @@
 'use strict';
-// Browser test for the rebuilt 균열의 검. Needs Playwright on NODE_PATH. Run: node scripts/test-rift-blade-browser.cjs
+// Browser test for 던전엔드레곤 (arcade/rift-blade.html, formerly 균열의 검). Needs Playwright on NODE_PATH. Run: node scripts/test-rift-blade-browser.cjs
 const http=require('node:http'),fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),{chromium,devices}=require('playwright');
 const root=path.resolve(__dirname,'..'),results=path.resolve(root,process.env.RIFT_TEST_RESULTS||'test-results');fs.mkdirSync(results,{recursive:true});
 (async()=>{
@@ -11,7 +11,7 @@ const root=path.resolve(__dirname,'..'),results=path.resolve(root,process.env.RI
   browser=await chromium.launch(process.env.PLAYWRIGHT_EXECUTABLE_PATH?{executablePath:process.env.PLAYWRIGHT_EXECUTABLE_PATH}:undefined);
   const ctx=await browser.newContext({viewport:{width:1440,height:1000}});await prep(ctx);const page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(url);await page.waitForFunction(()=>window.rift&&document.querySelectorAll('[data-hero]').length===3);
-  assert(await page.locator('#menuView').isVisible());
+  assert(await page.locator('#menuView').isVisible());assert.match(await page.locator('h1').textContent(),/던전엔드레곤/);assert.match(await page.title(),/던전엔드레곤/);
   await page.click('[data-hero="arcanist"]');assert.equal(await page.evaluate(()=>rift.heroId),'arcanist');assert.equal(await page.locator('[data-hero="arcanist"]').getAttribute('aria-pressed'),'true');
   assert.equal(await page.locator('#weaponCards [data-weapon]').count(),3);await page.click('[data-weapon="storm"]');assert.equal(await page.evaluate(()=>rift.weaponId),'storm');
   assert.match(await page.locator('#heroDesc').textContent(),/뇌전 홀/);
