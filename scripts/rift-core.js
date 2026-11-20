@@ -15,6 +15,45 @@ const RIFT_HEROES={
   skill:{name:'관통 사격',cost:26,cd:2.1,dur:.48,hits:[{at:.24,kind:'shot',speed:1250,mult:3,r:14,shot:'lance',pierce:99,kb:200,heavy:true}]},
   ult:{name:'화살비',dur:1.15,hits:[{at:.15,kind:'rain',width:430,duration:1.6,ticks:9,mult:1.15}]}}
 };
+// Three weapons per hero. Each changes the basic combo and adds an element; level 3 awakens a weapon trait, level 6 is legendary.
+const RIFT_ELEMENTS={
+ rift:{name:'균열',color:'#7fe6d3',desc:'기본 공격 균열 게이지 +40%'},
+ fire:{name:'화염',color:'#ff8a3a',desc:'화상: 2.5초 동안 지속 피해'},
+ ice:{name:'냉기',color:'#9fe2ff',desc:'냉기 5중첩 시 빙결'},
+ shock:{name:'번개',color:'#ffe66a',desc:'30% 확률로 옆의 적에게 전이'},
+ poison:{name:'맹독',color:'#9dff6a',desc:'중독이 최대 6중첩까지 쌓임'},
+ arcane:{name:'비전',color:'#b9a2ff',desc:'적중마다 마력 회복'},
+ wind:{name:'바람',color:'#c8ffe0',desc:'넉백 +50% · 관통 +1'}
+};
+const RIFT_WEAPON_MAX=6;
+const RIFT_WEAPONS={
+ blade:[
+  {id:'steel',name:'균열 장검',elem:'rift',art:'sword',desc:'균형 잡힌 3연 베기.',awaken:'세 번째 베기가 검기를 날립니다.',
+   basic:RIFT_HEROES.blade.basic},
+  {id:'ember',name:'화염 대검',elem:'fire',art:'flamesword',desc:'느리지만 넓고 묵직한 베기.',awaken:'강타가 화염 폭발을 일으킵니다.',
+   basic:[{dur:.36,at:.15,kind:'melee',range:120,width:50,mult:1.35,kb:110},{dur:.36,at:.15,kind:'melee',range:120,width:50,mult:1.5,kb:110},{dur:.56,at:.24,kind:'melee',range:145,width:58,mult:2.7,kb:240,launch:520,heavy:true}]},
+  {id:'twin',name:'뇌명 쌍검',elem:'shock',art:'dagger',desc:'아주 빠른 연속 찌르기. 마지막은 2연타.',awaken:'모든 공격이 번개를 두 번 전이합니다.',
+   basic:[{dur:.2,at:.07,kind:'melee',range:92,width:40,mult:.78,kb:40},{dur:.2,at:.07,kind:'melee',range:92,width:40,mult:.84,kb:40},{dur:.38,hits:[{at:.08,kind:'melee',range:100,width:44,mult:.9,kb:60},{at:.2,kind:'melee',range:112,width:46,mult:1.35,kb:170,launch:430,heavy:true}]}]}
+ ],
+ arcanist:[
+  {id:'star',name:'별빛 지팡이',elem:'arcane',art:'staff',desc:'마력탄 두 발 뒤 관통 구체.',awaken:'구체가 적을 추적하고 터집니다.',
+   basic:RIFT_HEROES.arcanist.basic},
+  {id:'frost',name:'서리 지팡이',elem:'ice',art:'icestaff',desc:'얼음 파편을 흩뿌리고 서리 폭발이 더 오래 얼립니다.',awaken:'얼거나 냉기에 걸린 적이 30% 더 아파합니다.',
+   basic:[{dur:.3,at:.12,kind:'fan',count:2,spread:.12,speed:700,mult:.72,r:9,shot:'ice'},{dur:.3,at:.12,kind:'fan',count:2,spread:.12,speed:700,mult:.76,r:9,shot:'ice'},{dur:.46,at:.2,kind:'shot',speed:520,mult:1.9,r:20,shot:'iceorb',pierce:3,kb:100,heavy:true}],
+   skill:{freeze:2.6}},
+  {id:'storm',name:'뇌전 홀',elem:'shock',art:'stormrod',desc:'가장 가까운 적에게 번개가 바로 꽂힙니다.',awaken:'번개가 한 명 더 튑니다.',
+   basic:[{dur:.3,at:.12,kind:'zap',range:400,mult:1.05,jumps:0,kb:40},{dur:.3,at:.12,kind:'zap',range:400,mult:1.1,jumps:1,kb:40},{dur:.48,at:.22,kind:'zap',range:440,mult:1.55,jumps:2,kb:130,heavy:true}]}
+ ],
+ ranger:[
+  {id:'long',name:'바람 장궁',elem:'wind',art:'bow',desc:'멀리 날아가 밀쳐내는 화살.',awaken:'세 번째 사격이 화살 다섯 발이 됩니다.',
+   basic:RIFT_HEROES.ranger.basic},
+  {id:'venom',name:'독사 단궁',elem:'poison',art:'venombow',desc:'빠른 독화살로 중독을 쌓습니다.',awaken:'중독된 적이 쓰러지면 독이 퍼집니다.',
+   basic:[{dur:.22,at:.08,kind:'shot',speed:900,mult:.85,r:8,shot:'venom'},{dur:.22,at:.08,kind:'shot',speed:900,mult:.88,r:8,shot:'venom'},{dur:.4,at:.15,kind:'fan',count:3,spread:.2,speed:900,mult:.9,r:8,shot:'venom',heavy:true}]},
+  {id:'blaze',name:'화염 석궁',elem:'fire',art:'crossbow',desc:'느린 폭발 화살. 맞은 곳 주변까지 태웁니다.',awaken:'폭발 범위 +50% · 폭발 피해 80%.',
+   basic:[{dur:.34,at:.14,kind:'shot',speed:820,mult:1.3,r:10,shot:'firebolt',splash:70},{dur:.34,at:.14,kind:'shot',speed:820,mult:1.35,r:10,shot:'firebolt',splash:70},{dur:.5,at:.2,kind:'shot',speed:760,mult:2.3,r:14,shot:'firebolt',splash:115,kb:180,heavy:true}]}
+ ]
+};
+const RIFT_WEAPON_LEVELS=['','기본','피해 +10%','각성 · 피해 +10%','피해 +10%','속성 효과 ×1.5 · 피해 +10%','전설 · 궁극기 +30% · 피해 +10%'];
 const RIFT_ENEMIES={
  grunt:{name:'균열 병사',hp:105,speed:105,dmg:16,range:78,wind:.5,cd:1.35,score:100},
  archer:{name:'그림자 궁수',hp:78,speed:92,dmg:14,range:440,wind:.72,cd:2.1,score:120,ranged:true},
@@ -53,13 +92,17 @@ const RIFT_DASH={time:.2,speed:760,inv:.3,cd:.72,perfect:.2};
 const clampN=(v,a,b)=>Math.max(a,Math.min(b,v));
 
 class RiftGame{
- constructor(heroId='blade',random=Math.random){
+ constructor(heroId='blade',random=Math.random,weaponId){
   this.random=typeof random==='function'?random:Math.random;
-  this.state='ready';this.setHero(Object.hasOwn(RIFT_HEROES,heroId)?heroId:'blade');
+  this.state='ready';this.setHero(Object.hasOwn(RIFT_HEROES,heroId)?heroId:'blade',weaponId);
  }
- setHero(id){
+ setWeapon(id){
+  if(this.state!=='ready')return false;const w=RIFT_WEAPONS[this.heroId].find(x=>x.id===id);if(!w)return false;
+  this.weapon=w;this.weaponId=w.id;return true;
+ }
+ setHero(id,weaponId){
   if(this.state!=='ready'||!Object.hasOwn(RIFT_HEROES,id))return false;
-  const h=RIFT_HEROES[id];this.heroId=id;this.hero=h;
+  const h=RIFT_HEROES[id];this.heroId=id;this.hero=h;this.weapon=RIFT_WEAPONS[id][0];this.weaponId=this.weapon.id;if(weaponId)this.setWeapon(weaponId);this.wlv=1;
   this.region=0;this.fight=0;this.time=0;this.score=0;this.kills=0;this.combo=0;this.comboT=0;this.maxCombo=0;this.perfects=0;this.damageTaken=0;this.fightDamage=0;
   this.blessings={};this.offers=[];this.enemies=[];this.hazards=[];this.shots=[];this.blasts=[];this.rains=[];this.queue=[];this.events=[];
   this.hitstop=0;this.slow=0;this.clearT=0;this.serial=0;this.basicCount=0;
@@ -73,9 +116,16 @@ class RiftGame{
  get mpRegen(){return 9*(1+.45*this.rank('flow'));}
  get guard(){return Math.min(.6,.12*this.rank('guard'));}
  get skillCost(){return Math.round(this.hero.skill.cost*(1-.2*this.rank('artistry')));}
+ get weaponMult(){return 1+.1*(this.wlv-1);}
+ get awakened(){return this.wlv>=3;}
+ get legendary(){return this.wlv>=RIFT_WEAPON_MAX;}
+ get elemPower(){return this.wlv>=5?1.5:1;}
+ get elem(){return this.weapon.elem;}
+ get skillDef(){const m=this.weapon.skill;if(!m)return this.hero.skill;return{...this.hero.skill,hits:this.hero.skill.hits.map(h=>({...h,...m}))};}
+ upgradeWeapon(){if(this.wlv>=RIFT_WEAPON_MAX)return false;this.wlv++;this.emit('forge',{lv:this.wlv,awaken:this.wlv===3,legend:this.wlv===RIFT_WEAPON_MAX,x:this.player.x,y:this.player.y});return true;}
  get regionData(){return RIFT_REGIONS[this.region];}
  get isBossFight(){return this.fight===2;}
- get enemyScale(){return{hp:1+this.region*.42,dmg:1+this.region*.22};}
+ get enemyScale(){return{hp:1+this.region*.66,dmg:1+this.region*.36};}
  get alive(){return this.enemies.filter(e=>!e.dead);}
  emit(type,data={}){this.events.push({type,...data});if(this.events.length>300)this.events.splice(0,this.events.length-300);}
  drainEvents(){const e=this.events;this.events=[];return e;}
@@ -112,8 +162,8 @@ class RiftGame{
   if(kind==='skill'&&(p.skillCd>0||p.mp<this.skillCost))return false;
   if(kind==='ult'&&p.rift<100)return false;
   let def;
-  if(kind==='basic'){if(p.stepT<=0)p.step=0;def=this.hero.basic[p.step];p.step=(p.step+1)%3;p.stepT=.75;this.basicCount++;}
-  else if(kind==='skill'){def=this.hero.skill;p.mp-=this.skillCost;p.skillCd=this.hero.skill.cd;}
+  if(kind==='basic'){if(p.stepT<=0)p.step=0;def=this.weapon.basic[p.step];p.step=(p.step+1)%3;p.stepT=.75;this.basicCount++;}
+  else if(kind==='skill'){def=this.skillDef;p.mp-=this.skillCost;p.skillCd=this.hero.skill.cd;}
   else{def=this.hero.ult;p.rift=0;p.inv=Math.max(p.inv,def.dur);}
   const target=this.nearestTarget(kind==='basic'?520:700);if(target&&Math.abs(target.x-p.x)>8)p.face=target.x>p.x?1:-1;
   p.act={kind,step:kind==='basic'?(p.step+2)%3:0,t:0,dur:def.dur,hits:def.hits||[def],fired:0,def};p.buffer=null;
@@ -128,45 +178,83 @@ class RiftGame{
  }
  nearestTarget(maxD){const p=this.player;let best=null,bd=maxD;for(const e of this.alive){if(e.state==='enter'&&(e.x<0||e.x>960))continue;const d=Math.abs(e.x-p.x)+Math.abs(e.y-p.y)*1.6;if(d<bd){bd=d;best=e;}}return best;}
  fireHit(h){
-  const p=this.player,atk=this.hero.atk*this.damageMult,skill=p.act.kind!=='basic',mult=h.mult*(skill?1+.2*this.rank('artistry'):1);
-  const base={dmg:atk*mult,kb:h.kb||40,launch:h.launch||0,heavy:!!h.heavy,freeze:h.freeze||0,kind:p.act.kind};
+  const p=this.player,w=this.weapon,aw=this.awakened,kind=p.act.kind,skill=kind!=='basic';
+  const atk=this.hero.atk*this.damageMult*this.weaponMult,mult=h.mult*(skill?1+.2*this.rank('artistry'):1)*(kind==='ult'&&this.legendary?1.3:1);
+  const wind=w.elem==='wind';
+  const base={dmg:atk*mult,kb:(h.kb||40)*(wind?1.5:1),launch:h.launch||0,heavy:!!h.heavy,freeze:h.freeze||0,kind,elem:w.elem};
   if(h.kind==='melee'||h.kind==='lane'){
-   let n=0;for(const e of this.alive){const dx=(e.x-p.x)*p.face;if(dx>-25&&dx<h.range+(e.boss?45:0)&&Math.abs(e.y-p.y)<h.width+(e.boss?30:0)){this.damageEnemy(e,base);n++;}}
-   this.emit('slash',{x:p.x,y:p.y,face:p.face,range:h.range,kind:p.act.kind,step:p.act.step,hit:n>0});
+   let n=0,fx=p.x+p.face*h.range*.55;for(const e of this.alive){const dx=(e.x-p.x)*p.face;if(dx>-25&&dx<h.range+(e.boss?45:0)&&Math.abs(e.y-p.y)<h.width+(e.boss?30:0)){this.damageEnemy(e,base);n++;fx=e.x;}}
+   this.emit('slash',{x:p.x,y:p.y,face:p.face,range:h.range,kind,step:p.act.step,hit:n>0,elem:w.elem,weapon:w.id,lv:this.wlv});
+   if(aw&&kind==='basic'&&h.heavy){
+    if(w.id==='steel')this.addShot({x:p.x+p.face*40,vx:p.face*820,vy:0,r:22,life:.6,dmg:atk*1.2,kb:90,pierce:99,kind:'wave',skill:'basic',heavy:true});
+    if(w.id==='ember'&&n>0)this.blasts.push({x:clampN(fx,40,920),y:p.y,r:95,t:0,max:.01,dmg:atk*1.1,kind:'flame',launch:0,hitKind:'skill',elem:'fire'});
+   }
   }else if(h.kind==='ring'){
-   for(const e of this.alive)if(((e.x-p.x)/(h.rx+(e.boss?40:0)))**2+((e.y-p.y)/(h.ry+(e.boss?20:0)))**2<=1)this.damageEnemy(e,{...base,kb:base.kb,dir:Math.sign(e.x-p.x)||p.face});
-   this.emit('ring',{x:p.x,y:p.y,rx:h.rx,ry:h.ry,kind:this.heroId});
+   for(const e of this.alive)if(((e.x-p.x)/(h.rx+(e.boss?40:0)))**2+((e.y-p.y)/(h.ry+(e.boss?20:0)))**2<=1)this.damageEnemy(e,{...base,dir:Math.sign(e.x-p.x)||p.face});
+   this.emit('ring',{x:p.x,y:p.y,rx:h.rx,ry:h.ry,kind:this.heroId,elem:w.elem});
   }else if(h.kind==='shot'||h.kind==='fan'){
-   const n=h.count||1;for(let i=0;i<n;i++){const a=(i-(n-1)/2)*(h.spread||0);this.shots.push({id:++this.serial,friendly:true,x:p.x+p.face*30,y:p.y,z:48,vx:Math.cos(a)*h.speed*p.face,vy:Math.sin(a)*h.speed*.35,r:h.r,life:1.1,dmg:base.dmg,kb:base.kb,launch:0,heavy:base.heavy,pierce:h.pierce||1,hit:[],kind:h.shot,skill:p.act.kind});}
-   this.emit('shoot',{x:p.x,y:p.y,face:p.face,kind:h.shot});
+   const n=(h.count||1)+(aw&&w.id==='long'&&h.heavy&&kind==='basic'?2:0),spread=h.spread*(n>3?.8:1)||0;
+   for(let i=0;i<n;i++){const a=(i-(n-1)/2)*spread;
+    const orb=aw&&w.id==='star'&&h.shot==='orb';
+    this.addShot({x:p.x+p.face*30,vx:Math.cos(a)*h.speed*p.face,vy:Math.sin(a)*h.speed*.35,r:h.r,dmg:base.dmg,kb:base.kb,heavy:base.heavy,pierce:(h.pierce||1)+(wind?1:0),kind:h.shot,skill:kind,
+     splash:orb?80:h.splash?h.splash*(aw&&w.id==='blaze'?1.5:1):0,splashMult:aw&&w.id==='blaze'?.8:.5,homing:orb});}
+   this.emit('shoot',{x:p.x,y:p.y,face:p.face,kind:h.shot,elem:w.elem});
+  }else if(h.kind==='zap'){
+   const pts=[[p.x+p.face*30,p.y]],hit=[];let from=this.nearestTarget(h.range),dmg=base.dmg;
+   const jumps=(h.jumps||0)+(aw?1:0);
+   if(from){for(let j=0;from&&j<=jumps;j++){hit.push(from.id);pts.push([from.x,from.y-from.z]);this.damageEnemy(from,{...base,dmg,dir:Math.sign(from.x-p.x)||p.face});dmg*=.72;
+     const src=from;from=null;let bd=210;for(const e of this.alive){if(hit.includes(e.id))continue;const d=Math.hypot(e.x-src.x,e.y-src.y);if(d<bd){bd=d;from=e;}}}}
+   else pts.push([p.x+p.face*h.range*.6,p.y+(this.random()-.5)*30]);
+   this.emit('zap',{pts,heavy:!!h.heavy,hit:hit.length>0});
   }else if(h.kind==='meteors'){
    const targets=this.alive.slice().sort((a,b)=>Math.abs(a.x-p.x)-Math.abs(b.x-p.x));
-   for(let i=0;i<h.count;i++){const t=targets[i%Math.max(1,targets.length)],x=t?t.x+(i>=targets.length?(this.random()-.5)*160:0):p.x+p.face*(120+i*80),y=t?t.y+(i>=targets.length?(this.random()-.5)*60:0):p.y;this.blasts.push({x:clampN(x,40,920),y:clampN(y,RIFT_FLOOR.top,RIFT_FLOOR.bottom),r:h.r,t:.35+i*.12,max:.35+i*.12,dmg:base.dmg,kind:'meteor',launch:380});}
+   for(let i=0;i<h.count;i++){const t=targets[i%Math.max(1,targets.length)],x=t?t.x+(i>=targets.length?(this.random()-.5)*160:0):p.x+p.face*(120+i*80),y=t?t.y+(i>=targets.length?(this.random()-.5)*60:0):p.y;this.blasts.push({x:clampN(x,40,920),y:clampN(y,RIFT_FLOOR.top,RIFT_FLOOR.bottom),r:h.r,t:.35+i*.12,max:.35+i*.12,dmg:base.dmg,kind:'meteor',launch:380,elem:w.elem});}
   }else if(h.kind==='rain'){
-   this.rains.push({x:p.x+p.face*(h.width/2+40),y:p.y,w:h.width,h:150,t:h.duration,max:h.duration,tick:0,interval:h.duration/h.ticks,dmg:base.dmg});this.emit('rain',{x:p.x,face:p.face});
+   this.rains.push({x:p.x+p.face*(h.width/2+40),y:p.y,w:h.width,h:150,t:h.duration,max:h.duration,tick:0,interval:h.duration/h.ticks,dmg:base.dmg,elem:w.elem});this.emit('rain',{x:p.x,face:p.face});
   }
+ }
+ addShot(o){const s={id:++this.serial,friendly:true,y:this.player.y,z:48,life:1.1,launch:0,hit:[],pierce:1,elem:this.weapon.elem,...o};this.shots.push(s);return s;}
+ applyStatus(e,o){
+  const el=o.elem,pw=this.elemPower,atk=this.hero.atk*this.weaponMult;
+  if(el==='fire'){e.burn={t:2.5,tick:e.burn?.tick??.5,dps:atk*.42*pw*(o.heavy?1.4:1)};}
+  else if(el==='poison'){const st=Math.min(6,(e.poison?.stacks||0)+1);e.poison={t:4,tick:e.poison?.tick??.5,stacks:st,dps:atk*.13*pw};}
+  else if(el==='ice'){const need=e.boss?7:5,st=(e.chill?.stacks||0)+(o.heavy?2:1);
+   if(st>=need){e.chill=null;e.freeze=Math.max(e.freeze,(e.boss?.5:1.3)*pw);this.emit('freeze',{x:e.x,y:e.y,id:e.id,boss:!!e.boss});}else e.chill={t:3,stacks:st};}
+  else if(el==='shock'){const twin=this.weapon.id==='twin'&&this.awakened;
+   if(o.heavy||twin||this.random()<.3*pw){let src=e;const hit=[e.id];for(let j=0;j<(twin?2:1);j++){let best=null,bd=175;for(const t of this.alive){if(hit.includes(t.id))continue;const d=Math.hypot(t.x-src.x,t.y-src.y);if(d<bd){bd=d;best=t;}}if(!best)break;hit.push(best.id);
+     this.emit('chain',{x1:src.x,y1:src.y-src.z,x2:best.x,y2:best.y-best.z,elem:'shock'});this.damageEnemy(best,{dmg:o.dmg*.5*pw,kb:0,kind:'chain',elem:'shock',status:true});if(!best.boss)best.stun=Math.max(best.stun,.22);src=best;}}}
+  else if(el==='arcane')this.player.mp=Math.min(this.player.maxMp,this.player.mp+1.5);
+ }
+ updateStatus(e,dt){
+  for(const k of ['burn','poison']){const s=e[k];if(!s||e.dead)continue;s.t-=dt;s.tick-=dt;
+   if(s.tick<=0){s.tick+=.5;this.damageEnemy(e,{dmg:s.dps*.5*(s.stacks||1),kb:0,kind:'dot',elem:k==='burn'?'fire':'poison',status:true});}
+   if(s.t<=0)e[k]=null;}
+  if(e.chill){e.chill.t-=dt;if(e.chill.t<=0)e.chill=null;}
  }
  damageEnemy(e,o){
   if(e.dead)return 0;const p=this.player;
   let dmg=o.dmg*(e.hp<=e.maxHp*.3?1+.4*this.rank('execute'):1);
+  if(this.weapon.id==='frost'&&this.awakened&&(e.freeze>0||e.chill))dmg*=1.3;
   if(p.riposte&&o.kind!=='dot'){dmg*=2;p.riposte=false;}
   dmg=Math.max(1,Math.round(dmg*(.92+this.random()*.16)));
   const dealt=Math.min(e.hp,dmg);e.hp-=dmg;e.flash=.12;
-  const leech=.03*this.rank('leech');if(leech)p.hp=Math.min(p.maxHp,p.hp+dealt*leech);
+  const leech=o.status||o.kind==='dot'?0:.03*this.rank('leech');if(leech)p.hp=Math.min(p.maxHp,p.hp+dealt*leech);
   if(o.kind!=='dot'&&o.kind!=='chain'){
-   p.rift=Math.min(100,p.rift+(o.kind==='ult'?0:(o.kind==='basic'?3.2:2.2))*(1+.35*this.rank('resonance')));
+   p.rift=Math.min(100,p.rift+(o.kind==='ult'?0:(o.kind==='basic'?3.2*(o.elem==='rift'?1.4:1):2.2))*(1+.35*this.rank('resonance')));
    this.combo++;this.comboT=2.2;this.maxCombo=Math.max(this.maxCombo,this.combo);
    this.hitstop=Math.max(this.hitstop,o.heavy?.085:.045);
   }
   const dir=o.dir||Math.sign(e.x-p.x)||p.face,armored=e.boss||e.type==='brute'&&e.state==='wind';
-  if(!armored){
+  if(o.status){if(e.boss)this.staggerBoss(e,dealt*.5);}
+  else if(!armored){
    e.vx=dir*o.kb*(e.type==='brute'?.45:1);e.stun=Math.max(e.stun,o.heavy?.5:.28);
    if(e.state==='wind'){e.state='idle';e.cd=Math.max(e.cd,.6);this.cancelOwned(e);}
    if(o.launch&&e.type!=='brute'){e.vz=o.launch;e.air=true;}
   }else if(e.boss)this.staggerBoss(e,dealt);
-  if(o.freeze)e.freeze=Math.max(e.freeze,o.freeze);
-  this.emit('hit',{x:e.x,y:e.y,z:e.z,dmg,heavy:o.heavy,boss:!!e.boss,kind:o.kind,id:e.id,crit:dmg>=this.hero.atk*3});
-  if(e.hp<=0)this.killEnemy(e);
+  if(o.freeze){e.freeze=Math.max(e.freeze,o.freeze*(e.boss?.5:1));e.chill=null;}
+  this.emit('hit',{x:e.x,y:e.y,z:e.z,dmg,heavy:o.heavy,boss:!!e.boss,kind:o.kind,id:e.id,crit:dmg>=this.hero.atk*3,elem:o.elem||null,status:!!o.status});
+  if(e.hp>0&&o.elem&&!o.status)this.applyStatus(e,o);
+  if(e.hp<=0&&!e.dead)this.killEnemy(e);
   else if(e.boss&&!e.enraged&&e.hp<=e.maxHp*.5){e.enraged=true;this.emit('enrage',{x:e.x,y:e.y,name:e.boss.name});}
   return dealt;
  }
@@ -174,10 +262,11 @@ class RiftGame{
  cancelOwned(e){this.hazards=this.hazards.filter(h=>h.owner!==e.id||h.wind<=0);}
  killEnemy(e){
   e.dead=true;e.deadT=0;e.hp=0;this.kills++;this.cancelOwned(e);
+  if(e.poison&&this.weapon.id==='venom'&&this.awakened){const ids=[];for(const t of this.alive)if(Math.hypot(t.x-e.x,t.y-e.y)<160){const st=Math.min(6,(t.poison?.stacks||0)+3);t.poison={t:4,tick:t.poison?.tick??.5,stacks:st,dps:this.hero.atk*this.weaponMult*.13*this.elemPower};ids.push(t.id);}this.emit('cloud',{x:e.x,y:e.y,n:ids.length});}
   const pts=e.boss?3000+this.region*1000:RIFT_ENEMIES[e.type].score;this.score+=Math.round(pts*(1+this.region*.25)*(1+Math.min(this.combo,50)/50));
   this.hitstop=Math.max(this.hitstop,e.boss?.35:.07);if(e.boss)this.slow=Math.max(this.slow,1.1);
   this.player.mp=Math.min(this.player.maxMp,this.player.mp+(e.boss?60:6));
-  this.emit('kill',{x:e.x,y:e.y,z:e.z,type:e.type,boss:!!e.boss,id:e.id});
+  this.emit('kill',{x:e.x,y:e.y,z:e.z,type:e.type,boss:!!e.boss,id:e.id,frozen:e.freeze>0,burning:!!e.burn});
  }
  hitPlayer(dmg,src={}){
   const p=this.player;if(this.state!=='playing')return 0;
@@ -241,12 +330,13 @@ class RiftGame{
  updateEnemy(e,dt){
   if(e.dead)return;const p=this.player;
   e.flash=Math.max(0,e.flash-dt);e.stun=Math.max(0,e.stun-dt);
+  this.updateStatus(e,dt);if(e.dead)return;
   const frozen=e.freeze>0;if(frozen)e.freeze=Math.max(0,e.freeze-dt);
   if(e.air||e.z>0){e.vz-=1500*dt;e.z+=e.vz*dt;e.x+=e.vx*dt;if(e.z<=0){e.z=0;e.vz=0;if(e.air){e.air=false;e.stun=Math.max(e.stun,.45);this.emit('land',{x:e.x,y:e.y});}}}
   else if(e.vx){e.x+=e.vx*dt;e.vx*=Math.pow(.004,dt);if(Math.abs(e.vx)<5)e.vx=0;}
   e.x=e.state==='enter'?e.x:clampN(e.x,RIFT_FLOOR.left,RIFT_FLOOR.right);
   if(e.stun>0||e.air||e.z>0)return;
-  const pace=frozen?.25:e.enraged?1.25:1;dt*=pace;
+  const pace=(frozen?.25:e.enraged?1.25:1)*(e.chill?1-.09*e.chill.stacks:1);dt*=pace;
   if(e.boss)return this.updateBoss(e,dt);
   const d=RIFT_ENEMIES[e.type],dx=p.x-e.x,dy=p.y-e.y;
   if(e.state==='enter'){e.x+=Math.sign(480-e.x)*d.speed*1.3*dt;e.face=Math.sign(480-e.x)||-1;if(e.x>70&&e.x<890)e.state='idle';return;}
@@ -296,15 +386,19 @@ class RiftGame{
    s.x+=s.vx*dt;s.y+=s.vy*dt;s.life-=dt;
    if(s.y<RIFT_FLOOR.top-30||s.y>RIFT_FLOOR.bottom+20||s.x<-60||s.x>1020)s.life=0;
    if(s.life<=0)continue;
-   if(s.friendly){for(const e of this.alive){if(s.hit.includes(e.id))continue;const reach=s.r+(e.boss?55:22);if(Math.abs(e.x-s.x)<reach&&Math.abs(e.y-s.y)<reach*.9+(e.boss?20:8)){s.hit.push(e.id);this.damageEnemy(e,{dmg:s.dmg,kb:s.kb||45,heavy:s.heavy,kind:s.skill,dir:Math.sign(s.vx)});s.pierce--;if(s.pierce<=0){s.life=0;break;}}}}
+   if(s.friendly){
+    if(s.homing){let best=null,bd=420;for(const e of this.alive){if(s.hit.includes(e.id))continue;const d=Math.hypot(e.x-s.x,e.y-s.y);if(d<bd&&(e.x-s.x)*Math.sign(s.vx)>-20){bd=d;best=e;}}if(best){const sp=Math.hypot(s.vx,s.vy),a=Math.atan2(s.vy,s.vx),want=Math.atan2(best.y-s.y,best.x-s.x);let da=want-a;while(da>Math.PI)da-=Math.PI*2;while(da<-Math.PI)da+=Math.PI*2;const na=a+clampN(da,-4*dt,4*dt);s.vx=Math.cos(na)*sp;s.vy=Math.sin(na)*sp;}}
+    for(const e of this.alive){if(s.hit.includes(e.id))continue;const reach=s.r+(e.boss?55:22);if(Math.abs(e.x-s.x)<reach&&Math.abs(e.y-s.y)<reach*.9+(e.boss?20:8)){s.hit.push(e.id);this.damageEnemy(e,{dmg:s.dmg,kb:s.kb||45,heavy:s.heavy,kind:s.skill,dir:Math.sign(s.vx),elem:s.elem});
+     if(s.splash){for(const o of this.alive)if(o!==e&&((o.x-e.x)/s.splash)**2+((o.y-e.y)/(s.splash*.5))**2<=1)this.damageEnemy(o,{dmg:s.dmg*s.splashMult,kb:60,kind:s.skill,dir:Math.sign(o.x-e.x)||1,elem:s.elem});this.emit('blast',{x:e.x,y:e.y,r:s.splash,elem:s.elem,small:true});}
+     s.pierce--;if(s.pierce<=0){s.life=0;break;}}}}
    else if(Math.abs(p.x-s.x)<s.r+16&&Math.abs(p.y-s.y)<s.r+18){const dealt=this.hitPlayer(s.dmg,{dir:Math.sign(s.vx)});if(dealt||p.dash<=0)s.life=0;}
   }
   this.shots=this.shots.filter(s=>s.life>0);
  }
  updateBlasts(dt){
-  for(const b of this.blasts){b.t-=dt;if(b.t<=0&&!b.done){b.done=true;for(const e of this.alive)if(((e.x-b.x)/(b.r+(e.boss?40:0)))**2+((e.y-b.y)/(b.r*.5+(e.boss?20:0)))**2<=1)this.damageEnemy(e,{dmg:b.dmg,kb:120,launch:b.launch,heavy:true,kind:'ult',dir:Math.sign(e.x-b.x)||1});this.emit('blast',{x:b.x,y:b.y,r:b.r});}}
+  for(const b of this.blasts){b.t-=dt;if(b.t<=0&&!b.done){b.done=true;for(const e of this.alive)if(((e.x-b.x)/(b.r+(e.boss?40:0)))**2+((e.y-b.y)/(b.r*.5+(e.boss?20:0)))**2<=1)this.damageEnemy(e,{dmg:b.dmg,kb:120,launch:b.launch,heavy:true,kind:b.hitKind||'ult',dir:Math.sign(e.x-b.x)||1,elem:b.elem});this.emit('blast',{x:b.x,y:b.y,r:b.r,elem:b.elem,small:b.kind==='flame'});}}
   this.blasts=this.blasts.filter(b=>!b.done||b.t>-.4);
-  for(const r of this.rains){r.t-=dt;r.tick-=dt;if(r.tick<=0&&r.t>0){r.tick=r.interval;for(const e of this.alive)if(Math.abs(e.x-r.x)<=r.w/2&&Math.abs(e.y-r.y)<=r.h)this.damageEnemy(e,{dmg:r.dmg,kb:10,kind:'dot'});}}
+  for(const r of this.rains){r.t-=dt;r.tick-=dt;if(r.tick<=0&&r.t>0){r.tick=r.interval;for(const e of this.alive)if(Math.abs(e.x-r.x)<=r.w/2&&Math.abs(e.y-r.y)<=r.h)this.damageEnemy(e,{dmg:r.dmg,kb:10,kind:'dot',elem:r.elem});}}
   this.rains=this.rains.filter(r=>r.t>0);
  }
  // ---------- bosses ----------
@@ -337,17 +431,19 @@ class RiftGame{
   this.clearT+=dt;if(this.clearT<1.1)return;
   if(this.fightDamage===0)this.score+=500*(1+this.region);
   if(this.isBossFight&&this.region===RIFT_REGIONS.length-1){this.score+=Math.max(0,Math.round(20000-this.time*12));this.state='won';this.emit('victory',{});return;}
-  if(this.isBossFight){const p=this.player;p.hp=Math.min(p.maxHp,p.hp+p.maxHp*.4);}
+  if(this.isBossFight){const p=this.player;p.hp=Math.min(p.maxHp,p.hp+p.maxHp*.4);this.upgradeWeapon();}
   this.offers=this.rollOffers();this.state=this.offers.length?'choice':'playing';
   if(this.state==='playing')this.advance();
  }
- rollOffers(){const pool=RIFT_BLESSINGS.filter(b=>this.rank(b.id)<b.max),out=[];while(pool.length&&out.length<3)out.push(pool.splice(Math.floor(this.random()*pool.length),1)[0].id);return out;}
+ rollOffers(){const pool=RIFT_BLESSINGS.filter(b=>this.rank(b.id)<b.max),out=[];if(this.wlv<RIFT_WEAPON_MAX&&!this.isBossFight&&this.random()<.35)out.push('forge');while(pool.length&&out.length<3)out.push(pool.splice(Math.floor(this.random()*pool.length),1)[0].id);return out;}
  choose(id){
-  if(this.state!=='choice'||!this.offers.includes(id))return false;const b=RIFT_BLESSINGS.find(x=>x.id===id);if(this.rank(id)>=b.max)return false;
+  if(this.state!=='choice'||!this.offers.includes(id))return false;
+  if(id==='forge'){if(!this.upgradeWeapon())return false;this.offers=[];this.state='playing';this.advance();return true;}
+  const b=RIFT_BLESSINGS.find(x=>x.id===id);if(this.rank(id)>=b.max)return false;
   this.blessings[id]=this.rank(id)+1;if(id==='vigor'){this.player.maxHp+=25;this.player.hp=Math.min(this.player.maxHp,this.player.hp+25);}
   this.offers=[];this.state='playing';this.advance();return true;
  }
  advance(){if(this.fight<2)this.fight++;else{this.fight=0;this.region++;}this.beginFight();}
  get progress(){return this.region*3+this.fight;}
 }
-if(typeof module!=='undefined')module.exports={RiftGame,RIFT_HEROES,RIFT_ENEMIES,RIFT_BOSSES,RIFT_REGIONS,RIFT_BLESSINGS,RIFT_FLOOR,RIFT_DASH};
+if(typeof module!=='undefined')module.exports={RiftGame,RIFT_HEROES,RIFT_WEAPONS,RIFT_ELEMENTS,RIFT_WEAPON_MAX,RIFT_WEAPON_LEVELS,RIFT_ENEMIES,RIFT_BOSSES,RIFT_REGIONS,RIFT_BLESSINGS,RIFT_FLOOR,RIFT_DASH};

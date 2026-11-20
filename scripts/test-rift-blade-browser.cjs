@@ -13,7 +13,10 @@ const root=path.resolve(__dirname,'..'),results=path.resolve(root,process.env.RI
   await page.goto(url);await page.waitForFunction(()=>window.rift&&document.querySelectorAll('[data-hero]').length===3);
   assert(await page.locator('#menuView').isVisible());
   await page.click('[data-hero="arcanist"]');assert.equal(await page.evaluate(()=>rift.heroId),'arcanist');assert.equal(await page.locator('[data-hero="arcanist"]').getAttribute('aria-pressed'),'true');
-  await page.click('[data-hero="blade"]');await page.click('#startBtn');assert.equal(await page.evaluate(()=>rift.state),'playing');assert(await page.locator('#riftOverlay').isHidden());
+  assert.equal(await page.locator('#weaponCards [data-weapon]').count(),3);await page.click('[data-weapon="storm"]');assert.equal(await page.evaluate(()=>rift.weaponId),'storm');
+  assert.match(await page.locator('#heroDesc').textContent(),/뇌전 홀/);
+  await page.click('[data-hero="blade"]');assert.equal(await page.evaluate(()=>rift.weaponId),'steel');await page.click('[data-hero="arcanist"]');assert.equal(await page.evaluate(()=>rift.weaponId),'storm','weapon choice remembered per hero');
+  await page.click('[data-hero="blade"]');await page.click('[data-weapon="ember"]');await page.click('#startBtn');assert.equal(await page.evaluate(()=>rift.weaponId),'ember');assert.equal(await page.evaluate(()=>rift.state),'playing');assert(await page.locator('#riftOverlay').isHidden());
   const x0=await page.evaluate(()=>rift.player.x);await page.keyboard.down('d');await page.waitForTimeout(300);await page.keyboard.up('d');assert((await page.evaluate(()=>rift.player.x))>x0+30);
   await page.evaluate(()=>{rift.queue=[];const e=rift.makeEnemy('grunt',{x:rift.player.x+60,y:rift.player.y});e.state='idle';e.cd=99;e.hp=e.maxHp=9999;rift.enemies=[e];});
   await page.keyboard.press('j');await page.waitForTimeout(300);assert((await page.evaluate(()=>rift.enemies[0].hp))<9999);
@@ -24,15 +27,18 @@ const root=path.resolve(__dirname,'..'),results=path.resolve(root,process.env.RI
   await page.keyboard.press('p');assert(await page.locator('#pauseView').isVisible());const frozen=await page.evaluate(()=>JSON.stringify([rift.time,rift.player,rift.enemies]));await page.waitForTimeout(250);assert.equal(await page.evaluate(()=>JSON.stringify([rift.time,rift.player,rift.enemies])),frozen);
   await page.click('#resumeBtn');assert.equal(await page.evaluate(()=>rift.state),'playing');
   // Clearing a fight shows three blessing cards; picking one starts the next fight.
-  await page.evaluate(()=>{rift.enemies.forEach(e=>{e.hp=1;});rift.player.inv=99;});await page.keyboard.press('j');await page.waitForFunction(()=>rift.state==='choice',null,{timeout:5000});
+  await page.evaluate(()=>{rift.enemies.forEach(e=>{e.hp=1;});rift.player.inv=99;rift.random=()=>.99;});await page.keyboard.press('j');await page.waitForFunction(()=>rift.state==='choice',null,{timeout:5000});
   assert.equal(await page.locator('#choiceCards [data-bless]').count(),3);await page.screenshot({path:path.join(results,'rift-blade-choice.png')});
   await page.locator('#choiceCards [data-bless]').first().click();assert.equal(await page.evaluate(()=>[rift.state,rift.fight].join()),'playing,1');assert.equal(await page.evaluate(()=>Object.values(rift.blessings).reduce((a,b)=>a+b,0)),1);
+  // A forge card upgrades the weapon instead of granting a blessing.
+  await page.evaluate(()=>{rift.queue=[];rift.enemies=[];rift.random=()=>0;});await page.waitForFunction(()=>rift.state==='choice',null,{timeout:5000});
+  await page.click('#choiceCards [data-bless="forge"]');assert.equal(await page.evaluate(()=>[rift.state,rift.wlv].join()),'playing,2');
   // Each region and boss renders without errors.
   for(let r=0;r<5;r++){await page.evaluate(r=>{rift.region=r;rift.fight=2;rift.beginFight();rift.player.inv=99;rift.enemies[0].cd=0;},r);await page.waitForTimeout(900);}
   await page.screenshot({path:path.join(results,'rift-blade-boss.png')});
   // Defeat shows the result screen and stores the best score.
   await page.evaluate(()=>{rift.score=12345;rift.player.inv=0;rift.player.hp=1;rift.hitPlayer(99);});await page.waitForFunction(()=>!document.getElementById('resultView').hidden);
-  assert.equal(await page.locator('#resultStats>div').count(),6);assert.equal(await page.evaluate(()=>localStorage.getItem('riftBladeBestV2')),'12345');assert.match(await page.locator('#bestScore').textContent(),/12,345/);
+  assert.equal(await page.locator('#resultStats>div').count(),7);assert.match(await page.locator('#resultStats').textContent(),/화염 대검 \+1/);assert.equal(await page.evaluate(()=>localStorage.getItem('riftBladeBestV2')),'12345');assert.match(await page.locator('#bestScore').textContent(),/12,345/);
   await page.click('#retryBtn');assert.equal(await page.evaluate(()=>[rift.state,rift.region,rift.score].join()),'playing,0,0');
   assert.deepEqual(errors,[]);await ctx.close();
   // Phone: touch pad visible, no horizontal scroll, menu fits, joystick moves the hero.
@@ -44,6 +50,6 @@ const root=path.resolve(__dirname,'..'),results=path.resolve(root,process.env.RI
   await mp.waitForTimeout(350);assert((await mp.evaluate(()=>rift.player.x))>px+20);
   await mp.locator('[data-pad="attack"]').dispatchEvent('pointerdown');await mp.waitForTimeout(60);assert(await mp.evaluate(()=>rift.player.act!==null||rift.player.step>0));
   await mp.screenshot({path:path.join(results,'rift-blade-phone-play.png')});assert.deepEqual(merr,[]);
-  console.log('PASS: hero select, start, move/attack/skill/dash keys, pause freeze, blessing choice, five regions/bosses, defeat/best score/retry, phone touch pad and layout');
+  console.log('PASS: hero and weapon select, forge card, start, move/attack/skill/dash keys, pause freeze, blessing choice, five regions/bosses, defeat/best score/retry, phone touch pad and layout');
  }finally{await browser?.close();server.close();}
 })().catch(e=>{console.error(e);process.exit(1);});

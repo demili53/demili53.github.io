@@ -1,9 +1,9 @@
 'use strict';
 // Rules tests for the rebuilt 균열의 검 (2026-11-20). Run: node scripts/test-rift-blade.cjs
-const assert=require('node:assert/strict'),{RiftGame,RIFT_HEROES,RIFT_BLESSINGS,RIFT_REGIONS,RIFT_BOSSES,RIFT_DASH}=require('./rift-core.js');
+const assert=require('node:assert/strict'),{RiftGame,RIFT_HEROES,RIFT_BLESSINGS,RIFT_REGIONS,RIFT_BOSSES,RIFT_DASH,RIFT_WEAPONS,RIFT_ELEMENTS,RIFT_WEAPON_MAX}=require('./rift-core.js');
 const seeded=s=>()=>((s=Math.imul(s^s>>>15,1|s)+0x6D2B79F5|0,((s^s>>>7)>>>0)/4294967296));
 const run=(g,sec,input={})=>{for(let i=0;i<sec*60;i++)g.step(1/60,input);};
-const fresh=(hero='blade')=>{const g=new RiftGame(hero,seeded(7));g.start();g.queue=[];g.enemies=[];return g;};
+const fresh=(hero='blade',weapon)=>{const g=new RiftGame(hero,seeded(7),weapon);g.start();g.queue=[];g.enemies=[];return g;};
 const dummy=(g,type='grunt',x=300,y=400)=>{const e=g.makeEnemy(type,{x,y});e.state='idle';e.cd=99;g.enemies.push(e);return e;};
 
 // Setup
@@ -45,12 +45,29 @@ g.blessings.vigor=3;assert(!g.rollOffers().includes('vigor'));
 g=fresh();e=dummy(g,'grunt',g.player.x+60,g.player.y);e.hp=e.maxHp=99999;g.attack();run(g,.4);const plain=99999-e.hp;g=fresh();g.blessings.edge=2;e=dummy(g,'grunt',g.player.x+60,g.player.y);e.hp=e.maxHp=99999;g.attack();run(g,.4);assert(99999-e.hp>plain*1.15,'edge blessing raises damage');
 assert.equal(RIFT_BLESSINGS.length,12);
 
+// Weapons: three per hero, each with its own combo and element; chosen only before the run.
+for(const h of Object.keys(RIFT_HEROES)){assert.equal(RIFT_WEAPONS[h].length,3);for(const w of RIFT_WEAPONS[h]){assert(RIFT_ELEMENTS[w.elem],w.id);assert.equal(w.basic.length,3);}}
+g=new RiftGame('blade',seeded(1),'ember');assert.equal(g.weaponId,'ember');assert(!g.setWeapon('frost'));assert(g.setWeapon('twin'));g.start();assert(!g.setWeapon('steel'));assert.equal(g.weaponId,'twin');
+const firstHit=(hero,weapon,setup)=>{const g=fresh(hero,weapon);setup?.(g);const e=dummy(g,'grunt',g.player.x+70,g.player.y);e.hp=e.maxHp=99999;g.attack();run(g,.5);return {g,e,dmg:99999-e.hp};};
+assert(firstHit('blade','ember').dmg>firstHit('blade','steel').dmg*1.2,'great sword hits harder');
+{const {g,e}=firstHit('blade','ember');assert(e.burn,'fire burns');const hp=e.hp;run(g,1.2);assert(e.hp<hp,'burn ticks');}
+{const g=fresh('arcanist','storm'),e=dummy(g,'grunt',g.player.x+300,g.player.y);e.hp=e.maxHp=9999;g.attack();run(g,.2);assert(e.hp<9999,'zap lands instantly');assert.equal(g.shots.length,0);}
+{const g=fresh('ranger','venom'),e=dummy(g,'grunt',g.player.x+200,g.player.y);e.hp=e.maxHp=99999;for(let i=0;i<4;i++){g.attack();run(g,.35);}assert(e.poison&&e.poison.stacks>=3,'poison stacks');}
+{const g=fresh('arcanist','frost'),e=dummy(g,'grunt',g.player.x+200,g.player.y);e.hp=e.maxHp=99999;for(let i=0;i<6&&!(e.freeze>0);i++){g.attack();run(g,.4);}assert(e.freeze>0,'chill stacks freeze');}
+{const g=fresh('ranger','blaze'),a=dummy(g,'grunt',g.player.x+200,g.player.y),b=dummy(g,'grunt',g.player.x+250,g.player.y+20);a.hp=a.maxHp=b.hp=b.maxHp=99999;g.attack();run(g,.6);assert(a.hp<99999&&b.hp<99999,'fire bolt splashes');}
+{const g=fresh('blade','twin');g.random=()=>0;const a=dummy(g,'grunt',g.player.x+60,g.player.y),b=dummy(g,'grunt',g.player.x+60,g.player.y+90);a.hp=a.maxHp=b.hp=b.maxHp=99999;g.attack();run(g,.3);assert(b.hp<99999,'shock arcs to a neighbour');}
+// Upgrades: forge cards and boss clears raise the weapon level, which raises damage and awakens a trait at level 3.
+{const g=fresh();g.random=()=>0;g.clearT=0;run(g,1.3);assert.equal(g.state,'choice');assert(g.offers.includes('forge'));assert(g.choose('forge'));assert.equal(g.wlv,2);}
+{const g=new RiftGame('blade',seeded(2));g.start();g.fight=2;g.beginFight();g.enemies=[];g.clearT=0;run(g,1.3);assert.equal(g.wlv,2,'boss clear upgrades');assert.equal(g.state,'choice');assert(!g.offers.includes('forge'));}
+assert(firstHit('blade','steel',g=>{g.wlv=5;}).dmg>firstHit('blade','steel').dmg*1.3,'weapon level raises damage');
+{const g=fresh('blade','steel');g.wlv=3;const e=dummy(g,'grunt',g.player.x+60,g.player.y);e.hp=e.maxHp=99999;for(let i=0;i<3;i++){g.attack();run(g,.47);}assert(g.shots.some(s=>s.kind==='wave')||e.hp<99999-200,'awakened sword wave');}
+{const g=fresh();g.wlv=RIFT_WEAPON_MAX;assert(!g.upgradeWeapon());assert(g.legendary);}
 // Death ends the run; full deterministic campaigns can be completed by a careful bot for every hero.
 g=fresh();g.player.hp=5;g.hitPlayer(50);assert.equal(g.state,'lost');
 function bot(g){const p=g.player,t=g.nearestTarget(2000);if(!t)return{x:(480-p.x)/200,y:0};
- if((g.hazards.some(h=>h.wind>0&&h.wind<.18&&g.inHazard(h,p.x,p.y))||g.shots.some(s=>!s.friendly&&Math.abs(s.x-p.x)<70&&Math.abs(s.y-p.y)<25))&&p.dashCd<=0){p.face=t.x>p.x?-1:1;g.dashMove();}
+ if((g.hazards.some(h=>h.wind>0&&h.wind<.18&&g.inHazard(h,p.x,p.y))||g.shots.some(s=>!s.friendly&&Math.abs(s.x-p.x)<70&&Math.abs(s.y-p.y)<25))&&p.dashCd<=0){p.face=t.x>p.x?1:-1;g.dashMove();}
  if(p.rift>=100)g.ultimate();if(p.mp>60)g.skill();const want=g.heroId==='blade'?70:260,dx=t.x-p.x,dy=t.y-p.y;
  return{x:Math.abs(dx)>want+30?Math.sign(dx):Math.abs(dx)<want-40&&g.heroId!=='blade'?-Math.sign(dx):0,y:Math.abs(dy)>12?Math.sign(dy):0,attack:Math.abs(dx)<want+60&&Math.abs(dy)<30};}
-for(const [hero,seed] of [['blade',1],['arcanist',1],['ranger',1]]){g=new RiftGame(hero,seeded(seed));g.start();let n=0;while(['playing','choice'].includes(g.state)&&n++<60*60*20){if(g.state==='choice'){g.choose(g.offers[0]);continue;}g.step(1/60,bot(g));g.drainEvents();}
- assert.equal(g.state,'won',hero+' campaign');assert(g.score>50000);assert.equal(g.region,4);}
-console.log('PASS: heroes/combo/launch, skill & ultimate gating, projectiles/pierce, telegraph timing, perfect dodge, interrupts, archer dodge, boss stagger/enrage, pause freeze, blessings, defeat and full campaigns');
+for(const [hero,weapon] of Object.entries(RIFT_WEAPONS).flatMap(([h,ws])=>ws.map(w=>[h,w.id]))){g=new RiftGame(hero,seeded(1),weapon);g.start();let n=0;while(['playing','choice'].includes(g.state)&&n++<60*60*20){if(g.state==='choice'){g.choose(g.offers[0]);continue;}g.step(1/60,bot(g));g.drainEvents();}
+ assert.equal(g.state,'won',hero+'/'+weapon+' campaign');assert(g.score>50000);assert.equal(g.region,4);}
+console.log('PASS: weapons/elements/upgrades, heroes/combo/launch, skill & ultimate gating, projectiles/pierce, telegraph timing, perfect dodge, interrupts, archer dodge, boss stagger/enrage, pause freeze, blessings, defeat and full campaigns');

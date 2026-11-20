@@ -2,7 +2,7 @@
 <html lang="ko"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>균열의 검 | 횡스크롤 액션 로그라이트 · PartyGame</title>
-<meta name="description" content="검사·마법사·궁수 중 한 명을 골라 다섯 지역과 다섯 수문장을 돌파하는 무료 횡스크롤 액션 게임. 연속 베기와 완벽 회피, 균열 해방 필살기, 전투마다 고르는 축복으로 나만의 원정을 완성하세요.">
+<meta name="description" content="검사·마법사·궁수 중 한 명을 골라 다섯 지역과 다섯 수문장을 돌파하는 무료 횡스크롤 액션 게임. 연속 베기와 완벽 회피, 균열 해방 필살기, 무기 9종과 강화, 전투마다 고르는 축복으로 나만의 원정을 완성하세요.">
 <meta name="keywords" content="액션 게임,횡스크롤,벨트스크롤,로그라이트,보스전,브라우저 게임,무료 게임,균열의 검"><meta name="robots" content="index, follow"><meta name="theme-color" content="#0d0a16">
 <link rel="canonical" href="https://partygame.pe.kr/arcade/rift-blade.html"><link rel="icon" href="/favicon.ico">
 <meta property="og:type" content="website"><meta property="og:site_name" content="PartyGame"><meta property="og:title" content="균열의 검 | 횡스크롤 액션 로그라이트"><meta property="og:description" content="세 영웅, 다섯 지역, 다섯 수문장. 완벽 회피와 균열 해방으로 심연을 봉인하세요."><meta property="og:url" content="https://partygame.pe.kr/arcade/rift-blade.html"><meta property="og:image" content="https://partygame.pe.kr/assets/games/rift-blade/share.png">
@@ -32,6 +32,11 @@ body{margin:0}button{font:inherit;cursor:pointer}button:disabled{opacity:.4;curs
 .rb-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .rb-keys{font-size:11px!important;color:#8a84aa!important;margin-top:12px!important}.rb-keys kbd{font:inherit;font-size:10px;border:1px solid #4a4268;border-radius:4px;padding:1px 5px;color:#e6dcff;background:#1c1830}
 .choice-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0 4px}
+.weapon-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 8px}
+.weapon-card{display:grid;grid-template-columns:44px 1fr;grid-template-rows:auto auto;column-gap:8px;align-items:center;text-align:left;padding:6px 10px 6px 6px;border-radius:10px;border:1px solid #3a3458;background:#14111f;color:#ece8ff;transition:border-color .15s,box-shadow .15s}
+.weapon-card canvas{grid-row:span 2;width:44px;height:44px}.weapon-card b{font-size:13px}.weapon-card small{font-size:10px;color:var(--el,#a8a3c2)}
+.weapon-card:hover{border-color:#6a5f9a}.weapon-card[aria-pressed=true]{border-color:var(--el,#ffb35c);box-shadow:0 0 0 1px var(--el,#ffb35c),0 6px 20px #0006;background:linear-gradient(180deg,#221c34,#14111f)}
+.bless-card.forge{border-color:#c8963a;background:linear-gradient(180deg,#2e2214,#151018)}.bless-card.forge i{background:radial-gradient(#ffd86a55,#0000 70%);color:#ffe9a0}.bless-card.forge em{color:#ffd86a}
 .bless-card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;border-radius:12px;border:1px solid #3a3458;background:linear-gradient(180deg,#1f1a34,#120f20);color:#efeaff;animation:rise .35s both}
 .bless-card i{font-style:normal;font-size:26px;width:52px;height:52px;display:grid;place-items:center;border-radius:50%;background:radial-gradient(#ffb35c33,#0000 70%);color:#ffd28a}.bless-card b{font-size:15px}.bless-card em{font-style:normal;font-size:11px;color:#ff9ad8;letter-spacing:.15em}.bless-card small{font-size:12px;color:#b9b3d6;line-height:1.5}
 .bless-card:hover,.bless-card:focus-visible{border-color:#ffb35c;transform:translateY(-3px);outline:none;box-shadow:0 10px 30px #ffb35c22}
@@ -46,7 +51,7 @@ body{margin:0}button{font:inherit;cursor:pointer}button:disabled{opacity:.4;curs
 .pad-buttons [data-pad=attack]{grid-column:2/4;grid-row:2;width:100%;height:64px;border-radius:32px;background:linear-gradient(180deg,#ffc27a,#f59a45);color:#2a1608;font-size:15px}
 .pad-buttons [data-pad=ult]{background:#3a1d38;border-color:#ff9ad8;color:#ffd0f0}
 @media(pointer:coarse){.rb-pad{display:flex}}html.rb-touch .rb-pad{display:flex}
-@media(max-width:700px){.rb-stage:has(.rb-overlay:not([hidden])){aspect-ratio:auto;min-height:440px}.rb-stage:has(.rb-overlay:not([hidden]))>canvas{position:absolute;inset:0;object-fit:cover}}
+@media(max-width:700px){.weapon-cards{gap:4px}.weapon-card{grid-template-columns:1fr;justify-items:center;text-align:center;padding:4px 2px}.weapon-card canvas{grid-row:auto;width:34px;height:34px}.weapon-card b{font-size:11px}.rb-stage:has(.rb-overlay:not([hidden])){aspect-ratio:auto;min-height:440px}.rb-stage:has(.rb-overlay:not([hidden]))>canvas{position:absolute;inset:0;object-fit:cover}}
 .rb-guide{margin-top:24px;padding:22px;border-radius:14px;border:1px solid #2e2946;background:#120f1f}.rb-guide h2{font-size:18px;color:#f1edff;margin:0 0 14px}.guide-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}.rb-guide h3{font-size:13px;color:#ffc89a;margin:0 0 6px}.rb-guide p{font-size:12px;color:#a8a3c2;line-height:1.9;margin:0}
 @media(max-width:700px){.rb-shell{padding:16px 10px 0}.rb-heading{align-items:flex-start;flex-direction:column;gap:6px}.rb-best{text-align:left}.rb-overlay{align-items:flex-start}.hero-cards,.choice-cards{gap:6px}.hero-card{padding:4px 2px 8px}.hero-card b{font-size:13px}.hero-card span,.rb-keys{display:none}.bless-card{padding:10px 4px}.bless-card i{width:36px;height:36px;font-size:20px}.bless-card small{font-size:10px}.bless-card b{font-size:12px}.rb-overlay p{font-size:11px;margin-bottom:8px}.rb-overlay h2{margin:2px 0}.result-stats{gap:4px;margin:8px auto}.result-stats div{padding:6px}.result-stats b{font-size:14px}.guide-grid{grid-template-columns:1fr;gap:14px}.rb-status{display:none}}
 @media(max-width:420px){.stick{width:116px;height:116px}.pad-buttons{grid-template-columns:repeat(3,56px);grid-template-rows:56px 56px}.pad-buttons button{width:56px;height:56px}.pad-buttons [data-pad=attack]{height:56px}}
@@ -57,7 +62,7 @@ body{margin:0}button{font:inherit;cursor:pointer}button:disabled{opacity:.4;curs
 <section class="rb-panel" aria-label="균열의 검 게임">
 <div class="rb-stage"><canvas id="riftCanvas" width="960" height="540" tabindex="0" aria-label="균열의 검 전장. 방향키나 WASD로 이동, J 공격, K 기술, L 균열 해방, Space 대시, P 일시정지"></canvas>
 <div class="rb-overlay" id="riftOverlay">
- <section id="menuView"><div class="rb-kicker">CHOOSE YOUR HERO</div><h2>영웅을 고르세요</h2><div class="hero-cards" id="heroCards" role="group" aria-label="영웅 선택"></div><p class="rb-desc" id="heroDesc" aria-live="polite"></p><button class="rb-btn primary" id="startBtn">출정하기 →</button><p class="rb-keys"><kbd>WASD</kbd> 이동 · <kbd>J</kbd> 공격 · <kbd>K</kbd> 기술 · <kbd>L</kbd> 균열 해방 · <kbd>Space</kbd> 대시 · <kbd>P</kbd> 정지</p></section>
+ <section id="menuView"><div class="rb-kicker">CHOOSE YOUR HERO</div><h2>영웅을 고르세요</h2><div class="hero-cards" id="heroCards" role="group" aria-label="영웅 선택"></div><div class="weapon-cards" id="weaponCards" role="group" aria-label="무기 선택"></div><p class="rb-desc" id="heroDesc" aria-live="polite"></p><button class="rb-btn primary" id="startBtn">출정하기 →</button><p class="rb-keys"><kbd>WASD</kbd> 이동 · <kbd>J</kbd> 공격 · <kbd>K</kbd> 기술 · <kbd>L</kbd> 균열 해방 · <kbd>Space</kbd> 대시 · <kbd>P</kbd> 정지</p></section>
  <section id="choiceView" hidden><div class="rb-kicker">BLESSING OF THE RIFT</div><h2>축복을 하나 고르세요</h2><p id="choiceSub"></p><div class="choice-cards" id="choiceCards" role="group" aria-label="축복 선택"></div></section>
  <section id="pauseView" hidden><div class="rb-kicker">PAUSED</div><h2>잠시 숨을 고르세요</h2><p>전투가 멈췄습니다.</p><div class="rb-row"><button class="rb-btn primary" id="resumeBtn">계속하기</button><button class="rb-btn" id="quitBtn">영웅 선택으로</button></div></section>
  <section id="resultView" hidden><div class="rb-kicker" id="resultKicker"></div><h2 id="resultTitle"></h2><div class="result-stats" id="resultStats"></div><p id="resultBest"></p><div class="rb-row"><button class="rb-btn primary" id="retryBtn">다시 도전</button><button class="rb-btn" id="heroBtn">영웅 바꾸기</button></div></section>
@@ -68,8 +73,8 @@ body{margin:0}button{font:inherit;cursor:pointer}button:disabled{opacity:.4;curs
 <section class="rb-guide"><h2>균열의 검 안내</h2><div class="guide-grid">
 <div><h3>베고, 피하고, 해방하라</h3><p>J를 연타하면 3연속 공격이 이어지고 세 번째 공격은 적을 띄웁니다. K는 마력을 쓰는 직업 기술, 공격으로 모은 균열 게이지가 가득 차면 L로 필살기를 씁니다.</p></div>
 <div><h3>붉은 예고와 완벽 회피</h3><p>적의 공격은 바닥에 붉은 범위로 먼저 보입니다. 범위가 차오르기 직전에 Space로 대시하면 완벽 회피가 발동해 시간이 느려지고 균열 게이지와 마력을 돌려받습니다.</p></div>
-<div><h3>축복과 다섯 수문장</h3><p>지역마다 두 번의 전투와 수문장이 기다립니다. 전투를 마칠 때마다 축복 세 개 중 하나를 고르세요. 수문장은 체력이 절반 이하가 되면 격노하고, 큰 피해를 연달아 주면 잠시 무력화됩니다.</p></div>
+<div><h3>무기 아홉 자루와 강화</h3><p>영웅마다 무기를 세 자루 중 하나 골라 출정합니다. 무기마다 기본 공격과 속성이 다릅니다. 화염은 불태우고, 냉기는 쌓이면 얼리고, 번개는 옆의 적에게 튀고, 맹독은 중첩됩니다. 수문장을 쓰러뜨리거나 대장간 카드를 고르면 무기가 강화되고, +2에서 각성 능력이, +5에서 전설의 힘이 깨어납니다.</p></div><div><h3>축복과 다섯 수문장</h3><p>지역마다 두 번의 전투와 수문장이 기다립니다. 전투를 마칠 때마다 축복 세 개 중 하나를 고르세요. 수문장은 체력이 절반 이하가 되면 격노하고, 큰 피해를 연달아 주면 잠시 무력화됩니다.</p></div>
 </div></section>
 </main><site-footer></site-footer>
-<script src="/scripts/rift-core.js?v=20261120r"></script><script src="/scripts/rift-art.js?v=20261120r"></script><script src="/scripts/rift-blade.js?v=20261120r"></script>
+<script src="/scripts/rift-core.js?v=20261120w"></script><script src="/scripts/rift-art.js?v=20261120w"></script><script src="/scripts/rift-blade.js?v=20261120w"></script>
 </body></html>
