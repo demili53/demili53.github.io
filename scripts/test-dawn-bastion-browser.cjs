@@ -37,7 +37,7 @@ const root = path.resolve(__dirname, '..');
     assert.equal(await page.evaluate(() => typeof Phaser), 'undefined');
     assert.equal(await page.locator('#start').textContent(), '게임 시작');
     assert.equal(await page.locator('#summon').isDisabled(), true);
-    assert.equal(await page.locator('#towerCodex li').count(), 7);
+    assert.equal(await page.locator('#towerCodex li').count(), await page.evaluate(() => Dawn.DECK.length));
     assert.equal(await page.locator('#tierLegend span').count(), 6);
 
     // 시작과 소환
@@ -89,6 +89,18 @@ const root = path.resolve(__dirname, '..');
     const frozen = await page.evaluate(() => game.time); await page.waitForTimeout(250); assert.equal(await page.evaluate(() => game.time), frozen);
     await page.click('#start'); await page.waitForTimeout(250);
     assert.ok(await page.evaluate(() => game.time) > frozen, '계속하면 시간이 흐른다');
+
+    // 연구: 여는 동안 멈추고, 에테르로 단계를 올린다
+    await page.evaluate(() => { game.gold = 120; sync(); });
+    await page.click('#research');
+    assert.equal(await page.locator('#overlayTitle').textContent(), '타워 연구');
+    assert.equal(await page.locator('#researchList button').count(), await page.evaluate(() => Dawn.DECK.length));
+    const held = await page.evaluate(() => game.time);
+    await page.click('#researchList [data-research="arrow"]');
+    assert.deepEqual(await page.evaluate(() => [game.research.arrow, game.gold]), [1, 70]);
+    assert.equal(await page.locator('#researchList [data-research="arrow"]').isDisabled(), true, '에테르가 모자라면 연구할 수 없다');
+    assert.equal(await page.evaluate(() => game.time), held);
+    await page.click('#start'); assert.equal(await page.locator('#overlay').isHidden(), true); assert.equal(await page.evaluate(() => paused), false);
 
     // 군주 보상
     await page.evaluate(() => { game.enemies = []; game.wave = 5; game.spawnLimit = game.waveSize(5); game.spawned = game.spawnLimit; });

@@ -169,9 +169,45 @@
       g.fillStyle = radial(g, 0, 0, 15, ['#f0ffc4', col, lo], -4, -5); circle(g, 0, 0, 14.5); g.fill(); outline(g, 1.3);
       g.fillStyle = 'rgba(255,255,255,.55)'; circle(g, -5, -5, 3); g.fill(); circle(g, 5, 2, 2); g.fill(); circle(g, -2, 7, 1.5); g.fill();
       g.strokeStyle = 'rgba(30,60,20,.45)'; g.lineWidth = 1; circle(g, 5, 2, 3.4); g.stroke(); circle(g, -5, -5, 4.6); g.stroke();
+    } else if (type === 'sniper') {
+      g.fillStyle = linear(g, 0, -7, 0, 7, ['#7a6a4a', '#3f3626']); poly(g, [-22, -6, -8, -7, -4, 7, -22, 6]); g.fill(); outline(g);
+      g.fillStyle = linear(g, 0, -4, 0, 4, ['#252c31', '#9eabb2', '#4b565d', '#1b2125']); rounded(g, -8, -3.6, 46, 7.2, 2); g.fill(); outline(g, 1.4);
+      g.fillStyle = '#20272c'; rounded(g, 33, -5.5, 8, 11, 2); g.fill(); outline(g, 1.2);
+      g.fillStyle = linear(g, 0, -11, 0, -4, ['#59646b', '#22292e']); rounded(g, -6, -11, 20, 6.5, 3); g.fill(); outline(g, 1.2);
+      g.fillStyle = radial(g, 14, -7.8, 3.4, ['#ffffff', col, lo]); circle(g, 14, -7.8, 3); g.fill(); outline(g, 1);
+      g.fillStyle = hi; circle(g, -14, 0, 3.2); g.fill(); outline(g, 1);
+      if (tier >= 3) { g.strokeStyle = col; g.lineWidth = 1.4; g.beginPath(); g.moveTo(6, 0); g.lineTo(30, 0); g.stroke(); }
+      if (tier >= 5) { g.fillStyle = col; poly(g, [-22, -6, -28, -10, -24, -1]); g.fill(); poly(g, [-22, 6, -28, 10, -24, 1]); g.fill(); }
+    } else if (type === 'gravity') {
+      g.fillStyle = radial(g, 0, 0, 24, [alpha(col, .5), alpha(col, 0)]); circle(g, 0, 0, 24); g.fill();
+      for (let i = 0; i < 2 + (tier >= 4 ? 1 : 0); i++) { g.strokeStyle = INK; g.lineWidth = 4.4; ellipse(g, 0, 0, 22 - i * 3, 8 + i * 2, .5 + i * 1.05); g.stroke(); g.strokeStyle = i ? hi : col; g.lineWidth = 2.4; g.stroke(); }
+      g.fillStyle = radial(g, 0, 0, 12, ['#05060f', '#141a3a', col], -3, -4); circle(g, 0, 0, 11 + tier * .4); g.fill(); outline(g, 1.4);
+      g.fillStyle = 'rgba(255,255,255,.7)'; circle(g, -4, -4, 2); g.fill(); g.fillStyle = hi; circle(g, 18, -8, 2.2); g.fill(); circle(g, -17, 9, 1.8); g.fill();
+    } else if (type === 'beacon') {
+      g.fillStyle = radial(g, 0, 0, 26, [alpha(col, .45), alpha(col, 0)]); circle(g, 0, 0, 26); g.fill();
+      g.strokeStyle = alpha(col, .8); g.lineWidth = 1.6; for (let i = 0; i < 4; i++) { g.save(); g.rotate(i * Math.PI / 2 + Math.PI / 4); g.beginPath(); g.moveTo(15, -5); g.lineTo(21, 0); g.lineTo(15, 5); g.stroke(); g.restore(); }
+      const star = []; for (let i = 0; i < 8; i++) { const a = i / 8 * TAU - Math.PI / 2, r = i % 2 ? 6.5 : 21 + tier * .5; star.push(Math.cos(a) * r, Math.sin(a) * r); }
+      g.fillStyle = linear(g, -14, -20, 14, 20, ['#fffbe0', col, '#a8741e']); poly(g, star); g.fill(); outline(g, 1.5);
+      g.fillStyle = 'rgba(255,255,255,.55)'; poly(g, [star[0], star[1], star[14], star[15], 0, 0]); g.fill();
+      g.fillStyle = radial(g, 0, 0, 6, ['#ffffff', '#fff0b0']); circle(g, 0, 0, 4.5); g.fill(); outline(g, 1);
+    } else if (type === 'star') {
+      g.fillStyle = radial(g, 0, 0, 25, [alpha(col, .5), alpha(col, 0)]); circle(g, 0, 0, 25); g.fill();
+      g.fillStyle = linear(g, -18, 0, 18, 0, ['#39465a', '#7d8ea6', '#2a3444']); ellipse(g, 0, 13, 17, 6); g.fill(); outline(g, 1.4);
+      g.strokeStyle = INK; g.lineWidth = 4; g.beginPath(); g.arc(0, -2, 17, .35, Math.PI - .35); g.stroke(); g.strokeStyle = hi; g.lineWidth = 2; g.stroke();
+      const pts = []; for (let i = 0; i < 10; i++) { const a = i / 10 * TAU - Math.PI / 2, r = i % 2 ? 5.6 : 13.5 + tier * .5; pts.push(Math.cos(a) * r, Math.sin(a) * r - 5); }
+      g.save(); g.shadowColor = col; g.shadowBlur = 10; g.fillStyle = linear(g, -10, -18, 10, 8, ['#ffffff', col, '#3f8fc0']); poly(g, pts); g.fill(); g.restore(); outline(g, 1.4);
+      g.fillStyle = 'rgba(255,255,255,.7)'; circle(g, -3, -8, 2.2); g.fill();
+      if (tier >= 3) { g.fillStyle = hi; circle(g, -17, -14, 2); g.fill(); circle(g, 18, -12, 1.6); g.fill(); circle(g, 14, 6, 1.4); g.fill(); }
+    } else if (type === 'spike') {
+      const n = 6 + (tier >= 4 ? 2 : 0);
+      for (let i = 0; i < n; i++) { g.save(); g.rotate(i / n * TAU); g.fillStyle = linear(g, 8, 0, 27, 0, ['#5d4a36', '#f0d3a4']); poly(g, [8, -5.5, 27 + tier * .5, 0, 8, 5.5]); g.fill(); outline(g, 1.3); g.restore(); }
+      g.fillStyle = linear(g, -13, -13, 13, 13, [hi, col, lo]); circle(g, 0, 0, 13); g.fill(); outline(g);
+      g.fillStyle = '#2a2018'; circle(g, 0, 0, 7.5); g.fill(); outline(g, 1.2);
+      g.fillStyle = radial(g, 0, 0, 5, ['#ffe9c4', '#c9853a']); circle(g, 0, 0, 4); g.fill();
+      g.fillStyle = 'rgba(255,255,255,.45)'; circle(g, -5, -6, 2.4); g.fill();
     }
   }
-  const ROTATING = { arrow: true, cannon: true, laser: true, flame: true };
+  const ROTATING = { arrow: true, cannon: true, laser: true, flame: true, sniper: true };
   const towerCache = new Map();
   function tower(type, tier) {
     const key = type + tier; let entry = towerCache.get(key);

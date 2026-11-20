@@ -67,8 +67,8 @@ test('등급과 강화가 능력치를 올린다', () => {
   assert.equal(g.reaches(0, 'frost', 1), true); assert.equal(g.reaches(5, 'frost', 1), false, '안쪽 칸의 냉기탑은 길에 닿지 않는다'); assert.equal(g.reaches(5, 'laser', 1), true);
 });
 
-test('타워 일곱 종이 모두 적에게 피해를 준다', () => {
-  for (const type of D.DECK) {
+test('공격 타워가 모두 적에게 피해를 준다', () => {
+  for (const type of D.DECK.filter(type => D.TOWERS[type].damage > 0 && type !== 'spike')) {
     const g = fresh(); g.spawnClock = 1e9; g.place(1, type, 3);
     const e = g.spawn('armored', 240); e.speed = 0; e.hp = e.maxHp = 1e6;
     run(g, 4);
@@ -77,6 +77,75 @@ test('타워 일곱 종이 모두 적에게 피해를 준다', () => {
     if (type === 'venom') assert.ok(e.poison > 0);
     if (type === 'flame') assert.ok(e.burn > 0);
   }
+});
+
+test('지휘탑은 이웃 타워만 강화한다', () => {
+  const g = fresh(); g.place(5, 'beacon', 2); g.place(0, 'arrow', 1); g.place(15, 'arrow', 1);
+  const plain = g.towerStats('arrow', 1).damage;
+  assert.ok(Math.abs(g.towerStats('arrow', 1, 0).damage / plain - 1.22) < 1e-9); assert.equal(g.towerStats('arrow', 1, 15).damage, plain);
+  assert.equal(g.reaches(5), true); g.cells[0].tower = null; assert.equal(g.reaches(5), false, '이웃에 공격 타워가 없으면 경고');
+  g.place(6, 'beacon', 6); g.place(1, 'arrow', 1); assert.ok(Math.abs(g.towerStats('arrow', 1, 1).damage / plain - 1.46) < 1e-9, '가장 강한 지휘탑 하나만 적용');
+});
+
+test('저격탑은 가장 튼튼한 적을, 중력탑은 적을 뒤로 민다', () => {
+  let g = fresh(); g.spawnClock = 1e9; g.place(1, 'sniper', 1);
+  const weak = g.spawn('grunt', 400), strong = g.spawn('armored', 300); weak.speed = strong.speed = 0; run(g, 1);
+  assert.ok(strong.hp < strong.maxHp); assert.equal(weak.hp, weak.maxHp);
+  g = fresh(); g.spawnClock = 1e9; g.place(1, 'gravity', 1); const e = g.spawn('armored', 240); e.speed = 0; e.hp = e.maxHp = 1e6; run(g, 1);
+  assert.ok(e.d < 240, '밀려남: ' + e.d);
+});
+
+test('연구는 공격력을 올리고 3·5단계 능력을 연다', () => {
+  const g = fresh(); g.gold = 10000; const base = g.towerStats('arrow', 1).damage;
+  assert.equal(g.researchCost('arrow'), 50); assert.equal(g.knows('arrow', 3), false);
+  assert.equal(g.study('arrow'), true); assert.equal(g.gold, 9950); assert.ok(Math.abs(g.towerStats('arrow', 1).damage / base - 1.12) < 1e-9);
+  g.study('arrow'); assert.equal(g.knows('arrow', 3), true); assert.equal(g.knows('arrow', 5), false);
+  g.study('arrow'); g.study('arrow'); assert.equal(g.knows('arrow', 5), true); assert.equal(g.researchCost('arrow'), Infinity); assert.equal(g.study('arrow'), false);
+  assert.equal(g.study('nope'), false);
+  for (const type of D.DECK) assert.equal(D.RESEARCH[type].length, 2, type);
+  // 저격 5단계 처형
+  g.research.sniper = 4; g.spawnClock = 1e9; const e = g.spawn('grunt', 300); e.hp = e.maxHp * .16; g.damage(e, e.maxHp * .02, '#fff', { execute: true }); assert.ok(e.hp <= 0);
+  // 광선 5단계: 보호막 2배
+  const s = g.spawn('shieldbearer', 300), before = s.shield; g.damage(s, 10, '#fff', { shield: 2 }); assert.ok(Math.abs(before - s.shield - 20) < 1e-9);
+  // 냉기 5단계 빙결: 멈춘 적은 전진하지 않는다
+  const f = g.spawn('grunt', 100); f.stun = 1; const d = f.d; g.step(.05); assert.equal(f.d, d);
+});
+
+test('전설 등급부터 각성 능력이 열린다', () => {
+  for (const type of D.DECK) assert.ok(D.AWAKEN[type], type);
+  const volley = tier => { const g = fresh(); g.spawnClock = 1e9; g.place(1, 'arrow', tier); for (const d of [230, 250, 270]) { const e = g.spawn('armored', d); e.speed = 0; e.hp = e.maxHp = 1e9; } g.cells[1].tower.cd = 0; g.step(.05); return g.shots.length; };
+  assert.equal(volley(4), 1); assert.equal(volley(5), 3);
+  const g = fresh(); g.spawnClock = 1e9; g.place(1, 'flame', 5); const e = g.spawn('armored', 240); e.speed = 0; e.hp = e.maxHp = 1e9; run(g, 1); assert.ok(g.zones.length >= 1, '불바다');
+  const z = fresh(); z.spawnClock = 1e9; z.place(1, 'gravity', 5); const s = z.spawn('grunt', 240); s.speed = 0; s.hp = s.maxHp = 1e9; run(z, .5); assert.ok(s.stun > 0 || s.d < 240);
+  const acid = fresh(); const a = acid.spawn('grunt', 100); a.hp = a.maxHp = 1000; a.acid = 1; acid.damage(a, 100); assert.equal(a.hp, 880);
+});
+
+test('가시탑은 길에 덫을 놓고 별빛탑은 어디든 공격한다', () => {
+  const g = fresh(); g.spawnClock = 1e9; g.place(1, 'spike', 1); run(g, 8);
+  assert.equal(g.traps.length, 3, '덫은 타워당 3개까지'); for (const t of g.traps) assert.ok(Math.hypot(t.x - g.cells[1].x, t.y - g.cells[1].y) <= 170);
+  const e = g.spawn('armored', g.traps[0].d - 5); e.hp = e.maxHp = 1e9; const charges = g.traps[0].charges; run(g, .6); assert.ok(e.hp < e.maxHp); assert.ok(!g.traps.includes(undefined));
+  assert.ok(g.traps.every(t => t.charges <= charges));
+  g.sell(1); g.step(.05); assert.equal(g.traps.length, 0, '타워가 사라지면 덫도 사라진다');
+  const s = fresh(); s.spawnClock = 1e9; s.place(10, 'star', 1); const far = s.spawn('armored', 30); far.speed = 0; far.hp = far.maxHp = 1e9; run(s, 2); assert.ok(far.hp < far.maxHp);
+  assert.equal(s.reaches(10), true);
+});
+
+test('조합 반응: 감전·파쇄·급소', () => {
+  const g = fresh(); g.spawnClock = 1e9; g.place(1, 'tesla', 1);
+  const dry = g.spawn('armored', 240), wet = g.spawn('armored', 240); for (const e of [dry, wet]) { e.speed = 0; e.hp = e.maxHp = 1e9; } wet.poison = 5; wet.poisonDamage = 0;
+  g.cells[1].tower.cd = 0; g.step(.05);
+  const a = 1e9 - dry.hp, b = 1e9 - wet.hp; assert.ok(a > 0 && b > 0); assert.ok(g.effects.some(f => f.kind === 'react' && f.tag === 'conduct'));
+  assert.ok(Object.keys(D.REACTIONS).length >= 5);
+});
+
+test('단련: 별 하나에 공격력 25%, 합성하면 물려받는다', () => {
+  const g = fresh(); g.gold = 1000; g.place(0, 'arrow', 1); g.place(1, 'arrow', 1);
+  const base = g.towerStats('arrow', 1, 0).damage; assert.equal(g.temperCost(0), 30);
+  assert.equal(g.temper(0), true); assert.equal(g.gold, 970); assert.equal(g.temperCost(0), 60);
+  assert.ok(Math.abs(g.towerStats('arrow', 1, 0).damage / base - 1.25) < 1e-9); assert.equal(g.towerStats('arrow', 1, 1).damage, base);
+  assert.equal(g.sellValue(0), 25);
+  g.temper(0); g.temper(0); assert.equal(g.cells[0].tower.star, 3); assert.equal(g.temperCost(0), Infinity); assert.equal(g.temper(0), false);
+  g.drop(1, 0); assert.equal(g.cells[0].tower.star, 3); assert.equal(g.cells[0].tower.tier, 2); assert.equal(g.temper(5), false);
 });
 
 test('열충격: 연소와 둔화가 겹치면 피해가 늘어난다', () => {
