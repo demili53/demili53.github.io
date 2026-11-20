@@ -1100,9 +1100,9 @@
     setTime: t => { S.t = t; }, addXp: v => gainXp(v),
     spawn: (type, n = 1, dist = 120) => { for (let i = 0; i < n; i++) { const a = i / n * TAU; spawnEnemy(type, S.player.x + Math.cos(a) * dist, S.player.y + Math.sin(a) * dist); } },
     spawnBoss: i => spawnBoss(C.BOSSES[i]), killBoss: () => S.boss && hit(S.boss, S.boss.hp + 1),
-    grant: (kind, id, level = 1) => { for (let i = 0; i < level; i++) S.build = C.applyChoice(S.build, { kind, id }); S.mods = C.modifiers(S.build); },
+    grant: (kind, id, level = 1) => { for (let i = 0; i < level; i++) S.build = C.applyChoice(S.build, { kind, id }); S.mods = C.modifiers(S.build); if (mode === 'levelup') openLevelUp(); },
     openChest: () => openChest(),
-    evolve: id => { S.build = C.applyChoice(S.build, { kind: 'evolve', id }); S.mods = C.modifiers(S.build); },
+    evolve: id => { S.build = C.applyChoice(S.build, { kind: 'evolve', id }); S.mods = C.modifiers(S.build); if (mode === 'levelup') openLevelUp(); }, // hooks change the build, so re-roll stale offers
     enemyStatus: () => S.enemies.map(e => ({ stun: e.stunT > 0, slow: e.slowT > 0 })),
     setMove: v => { botMove = v; },
     step: (sec, dt = 1 / 30) => { for (let i = 0; i < sec / dt && mode === 'play'; i++) update(dt); return mode; },
