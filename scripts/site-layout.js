@@ -7,6 +7,7 @@
     { url: '/arcade/missile-rush.html', label: '구글광고에나오는게임', description: '연산 캡슐 부대 증식', group: 'games', paths: '<path d="M12 2c2 2 3 5 3 9v6H9v-6c0-4 1-7 3-9Zm-3 11-3 3v4l3-2m6-5 3 3v4l-3-2m-5 2v4m4-4v4"/>' },
     { url: '/arcade/fog-front.html', label: '운빨좆망겜', description: '정찰 타워 디펜스', group: 'games', paths: '<path d="M3 10h18M3 15h18M7 5v14M17 5v14"/><path d="M4 7c2-2 4 0 6-1s3-2 5-1 3 1 5 0"/>' },
     { url: '/arcade/lantern-keeper.html', label: '뱀파이어 온라인', description: '10분 생존 액션', group: 'games', paths: '<path d="M9 3h6M12 3v2M7 9a5 5 0 0 1 10 0v7a3 3 0 0 1-3 3h-4a3 3 0 0 1-3-3V9Zm0 0h10M12 12c1.4 1.3 1.4 3 0 4-1.4-1-1.4-2.7 0-4ZM9 21h6"/>' },
+    { url: '/arcade/exam-sneak.html', label: '들키면 재수', description: 'AI 수능 컨닝', group: 'games', paths: '<path d="M6 3h9l3 3v15H6z"/><path d="M9 9h6M9 12h6M9 15h3"/><circle cx="17" cy="17" r="3.2"/><path d="m19.3 19.3 2 2"/>' },
     { url: '/arcade/shadow-sniper.html', label: '윌리를 찾아 보자', description: '관찰 · 저격', group: 'games', paths: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 1v4m0 14v4M1 12h4m14 0h4"/>' },
     { url: '/fortune/tarot.html', label: '무료 타로점', description: '오늘의 카드', group: 'games', paths: '<rect x="6" y="3" width="12" height="18" rx="2"/><path d="m12 8 1.2 2.6 2.8.3-2.1 1.9.6 2.8L12 14.2l-2.5 1.4.6-2.8L8 10.9l2.8-.3L12 8Z"/>' },
     { url: '/exaone/', label: 'EXAONE Agent', description: '로컬 AI 도구', group: 'tools', paths: '<rect x="5" y="5" width="14" height="14" rx="3"/><path d="M9 1v4m6-4v4M9 19v4m6-4v4M1 9h4m-4 6h4m14-6h4m-4 6h4M9 9h6v6H9z"/>' }
