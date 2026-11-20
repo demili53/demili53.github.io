@@ -53,7 +53,7 @@
       ship, score: 0, wave: 0, lives: C.SHIPS[ship].lives, bombs: 2, weapon: 'vulcan', level: 1, shield: false, owned: {},
       chain: 0, chainT: 0, bestChain: 0, kills: 0, hits: 0, grazes: 0, time: 0, drought: 0, waveHits: 0,
       player: { x: W / 2, y: H - 90, invuln: 2, cooldown: 0, tilt: 0, dead: 0 },
-      shots: [], enemies: [], bullets: [], items: [], gems: [], particles: [], blasts: [], rings: [], texts: [], arcs: [], muzzle: 0, optionT: 0, delayed: [], ghosts: [], hitstop: 0, ghostT: 0, critT: 0, sub: null, subT: 0, beam: null, storm: null, mastery: {},
+      shots: [], enemies: [], bullets: [], items: [], gems: [], particles: [], blasts: [], rings: [], texts: [], arcs: [], scorePop: 0, muzzle: 0, optionT: 0, delayed: [], ghosts: [], hitstop: 0, ghostT: 0, critT: 0, sub: null, subT: 0, beam: null, storm: null, mastery: {},
       boss: null, bossDeath: 0, plan: null, planT: 0, planI: 0, pause: 0, banner: '', bannerT: 0, shake: 0, flash: 0, hurt: 0, ended: false
     };
   }
@@ -124,7 +124,7 @@
     for (const e of targets) { if (e === skip || e.hp <= 0) continue; const reach = radius + (e.type === 'boss' ? 46 : e.r); if ((e.x - x) ** 2 + (e.y - y) ** 2 < reach * reach) damageEnemy(e, damage); }
     ring(x, y, radius, color); if (!reduced && G.blasts.length < 30) G.blasts.push({ x, y, color, r: radius * 1.1, life: .28 }); sparks(x, y, color, 6, 0, Math.PI, 260);
   }
-  function dropGems(x, y, count) { for (let i = 0; i < count && G.gems.length < 90; i += 1) G.gems.push({ x, y, vx: rand(-110, 110), vy: rand(-150, -20), age: 0 }); }
+  function dropGems(x, y, count) { for (let i = 0; i < count && G.gems.length < 90; i += 1) G.gems.push({ x, y, vx: rand(-90, 90), vy: rand(-90, 90), age: rand(0, .12) }); }
 
   function killEnemy(e) {
     G.kills += 1; G.chain += 1; G.chainT = 2.6; G.bestChain = Math.max(G.bestChain, G.chain);
@@ -421,10 +421,12 @@
     for (const a of G.arcs) a.life -= dt; G.arcs = G.arcs.filter(a => a.life > 0);
 
     // 보석과 아이템
+    // 점수 조각: 잠깐 흩어졌다가 화면 왼쪽 위 점수판으로 날아가 점수가 된다. 기체 쪽으로 오지 않으니 탄과 헷갈리지 않는다.
+    G.scorePop = Math.max(0, G.scorePop - dt);
     for (const gem of G.gems) {
       gem.age += dt;
-      if (gem.age < .35) { gem.x += gem.vx * dt; gem.y += gem.vy * dt; gem.vy += 300 * dt; }
-      else { const dx = p.x - gem.x, dy = p.y - gem.y, d = Math.hypot(dx, dy) || 1, v = 380 + gem.age * 500; gem.x += dx / d * v * dt; gem.y += dy / d * v * dt; if (d < 18) { gem.dead = true; G.score += Math.round(50 * C.chainMultiplier(G.chain)); sfx('gem'); if (!reduced && G.particles.length < 260) G.particles.push({ x: p.x + rand(-10, 10), y: p.y + rand(-10, 10), vx: rand(-30, 30), vy: rand(-110, -50), life: .25, color: '#fde047', size: 2 }); } }
+      if (gem.age < .4) { gem.x += gem.vx * dt; gem.y += gem.vy * dt; gem.vx *= 1 - dt * 3; gem.vy *= 1 - dt * 3; }
+      else { const dx = 46 - gem.x, dy = 20 - gem.y, d = Math.hypot(dx, dy) || 1, v = 260 + (gem.age - .4) * 1500; gem.x += dx / d * Math.min(d, v * dt); gem.y += dy / d * Math.min(d, v * dt); if (d < 14) { gem.dead = true; G.score += Math.round(50 * C.chainMultiplier(G.chain)); G.scorePop = .15; sfx('gem'); } }
     }
     G.gems = G.gems.filter(gem => !gem.dead);
     const reach = 80 * (G.owned.magnet ? 2 : 1);
@@ -662,7 +664,7 @@
       ctx.restore();
     }
     ctx.textBaseline = 'top'; ctx.textAlign = 'left';
-    ctx.fillStyle = '#f8fafc'; ctx.font = 'bold 20px system-ui, sans-serif'; ctx.fillText(G.score.toLocaleString('en-US'), 12, 9);
+    ctx.fillStyle = G.scorePop > 0 ? '#fde68a' : '#f8fafc'; ctx.font = `bold ${G.scorePop > 0 && !reduced ? 22 : 20}px system-ui, sans-serif`; ctx.fillText(G.score.toLocaleString('en-US'), 12, 9);
     if (G.chain > 1) {
       const fresh = clamp(G.chainT / 2.6, 0, 1), pop = reduced ? 0 : Math.max(0, fresh - .9) * 60;
       ctx.font = `bold ${Math.round(14 + pop)}px system-ui, sans-serif`; ctx.fillStyle = G.chain >= 20 ? '#fb923c' : '#fcd34d';
@@ -709,7 +711,15 @@
     if (!G) return;
     ctx.save();
     if (G.shake > 0) ctx.translate(rand(-G.shake, G.shake) * .5, rand(-G.shake, G.shake) * .5);
-    G.gems.forEach(gem => { glow(gem.x, gem.y, '#fde047', 9, .8); ctx.save(); ctx.translate(gem.x, gem.y); ctx.rotate(Math.PI / 4 + (reduced ? 0 : gem.age * 6)); ctx.fillStyle = '#fef9c3'; ctx.fillRect(-3, -3, 6, 6); ctx.restore(); });
+    // 점수 조각은 작고 옅은 금색 별로 그린다. 탄보다 흐리고, 점수판에 가까워질수록 작아진다.
+    ctx.save(); ctx.fillStyle = '#fde68a';
+    G.gems.forEach(gem => {
+      const fly = clamp((gem.age - .4) / .5, 0, 1), size = 4.5 - fly * 2, spin = reduced ? 0 : gem.age * 3;
+      ctx.globalAlpha = .75 - fly * .3; ctx.beginPath();
+      for (let i = 0; i < 8; i += 1) { const a = spin + i * Math.PI / 4, r = i % 2 ? size * .4 : size; ctx[i ? 'lineTo' : 'moveTo'](gem.x + Math.cos(a) * r, gem.y + Math.sin(a) * r); }
+      ctx.closePath(); ctx.fill();
+    });
+    ctx.restore();
     G.items.forEach(drawItem);
     if (!reduced) { ctx.save(); ctx.globalAlpha = .3; ctx.lineCap = 'round'; ctx.globalCompositeOperation = 'lighter'; G.shots.forEach(s => { ctx.strokeStyle = s.color; ctx.lineWidth = Math.max(1.5, s.r * .7); ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(s.x - s.vx * .035, s.y - s.vy * .035); ctx.stroke(); }); ctx.restore(); }
     if (G.beam) {
