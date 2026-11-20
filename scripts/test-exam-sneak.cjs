@@ -30,6 +30,13 @@ assert.equal(PERIODS.length,4);assert(PERIODS.every(p=>p.q===15));assert.deepEqu
  const c=begin();c.susp=95;watch(c);c.setInput('ai',true);const ev2=run(c,12);assert.equal(c.phase,'caught');assert(ev2.some(e=>e.type==='caught'));
  const before=c.timeLeft;run(c,1);assert.equal(c.timeLeft,before,'caught freezes the rules');}
 
+// Excuses: offered when the stare starts, one try per stare; a good one cools suspicion, a bad one heats it, holding the pen ruins it.
+{let ok=0,bad=0,held=0;for(let seed=1;seed<=120;seed++){const g=begin({seed});g.susp=BASE.warnAt+5;run(g,.1);let n=0;while(!g.excuse&&n++<1500)g.step(1/60);assert(g.excuse&&g.excuse.options.length===3&&new Set(g.excuse.options).size===3,'three different excuses');
+  assert.equal(g.chooseExcuse('nope'),null);if(seed%2)g.devT=1;const before=g.susp,r=g.chooseExcuse(g.excuse.options[0]);assert(r&&typeof r.line==='string'&&r.line.length>0);assert.equal(g.chooseExcuse(g.excuse.options[1]),null,'one try');
+  assert(r.ok?g.susp<before:g.susp>before);assert(g.staff[0].sayT>0&&g.staff[0].say===r.line);if(seed%2){if(r.ok)held++;}else if(r.ok)ok++;else bad++;}
+ assert(ok>12&&bad>12,`mixed outcomes ${ok}/${bad}`);assert(held<ok,'excuses rarely work with the pen in hand');
+ const g=begin();g.staff[0].state='scan';g.staff[0].t=5;run(g,.1);assert(Object.values(E.LINES).every(a=>a.length>=2));}
+
 // Back-turned proctor right next to me still notices a buzzing pen unless it is silenced.
 {const g=begin();const s=g.staff[0];s.state='walk';s.path=[[PLAYER.x+40,PLAYER.y]];s.x=PLAYER.x+40;s.y=PLAYER.y;s.dir=0;g.setInput('ai',true);run(g,.6);assert(g.susp>0,'noticed up close');
  const q=begin();q.perks.silent=true;const t=q.staff[0];t.state='glance';t.t=999;t.x=PLAYER.x+40;t.y=PLAYER.y;t.dir=0;q.setInput('ai',true);run(q,.6);assert.equal(q.susp,0,'silent mode');}

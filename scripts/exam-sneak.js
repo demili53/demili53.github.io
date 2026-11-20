@@ -52,6 +52,8 @@ function showResult(){
  else if(s.grade<=1){kicker='PERFECT(?) CRIME';title='AI 덕분에 1등급… 양심은 9등급';}
  else if(s.grade<=3){kicker='ESCAPED · 무사 탈출';title=`${grade(s.grade)}, 아무도 눈치채지 못했다`;}
  else{kicker='ESCAPED · 무사 탈출';title=`안 들켰지만 ${grade(s.grade)}… AI도 공부가 필요했다`;}
+ const heads=caught?['[속보] 18번 수험생 소매에서 "분석 중…" 뜨는 볼펜 발견','[단독] "빛나는 지우개"라던 물건, 알고 보니 AI','[속보] 감독관 "와이파이 잡히는 지우개는 처음 봤다"']:s.aiShare<.1?['[미담] AI 볼펜 들고 들어가 연필로만 푼 수험생, 볼펜은 왜 샀나','[화제] "그냥 찍었는데요" 18번 수험생의 배짱']:s.grade<=2?['[속보] 18번 수험생, 감독관 눈앞에서 고득점… 감독관 "성실해 보였다"','[단독] 시험장 최고 연기상, 18번 수험생 수상']:['[속보] AI 볼펜 "저도 잘 몰라요"… 18번 수험생 망연자실','[화제] 안 들키는 데는 성공, 점수는 실패'];
+ $('resultHeadline').textContent=heads[Math.floor(Math.random()*heads.length)];
  $('resultKicker').textContent=kicker;$('resultTitle').textContent=title;
  const stats=[['정답',`${s.correct}/${caught?g.P.q*C.PERIODS.length:s.total}`],['예상 등급',caught?'0점 처리':grade(s.grade)],['점수',caught?'무효':s.score.toLocaleString('ko-KR')],['책상 확인',`${s.checks}회`],['AI 사용',`${Math.round(s.aiShare*100)}%`],['도달',`${g.period+1}교시`]];
  $('resultStats').innerHTML=stats.map(([k,v])=>`<div><small>${k}</small><b>${v}</b></div>`).join('');
@@ -69,15 +71,16 @@ function handle(e){
   case 'periodStart':show(null);log(`🔔 ${e.name} 시작!`);beep(880,.15,'sine');break;
   case 'look':beep(520,.05);break;
   case 'check':log(`😨 ${e.who}이(가) 내 자리로 온다! 기기를 숨기고 시치미!`);beep(300,.2,'sawtooth',.06);break;
-  case 'stare':log(`👁️ ${e.who}: "……" (뚫어지게 본다)`);break;
+  case 'stare':log(`👁️ ${e.who}이(가) 뚫어지게 본다! 빨리 변명을 골라라 (1·2·3).`);beep(260,.15,'square',.05);break;
+  case 'excuse':log(`🗣️ 나: ${e.text}`);log(`${e.ok?'😌':'😬'} 감독관: "${e.line}"`);beep(e.ok?880:200,.15,e.ok?'sine':'sawtooth',.05);break;
   case 'stareEnd':log(`😮‍💨 ${e.who}이(가) 돌아갔다.`);break;
   case 'event':log(e.text);beep(440,.1,'triangle');break;
   case 'sneeze':log('🤧 "에취!" 감독관이 옆자리를 쳐다본다.');break;
-  case 'answer':if(e.method==='ai'&&Math.random()<.3)log(`🤖 AI: "정답은 ${A.ANS[e.mark-1]}번입니다. 확신 ${90+Math.floor(Math.random()*10)}%."`);beep(e.method==='ai'?1200:700,.03,'sine',.03);break;
+  case 'answer':{const m=A.ANS[e.mark-1];if(e.method==='ai'&&Math.random()<.45){const l=[`정답은 ${m}번입니다. 확신 ${90+Math.floor(Math.random()*10)}%.`,`정답은 ③… 아니 ④… 최종 답변 ${m}번.`,`저는 언어 모델이라 수학은 좀… 일단 ${m}번.`,`이 문제의 정답은 '사랑'입니다. (객관식인데?)`,`좋은 질문이에요! 정답은 ${m}번입니다 😊`,`${m}번. 출처: 제 느낌.`,`잠시만요, 업데이트를 설치하는 중… 끝! ${m}번.`,`광고 시청 후 정답이 공개됩니다… 농담이에요. ${m}번.`];log('🤖 AI: "'+l[Math.floor(Math.random()*l.length)]+'"');}else if(e.method==='honest'&&Math.random()<.35)log(['✍️ 직접 풀었다. 이게 맞나…? (자신감 12%)','✍️ 연필 굴리기 신공… 아니 직접 풀었다.','✍️ 머리를 쥐어짜 냈다. 뇌가 뜨겁다.'][Math.floor(Math.random()*3)]);}beep(e.method==='ai'?1200:700,.03,'sine',.03);break;
   case 'allDone':log('✅ 답안지를 다 채웠다! 남은 시간은 보너스.');break;
   case 'battery':log('🪫 AI 볼펜 배터리가 바닥났다.');break;
   case 'periodEnd':log(`📄 ${C.PERIODS[e.period].name} 답안지 제출.`);releaseAll();break;
-  case 'caught':log('🚨 "수험생, 손에 든 거 뭐예요?"');beep(180,.5,'sawtooth',.08);releaseAll();ui.caughtT=1.4;break;
+  case 'caught':log(['🚨 "수험생, 손에 든 거 뭐예요?"','🚨 "지우개가 말을 하네요?"','🚨 AI: "부정행위가 감지되었습니다" (…너 말고!)'][Math.floor(Math.random()*3)]);beep(180,.5,'sawtooth',.08);releaseAll();ui.caughtT=1.4;break;
  }
 }
 
@@ -89,12 +92,18 @@ for(const [id,k] of Object.entries(holds)){const b=$(id);b.dataset.hold=k;
  b.addEventListener('pointerdown',e=>{e.preventDefault();if(!ui.running||ui.paused)return;try{b.setPointerCapture(e.pointerId);}catch{}setHold(k,true);});
  for(const ev of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>setHold(k,false));
  b.addEventListener('contextmenu',e=>e.preventDefault());}
+// Excuse picker while a proctor stares at my desk.
+let shownExcuse=null;
+function renderExcuse(){const g=ui.game,ex=g&&g.phase==='exam'&&g.excuse&&!g.excuse.used?g.excuse:null;$('excuseBox').hidden=!ex;if(!ex||ex===shownExcuse)return;shownExcuse=ex;
+ $('excuseList').innerHTML='';ex.options.forEach((id,i)=>{const b=document.createElement('button');b.dataset.excuse=id;b.innerHTML=`<i>${i+1}</i>${C.EXCUSES[id].text}`;b.addEventListener('click',()=>pickExcuse(id));$('excuseList').appendChild(b);});}
+function pickExcuse(id){if(ui.game&&!ui.paused)ui.game.chooseExcuse(id);}
 const keyMap={Space:'ai',KeyJ:'ai',KeyS:'solve',KeyK:'solve',KeyD:'act',KeyL:'act'};
 document.addEventListener('keydown',e=>{
  if(e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
  if(e.composedPath&&e.composedPath().some(n=>n.tagName==='SITE-HEADER'))return;
  if(!ui.running)return;
  if(e.code==='KeyP'||e.code==='Escape'){e.preventDefault();pause(!ui.paused);return;}
+ const n=['Digit1','Digit2','Digit3'].indexOf(e.code);if(n>=0&&ui.game?.excuse&&!ui.game.excuse.used){e.preventDefault();pickExcuse(ui.game.excuse.options[n]);return;}
  const k=keyMap[e.code];if(k){e.preventDefault();if(!ui.paused&&!e.repeat)setHold(k,true);}
 });
 document.addEventListener('keyup',e=>{const k=keyMap[e.code];if(k)setHold(k,false);});
@@ -114,6 +123,7 @@ function hud(){
  const sp=Math.round(g.susp);$('suspVal').textContent=sp;$('suspFill').style.width=sp+'%';$('suspFill').className=sp>=C.BASE.warnAt?'hot':sp>=30?'warm':'';
  $('suspMeter').classList.toggle('seen',g.seenNow);
  const bp=Math.round(g.battery/g.batteryMax*100);$('battVal').textContent=Math.round(g.battery);$('battFill').style.width=bp+'%';
+ renderExcuse();
  $('hudScore').textContent=g.score.toLocaleString('ko-KR');
  $('aiBtn').classList.toggle('dead',g.battery<=0||g.jam>0||g.lockDevice>0);
  $('aiState').textContent=g.lockDevice>0?`화장실에 둠 ${Math.ceil(g.lockDevice)}초`:g.jam>0?'전파 점검 중':g.battery<=0?'배터리 0':'Space · 꾹 누르기';

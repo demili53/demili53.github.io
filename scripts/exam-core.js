@@ -42,6 +42,29 @@ const HIDES=[
  {id:'restroom',name:'화장실 휴지통 뒤',risk:.05,note:'걸릴 확률 5% · 3교시 처음 20초 동안 기기 없음'}
 ];
 const GRADES=[96,89,77,60,40,23,11,4,0];
+// Proctor one-liners shown in speech bubbles (comedy only; picked by state).
+const LINES={
+ scan:['흠… 다들 열심히 하는군.','공기에서 AI 냄새가 나는데…','내 눈은 못 속인다.','점심 메뉴 뭐였더라…','누가 볼펜을 쓰다듬고 있지?','커피 한 잔만…'],
+ turn:['방금 뭔가 반짝였는데?','…뒤통수가 따갑네.','누구 지금 웃었어요?'],
+ glance:['흠?','거기 무슨 소리죠?','감기 조심하세요…'],
+ check:['18번 수험생…?','잠깐, 거기 학생.','그 소매, 수상한데?'],
+ stare:['……','그 지우개, 와이파이 잡혀요?','볼펜이 왜 따뜻하죠?','손 좀 보여 줄래요?'],
+ rush:['누구야! 휴대폰!','벨소리 트로트 메들리 누구 거야!'],
+ doze:['음냐… 5분만…','zzz… 정답은 3번…'],
+ listen:['(끄덕끄덕)','(경청)'],
+ peek:['(빼꼼)','…다 보고 있다.']
+};
+// Excuses the player can try while a proctor stares at the desk.
+const EXCUSES={
+ eraser:{text:'"이거 그냥 빛나는 지우개예요."',ok:'요즘 지우개 좋네…',no:'지우개에 "분석 중"이라고 쓰여 있는데요?',p:.5},
+ meditate:{text:'"명상 중이었어요. 마음의 평화…"',ok:'…그래요, 평화롭게 푸세요.',no:'명상은 눈 감고 하죠.',p:.55},
+ allergy:{text:'"꽃가루 알레르기라 손이 떨려서요."',ok:'아, 휴지 줄까요?',no:'여기 꽃 없어요.',p:.45},
+ charm:{text:'"할머니가 주신 합격 부적 볼펜이에요."',ok:'…효도는 좋은 거죠.',no:'부적에 배터리가 왜 있죠?',p:.4},
+ stretch:{text:'"손목 스트레칭이요! 거북목 예방!"',ok:'자세 좋네요.',no:'스트레칭을 소매 속에서 해요?',p:.5},
+ tears:{text:'"(눈물) 지문이 너무 감동적이라…"',ok:'…지문이 좀 슬프긴 하죠.',no:'지금 수학 시간인데요?',p:.45},
+ genius:{text:'"저 원래 천재예요."',ok:'…그래 보이네요.',no:'천재는 소매를 안 봐요.',p:.3},
+ sneeze:{text:'"에…에취! (얼버무리기)"',ok:'건강하세요…',no:'재채기를 눈으로 하네요?',p:.35}
+};
 
 function rng(seed){let s=(seed>>>0)||1;return()=>{s^=s<<13;s>>>=0;s^=s>>17;s^=s<<5;s>>>=0;return s/4294967296;};}
 const clamp=(v,a,b)=>v<a?a:v>b?b:v;
@@ -52,7 +75,7 @@ class ExamGame{
  constructor(o={}){
   this.seed=o.seed??(Date.now()&0xffffff);this.rand=rng(this.seed);this.level=clamp(o.level??1,0,2);this.L=LEVELS[this.level];
   this.period=0;this.perks={};this.batteryMax=BASE.battery;this.battery=BASE.battery;this.results=[];this.score=0;this.checks=0;this.caughtTimes=0;
-  this.events=[];this.input={ai:false,solve:false,act:false};this.time=0;this.phase='intro';this.introT=2.4;this.startSusp=0;this.lockDevice=0;
+  this.excuse=null;this.excuses=0;this.events=[];this.input={ai:false,solve:false,act:false};this.time=0;this.phase='intro';this.introT=2.4;this.startSusp=0;this.lockDevice=0;
   this.setupPeriod();
  }
  emit(type,data={}){this.events.push({type,...data});}
@@ -60,11 +83,11 @@ class ExamGame{
  has(p){return !!this.perks[p];}
  setupPeriod(){
   const P=PERIODS[this.period];this.P=P;this.timeLeft=P.time;this.q=0;this.prog=0;this.part={honest:0,ai:0};this.answers=[];
-  this.susp=this.startSusp;this.startSusp=0;this.devT=0;this.jam=0;this.endT=0;this.periodChecks=0;this.ring=null;this.sneeze=null;this.checkCd=0;this.seenNow=false;this.spotted=0;
+  this.susp=this.startSusp;this.startSusp=0;this.devT=0;this.jam=0;this.endT=0;this.periodChecks=0;this.ring=null;this.sneeze=null;this.checkCd=0;this.excuse=null;this.seenNow=false;this.spotted=0;
   this.staff=P.staff.map((k,i)=>this.makeStaff(k,i));this.schedule=this.makeSchedule();
  }
  makeStaff(kind,i){
-  const s={id:i,kind,dir:Math.PI/2,state:'desk',t:3+this.rand()*3,path:[],sweep:0,bubble:'',tell:0,stare:null};
+  const s={id:i,kind,dir:Math.PI/2,state:'desk',t:3+this.rand()*3,path:[],sweep:0,bubble:'',tell:0,stare:null,say:'',sayT:0,lastState:'desk'};
   if(kind==='chief'){s.x=320;s.y=96;s.name='정감독';}
   else if(kind==='roam'){s.x=AISLES[0];s.y=BACK_Y;s.name='부감독';s.state='walk';s.path=this.patrolPath(s);}
   else{s.x=DOOR.x+30;s.y=DOOR.y;s.dir=Math.PI;s.name='복도 감독';s.state='away';s.t=6+this.rand()*4;}
@@ -117,8 +140,10 @@ class ExamGame{
  moveTo(s,x,y,sp,dt){const dx=x-s.x,dy=y-s.y,d=Math.hypot(dx,dy);if(d<1)return true;const k=Math.min(1,sp*dt/d);s.x+=dx*k;s.y+=dy*k;s.dir=Math.atan2(dy,dx);return d<=sp*dt;}
  turnTo(s,a,rate,dt){const d=angNorm(a-s.dir),m=rate*dt;s.dir=angNorm(s.dir+(Math.abs(d)<=m?d:Math.sign(d)*m));}
  tellTime(){return(this.has('radar')?1.5:.9)*this.L.calm;}
+ say(s,text,t=2.4){s.say=text;s.sayT=t;}
  staffStep(s,dt){
-  const sp=48*this.L.speed*(1+this.period*.06);s.t-=dt;s.bubble='';
+  const sp=48*this.L.speed*(1+this.period*.06);s.t-=dt;s.bubble='';if(s.sayT>0)s.sayT-=dt;
+  if(s.state!==s.lastState){const pool=LINES[s.state];if(pool&&(s.state!=='scan'||this.rand()<.6)&&!(s.sayT>0&&s.state==='stare'))this.say(s,pool[Math.floor(this.rand()*pool.length)]);s.lastState=s.state;}
   switch(s.state){
    case 'desk':s.dir=Math.PI/2;if(s.t<=0){s.state='tell';s.t=this.tellTime();}break;
    case 'tell':s.bubble='!';if(s.t<=0){s.state='scan';s.t=3+this.rand()*2.5;s.sweep=this.rand()*6;this.emit('look',{who:s.name});}break;
@@ -137,9 +162,9 @@ class ExamGame{
    case 'away':s.x=DOOR.x+30;if(s.t<=0){s.state='peektell';s.t=this.tellTime();}break;
    case 'peektell':s.x=DOOR.x+14;s.bubble='!';if(s.t<=0){s.state='peek';s.t=2.5+this.rand()*2;s.x=DOOR.x;s.sweep=0;}break;
    case 'peek':s.sweep+=dt;s.dir=Math.PI+Math.sin(s.sweep*1.3)*.5;s.bubble='👀';if(s.t<=0){s.state='away';s.t=(6+this.rand()*6)*this.L.calm;}break;
-   case 'check':{const tx=AISLES[3],ty=PLAYER.y;s.bubble='?';if(this.moveTo(s,tx,ty,sp*1.25,dt)){s.state='stare';s.t=3.4;this.emit('stare',{who:s.name});}break;}
+   case 'check':{const tx=AISLES[3],ty=PLAYER.y;s.bubble='?';if(this.moveTo(s,tx,ty,sp*1.25,dt)){s.state='stare';s.t=4.2;this.offerExcuse(s);this.emit('stare',{who:s.name});}break;}
    case 'stare':s.bubble='❗';this.turnTo(s,Math.atan2(PLAYER.y-s.y,PLAYER.x-s.x),4,dt);
-    if(s.t<=0){this.susp=Math.max(0,this.susp-22);s.state=s.kind==='chief'?'return':'walk';s.path=s.kind==='roam'?this.patrolPath(s):[];this.emit('stareEnd',{who:s.name});}break;
+    if(s.t<=0){this.excuse=null;this.susp=Math.max(0,this.susp-22);s.state=s.kind==='chief'?'return':'walk';s.path=s.kind==='roam'?this.patrolPath(s):[];this.emit('stareEnd',{who:s.name});}break;
    case 'rush':{const tg=this.ring;if(!tg||s.t<=0){s.state=s.kind==='chief'?'return':(s.kind==='door'?'away':'walk');s.t=4;s.path=s.kind==='roam'?this.patrolPath(s):[];break;}
     if(s.kind==='door'){s.state='away';break;}
     const tx=AISLES[tg.c<2?tg.c:tg.c+1],ty=deskY(tg.r);if(this.moveTo(s,tx,ty,sp*1.6,dt))s.dir=Math.atan2(deskY(tg.r)-s.y,deskX(tg.c)-s.x);s.bubble='💢';break;}
@@ -147,11 +172,19 @@ class ExamGame{
    case 'doze':s.bubble='💤';s.dir=Math.PI/2+.2;if(s.t<=0){s.state='tell';s.t=.6;}break;
   }
  }
+ offerExcuse(s){const ids=Object.keys(EXCUSES),pick=[];while(pick.length<3)pick.push(ids.splice(Math.floor(this.rand()*ids.length),1)[0]);this.excuse={who:s,options:pick,used:false};}
+ chooseExcuse(id){
+  const ex=this.excuse;if(!ex||ex.used||!ex.options.includes(id)||this.phase!=='exam')return null;ex.used=true;this.excuses++;
+  const e=EXCUSES[id],s=ex.who,holding=this.devT>0;let p=e.p*(this.has('actor')?1.3:1);if(holding)p*=.3;if(id==='tears'&&this.P.name==='국어')p=.85;if(id==='tears'&&this.P.name==='수학')p=.05;
+  const ok=this.rand()<p,line=ok?e.ok:holding?'그럼 지금 손에 든 건요?':id==='tears'&&this.P.name!=='수학'?'눈물이 한 방울도 안 났는데요?':e.no;this.say(s,line,2.8);
+  if(ok){this.susp=Math.max(0,this.susp-30);s.t=Math.min(s.t,.9);}else this.susp=Math.min(99,this.susp+18);
+  this.emit('excuse',{id,ok,line,text:e.text});return{ok,line};
+ }
  fireEvent(ev){
   const staff=this.staff;
   switch(ev.type){
    case 'phone':{const seats=[];for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(!(r===SEAT.r&&c===SEAT.c)&&(Math.abs(r-SEAT.r)+Math.abs(c-SEAT.c))>1)seats.push({r,c});
-    this.ring=seats[Math.floor(this.rand()*seats.length)];this.ring.t=7;staff.forEach(s=>{if(s.state!=='stare'&&s.state!=='check'){s.state='rush';s.t=7;}});this.emit('event',{kind:'phone',text:'📱 누군가의 휴대폰이 울렸다! 감독관들이 그쪽으로 달려간다.'});break;}
+    this.ring=seats[Math.floor(this.rand()*seats.length)];this.ring.t=7;staff.forEach(s=>{if(s.state!=='stare'&&s.state!=='check'){s.state='rush';s.t=7;}});this.emit('event',{kind:'phone',text:'📱 "♪ 뽕짝 트로트 메들리 ♪" 누군가의 휴대폰이 울렸다! 감독관들이 달려간다.'});break;}
    case 'announce':staff.forEach(s=>{if(s.state!=='stare'&&s.state!=='check'){s.state='listen';s.t=3.6;}});this.emit('event',{kind:'announce',text:'🔊 "종료 시각을 알려 드립니다…" 모두 스피커를 본다.'});break;
    case 'doze':{const c=staff.find(s=>s.kind==='chief');if(c&&(c.state==='desk'||c.state==='tell')){c.state='doze';c.t=5;this.emit('event',{kind:'doze',text:'💤 정감독이 꾸벅꾸벅 존다.'});}else this.fireEvent({type:'announce'});break;}
    case 'jam':this.jam=7;this.emit('event',{kind:'jam',text:'📡 전파 점검 중! 잠시 AI가 연결되지 않는다.'});break;
@@ -239,5 +272,5 @@ class ExamGame{
  }
 }
 
-return{W,H,COLS,ROWS,SEAT,PLAYER,AISLES,FRONT_Y,BACK_Y,DOOR,SPEAKER,PERIODS,LEVELS,BASE,PERKS,HIDES,deskX,deskY,gradeOf,angNorm,ExamGame};
+return{LINES,EXCUSES,W,H,COLS,ROWS,SEAT,PLAYER,AISLES,FRONT_Y,BACK_Y,DOOR,SPEAKER,PERIODS,LEVELS,BASE,PERKS,HIDES,deskX,deskY,gradeOf,angNorm,ExamGame};
 });

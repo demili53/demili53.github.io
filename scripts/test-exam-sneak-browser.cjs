@@ -27,6 +27,10 @@ const root=path.resolve(__dirname,'..'),results=path.resolve(root,process.env.EX
   // Mobile-style hold on the honest button.
   const before=await page.evaluate(()=>examUI.game.prog+examUI.game.q);await page.locator('#solveBtn').scrollIntoViewIfNeeded();const sb=await page.locator('#solveBtn').boundingBox();await page.mouse.move(sb.x+sb.width/2,sb.y+sb.height/2);await page.mouse.down();await page.evaluate(()=>examUI.step(60*2));await page.mouse.up();
   assert(await page.evaluate(b=>examUI.game.prog+examUI.game.q>b,before),'honest solving progresses');
+  // A staring proctor opens the excuse picker; key 1 answers it and the proctor replies.
+  await page.evaluate(()=>{const g=examUI.game,s=g.staff[0];s.state='check';s.x=380;s.y=g.staff[0].y;g.checkCd=99;examUI.step(60*9);});await page.waitForSelector('#excuseBox:not([hidden])');assert.equal(await page.locator('#excuseList button').count(),3);await page.screenshot({path:path.join(results,'exam-sneak-excuse.png')});
+  await page.keyboard.press('Digit1');await page.evaluate(()=>examUI.step(2));await page.waitForSelector('#excuseBox',{state:'hidden'});{const d=await page.evaluate(()=>[examUI.game.excuses,examUI.game.staff[0].sayT,examUI.game.staff[0].state,examUI.game.phase,examUI.paused]);assert(d[0]===1&&d[1]>0,JSON.stringify(d));}await page.screenshot({path:path.join(results,'exam-sneak-reply.png')});
+  await page.evaluate(()=>{const g=examUI.game;g.susp=0;examUI.step(60*6);for(const s of g.staff){s.state='desk';s.t=999;s.x=320;s.y=96;}});
   // Pause freezes the clock.
   await page.keyboard.press('p');assert(await page.locator('#pauseView').isVisible());const t0=await page.evaluate(()=>examUI.game.timeLeft);await page.waitForTimeout(250);assert.equal(await page.evaluate(()=>examUI.game.timeLeft),t0);await page.click('#resumeBtn');
   // End of period: perk choice, then period 2 with a roaming proctor.
@@ -38,7 +42,7 @@ const root=path.resolve(__dirname,'..'),results=path.resolve(root,process.env.EX
   // Period 3 → 4 → results with stored best score.
   await page.evaluate(()=>{examUI.game.timeLeft=.01;examUI.step(2);});await page.locator('#perkList .es-perk').first().click();await page.evaluate(()=>examUI.step(60*3));
   assert.equal(await page.evaluate(()=>examUI.game.staff.length),3);await calm(page);await page.evaluate(()=>{const g=examUI.game;g.staff[2].state='peek';g.staff[2].x=g.staff[2].x-30;g.staff[2].t=999;examUI.step(30);});await page.screenshot({path:path.join(results,'exam-sneak-period4.png')});
-  await page.evaluate(()=>{examUI.game.timeLeft=.01;examUI.step(2);});await page.waitForSelector('#resultView:not([hidden])');assert.equal(await page.locator('#resultStats>div').count(),6);assert.equal(await page.locator('#resultSubjects li').count(),4);
+  await page.evaluate(()=>{examUI.game.timeLeft=.01;examUI.step(2);});await page.waitForSelector('#resultView:not([hidden])');assert.equal(await page.locator('#resultStats>div').count(),6);assert.equal(await page.locator('#resultSubjects li').count(),4);assert.match(await page.locator('#resultHeadline').textContent(),/^\[/);
   assert(Number(await page.evaluate(()=>localStorage.getItem('examSneakBest')))>0);await page.screenshot({path:path.join(results,'exam-sneak-result.png')});
   // Getting caught ends the run without a best score.
   await page.click('#retryBtn');await page.evaluate(()=>examUI.step(60*3));await page.evaluate(()=>{examUI.game.susp=99.9;examUI.game.devT=1;const s=examUI.game.staff[0];s.state='scan';s.t=999;s.sweep=0;s.dir=Math.PI/2;});await page.keyboard.down('Space');await page.evaluate(()=>examUI.step(30));await page.keyboard.up('Space');
