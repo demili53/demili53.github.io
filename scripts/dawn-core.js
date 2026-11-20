@@ -1,4 +1,4 @@
-/* 새벽의 요새 — 규칙 엔진. 화면과 무관한 순수 로직이며 Node와 브라우저에서 같은 파일을 씁니다. */
+/* 랜덤타워디펜스 — 규칙 엔진. 화면과 무관한 순수 로직이며 Node와 브라우저에서 같은 파일을 씁니다. */
 (function (root, factory) {
   const api = factory();
   if (typeof module === 'object' && module.exports) module.exports = api; else root.Dawn = api;

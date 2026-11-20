@@ -1,4 +1,4 @@
-// 새벽의 요새 규칙 엔진 테스트. 실행: node scripts/test-dawn-bastion.cjs
+// 랜덤타워디펜스 규칙 엔진 테스트. 실행: node scripts/test-dawn-bastion.cjs
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');

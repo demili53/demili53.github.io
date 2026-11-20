@@ -1,4 +1,4 @@
-/* 새벽의 요새 — 그림. 전장 배경, 타워, 적 스프라이트를 캔버스에 미리 그려 둡니다. */
+/* 랜덤타워디펜스 — 그림. 전장 배경, 타워, 적 스프라이트를 캔버스에 미리 그려 둡니다. */
 (function (root) {
   'use strict';
   const D = root.Dawn, TAU = Math.PI * 2, ART_SCALE = 2;

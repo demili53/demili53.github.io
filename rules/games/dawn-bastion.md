@@ -1,5 +1,5 @@
 
-# 새벽의 요새 (랜덤 합성 디펜스)
+# 랜덤타워디펜스 (랜덤 합성 디펜스)
 
 - 메인 경로: `/`, 구현: `index.html`, 게임 ID: `dawn-bastion`. 이전 `/arcade/dawn-bastion.html`은 메인으로 이동합니다.
 - 2026-11-20에 코드를 전부 걷어내고 새로 만들었습니다. Phaser를 쓰지 않고 Canvas 2D로 직접 그립니다. 예전 `BastionGame`·`MergeGame`과 `scripts/bastion-*.js`는 더 이상 없습니다(이전 코드는 git 기록에 있음).

@@ -1,4 +1,4 @@
-/* 새벽의 요새 — 화면. 규칙 엔진의 상태를 Canvas 2D로 그립니다. 게임 규칙은 건드리지 않습니다. */
+/* 랜덤타워디펜스 — 화면. 규칙 엔진의 상태를 Canvas 2D로 그립니다. 게임 규칙은 건드리지 않습니다. */
 (function (root) {
   'use strict';
   const D = root.Dawn, Art = root.DawnArt, TAU = Math.PI * 2, { circle, ellipse, poly, rounded, linear, radial } = Art.helpers, { alpha, tone } = Art;

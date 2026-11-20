@@ -1,4 +1,4 @@
-// 새벽의 요새 브라우저 테스트. Playwright가 NODE_PATH에 있어야 합니다: node scripts/test-dawn-bastion-browser.cjs
+// 랜덤타워디펜스 브라우저 테스트. Playwright가 NODE_PATH에 있어야 합니다: node scripts/test-dawn-bastion-browser.cjs
 const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
