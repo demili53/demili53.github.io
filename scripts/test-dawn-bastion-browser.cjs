@@ -1,4 +1,4 @@
-// Browser checks for the random merge defense on the main page. Run with Playwright on NODE_PATH.
+// 새벽의 요새 브라우저 테스트. Playwright가 NODE_PATH에 있어야 합니다: node scripts/test-dawn-bastion-browser.cjs
 const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -12,7 +12,7 @@ const root = path.resolve(__dirname, '..');
     const file = path.resolve(root, '.' + (pathname.endsWith('/') ? pathname + 'index.html' : pathname));
     if (!file.startsWith(root + path.sep)) { res.writeHead(403); res.end(); return; }
     const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.json': 'application/json', '.xml': 'application/xml' };
-    try { res.setHeader('Content-Type', types[path.extname(file)] || 'application/octet-stream'); res.end(fs.readFileSync(file)); }
+    try { const body = fs.readFileSync(file); res.setHeader('Content-Type', types[path.extname(file)] || 'application/octet-stream'); res.end(body); }
     catch { res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' }); res.end('not found'); }
   });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
@@ -20,80 +20,101 @@ const root = path.resolve(__dirname, '..');
   let browser;
   try {
     browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_EXECUTABLE_PATH ? { executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH } : {}) });
-    const page = await browser.newPage({ viewport: { width: 1280, height: 1000 }, hasTouch: true });
-    const errors = [];
+    const page = await browser.newPage({ viewport: { width: 1280, height: 1000 } });
+    const errors = [], scores = [], requested = [];
     page.on('pageerror', error => errors.push(error.message));
-    await page.route(/googletagmanager|googlesyndication|google-analytics/, route => route.abort());
+    page.on('request', request => requested.push(request.url()));
+    await page.route(/googletagmanager|googlesyndication|google-analytics|gstatic|googleapis/, route => route.abort());
     await page.route('**/scripts/firebase-client.js', route => route.fulfill({ contentType: 'text/javascript', body: 'export const app={},auth={currentUser:null},authReady=Promise.resolve();export function onAuthStateChanged(a,cb){queueMicrotask(()=>cb(null));return()=>{}}export async function signOut(){}' }));
     await page.route('**/scripts/firebase-game-ranking.js*', route => route.fulfill({ contentType: 'text/javascript', body: 'export function initializeGameRanking(){}' }));
+    await page.exposeFunction('reportScore', detail => scores.push(detail));
+    await page.addInitScript(() => addEventListener('partygame:score', event => window.reportScore(event.detail)));
     await page.goto(base + '/');
-    await page.waitForFunction(() => ready);
-    const cell = async index => page.evaluate(i => { const r = canvas.getBoundingClientRect(), s = game.slots[i]; return { x: r.left + s.x / SIZE * r.width, y: r.top + s.y / SIZE * r.height }; }, index);
-    const frame = () => page.evaluate(() => canvas.toDataURL());
+    await page.waitForFunction(() => typeof ready !== 'undefined' && ready);
 
-    // Simplified shell: one heading, three main actions, no legacy mode pickers.
-    assert.equal(await page.locator('link[rel="canonical"]').getAttribute('href'), 'https://partygame.pe.kr/');
-    assert.equal(await page.locator('h1').count(), 1);
-    for (const id of ['stageSelect', 'mapSelect', 'modeSelect', 'guardianSelect', 'loadoutSelect', 'buildPanel']) assert.equal(await page.locator('#' + id).count(), 0, id);
-    assert.equal(await page.locator('.actions button').count(), 3);
-    assert(await page.locator('#summon').isDisabled());
-    assert.equal(await page.evaluate(() => Object.keys(app.textures.list).filter(k => k.startsWith('bastion-elite-')).length), 40);
+    // 예전 엔진과 Phaser를 더는 불러오지 않는다
+    assert.ok(!requested.some(url => /phaser|bastion-/.test(url)), '예전 스크립트 요청 없음');
+    assert.equal(await page.evaluate(() => typeof Phaser), 'undefined');
+    assert.equal(await page.locator('#start').textContent(), '게임 시작');
+    assert.equal(await page.locator('#summon').isDisabled(), true);
+    assert.equal(await page.locator('#towerCodex li').count(), 7);
+    assert.equal(await page.locator('#tierLegend span').count(), 6);
 
-    // Start, then summon with the button and with the keyboard.
+    // 시작과 소환
     await page.click('#start');
-    assert.equal(await page.evaluate(() => game.state), 'running'); assert(await page.locator('#overlay').isHidden());
-    await page.evaluate(() => { game.spawnClock = 1000; });
-    await page.click('#summon'); assert.equal(await page.evaluate(() => game.slots.filter(s => s.tower).length), 1); assert.equal(await page.locator('#gold').textContent(), '80');
+    assert.equal(await page.evaluate(() => game.state), 'running');
+    assert.equal(await page.locator('#overlay').isHidden(), true);
+    await page.click('#summon');
+    assert.equal(await page.evaluate(() => game.cells.filter(c => c.tower).length), 1);
+    assert.equal(await page.locator('#gold').textContent(), '80');
     assert.equal(await page.locator('#summonCost').textContent(), '24 에테르');
-    await page.locator('#gameCanvas').focus(); await page.keyboard.press('Space'); assert.equal(await page.evaluate(() => game.slots.filter(s => s.tower).length), 2);
+    await page.keyboard.press('Space');
+    assert.equal(await page.evaluate(() => game.cells.filter(c => c.tower).length), 2);
 
-    // Drag one tower onto its twin to merge; drag to an empty cell to move; tap-tap also merges.
-    await page.evaluate(() => { for (const s of game.slots) s.tower = null; game.place(0, 'arrow', 1); game.place(1, 'arrow', 1); game.place(2, 'frost', 2); game.place(3, 'frost', 2); sync(); });
-    assert((await page.locator('#selection').textContent()).includes('합칠 수 있는'));
-    let from = await cell(0), to = await cell(1);
-    await page.mouse.move(from.x, from.y); await page.mouse.down(); await page.mouse.move((from.x + to.x) / 2, (from.y + to.y) / 2, { steps: 4 }); await page.mouse.move(to.x, to.y, { steps: 4 }); await page.mouse.up();
-    assert.deepEqual(await page.evaluate(() => [game.slots[0].tower, game.slots[1].tower.level, game.merges]), [null, 2, 1]);
-    assert((await page.locator('#status').textContent()).startsWith('합성!'));
-    from = await cell(1); to = await cell(8);
-    await page.mouse.move(from.x, from.y); await page.mouse.down(); await page.mouse.move(to.x, to.y, { steps: 6 }); await page.mouse.up();
-    assert.equal(await page.evaluate(() => !game.slots[1].tower && game.slots[8].tower.level), 2);
-    from = await cell(2); to = await cell(3);
-    await page.mouse.click(from.x, from.y); assert.equal(await page.evaluate(() => selected), 2); assert(await page.locator('#sell').isVisible()); assert((await page.locator('#selection').textContent()).includes('고급 냉기탑'));
-    await page.mouse.click(to.x, to.y); assert.deepEqual(await page.evaluate(() => [game.slots[2].tower, game.slots[3].tower.level, game.merges]), [null, 3, 2]);
-    await page.click('#sell'); assert.equal(await page.evaluate(() => game.slots[3].tower), null); assert(await page.locator('#sell').isHidden());
+    // 화면에 실제로 그려진다
+    const painted = await page.evaluate(() => { const c = document.getElementById('gameCanvas'), d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; const seen = new Set(); for (let i = 0; i < d.length; i += 4 * 97) seen.add(d[i] >> 4 << 8 | d[i + 1] >> 4 << 4 | d[i + 2] >> 4); return seen.size; });
+    assert.ok(painted > 60, '전장이 그려짐: ' + painted);
 
-    // Amplify, speed toggle, settings and pause freeze.
-    await page.evaluate(() => { game.gold = 120; sync(); }); await page.click('#amplify'); assert.equal(await page.evaluate(() => game.perks.overcharge), 1); assert.equal(await page.locator('#amplifyCost').textContent(), '180 에테르');
-    await page.click('#battleSpeed'); assert.equal(await page.locator('#battleSpeed').textContent(), '×2'); await page.click('#battleSpeed');
-    await page.click('#settingsToggle'); assert(await page.locator('#settings').isVisible()); await page.locator('#reducedEffects').check(); assert.equal(await page.evaluate(() => localStorage.getItem('dawnBastionReducedEffects')), '1'); await page.locator('#reducedEffects').uncheck(); await page.click('#settingsToggle');
-    await page.evaluate(() => { game.gold = 5000; for (let i = 0; i < 10; i++) game.summon(); game.spawnClock = 0; for (let i = 0; i < 120; i++) game.step(.05); });
-    await page.locator('#gameCanvas').focus(); await page.keyboard.press('p'); assert.equal(await page.evaluate(() => game.state), 'paused'); await page.evaluate(() => { $('overlay').style.display = 'none'; });
-    await page.waitForTimeout(120); const paused = await frame(); await page.waitForTimeout(350); assert.equal(await frame(), paused, 'paused frame must not animate');
-    await page.evaluate(() => { $('overlay').style.display = ''; }); await page.click('#start'); assert.equal(await page.evaluate(() => game.state), 'running');
+    // 끌어서 합성
+    const point = async index => { const box = await page.locator('#gameCanvas').boundingBox(); return page.evaluate(([i, box]) => ({ x: box.x + Dawn.CELLS[i].x / 720 * box.width, y: box.y + Dawn.CELLS[i].y / 720 * box.height }), [index, box]); };
+    await page.evaluate(() => { game.cells.forEach(c => c.tower = null); game.place(0, 'arrow', 1); game.place(5, 'arrow', 1); game.place(3, 'cannon', 2); selected = -1; });
+    let a = await point(0), b = await point(5);
+    await page.mouse.move(a.x, a.y); await page.mouse.down(); await page.mouse.move((a.x + b.x) / 2, (a.y + b.y) / 2, { steps: 4 }); await page.mouse.move(b.x, b.y, { steps: 4 });
+    assert.equal(await page.evaluate(() => drag && drag.over), 5);
+    await page.mouse.up();
+    assert.deepEqual(await page.evaluate(() => [game.cells[0].tower, game.cells[5].tower.tier, game.merges]), [null, 2, 1]);
 
-    // Boss wave: named boss panel, card choice by hotkey, battlefield rotation.
-    await page.evaluate(() => { game.enemies = []; game.wave = 5; game.spawnLimit = 1; game.spawned = 0; game.spawnClock = 0; game.step(.05); const boss = game.enemies.find(e => e.boss); boss.speed = 0; sync(); });
-    assert.equal(await page.locator('#bossName').textContent(), '소환 군주'); assert(await page.locator('#bossPanel').isVisible());
-    await page.locator('#gameCanvas').screenshot({ path: path.join(root, 'test-results/dawn-merge-boss.png') });
-    await page.evaluate(() => { game.enemies = []; game.waveTime = 99; game.step(.05); sync(); });
-    assert.equal(await page.evaluate(() => game.state), 'reward'); assert.equal(await page.locator('#rewardChoices button').count(), 3); assert(await page.locator('#start').isHidden());
-    await page.keyboard.press('2'); assert.equal(await page.evaluate(() => game.state), 'running'); assert.equal(await page.evaluate(() => game.map), 'canyon'); assert.equal(await page.locator('#wave').textContent(), '6');
-    await page.waitForTimeout(150); assert.equal(await page.evaluate(() => lastMap), 'canyon');
+    // 눌러서 고르고 빈 칸을 눌러 이동, 판매
+    a = await point(3); b = await point(10);
+    await page.mouse.click(a.x, a.y);
+    assert.equal(await page.evaluate(() => selected), 3);
+    assert.match(await page.locator('#selection').textContent(), /고급 폭발탑/);
+    assert.equal(await page.locator('#sell').isVisible(), true);
+    await page.mouse.click(b.x, b.y);
+    assert.deepEqual(await page.evaluate(() => [game.cells[3].tower, game.cells[10].tower.type, selected]), [null, 'cannon', -1]);
+    await page.mouse.click(b.x, b.y); await page.keyboard.press('x');
+    assert.equal(await page.evaluate(() => game.cells[10].tower), null);
 
-    // Defeat stores the local record and reports the score once.
-    await page.evaluate(() => { window.reported = []; addEventListener('partygame:score', e => reported.push(e.detail)); game.score = 4321; game.core = 0; game.step(.05); sync(); });
-    assert((await page.locator('#overlayTitle').textContent()).includes('6웨이브')); assert.equal(await page.evaluate(() => localStorage.getItem('dawnMergeWave')), '6'); assert.equal(await page.evaluate(() => localStorage.getItem('dawnMergeBest')), '4321');
-    await page.waitForTimeout(250); assert.deepEqual(await page.evaluate(() => reported), [{ gameId: 'dawn-bastion', score: 4321, wave: 6 }]);
-    await page.reload(); await page.waitForFunction(() => ready); assert((await page.locator('#bestRecord').textContent()).includes('6웨이브'));
+    // 길에 닿지 않는 타워 경고
+    await page.evaluate(() => { game.place(5, 'frost', 1); selected = 5; sync(); });
+    assert.match(await page.locator('#selection').textContent(), /길에 닿지 않습니다/);
 
-    // Phone layout: no horizontal scroll, actions reachable right under the board, touch drag merges.
-    await page.setViewportSize({ width: 390, height: 844 }); await page.click('#start');
-    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
-    const board = await page.locator('#gameCanvas').boundingBox(), summon = await page.locator('#summon').boundingBox(); assert(Math.abs(board.width - board.height) < 2); assert(summon.height >= 44); assert(summon.y + summon.height < 844, 'summon button visible without scrolling');
-    await page.evaluate(() => { game.spawnClock = 1000; game.place(4, 'cannon', 1); game.place(5, 'cannon', 1); sync(); });
-    await page.locator('#gameCanvas').screenshot({ path: path.join(root, 'test-results/dawn-merge-mobile.png') });
-    assert.equal(errors.length, 0, errors.join('\n'));
-    for (const old of ['/arcade/dawn-bastion.html', '/arcade/']) { await page.goto(base + old); await page.waitForURL(base + '/'); await page.waitForFunction(() => ready); }
-    console.log('PASS: simplified shell, summon, drag/tap merge, move, sell, amplify, pause freeze, boss reward, map rotation, records, score event, phone layout and legacy redirects');
-  } finally { await browser?.close(); server.close(); }
+    // 화력 강화, 섬광, 배속, 일시정지
+    await page.evaluate(() => { game.gold = 500; game.spawn('grunt', 300); selected = -1; sync(); });
+    await page.click('#amplify'); assert.equal(await page.evaluate(() => game.amplified), 1);
+    await page.click('#flash'); assert.equal(await page.evaluate(() => game.flashCd > 29), true); assert.equal(await page.locator('#flash').isDisabled(), true);
+    await page.click('#battleSpeed'); assert.equal(await page.locator('#battleSpeed').textContent(), '×2');
+    await page.keyboard.press('p');
+    assert.equal(await page.locator('#overlayTitle').textContent(), '일시정지');
+    const frozen = await page.evaluate(() => game.time); await page.waitForTimeout(250); assert.equal(await page.evaluate(() => game.time), frozen);
+    await page.click('#start'); await page.waitForTimeout(250);
+    assert.ok(await page.evaluate(() => game.time) > frozen, '계속하면 시간이 흐른다');
+
+    // 군주 보상
+    await page.evaluate(() => { game.enemies = []; game.wave = 5; game.spawnLimit = game.waveSize(5); game.spawned = game.spawnLimit; });
+    await page.waitForFunction(() => game.state === 'reward');
+    await page.waitForSelector('#rewardChoices button');
+    assert.equal(await page.locator('#rewardChoices button').count(), 3);
+    await page.locator('#rewardChoices button').first().click();
+    assert.equal(await page.evaluate(() => game.state), 'running'); assert.equal(await page.locator('#overlay').isHidden(), true);
+
+    // 패배와 점수 전송, 다시 시작
+    await page.evaluate(() => { game.score = 4321; game.core = 1; game.spawn('grunt', Dawn.TRACK_LENGTH - 1); });
+    await page.waitForFunction(() => game.state === 'lost');
+    await page.waitForFunction(() => document.getElementById('start').textContent === '다시 도전');
+    assert.equal(scores.length, 1); assert.equal(scores[0].gameId, 'dawn-bastion'); assert.equal(scores[0].score, 4321);
+    assert.equal(await page.evaluate(() => localStorage.getItem('dawnMergeBest')), '4321');
+    await page.click('#start');
+    assert.deepEqual(await page.evaluate(() => [game.state, game.wave, game.core]), ['running', 1, 20]);
+
+    // 휴대폰 폭에서도 가로로 넘치지 않고 버튼이 한 줄에 들어간다
+    await page.setViewportSize({ width: 360, height: 760 }); await page.waitForTimeout(200);
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), '가로 넘침 없음');
+    const boxes = await page.evaluate(() => ['summon', 'amplify', 'flash'].map(id => { const r = document.getElementById(id).getBoundingClientRect(); return [Math.round(r.top), Math.round(r.height)]; }));
+    assert.ok(boxes.every(box => box[0] === boxes[0][0] && box[1] >= 44), '행동 버튼 한 줄: ' + JSON.stringify(boxes));
+    assert.ok(await page.evaluate(() => { const c = document.getElementById('gameCanvas'); return c.width >= c.getBoundingClientRect().width; }), '캔버스 해상도');
+
+    assert.deepEqual(errors, []);
+    console.log('dawn bastion browser: ok');
+  } finally { if (browser) await browser.close(); server.close(); }
 })().catch(error => { console.error(error); process.exit(1); });
