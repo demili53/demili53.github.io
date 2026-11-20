@@ -46,6 +46,14 @@ const mode = page => page.evaluate(() => window.__missileRush.mode);
     assert(s.enemies > 0 || s.score > 0, 'enemies arrive');
     await page.screenshot({ path: path.join(out, 'missile-rush-wave1.png') });
 
+    // The mouse steers by hovering: no button is held.
+    { const box = await page.locator('#rushCanvas').boundingBox();
+      await page.mouse.move(box.x + box.width * .2, box.y + box.height * .85); await page.mouse.move(box.x + box.width * .22, box.y + box.height * .85);
+      const left = await page.evaluate(() => window.__missileRush.player());
+      assert(Math.abs(left.x - 480 * .22) < 12, `fleet follows the cursor (${left.x})`);
+      await page.mouse.move(box.x + box.width * .7, box.y + box.height * .85);
+      assert(Math.abs((await page.evaluate(() => window.__missileRush.player())).x - 480 * .7) < 12, 'and keeps following'); }
+
     // Operator gates: each of + − × ÷ changes the fleet size and the firepower with it.
     const power = async () => +(await page.locator('#powerHud').innerText()).replace(/,/g, '');
     await page.evaluate(() => { const m = window.__missileRush; m.hold(); m.setUnits(4); });

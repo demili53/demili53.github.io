@@ -589,11 +589,20 @@
   addEventListener('blur', () => { keys.clear(); setPaused(true); });
   document.addEventListener('visibilitychange', () => { if (document.hidden) setPaused(true); });
   const toField = e => { const r = canvas.getBoundingClientRect(); return { x: (e.clientX - r.left) / r.width * W, y: (e.clientY - r.top) / r.height * H }; };
-  canvas.addEventListener('pointerdown', e => { if (mode !== 'play') return; const q = toField(e); drag = { id: e.pointerId, sx: q.x, sy: q.y, px: S.player.x, py: S.player.y }; canvas.setPointerCapture(e.pointerId); e.preventDefault(); });
+  // The mouse steers by simply moving over the field, no button needed; a finger steers relative to where it
+  // touched down, so the hand never has to cover the fleet. Neither may hop over a gate row.
+  const steerTo = (x, y) => {
+    const p = S.player, y0 = p.y;
+    p.x = x; p.y = y; p.vx = p.vy = 0; clampPlayer();
+    if (S.rows.some(r => !r.dead && r.y > Math.min(y0, p.y) - GATE_H / 2 && r.y < Math.max(y0, p.y) + GATE_H / 2)) p.y = y0;
+  };
+  canvas.addEventListener('pointerdown', e => { if (mode !== 'play') return; if (e.pointerType === 'mouse') { e.preventDefault(); return; } const q = toField(e); drag = { id: e.pointerId, sx: q.x, sy: q.y, px: S.player.x, py: S.player.y }; canvas.setPointerCapture(e.pointerId); e.preventDefault(); });
   canvas.addEventListener('pointermove', e => {
-    if (!drag || drag.id !== e.pointerId || mode !== 'play') return;
-    const q = toField(e), p = S.player;
-    p.x = drag.px + (q.x - drag.sx) * 1.15; p.y = drag.py + (q.y - drag.sy) * 1.15; p.vx = p.vy = 0; clampPlayer();
+    if (mode !== 'play') return;
+    if (e.pointerType === 'mouse') { const q = toField(e); steerTo(q.x, q.y + 30); return; } // the cursor sits just ahead of the fleet
+    if (!drag || drag.id !== e.pointerId) return;
+    const q = toField(e);
+    steerTo(drag.px + (q.x - drag.sx) * 1.15, drag.py + (q.y - drag.sy) * 1.15);
   });
   const endDrag = e => { if (drag && drag.id === e.pointerId) drag = null; };
   canvas.addEventListener('pointerup', endDrag); canvas.addEventListener('pointercancel', endDrag);
