@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>운빨좆망겜 | 정찰 타워 디펜스 · PartyGame</title>
+<meta name="description" content="안개에 덮인 보드를 영웅으로 정찰해 자원과 동료를 찾고, 위아래로 번갈아 몰려오는 몬스터 웨이브를 막아내는 무료 정찰 타워 디펜스. AI 상대보다 오래 본부를 지키세요.">
+<meta name="keywords" content="타워 디펜스,디펜스 게임,정찰,안개,전략 게임,브라우저 게임,무료 게임,운빨좆망겜"><meta name="robots" content="index, follow"><meta name="theme-color" content="#0c1117">
+<link rel="canonical" href="https://partygame.pe.kr/arcade/fog-front.html"><link rel="icon" href="/favicon.ico">
+<meta property="og:type" content="website"><meta property="og:site_name" content="PartyGame"><meta property="og:title" content="운빨좆망겜 | 정찰 타워 디펜스"><meta property="og:description" content="안개를 걷어 자원과 동료를 찾고, 몰려오는 몬스터로부터 본부를 지키세요."><meta property="og:url" content="https://partygame.pe.kr/arcade/fog-front.html">
+<meta name="twitter:card" content="summary"><meta name="twitter:title" content="운빨좆망겜"><meta name="twitter:description" content="안개를 걷는 정찰 타워 디펜스">
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-T2KDKBN8');</script>
+<meta name="google-adsense-account" content="ca-pub-1087435977438565"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565" crossorigin="anonymous"></script>
+<script src="/scripts/site-layout.js" defer></script><link rel="stylesheet" href="/styles/site-design.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"운빨좆망겜","url":"https://partygame.pe.kr/arcade/fog-front.html","description":"안개에 덮인 보드를 영웅으로 정찰해 자원과 동료를 찾고, 번갈아 몰려오는 몬스터 웨이브와 보스를 막아내는 정찰 타워 디펜스. AI 상대와 나란히 본부를 지킵니다.","inLanguage":"ko","genre":["Tower defense","Strategy"],"gamePlatform":["PC web browser","Mobile web browser"],"playMode":"https://schema.org/SinglePlayer","isAccessibleForFree":true,"operatingSystem":"Web browser","applicationCategory":"GameApplication"}</script>
+<style>
+body{margin:0}button{font:inherit;cursor:pointer}button:disabled{cursor:not-allowed}[hidden]{display:none!important}
+.ff-shell{max-width:1120px;margin:auto;padding:24px 24px 0}
+.ff-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:4px 0 16px}.ff-heading h1{font-size:clamp(26px,4vw,38px);margin:0 0 6px;color:#eef6ff;font-weight:900}.ff-heading h1 span{font-size:12px;letter-spacing:.3em;color:#8fd0ff;margin-left:10px;font-weight:700;vertical-align:middle}.ff-heading p{font-size:13px;color:#9fb0c2;line-height:1.7;margin:0}
+.ff-best{font-size:12px;color:#9fb0c2;text-align:right;white-space:nowrap}.ff-best b{display:block;font-size:18px;color:#ffd28a}
+.ff-game{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:16px;align-items:start}
+.ff-col{background:#0f161e;border:1px solid #243243;border-radius:14px;overflow:hidden;box-shadow:0 20px 60px #0008;justify-self:center;width:min(100%,600px,calc((100svh - 190px)/1.3))}
+.ff-hud{display:grid;grid-template-columns:1fr 1fr 1.25fr 1fr 1fr;gap:4px;padding:8px 10px;background:linear-gradient(180deg,#17222e,#111a23);border-bottom:1px solid #243243;align-items:center}
+.ff-hud>div{display:flex;align-items:center;gap:6px;min-width:0;font-size:12px;color:#9fb0c2}.ff-hud b{font-size:15px;color:#f2f7ff;font-variant-numeric:tabular-nums}.ff-hud canvas{width:24px;height:24px;flex:none}
+.ff-hud .hud-stage{flex-direction:column;align-items:flex-start;gap:0}.ff-hud .hud-stage small{font-size:10px}
+.hud-boss{gap:6px}.hud-boss canvas{width:34px!important;height:34px!important;border-radius:8px;background:#1d1420;border:1px solid #4a2c3a}.hud-boss span{display:flex;flex-direction:column;font-size:10px;line-height:1.3;min-width:0}.hud-boss span b{font-size:12px;color:#ffb0b0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ff-stage{position:relative;aspect-ratio:600/780;width:100%;background:#0b1015;user-select:none;-webkit-user-select:none}
+.ff-stage>canvas{display:block;width:100%;height:100%;touch-action:none;outline:none}
+.ff-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#0b1219c0,#05080bee);text-align:center;padding:18px;overflow:auto}
+.ff-overlay>section{width:100%;max-width:420px}
+.ff-kicker{font-size:10px;letter-spacing:.3em;color:#8fd0ff;font-weight:800}.ff-overlay h2{font-size:clamp(22px,5vw,30px);color:#fff;margin:6px 0 8px;font-weight:900}.ff-overlay p{font-size:13px;line-height:1.7;color:#b4c3d4;margin:0 0 14px}
+.ff-btn{border:1px solid #3a4c60;background:#1a2633;color:#eaf3ff;border-radius:10px;min-height:42px;padding:8px 16px;font-size:14px;font-weight:800}.ff-btn:hover:not(:disabled){background:#22334a}.ff-btn:disabled{opacity:.42}
+.ff-btn.primary{background:linear-gradient(180deg,#8fd6ff,#3f9ee8);border-color:#8fd6ff;color:#06121f;min-width:170px}.ff-btn.primary:hover{filter:brightness(1.08)}
+.ff-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.ff-seg{display:inline-flex;border:1px solid #3a4c60;border-radius:10px;overflow:hidden;margin:0 0 14px}.ff-seg button{border:0;background:#141e29;color:#9fb0c2;padding:8px 14px;font-size:13px;font-weight:700}.ff-seg button[aria-pressed=true]{background:#2a4562;color:#fff}
+.result-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:12px auto}.result-stats div{padding:8px;border-radius:10px;background:#16212c;border:1px solid #243243}.result-stats small{display:block;font-size:11px;color:#8597aa}.result-stats b{display:block;font-size:16px;color:#ffe2b0;margin-top:2px}
+.ff-rps{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(88%,330px);background:#121c26f2;border:1px solid #ffcf5a;border-radius:14px;padding:14px;text-align:center;box-shadow:0 20px 50px #000a;animation:pop .25s both}
+.ff-rps h3{margin:0 0 4px;color:#ffe7a6;font-size:17px}.ff-rps p{margin:0 0 10px;font-size:12px;color:#b4c3d4}.ff-rps .ff-row button{width:76px;height:64px;font-size:26px;border-radius:12px;border:1px solid #3a4c60;background:#1a2633;color:#fff}.ff-rps .ff-row button:hover{border-color:#ffcf5a;background:#24364a}.ff-rps .ff-row button small{display:block;font-size:11px;color:#b4c3d4}
+.ff-rps .rps-timer{height:4px;border-radius:2px;background:#ffcf5a;margin-top:10px;transform-origin:left}
+@keyframes pop{from{opacity:0;transform:translate(-50%,-44%) scale(.9)}to{opacity:1;transform:translate(-50%,-50%)}}
+.ff-skills{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;padding:8px 10px;border-top:1px solid #243243;background:#111a23}
+.skill{position:relative;aspect-ratio:1;border-radius:50%;border:2px solid #2e4257;background:radial-gradient(circle at 50% 35%,#2f5c96,#1b3354);padding:0;overflow:hidden;display:grid;place-items:center;color:#fff}
+.skill canvas{width:86%;height:86%;pointer-events:none}.skill .cd{position:absolute;inset:0;background:conic-gradient(#000a var(--p,0turn),#0000 0);pointer-events:none}.skill .cdn{position:absolute;font-size:13px;font-weight:900;text-shadow:0 1px 3px #000;pointer-events:none}
+.skill.ready{border-color:#ffd56a;box-shadow:0 0 12px #ffd56a88;animation:ready 1.4s infinite}.skill.locked{filter:grayscale(.85) brightness(.55)}
+@keyframes ready{50%{box-shadow:0 0 20px #ffd56acc}}
+.ff-actions{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:6px;padding:0 10px 10px;background:#111a23}
+.ff-actions .ff-btn{min-height:44px;padding:4px 6px;font-size:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2}.ff-actions small{font-size:10px;color:#9fb0c2;font-weight:600}
+#summonBtn{background:linear-gradient(180deg,#2a5d8f,#1b3c5e);border-color:#4f8cc4}
+.ff-side{display:flex;flex-direction:column;gap:12px}
+.ff-card{background:#0f161e;border:1px solid #243243;border-radius:14px;padding:14px}.ff-card h2{font-size:13px;color:#8fd0ff;margin:0 0 8px;letter-spacing:.05em}
+.ff-card p,.ff-card li{font-size:12px;color:#a7b6c6;line-height:1.7;margin:0}
+#infoBox b{color:#fff}#infoBox .tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:6px;background:#22334a;color:#bfe3ff;margin-right:4px}
+#logList{list-style:none;padding:0;margin:0;max-height:220px;overflow:auto}#logList li{border-bottom:1px solid #1b2733;padding:3px 0}
+.ff-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.ff-bar label{font-size:12px;color:#c3d0de;display:flex;gap:6px;align-items:center}
+.ff-guide{margin-top:24px;padding:22px;border-radius:14px;border:1px solid #243243;background:#0e151c}.ff-guide h2{font-size:18px;color:#eef6ff;margin:0 0 14px}.guide-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}.ff-guide h3{font-size:13px;color:#ffd28a;margin:0 0 6px}.ff-guide p{font-size:12px;color:#9fb0c2;line-height:1.9;margin:0}
+@media(max-width:900px){.ff-game{grid-template-columns:1fr}.ff-col{width:min(100%,600px,calc((100svh - 180px)/1.3))}.ff-side{display:grid;grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.ff-shell{padding:12px 6px 0}.ff-heading{align-items:flex-start;flex-direction:column;gap:4px}.ff-heading p{font-size:12px}.ff-best{text-align:left}.ff-hud{grid-template-columns:repeat(5,auto);padding:6px;gap:2px;justify-content:space-between}.ff-hud>div{font-size:10px;gap:3px}.ff-hud b{font-size:13px}.ff-hud canvas{width:18px;height:18px}.hud-boss canvas{width:28px!important;height:28px!important}.hud-boss span{display:none}.ff-hud .lbl{display:none}.ff-skills{gap:4px;padding:6px}.ff-actions{gap:4px;padding:0 6px 6px}.ff-actions .ff-btn{font-size:12px}.ff-side{grid-template-columns:1fr}.guide-grid{grid-template-columns:1fr;gap:14px}}
+</style>
+</head><body><site-header></site-header><noscript><p>게임을 실행하려면 JavaScript를 켜 주세요.</p><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T2KDKBN8" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<main class="ff-shell" id="mainContent" tabindex="-1">
+<header class="ff-heading"><div><h1>운빨좆망겜<span>LUCK DEFENSE</span></h1><p>안개를 걷어 자원과 동료를 찾고, 몰려오는 몬스터로부터 본부를 지키세요.</p></div><div class="ff-best">내 최고 기록<b id="bestScore">아직 기록이 없습니다</b></div></header>
+<section class="ff-game" aria-label="운빨좆망겜 게임">
+<div class="ff-col">
+ <div class="ff-hud" id="hud">
+  <div title="인구수"><canvas id="icoPop" width="48" height="48"></canvas><b id="hudPop">0/20</b></div>
+  <div class="hud-stage"><small id="hudWeather">스테이지</small><b id="hudStage">1</b></div>
+  <div class="hud-boss" title="보스 정보"><canvas id="bossPortrait" width="68" height="68"></canvas><span><small id="bossWhen">5 스테이지</small><b id="bossName">진흙 거인</b></span></div>
+  <div title="자원 1 (수정)"><canvas id="icoCrystal" width="48" height="48"></canvas><b id="hudCrystal">100</b></div>
+  <div title="자원 2 (광석)"><canvas id="icoOre" width="48" height="48"></canvas><b id="hudOre">50</b></div>
+ </div>
+ <div class="ff-stage" id="stage"><canvas id="fogCanvas" width="600" height="780" tabindex="0" aria-label="운빨좆망겜 전장. 아래가 내 보드, 위가 상대 보드입니다. 영웅을 끌어 안개 칸에 놓으면 정찰합니다."></canvas>
+  <div class="ff-rps" id="rpsBox" hidden role="dialog" aria-label="동료와 가위바위보"><h3>동료를 만났습니다!</h3><p id="rpsText">가위바위보에서 이기면 영웅이 합류합니다.</p><div class="ff-row"><button data-rps="1" aria-label="가위">✌️<small>가위</small></button><button data-rps="0" aria-label="바위">✊<small>바위</small></button><button data-rps="2" aria-label="보">✋<small>보</small></button></div><div class="rps-timer" id="rpsTimer"></div></div>
+  <div class="ff-overlay" id="overlay">
+   <section id="menuView"><div class="ff-kicker">SCOUT · DEFEND · OUTLAST</div><h2>운빨좆망겜</h2><p>영웅을 안개 칸으로 끌어 정찰하고, 몬스터가 지나는 길가에 배치하세요. 홀수 스테이지 몬스터는 위쪽 상대 본부로, 짝수 스테이지는 내 본부로 향합니다.</p><div class="ff-seg" role="group" aria-label="상대 수준"><button data-level="0" aria-pressed="false">쉬운 상대</button><button data-level="1" aria-pressed="true">보통</button><button data-level="2" aria-pressed="false">강한 상대</button></div><div><button class="ff-btn primary" id="startBtn">전선으로 →</button></div></section>
+   <section id="pauseView" hidden><div class="ff-kicker">PAUSED</div><h2>잠시 정지</h2><p>몬스터와 정찰 시간이 멈췄습니다.</p><div class="ff-row"><button class="ff-btn primary" id="resumeBtn">계속하기</button><button class="ff-btn" id="quitBtn">처음으로</button></div></section>
+   <section id="resultView" hidden><div class="ff-kicker" id="resultKicker"></div><h2 id="resultTitle"></h2><div class="result-stats" id="resultStats"></div><p id="resultBest"></p><div class="ff-row"><button class="ff-btn primary" id="retryBtn">다시 도전</button><button class="ff-btn" id="menuBtn">처음으로</button></div></section>
+  </div>
+ </div>
+ <div class="ff-skills" id="skillBar" role="group" aria-label="영웅별 스킬"></div>
+ <div class="ff-actions">
+  <button class="ff-btn" id="summonBtn">영웅 소환<small id="summonCost">수정 45</small></button>
+  <button class="ff-btn" id="upgradeBtn">강화<small id="upgradeCost">광석 40</small></button>
+  <button class="ff-btn" id="repairBtn">수리<small>광석 55</small></button>
+  <button class="ff-btn" id="nextBtn">바로 시작<small id="prepLeft">15초</small></button>
+ </div>
+</div>
+<aside class="ff-side">
+ <div class="ff-card"><h2>선택 정보</h2><div id="infoBox"><p>영웅을 누르면 정보가 보입니다. 끌어서 안개 칸에 놓으면 정찰, 빈 칸에 놓으면 이동합니다.</p></div></div>
+ <div class="ff-card"><h2>전황</h2><ul id="logList" aria-live="polite"></ul></div>
+ <div class="ff-card ff-bar"><button class="ff-btn" id="pauseBtn" disabled>일시정지</button><button class="ff-btn" id="speedBtn" aria-pressed="false">속도 ×1</button><label><input id="soundToggle" type="checkbox"> 효과음</label></div>
+</aside>
+</section>
+<section class="ff-guide"><h2>운빨좆망겜 안내</h2><div class="guide-grid">
+<div><h3>끌어서 정찰</h3><p>영웅을 이미 밝혀진 칸과 맞닿은 안개 칸으로 끌어다 놓으면 정찰을 시작합니다. 인구 1 영웅은 10초, 2는 8초, 3은 5초, 4는 4초가 걸리고, 정찰 중에는 싸우지 못합니다. 안개 속에서는 수정·광석·보물·동료를 찾을 수 있습니다.</p></div>
+<div><h3>둥지와 동료</h3><p>안개 속 몬스터 둥지를 만나면 정찰병은 쓰러지고 둥지 위치가 드러납니다. 사거리가 닿는 영웅들이 자동으로 둥지를 공격해 무너뜨리면 큰 보상을 줍니다. 동료를 만나면 가위바위보로 이겨야 영웅이 합류합니다.</p></div>
+<div><h3>번갈아 오는 웨이브</h3><p>몬스터는 두 보드 사이 출현 지점에서 나와 홀수 스테이지에는 위쪽 상대 본부로, 짝수 스테이지에는 아래 내 본부로 향합니다. 상대 본부가 무너지면 그쪽 몬스터는 왼쪽 길을 따라 내 본부까지 내려옵니다. 5스테이지마다 보스가 나오고 20스테이지를 버티면 승리합니다.</p></div>
+</div></section>
+</main><site-footer></site-footer>
+<script src="/scripts/fog-core.js?v=20261120a"></script><script src="/scripts/fog-art.js?v=20261120a"></script><script src="/scripts/fog-front.js?v=20261120a"></script>
+</body></html>
