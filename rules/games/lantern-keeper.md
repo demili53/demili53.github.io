@@ -6,6 +6,7 @@
 - `arcade/lantern-keeper.html`: 페이지, 메타·VideoGame 구조화 데이터, 오버레이(시작·레벨업·일시정지·결과).
 - `scripts/lantern-core.js`: 규칙과 수치(무기·부적·적·보스·경험치 곡선·출현량·점수). 노드와 브라우저가 함께 쓴다.
 - `scripts/lantern-keeper.js`: Canvas 2D 게임 루프, 그리기, 입력, 테스트 훅 `window.__lanternKeeper`.
+- `scripts/lantern-art.js`: 그림 캐시(적 스프라이트 프레임·피격 흰색 변형, 발광, 빛 도장, 숲 바닥 무늬). 밤은 반해상도 어둠 지도에 등불·탄·불길·빛기둥·불씨·버섯 빛으로 구멍을 내서 그린다.
 - 테스트: `node scripts/test-lantern-keeper.cjs`, `node scripts/test-lantern-keeper-browser.cjs`(Playwright가 있는 NODE_PATH).
 - 스크립트 주소에는 `?v=YYYYMMDD` 버전 쿼리를 붙이고, 고치면 올린다.
 
@@ -19,4 +20,5 @@
 - 점수 = 버틴 초×10 + 처치×2 + (레벨−1)×30 + 새벽 5000. 순위 gameId는 `lantern-keeper`, wave 칸에는 버틴 초를 넣는다(`firestore.rules` 허용 목록에 있음).
 
 ## 화면
+- 그래픽 2차(2026-11-20): 적 스프라이트 캐시와 y 정렬, 등장 페이드, 처치 연기, 레벨업 빛 고리, 불씨 화살 꼬리, 불길 혀, 빛기둥 기둥·충격파, 섬광 고리, 보스 세부 묘사(거목 가지·까마귀 깃털·일식 코로나)와 예고선, 비네트·저체력 붉은 맥동·새벽 노을, HUD(레벨 배지, 달→해 진행 막대, 레벨 점).
 - 메뉴는 단순하게: 시작 화면은 버튼 하나, 페이지 곁 패널은 내 최고 기록과 TOP 10만, 조작 줄은 일시정지·효과음만.
