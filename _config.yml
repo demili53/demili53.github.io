@@ -12,17 +12,15 @@ exclude:
   - scripts/test-site-seo.cjs
   - scripts/test-shadow-sniper.cjs
   - scripts/test-shadow-sniper-browser.cjs
-  - scripts/test-shadow-sniper-improvements.cjs
-  - scripts/test-shadow-sniper-improvements-2.cjs
   - scripts/test-rift-blade.cjs
   - scripts/test-rift-blade-browser.cjs
   - scripts/test-rift-advanced-browser.cjs
   - scripts/test-rift-audio.cjs
   - scripts/test-rift-save.cjs
   - scripts/test-space-shooter-browser.cjs
+  - scripts/test-space-shooter-core.cjs
   - scripts/test-space-shooter-expansion.cjs
   - scripts/test-space-shooter-tactics.cjs
-  - scripts/test-shadow-sniper-improvements-3.cjs
   - scripts/test-rift-journal.cjs
   - scripts/test-space-shooter-sectors.cjs
   - scripts/test-rift-frontier-browser.cjs
@@ -30,9 +28,6 @@ exclude:
   - scripts/test-shooter-progress.cjs
   - scripts/test-site-menu-browser.cjs
   - scripts/test-space-shooter-polish.cjs
-  - scripts/test-shadow-sniper-tools.cjs
-  - scripts/test-shadow-sniper-improvements-4.cjs
-  - scripts/test-sniper-audio.cjs
   - scripts/test-bastion-convenience-browser.cjs
   - scripts/test-bastion-convenience.cjs
   - scripts/test-bastion-progress.cjs
