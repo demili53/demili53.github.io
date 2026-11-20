@@ -29,6 +29,12 @@ const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '
     assert.match(await page.locator('#ssClues').innerText(), /털모자/);
     assert.strictEqual(await page.locator('#ssOverlay').isVisible(), true);
 
+    // Armory: four rifles, the start button waits until one is picked (keyboard 1-4 works too).
+    assert.strictEqual(await page.locator('#ssChoices .ss-choice').count(), 4);
+    assert.strictEqual(await page.locator('#ssAction').isVisible(), false);
+    await page.keyboard.press('1');
+    assert.strictEqual(await page.evaluate(() => window.__shadowSniper.run.weapon), 'scout');
+    assert.match(await page.locator('#ssLoadout').innerText(), /정찰 소총/);
     // Start, aim with the mouse, and shoot Willy once he is in the open.
     await page.click('#ssAction');
     assert.strictEqual(await page.evaluate(() => window.__shadowSniper.run.state), 'play');
@@ -49,7 +55,11 @@ const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '
     await page.click('#ssSkip');
     await page.waitForFunction(() => window.__shadowSniper.run.state === 'clear');
     assert.match(await page.locator('#ssKicker').innerText(), /STAGE CLEAR/);
-    await page.click('#ssAction');
+    assert.strictEqual(await page.locator('#ssChoices .ss-choice').count(), 3, 'three upgrades offered');
+    assert.strictEqual(await page.locator('#ssAction').isVisible(), false);
+    const picked = await page.locator('#ssChoices .ss-choice').first().getAttribute('data-choice');
+    await page.locator('#ssChoices .ss-choice').first().click();
+    if (picked !== 'medkit') assert.strictEqual(await page.evaluate(id => window.__shadowSniper.run.mods[id], picked), 1);
     assert.strictEqual(await page.evaluate(() => window.__shadowSniper.run.level), 1);
 
     // Keyboard: Enter starts, arrows aim, P pauses and resumes.
@@ -57,6 +67,11 @@ const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '
     const before = await page.evaluate(() => ({ ...window.__shadowSniper.run.aim }));
     await page.keyboard.down('ArrowRight'); await page.waitForTimeout(300); await page.keyboard.up('ArrowRight');
     assert.ok(await page.evaluate(x => window.__shadowSniper.run.aim.x > x, before.x), 'arrow keys move the scope');
+    // E uses the rifle's special ability once per stage.
+    assert.strictEqual(await page.locator('#ssAbility').isEnabled(), true);
+    await page.keyboard.press('e');
+    assert.ok(await page.evaluate(() => window.__shadowSniper.run.focus), 'focus is active');
+    assert.strictEqual(await page.locator('#ssAbility').isEnabled(), false);
     await page.keyboard.press('p');
     assert.strictEqual(await page.evaluate(() => window.__shadowSniper.run.state), 'paused');
     const t0 = await page.evaluate(() => window.__shadowSniper.run.time); await page.waitForTimeout(300);
@@ -74,12 +89,13 @@ const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '
     assert.match(await page.locator('#ssKicker').innerText(), /GAME OVER/);
     assert.match(await page.locator('#ssBest').innerText(), /점/);
     await page.click('#ssAction');
-    assert.strictEqual(await page.evaluate(() => window.__shadowSniper.run.state), 'brief');
+    assert.strictEqual(await page.evaluate(() => window.__shadowSniper.run.state), 'armory', 'a new run goes back to the armory');
 
     // Phone: the page fits, touch drags the scope.
     await page.close();
     const phone = await open({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
     assert.ok(await phone.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'no sideways scroll at 390px');
+    await phone.tap('#ssChoices [data-choice="rapid"]'); await phone.waitForTimeout(150);
     await phone.tap('#ssAction'); await phone.waitForTimeout(150);
     const cbox = await phone.locator('#ssCanvas').boundingBox(); assert.ok(cbox.width > 300 && cbox.height > 150);
     const aim0 = await phone.evaluate(() => ({ ...window.__shadowSniper.run.aim }));
@@ -92,7 +108,7 @@ const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '
     assert.strictEqual(await phone.evaluate(() => window.__shadowSniper.run.state), 'play', 'a drag does not fire');
     await phone.waitForTimeout(150);
     await phone.tap('#ssFire'); await phone.waitForTimeout(50);
-    assert.strictEqual(await phone.evaluate(() => window.__shadowSniper.run.state), 'shot');
+    assert.strictEqual(await phone.evaluate(() => window.__shadowSniper.run.shotsFired), 1, 'the fire button shoots');
 
     assert.deepStrictEqual(errors, []);
     console.log('shadow-sniper browser test passed');

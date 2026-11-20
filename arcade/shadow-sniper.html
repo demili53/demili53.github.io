@@ -2,7 +2,7 @@
 <html lang="ko"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>윌리를 찾아서 저격해라 | 군중 속 숨은 그림 저격 게임 · PartyGame</title>
-<meta name="description" content="여섯 장소의 북적이는 군중 속에서 빨간 털모자, 줄무늬 옷, 둥근 안경과 장소별 소지품을 모두 갖춘 윌리를 찾아 저격하세요. 단서 하나만 다른 변장 인물, 확대 스코프, 총알 슬로모션이 있는 무료 브라우저 게임.">
+<meta name="description" content="여섯 장소의 북적이는 군중 속에서 빨간 털모자, 줄무늬 옷, 둥근 안경과 장소별 소지품을 모두 갖춘 윌리를 찾아 저격하세요. 단서 하나만 다른 변장 인물, 확대 스코프, 소총 네 종류와 업그레이드, 총알 슬로모션이 있는 무료 브라우저 게임.">
 <meta name="keywords" content="윌리 찾기,숨은 그림 찾기,저격 게임,스나이퍼 게임,브라우저 게임,무료 게임"><meta name="robots" content="index, follow"><meta name="theme-color" content="#0b1220">
 <link rel="canonical" href="https://partygame.pe.kr/arcade/shadow-sniper.html"><link rel="icon" href="/favicon.ico">
 <meta property="og:type" content="website"><meta property="og:site_name" content="PartyGame"><meta property="og:title" content="윌리를 찾아서 저격해라 | 군중 속 숨은 그림 저격 게임"><meta property="og:description" content="수배 전단의 단서 네 가지로 군중 속 윌리를 찾아 한 발에 맞히세요."><meta property="og:url" content="https://partygame.pe.kr/arcade/shadow-sniper.html"><meta property="og:image" content="https://partygame.pe.kr/assets/games/shadow-sniper/share.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="윌리를 찾아서 저격해라 스코프 조준 게임 화면">
@@ -31,12 +31,20 @@ body{margin:0}button{font:inherit;cursor:pointer}button:disabled{opacity:.4;curs
 .ss-aside{display:grid;align-content:start;gap:14px}.card{padding:16px 18px}.card h2{font-size:14px;margin:0 0 10px;color:#edf3fb}
 #ssPoster{display:block;width:100%;max-width:220px;margin:0 auto 10px;border-radius:4px;box-shadow:0 8px 20px #0007;transform:rotate(-1.5deg)}
 #ssClues{margin:0;padding-left:18px;font-size:13px;line-height:1.9;color:#ffd6aa}
+.ss-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:8px;margin:0 0 4px;text-align:left}
+.ss-choice{border:1px solid #3a5070;background:#16243a;color:#e6f0ff;border-radius:11px;padding:10px 11px;display:grid;gap:4px;align-content:start;transition:transform .12s,border-color .12s,background .12s}
+.ss-choice:hover,.ss-choice:focus-visible{transform:translateY(-2px);border-color:var(--c,#ffb35c);background:#1d2f4a;outline:none}
+.ss-choice b{font-size:13px;color:var(--c,#ffd9a8)}.ss-choice small{font-size:11px;line-height:1.5;color:#a9bbd2}.ss-choice i{font-style:normal;font-size:10px;letter-spacing:.08em;color:var(--c,#ffb35c);font-weight:800}
+.ss-choice.rare{border-color:#c79bff;--c:#d6b6ff;background:linear-gradient(160deg,#241a3c,#16243a)}
+.ss-overlay>div:has(.ss-choices:not([hidden])){max-width:620px}
+.ss-ability{border-color:#5a7a9a}.ss-ability kbd{font:inherit;font-size:10px;opacity:.6;border:1px solid #567;border-radius:4px;padding:0 4px;margin-left:4px}.ss-ability.ready{border-color:#6fe0c0;color:#bff5e4;box-shadow:0 0 0 1px #6fe0c055}
+.loadout{font-size:12px;color:#b8c9dc;line-height:1.8}.loadout b{color:#ffd9a8;font-size:14px}.loadout ul{margin:6px 0 0;padding-left:16px}.loadout .syn{color:#8ff0c8}
 .best{font-size:18px;font-weight:800;color:#ffbd86}
 #firebaseRankingList{list-style:none;padding:0;margin:0 0 10px}#firebaseRankingList li{padding:8px 0;border-bottom:1px solid #2a394d;display:flex;align-items:center;gap:9px;font-size:11px;color:#c2d0e4}#firebaseRankingList li>strong{min-width:17px;color:#ffb981}#firebaseRankingList li>span:first-of-type{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#firebaseRankingStatus{font-size:11px;line-height:1.7;color:#a3b6ce;margin:0}
-.ss-guide{margin-top:26px;padding:22px;border-radius:14px;border:1px solid #29384e;background:#131c2a}.ss-guide h2{font-size:18px;color:#f1f5ff;margin:0 0 14px}.guide-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}.ss-guide h3{font-size:13px;color:#ffd0a5;margin:0 0 6px}.ss-guide p{font-size:12px;color:#9fb0c6;line-height:1.9;margin:0}
+.ss-guide{margin-top:26px;padding:22px;border-radius:14px;border:1px solid #29384e;background:#131c2a}.ss-guide h2{font-size:18px;color:#f1f5ff;margin:0 0 14px}.guide-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px 28px}.ss-guide h3{font-size:13px;color:#ffd0a5;margin:0 0 6px}.ss-guide p{font-size:12px;color:#9fb0c6;line-height:1.9;margin:0}
 @media(hover:none),(pointer:coarse){.ss-touch{display:flex}}
 @media(max-width:900px){.ss-layout{grid-template-columns:1fr}.ss-aside{grid-template-columns:repeat(2,minmax(0,1fr))}.poster-card{grid-row:span 2}}
-@media(max-width:580px){.ss-shell{padding:16px 12px 0}.ss-heading h1{font-size:27px}.ss-stage{aspect-ratio:4/3}.ss-aside{grid-template-columns:1fr}.guide-grid{grid-template-columns:1fr;gap:14px}.ss-guide{padding:18px}.ss-status{display:none}.ss-overlay>div{padding:16px}.ss-overlay h2{font-size:21px}.ss-overlay p{font-size:12px;line-height:1.7}.ss-touch .ss-btn{flex:1}.ss-touch{width:100%}}
+@media(max-width:580px){.ss-shell{padding:16px 12px 0}.ss-heading h1{font-size:27px}.ss-stage{aspect-ratio:4/3}.ss-aside{grid-template-columns:1fr}.guide-grid{grid-template-columns:1fr;gap:14px}.ss-guide{padding:18px}.ss-status{display:none}.ss-overlay>div{padding:16px}.ss-overlay h2{font-size:21px}.ss-overlay p{font-size:12px;line-height:1.7}.ss-touch .ss-btn{flex:1}.ss-choices{grid-template-columns:1fr 1fr;gap:6px}.ss-choice{padding:7px 8px;gap:2px}.ss-choice small{font-size:10px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.ss-overlay{padding:8px;align-items:safe center;overflow:auto}.ss-overlay>div:has(.ss-choices:not([hidden])){padding:10px 12px}.ss-overlay>div:has(.ss-choices:not([hidden])) p{display:none}.ss-overlay>div:has(.ss-choices:not([hidden])) h2{font-size:17px;margin:4px 0 8px}.ss-touch{width:100%}}
 </style>
 </head><body><site-header></site-header><noscript><p>게임을 실행하려면 JavaScript를 켜 주세요.</p><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T2KDKBN8" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <main class="ss-shell" id="mainContent" tabindex="-1">
@@ -44,20 +52,22 @@ body{margin:0}button{font:inherit;cursor:pointer}button:disabled{opacity:.4;curs
 <div class="ss-layout"><section class="ss-panel" aria-label="윌리를 찾아서 저격해라 게임">
 <div class="ss-stage"><canvas id="ssCanvas" tabindex="0" aria-label="군중이 있는 장면. 마우스나 방향키로 스코프를 움직이고 클릭이나 스페이스로 쏩니다. Shift로 숨을 참으면 흔들림이 줄어듭니다."></canvas>
 <button class="ss-btn ss-skip" id="ssSkip" hidden>연출 건너뛰기</button>
-<div class="ss-overlay" id="ssOverlay"><div><div class="ss-kicker" id="ssKicker">FIND WILLY</div><h2 id="ssTitle">윌리를 찾아라</h2><p id="ssText">불러오는 중…</p><button class="ss-btn primary" id="ssAction" disabled>임무 시작</button></div></div>
+<div class="ss-overlay" id="ssOverlay"><div><div class="ss-kicker" id="ssKicker">FIND WILLY</div><h2 id="ssTitle">윌리를 찾아라</h2><p id="ssText">불러오는 중…</p><div class="ss-choices" id="ssChoices" hidden></div><button class="ss-btn primary" id="ssAction" disabled>임무 시작</button></div></div>
 </div>
-<div class="ss-controls"><button class="ss-btn" id="ssPause" disabled>일시정지</button><label><input id="ssSound" type="checkbox"> 효과음</label><div class="ss-touch"><button class="ss-btn" id="ssSteady" disabled>숨 참기</button><button class="ss-btn primary" id="ssFire" disabled>사격</button></div><p class="ss-status" id="ssStatus" role="status" aria-live="polite"></p></div>
+<div class="ss-controls"><button class="ss-btn" id="ssPause" disabled>일시정지</button><label><input id="ssSound" type="checkbox"> 효과음</label><button class="ss-btn ss-ability" id="ssAbility" disabled>특수 능력 <kbd>E</kbd></button><div class="ss-touch"><button class="ss-btn" id="ssSteady" disabled>숨 참기</button><button class="ss-btn primary" id="ssFire" disabled>사격</button></div><p class="ss-status" id="ssStatus" role="status" aria-live="polite"></p></div>
 </section><aside class="ss-aside">
 <section class="ss-panel card poster-card"><h2>수배 전단</h2><canvas id="ssPoster" width="220" height="280" aria-label="윌리 수배 전단 그림"></canvas><ul id="ssClues"></ul></section>
+<section class="ss-panel card"><h2>내 장비</h2><div id="ssLoadout" class="loadout">임무 시작 때 소총을 고릅니다.</div></section>
 <section class="ss-panel card"><h2>내 최고 기록</h2><div class="best" id="ssBest">아직 기록이 없습니다</div></section>
 <section class="ss-panel card"><h2>TOP 10</h2><ol id="firebaseRankingList"><li>온라인 기록을 불러오는 중…</li></ol><p id="firebaseRankingStatus" aria-live="polite">로그인하면 최고 점수가 저장됩니다.</p></section>
 </aside></div>
 <section class="ss-guide"><h2>플레이 방법</h2><div class="guide-grid">
 <div><h3>단서 네 가지를 모두 확인</h3><p>윌리는 빨간 털모자, 빨강·흰 줄무늬 옷, 둥근 안경에 장소마다 다른 소지품을 지녔습니다. 단서가 하나만 다른 변장 인물을 쏘면 실패예요. 사람들은 계속 움직이고, 윌리는 가판대나 나무 뒤에 숨기도 합니다.</p></div>
-<div><h3>스코프와 숨 참기</h3><p>마우스나 방향키로 스코프를 움직여 3배로 확대해 보세요. 조준점은 호흡에 따라 흔들리고, Shift(모바일은 숨 참기 버튼)를 누르는 동안 거의 멈춥니다. 클릭, 스페이스, F로 쏘고, P나 Esc로 일시정지합니다.</p></div>
-<div><h3>목숨 세 개, 끝없는 회차</h3><p>세 번 빗나가거나 시간이 다 되거나 다른 사람을 쏘면 목숨을 잃고 새 군중으로 다시 도전합니다. 여섯 장소를 돌면 더 많은 변장 인물과 짧은 시간으로 다음 회차가 시작돼요. 첫발, 남은 시간, 머리 명중에 보너스가 붙습니다.</p></div>
+<div><h3>소총 네 자루, 판마다 업그레이드</h3><p>시작할 때 정찰 소총(균형), 대구경 소총(가림막 관통), 반자동 소총(빗나가도 바로 다음 발), 소음 카빈(빗나가도 군중이 놀라지 않음) 중 하나를 고릅니다. 판을 깰 때마다 업그레이드 세 장 중 하나를 고르고, 짝이 맞으면 시너지가 발동해요.</p></div>
+<div><h3>스코프, 숨 참기, 특수 능력</h3><p>마우스나 방향키로 스코프를 움직이고, Shift(모바일은 숨 참기 버튼)로 흔들림을 줄입니다. 클릭, 스페이스, F로 쏘고, E로 소총마다 다른 특수 능력(집중, 열상 투시, 속사 모드, 예비탄)을 판마다 한 번 씁니다. P나 Esc로 일시정지.</p></div>
+<div><h3>목숨 세 개, 끝없는 회차</h3><p>기회를 다 쓰거나 시간이 다 되거나 다른 사람을 쏘면 목숨을 잃고 새 군중으로 다시 도전합니다. 여섯 장소를 돌면 다음 회차가 더 어려워져요. 남은 시간, 남은 기회, 머리 명중, 관통 명중에 보너스가 붙습니다.</p></div>
 </div></section>
 </main><site-footer></site-footer>
 <script type="module">import { initializeGameRanking } from '/scripts/firebase-game-ranking.js';initializeGameRanking({gameId:'shadow-sniper',gameName:'윌리를 찾아서 저격해라'});</script>
-<script src="/scripts/sniper-core.js?v=20261120r"></script><script src="/scripts/sniper-art.js?v=20261120r"></script><script src="/scripts/shadow-sniper.js?v=20261120r"></script>
+<script src="/scripts/sniper-core.js?v=20261120w"></script><script src="/scripts/sniper-art.js?v=20261120w"></script><script src="/scripts/shadow-sniper.js?v=20261120w"></script>
 </body></html>

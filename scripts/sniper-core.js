@@ -73,6 +73,56 @@ const LOOK_POOL = {
 };
 const MAX_MISSES = 3, FLIGHT = 0.95, AFTERMATH = 1.6;
 
+// Three rifles with different handling. Chosen once at the start of a run.
+const WEAPONS = {
+  scout: { id: 'scout', name: '정찰 소총', short: '균형형', desc: '흔들림과 배율이 고르고, 기회 3번.', zoom: 3.2, sway: 1, breath: 3.2, misses: 3, pierce: 0, silent: false, color: '#e8b45c', trail: '#ffdca0' },
+  heavy: { id: 'heavy', name: '대구경 소총', short: '관통', desc: '가림막 하나를 뚫고, 배율이 높지만 많이 흔들려요. 정밀 명중 +300.', zoom: 3.9, sway: 1.35, breath: 2.6, misses: 3, pierce: 1, silent: false, headBonus: 300, color: '#ff8a4c', trail: '#ffb070' },
+  rapid: { id: 'rapid', name: '반자동 소총', short: '속사', desc: '빗나간 탄은 슬로모션 없이 바로 다음 발. 배율이 낮고 많이 흔들려요.', zoom: 2.8, sway: 1.25, breath: 3, misses: 3, pierce: 0, silent: false, quick: true, color: '#b7e36a', trail: '#e2ffb0' },
+  silent: { id: 'silent', name: '소음 카빈', short: '은밀', desc: '빗나가도 군중이 놀라지 않고 기회가 4번. 배율은 낮아요.', zoom: 2.6, sway: 0.8, breath: 4, misses: 4, pierce: 0, silent: true, color: '#8fd3ff', trail: '#cfeeff' }
+};
+// One special ability per rifle, usable once per stage (more with the 'charge' upgrade).
+const ABILITIES = {
+  scout: { name: '집중', desc: '4초 동안 조준이 멈추고 군중이 느려져요.', time: 4 },
+  heavy: { name: '열상 투시', desc: '5초 동안 가림막 뒤 사람이 보여요.', time: 5 },
+  rapid: { name: '속사 모드', desc: '6초 동안 숨이 줄지 않고 흔들림이 절반.', time: 6 },
+  silent: { name: '예비탄', desc: '다음 빗나감 한 번은 기회를 쓰지 않아요.', time: 0 }
+};
+// Upgrades offered after each cleared stage (pick one of three).
+const UPGRADES = {
+  stock: { id: 'stock', name: '안정 개머리판', desc: '조준 흔들림 20% 감소', max: 3 },
+  lungs: { id: 'lungs', name: '폐활량 훈련', desc: '숨 참기 시간 35% 증가', max: 3 },
+  lens: { id: 'lens', name: '고배율 렌즈', desc: '스코프 배율 +0.5', max: 2 },
+  mag: { id: 'mag', name: '예비 탄창', desc: '판마다 빗나갈 기회 +1', max: 2 },
+  ap: { id: 'ap', name: '철갑탄', desc: '가림막 하나 더 관통', max: 2 },
+  suppressor: { id: 'suppressor', name: '소음기', desc: '빗나가도 군중이 놀라지 않음', max: 1 },
+  scanner: { id: 'scanner', name: '단서 탐지 렌즈', desc: '스코프 안 변장 인물에 X 표시', max: 1 },
+  timer: { id: 'timer', name: '작전 연장', desc: '판마다 제한 시간 +10초', max: 3 },
+  hollow: { id: 'hollow', name: '정밀 탄두', desc: '머리 판정 30% 확대, 정밀 명중 +200', max: 2 },
+  charge: { id: 'charge', name: '능력 충전기', desc: '특수 능력 판마다 +1회', max: 2, rare: true },
+  medkit: { id: 'medkit', name: '응급 키트', desc: '목숨 1개 회복(최대 3)', max: 9, rare: true },
+  tracer: { id: 'tracer', name: '예광탄 표적기', desc: '시간 절반이 지나면 윌리 쪽 방향 표시', max: 1, rare: true }
+};
+// Two upgrades on the same build give an extra effect.
+const SYNERGIES = [
+  { id: 'deadeye', name: '명사수', need: { stock: 2, hollow: 1 }, desc: '정밀 명중 +500' },
+  { id: 'ghost', name: '유령 저격수', need: { suppressor: 1, lungs: 1 }, desc: '빗나감이 점수를 깎지 않음', silentWeapon: true },
+  { id: 'breacher', name: '관통 전문가', need: { ap: 1 }, weapon: 'heavy', desc: '관통 명중 +400' }
+];
+function weaponStats(weaponId, mods = {}) {
+  const w = WEAPONS[weaponId] || WEAPONS.scout, m = id => mods[id] || 0;
+  return {
+    weapon: w, zoom: w.zoom + m('lens') * 0.5, sway: w.sway * Math.pow(0.8, m('stock')), breath: w.breath * (1 + 0.35 * m('lungs')),
+    misses: w.misses + m('mag'), pierce: w.pierce + m('ap'), silent: w.silent || m('suppressor') > 0, scanner: m('scanner') > 0,
+    timeBonus: m('timer') * 10, head: 1 + 0.3 * m('hollow'), headBonus: (w.headBonus || 0) + m('hollow') * 200,
+    quick: Boolean(w.quick), charges: 1 + m('charge'), tracer: m('tracer') > 0, ability: ABILITIES[w.id]
+  };
+}
+function activeSynergies(weaponId, mods = {}) {
+  const silent = weaponStats(weaponId, mods).silent;
+  return SYNERGIES.filter(sy => Object.entries(sy.need).every(([k, v]) => (mods[k] || 0) >= v || (k === 'suppressor' && sy.silentWeapon && silent))
+    && (!sy.weapon || sy.weapon === weaponId));
+}
+
 function depthScale(stage, y) { return 0.62 + 0.58 * clamp((y - stage.horizon) / (WORLD.height - stage.horizon), 0, 1); }
 
 function locationFor(level) {
@@ -143,32 +193,70 @@ function personBox(stage, p) {
   const s = depthScale(stage, p.y) * p.build, h = PERSON.height * s;
   return { x: p.x, y: p.y, w: PERSON.width * s, h, head: h * 0.27 };
 }
-function hitTest(stage, x, y) {
+function hitTest(stage, x, y, opt = {}) {
+  const pierce = opt.pierce || 0, headScale = opt.head || 1;
   const order = stage.people.filter(p => !p.dead).sort((a, b) => b.y - a.y);
   for (const p of order) {
     const b = personBox(stage, p);
     if (Math.abs(x - b.x) <= b.w / 2 && y <= b.y && y >= b.y - b.h) {
-      const prop = propCovers(stage, p, x, y);
-      if (prop) return { kind: 'prop', prop, person: p };
-      return { kind: 'person', person: p, head: y < b.y - b.h + b.head };
+      const covers = stage.props.filter(o => o.y > p.y && propSolid(stage, o, x, y));
+      if (covers.length > pierce) return { kind: 'prop', prop: covers[0], person: p };
+      return { kind: 'person', person: p, head: y < b.y - b.h + b.head * headScale, pierced: covers };
     }
   }
   const prop = stage.props.find(p => propSolid(stage, p, x, y));
-  return prop ? { kind: 'prop', prop } : { kind: 'miss' };
+  return prop ? { kind: 'prop', prop, pierced: [] } : { kind: 'miss', pierced: [] };
 }
 
 class SniperRun {
-  constructor({ seed = (Date.now() >>> 0) } = {}) {
+  constructor({ seed = (Date.now() >>> 0), weapon = null } = {}) {
     this.seed = seed >>> 0; this.level = 0; this.lives = 3; this.score = 0; this.clears = []; this.attempt = 0;
-    this.state = 'brief'; this.aim = { x: WORLD.width / 2, y: WORLD.height * 0.62 }; this.steady = false; this.breath = 1;
+    this.weapon = WEAPONS[weapon] ? weapon : 'scout'; this.mods = {}; this.offer = []; this.decals = [];
+    this.state = WEAPONS[weapon] ? 'brief' : 'armory'; this.aim = { x: WORLD.width / 2, y: WORLD.height * 0.62 }; this.steady = false; this.breath = 1;
     this.loadLevel();
   }
   loadLevel() {
     this.stage = makeStage(this.level, (this.seed + this.level * 7919 + this.attempt * 104729) >>> 0);
-    this.time = this.stage.loc.time; this.elapsed = 0; this.misses = 0; this.shot = null; this.result = null; this.message = '';
+    this.time = this.stage.loc.time + this.stats.timeBonus; this.decals = []; this.elapsed = 0;
+    this.charges = this.stats.charges; this.abilityTime = 0; this.spareRound = false; this.shotsFired = 0; this.misses = 0; this.shot = null; this.result = null; this.message = '';
     this.pausedFrom = null; this.breath = 1; this.steady = false;
   }
   get location() { return this.stage.loc; }
+  get stats() { return weaponStats(this.weapon, this.mods); }
+  get maxMisses() { return this.stats.misses; }
+  // Pick the rifle for this run (only before the first stage starts).
+  chooseWeapon(id) {
+    if (this.state !== 'armory' || !WEAPONS[id]) return false;
+    this.weapon = id; this.time = this.stage.loc.time + this.stats.timeBonus; this.state = 'brief'; return true;
+  }
+  makeOffer() {
+    const rand = sniperRandom((this.seed ^ (this.level * 2654435761)) >>> 0);
+    const ok = id => (this.mods[id] || 0) < UPGRADES[id].max && !(id === 'suppressor' && WEAPONS[this.weapon].silent) && !(id === 'medkit' && this.lives >= 3);
+    const pool = Object.keys(UPGRADES).filter(id => ok(id) && !UPGRADES[id].rare), rares = Object.keys(UPGRADES).filter(id => ok(id) && UPGRADES[id].rare);
+    const offer = [];
+    if (this.level >= 1 && rares.length && rand() < 0.6) offer.push(rares[Math.floor(rand() * rares.length)]);
+    while (offer.length < 3 && pool.length) offer.push(pool.splice(Math.floor(rand() * pool.length), 1)[0]);
+    return offer;
+  }
+  // Take one of the offered upgrades after a clear, then move to the next stage.
+  pickUpgrade(id) {
+    if (this.state !== 'clear' || !this.offer.includes(id)) return false;
+    if (id === 'medkit') this.lives = Math.min(3, this.lives + 1); else this.mods[id] = (this.mods[id] || 0) + 1;
+    this.offer = []; return this.next();
+  }
+  get synergies() { return activeSynergies(this.weapon, this.mods); }
+  hasSynergy(id) { return this.synergies.some(s => s.id === id); }
+  // Special ability: one use per stage per charge.
+  useAbility() {
+    if (this.state !== 'play' || this.charges <= 0 || this.abilityTime > 0 || this.spareRound) return false;
+    this.charges--; const a = this.stats.ability;
+    if (this.weapon === 'silent') this.spareRound = true; else this.abilityTime = a.time;
+    return true;
+  }
+  get focus() { return this.weapon === 'scout' && this.abilityTime > 0; }
+  get thermal() { return this.weapon === 'heavy' && this.abilityTime > 0; }
+  get rapidMode() { return this.weapon === 'rapid' && this.abilityTime > 0; }
+  get tracerOn() { return this.stats.tracer && this.time <= (this.stage.loc.time + this.stats.timeBonus) / 2; }
   get target() { return this.stage.people[0]; }
   get clues() { return describe(targetLook(this.location)); }
   begin() { if (this.state !== 'brief') return false; this.state = 'play'; return true; }
@@ -181,14 +269,17 @@ class SniperRun {
   setSteady(on) { this.steady = Boolean(on) && this.state === 'play' && this.breath > 0.05; }
   // Breathing sway; holding breath (steady) shrinks it until the breath meter runs out.
   sway() {
-    const amp = this.steady ? 1.4 : 6.5, t = this.elapsed;
+    if (this.focus) return { x: 0, y: 0 };
+    const amp = (this.steady ? 1.4 : 6.5) * this.stats.sway * (this.rapidMode ? 0.5 : 1), t = this.elapsed;
     return { x: Math.sin(t * 1.9) * amp + Math.sin(t * 4.3) * amp * 0.25, y: Math.cos(t * 1.5) * amp * 0.7 };
   }
   fire() {
     if (this.state !== 'play') return { kind: 'blocked' };
-    const d = this.sway(), x = clamp(this.aim.x + d.x, 0, WORLD.width), y = clamp(this.aim.y + d.y, 0, WORLD.height), hit = hitTest(this.stage, x, y);
-    this.shot = { x, y, hit, clock: 0, resolved: false, outcome: null };
-    this.state = 'shot'; this.steady = false;
+    const st = this.stats, d = this.sway(), x = clamp(this.aim.x + d.x, 0, WORLD.width), y = clamp(this.aim.y + d.y, 0, WORLD.height), hit = hitTest(this.stage, x, y, { pierce: st.pierce, head: st.head });
+    this.shot = { x, y, hit, clock: 0, resolved: false, outcome: null, weapon: this.weapon, pierced: hit.pierced || [] };
+    this.state = 'shot'; this.steady = false; this.shotsFired++;
+    // A semi-auto miss skips the slow-motion sequence entirely.
+    if (this.stats.quick && hit.kind !== 'person') { this.shot.quick = true; this.resolveShot(); if (this.shot.outcome === 'miss') { this.lastShot = this.shot; this.shot = null; this.state = 'play'; } else this.shot.clock = FLIGHT; }
     return { kind: hit.kind === 'person' ? (hit.person.target ? 'target' : 'innocent') : hit.kind, x, y };
   }
   update(dt) {
@@ -197,9 +288,10 @@ class SniperRun {
     if (this.state === 'shot') { this.updateShot(dt); return; }
     if (this.state !== 'play') return;
     this.elapsed += dt; this.time = Math.max(0, this.time - dt);
-    this.breath = this.steady ? Math.max(0, this.breath - dt / 3.2) : Math.min(1, this.breath + dt / 2.4);
+    this.abilityTime = Math.max(0, this.abilityTime - dt);
+    this.breath = this.steady && !this.rapidMode ? Math.max(0, this.breath - dt / this.stats.breath) : Math.min(1, this.breath + dt / 2.4);
     if (this.breath === 0) this.steady = false;
-    this.updateCrowd(dt);
+    this.updateCrowd(this.focus ? dt * 0.3 : dt);
     if (this.time === 0) this.fail('시간이 다 됐습니다. 윌리가 군중 속으로 사라졌어요.');
   }
   // Skip the rest of the bullet-time sequence; the outcome is resolved exactly once.
@@ -224,9 +316,15 @@ class SniperRun {
       s.reason = p.decoy ? `변장한 가짜였습니다. 윌리는 '${TRAITS[diff[0]][target[diff[0]]]}'인데 이 사람은 '${TRAITS[diff[0]][p.look[diff[0]]]}'였어요.` : '엉뚱한 사람을 쐈습니다. 수배 전단의 단서 네 가지를 모두 확인하세요.';
       return;
     }
-    this.misses++; s.outcome = this.misses >= MAX_MISSES ? 'fail' : 'miss';
-    s.reason = '세 번 빗나가자 윌리가 눈치채고 달아났습니다.';
-    this.panic(s.x, s.y);
+    if (this.spareRound) { this.spareRound = false; s.spared = true; } else this.misses++;
+    s.outcome = this.misses >= this.maxMisses ? 'fail' : 'miss';
+    s.reason = `${this.maxMisses}번 빗나가자 윌리가 눈치채고 달아났습니다.`;
+    this.decals.push({ x: s.x, y: s.y, prop: hit.kind === 'prop' });
+    if (this.stats.silent) this.hush(s.x, s.y); else this.panic(s.x, s.y);
+  }
+  // A suppressed miss: only people right next to the impact glance around.
+  hush(x, y) {
+    for (const p of this.stage.people) if (!p.dead && Math.hypot(p.x - x, (p.y - y) * 1.6) < 90) { p.alarm = 0.8; p.action = 'look'; }
   }
   panic(x, y) {
     for (const p of this.stage.people) {
@@ -271,12 +369,14 @@ class SniperRun {
   }
   clearLevel() {
     const loc = this.location, s = this.shot;
-    const breakdown = { base: 1000, time: Math.round(this.time * 12), misses: (MAX_MISSES - this.misses) * 250, head: s.head ? 600 : 0, tier: loc.tier * 500 };
+    const st = this.stats, breakdown = { base: 1000, time: Math.round(this.time * 12), misses: (st.misses - this.misses) * 250, head: s.head ? 600 + st.headBonus + (this.hasSynergy('deadeye') ? 500 : 0) : 0, tier: loc.tier * 500 };
+    if (s.pierced && s.pierced.length) breakdown.pierce = 300 + (this.hasSynergy('breacher') ? 400 : 0);
+    if (this.hasSynergy('ghost')) breakdown.misses = st.misses * 250;
     const gained = Object.values(breakdown).reduce((a, b) => a + b, 0);
-    const stars = this.misses === 0 && this.time >= loc.time * 0.4 ? 3 : this.misses <= 1 ? 2 : 1;
+    const stars = this.misses === 0 && this.time >= (loc.time + st.timeBonus) * 0.4 ? 3 : this.misses <= 1 ? 2 : 1;
     this.score += gained;
     this.result = { level: this.level, name: loc.name, gained, stars, head: Boolean(s.head), breakdown, seconds: Math.round((loc.time - this.time) * 10) / 10 };
-    this.clears.push(this.result); this.state = 'clear'; this.shot = null;
+    this.clears.push(this.result); this.state = 'clear'; this.shot = null; this.offer = this.makeOffer();
   }
   fail(reason, fromShot = false) {
     if (!['play', 'shot'].includes(this.state) || (this.state === 'shot' && !fromShot)) return;
@@ -284,12 +384,12 @@ class SniperRun {
     this.state = this.lives > 0 ? 'failed' : 'over';
   }
   next() {
-    if (this.state === 'clear') { this.level++; this.attempt = 0; this.loadLevel(); this.state = 'brief'; return true; }
+    if (this.state === 'clear') { this.offer = []; this.level++; this.attempt = 0; this.loadLevel(); this.state = 'brief'; return true; }
     if (this.state === 'failed') { this.attempt++; this.loadLevel(); this.state = 'brief'; return true; }
     return false;
   }
 }
 
-const api = { WORLD, TRAITS, TRAIT_KEYS, LOCATIONS, PROP_SHAPES, PROP_SOLIDS, PERSON, MAX_MISSES, FLIGHT, AFTERMATH, sniperRandom, makeStage, locationFor, targetLook, describe, differingTraits, sameLook, depthScale, hitTest, personBox, propCovers, propSolid, insideProp, SniperRun };
+const api = { WEAPONS, UPGRADES, ABILITIES, SYNERGIES, activeSynergies, weaponStats, WORLD, TRAITS, TRAIT_KEYS, LOCATIONS, PROP_SHAPES, PROP_SOLIDS, PERSON, MAX_MISSES, FLIGHT, AFTERMATH, sniperRandom, makeStage, locationFor, targetLook, describe, differingTraits, sameLook, depthScale, hitTest, personBox, propCovers, propSolid, insideProp, SniperRun };
 if (typeof module === 'object' && module.exports) module.exports = api; else root.SniperCore = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
