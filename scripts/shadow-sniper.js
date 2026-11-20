@@ -1,4 +1,4 @@
-/* 윌리를 찾아서 저격해라 — game loop, camera, scope, input, sound and page UI. */
+/* 윌리를 찾아 보자 — game loop, camera, scope, input, sound and page UI. */
 'use strict';
 (function () {
 const C = window.SniperCore, A = window.SniperArt, W = C.WORLD.width, H = C.WORLD.height;

@@ -1,9 +1,9 @@
-/* 윌리를 찾아서 저격해라 — vector art for scenes, props, people and the wanted poster.
+/* 윌리를 찾아 보자 — vector art for scenes, props, people and the wanted poster.
    Everything is drawn in world units (1600 × 900), so the same calls render the overview and the magnified scope crisply. */
 'use strict';
 (function (root) {
 const C = root.SniperCore;
-const TOP_COLORS = { stripe: '#d8434b', green: '#4f9a5a', blue: '#3f6fb5', yellow: '#e9c247', purple: '#8a5bb3', check: '#b65a3c', white: '#ece8de', orange: '#e4853a' };
+const TOP_COLORS = { stripe: '#2f4a7a', green: '#4f9a5a', blue: '#3f6fb5', yellow: '#e9c247', purple: '#8a5bb3', check: '#b65a3c', white: '#ece8de', orange: '#e4853a' };
 
 function shade(hex, f) {
   const n = parseInt(hex.slice(1), 16), ch = s => Math.max(0, Math.min(255, Math.round(((n >> s) & 255) * f)));
@@ -158,7 +158,7 @@ function drawProp(ctx, stage, p, t) {
 
 /* ---------- People ---------- */
 function drawHat(ctx, hat, f) {
-  if (hat === 'beanie') { ctx.fillStyle = '#d23f48'; ctx.beginPath(); ctx.arc(0, -61, 10.2, Math.PI, 0); ctx.fill(); ctx.fillStyle = '#f4ede0'; rr(ctx, -10.8, -62.5, 21.6, 4.6, 2); ctx.fill(); circle(ctx, 0, -72.5, 3.6, '#f4ede0'); ctx.fillStyle = 'rgba(0,0,0,.12)'; for (let k = -2; k <= 2; k++) ctx.fillRect(k * 3.6 - .6, -70, 1.2, 7.5); }
+  if (hat === 'beanie') { ctx.fillStyle = '#e8892f'; ctx.beginPath(); ctx.arc(0, -61, 10.2, Math.PI, 0); ctx.fill(); ctx.fillStyle = '#f4ede0'; rr(ctx, -10.8, -62.5, 21.6, 4.6, 2); ctx.fill(); circle(ctx, 0, -72.5, 3.6, '#5a3a22'); ctx.fillStyle = 'rgba(0,0,0,.12)'; for (let k = -2; k <= 2; k++) ctx.fillRect(k * 3.6 - .6, -70, 1.2, 7.5); }
   else if (hat === 'cap') { ctx.fillStyle = '#2f5fa8'; ctx.beginPath(); ctx.arc(0, -61, 9.8, Math.PI, 0); ctx.fill(); ell(ctx, f * 9, -61, 8, 2.4, '#244c88'); circle(ctx, 0, -70.6, 1.6, '#244c88'); }
   else if (hat === 'straw') { ell(ctx, 0, -62, 17, 4, '#e3c37a'); ctx.fillStyle = '#e8cc87'; rr(ctx, -8.5, -71, 17, 10, 4); ctx.fill(); ctx.fillStyle = '#b8473f'; ctx.fillRect(-8.5, -64.5, 17, 2.6); }
   else if (hat === 'beret') { ell(ctx, f * 2, -67, 11.5, 5, '#24242a'); circle(ctx, f * 2, -72, 1.5, '#24242a'); }
@@ -168,7 +168,7 @@ function drawTorso(ctx, top) {
   const base = TOP_COLORS[top];
   rr(ctx, -10, -52, 20, 26, 6); ctx.fillStyle = base; ctx.fill();
   ctx.save(); rr(ctx, -10, -52, 20, 26, 6); ctx.clip();
-  if (top === 'stripe') { ctx.fillStyle = '#f6f0e4'; for (let y = -50; y < -26; y += 6) ctx.fillRect(-11, y, 22, 3); }
+  if (top === 'stripe') { ctx.fillStyle = '#f0c64a'; for (let y = -50; y < -26; y += 6) ctx.fillRect(-11, y, 22, 3); }
   if (top === 'check') { ctx.strokeStyle = 'rgba(40,20,10,.45)'; ctx.lineWidth = 1.4; for (let k = -12; k <= 12; k += 5) { ctx.beginPath(); ctx.moveTo(k, -53); ctx.lineTo(k, -25); ctx.moveTo(-11, -52 + (k + 12)); ctx.lineTo(11, -52 + (k + 12)); ctx.stroke(); } }
   ctx.fillStyle = 'rgba(0,0,0,.14)'; ctx.fillRect(4, -53, 7, 28); ctx.fillStyle = 'rgba(255,255,255,.14)'; ctx.fillRect(-10, -53, 3, 28);
   ctx.restore();
@@ -190,7 +190,7 @@ function drawPerson(ctx, stage, p, t, opt = {}) {
   const leg = (dx, a) => { ctx.save(); ctx.translate(dx, -27); ctx.rotate(a); rr(ctx, -3.6, 0, 7.2, 25, 3); ctx.fillStyle = p.pants; ctx.fill(); ell(ctx, 1.5 * f, 25.5, 5.4, 2.8, '#2a2523'); ctx.restore(); };
   leg(-4, swing * .45); leg(4, -swing * .45);
   // back arm
-  const arm = (side, a, front) => { ctx.save(); ctx.translate(side * 9, -48); ctx.rotate(a); rr(ctx, -3.2, 0, 6.4, 18, 3); ctx.fillStyle = front ? top : shade(top, .82); ctx.fill(); if (p.look.top === 'stripe') { ctx.fillStyle = front ? '#f6f0e4' : '#d9d2c4'; ctx.fillRect(-3.2, 5, 6.4, 2.4); ctx.fillRect(-3.2, 11, 6.4, 2.4); } circle(ctx, 0, 19, 3.2, p.skin); ctx.restore(); };
+  const arm = (side, a, front) => { ctx.save(); ctx.translate(side * 9, -48); ctx.rotate(a); rr(ctx, -3.2, 0, 6.4, 18, 3); ctx.fillStyle = front ? top : shade(top, .82); ctx.fill(); if (p.look.top === 'stripe') { ctx.fillStyle = front ? '#f0c64a' : '#cfa83c'; ctx.fillRect(-3.2, 5, 6.4, 2.4); ctx.fillRect(-3.2, 11, 6.4, 2.4); } circle(ctx, 0, 19, 3.2, p.skin); ctx.restore(); };
   const fleeing = p.state === 'flee' && !p.dead, idle = p.state === 'idle' && !p.dead;
   let backA = -swing * .5, frontA = swing * .5;
   if (fleeing) { backA = 2.6; frontA = -2.6; }

@@ -1,4 +1,4 @@
-/* 윌리를 찾아서 저격해라 — game rules. No DOM access; runs in the browser and in Node tests. */
+/* 윌리를 찾아 보자 — game rules. No DOM access; runs in the browser and in Node tests. */
 'use strict';
 (function (root) {
 const WORLD = { width: 1600, height: 900 };
@@ -18,8 +18,8 @@ const pick = (rand, list) => list[Math.floor(rand() * list.length)];
 
 // Visible traits. Labels are what the wanted poster and decoy messages say.
 const TRAITS = {
-  hat: { beanie: '빨간 털모자', cap: '파란 야구모자', straw: '밀짚모자', beret: '검은 베레모', bowler: '갈색 중절모', none: '모자 없음' },
-  top: { stripe: '빨강·흰 줄무늬 옷', green: '초록 옷', blue: '파란 옷', yellow: '노란 옷', purple: '보라 옷', check: '체크무늬 옷', white: '흰 옷', orange: '주황 옷' },
+  hat: { beanie: '주황 털모자', cap: '파란 야구모자', straw: '밀짚모자', beret: '검은 베레모', bowler: '갈색 중절모', none: '모자 없음' },
+  top: { stripe: '남색·노랑 줄무늬 옷', green: '초록 옷', blue: '파란 옷', yellow: '노란 옷', purple: '보라 옷', check: '체크무늬 옷', white: '흰 옷', orange: '주황 옷' },
   glasses: { round: '둥근 안경', sun: '선글라스', none: '안경 없음' },
   item: { bag: '검은 가방', scarfY: '노란 스카프', backpack: '초록 배낭', camera: '목에 건 카메라', balloon: '빨간 풍선', scarfB: '파란 스카프', none: '소지품 없음' }
 };

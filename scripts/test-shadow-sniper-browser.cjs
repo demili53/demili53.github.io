@@ -1,4 +1,4 @@
-// Browser test for "윌리를 찾아서 저격해라". Run: node scripts/test-shadow-sniper-browser.cjs (needs playwright)
+// Browser test for "윌리를 찾아 보자". Run: node scripts/test-shadow-sniper-browser.cjs (needs playwright)
 const http = require('http'), fs = require('fs'), path = require('path'), assert = require('assert');
 const { chromium } = require('playwright');
 const root = path.resolve(__dirname, '..');

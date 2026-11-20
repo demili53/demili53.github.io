@@ -1,4 +1,4 @@
-// Rules tests for "윌리를 찾아서 저격해라" (scripts/sniper-core.js). Run: node scripts/test-shadow-sniper.cjs
+// Rules tests for "윌리를 찾아 보자" (scripts/sniper-core.js). Run: node scripts/test-shadow-sniper.cjs
 const assert = require('assert');
 const C = require('./sniper-core.js');
 
