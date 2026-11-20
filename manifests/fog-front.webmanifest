@@ -1,0 +1,41 @@
+{
+  "id": "/arcade/fog-front.html",
+  "name": "운빨좆망겜",
+  "short_name": "운빨좆망겜",
+  "description": "안개 정찰 타워 디펜스",
+  "lang": "ko",
+  "dir": "ltr",
+  "start_url": "/arcade/fog-front.html",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ],
+  "background_color": "#0c1117",
+  "theme_color": "#101722",
+  "categories": [
+    "games",
+    "entertainment"
+  ],
+  "icons": [
+    {
+      "src": "/assets/app/fog-front-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/app/fog-front-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/app/fog-front-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

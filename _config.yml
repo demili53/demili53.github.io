@@ -49,3 +49,5 @@ exclude:
   - scripts/test-exam-sneak.cjs
   - scripts/test-exam-sneak-browser.cjs
   - scripts/test-tarot.cjs
+  - scripts/test-web-app-browser.cjs
+  - scripts/build-web-app.cjs

@@ -1,0 +1,41 @@
+{
+  "id": "/arcade/missile-rush.html",
+  "name": "구글광고에나오는게임",
+  "short_name": "구글광고에나오는게임",
+  "description": "연산 관문 함대 증식 슈팅",
+  "lang": "ko",
+  "dir": "ltr",
+  "start_url": "/arcade/missile-rush.html",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ],
+  "background_color": "#0c1117",
+  "theme_color": "#101722",
+  "categories": [
+    "games",
+    "entertainment"
+  ],
+  "icons": [
+    {
+      "src": "/assets/app/missile-rush-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/app/missile-rush-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/app/missile-rush-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

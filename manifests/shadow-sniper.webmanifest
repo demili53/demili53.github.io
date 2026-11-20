@@ -1,0 +1,41 @@
+{
+  "id": "/arcade/shadow-sniper.html",
+  "name": "윌리를 찾아 보자",
+  "short_name": "윌리를 찾아 보자",
+  "description": "군중 속 숨은 그림 저격",
+  "lang": "ko",
+  "dir": "ltr",
+  "start_url": "/arcade/shadow-sniper.html",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ],
+  "background_color": "#0c1117",
+  "theme_color": "#101722",
+  "categories": [
+    "games",
+    "entertainment"
+  ],
+  "icons": [
+    {
+      "src": "/assets/app/shadow-sniper-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/app/shadow-sniper-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/app/shadow-sniper-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

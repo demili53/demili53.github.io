@@ -1,0 +1,41 @@
+{
+  "id": "/arcade/exam-sneak.html",
+  "name": "들키면 재수",
+  "short_name": "들키면 재수",
+  "description": "AI 수능 컨닝 게임",
+  "lang": "ko",
+  "dir": "ltr",
+  "start_url": "/arcade/exam-sneak.html",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ],
+  "background_color": "#0c1117",
+  "theme_color": "#101722",
+  "categories": [
+    "games",
+    "entertainment"
+  ],
+  "icons": [
+    {
+      "src": "/assets/app/exam-sneak-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/app/exam-sneak-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/app/exam-sneak-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

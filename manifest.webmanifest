@@ -1,0 +1,147 @@
+{
+  "id": "/",
+  "name": "PartyGame 무료 게임",
+  "short_name": "PartyGame",
+  "description": "랜덤타워디펜스와 무료 브라우저 게임 모음",
+  "lang": "ko",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ],
+  "background_color": "#0c1117",
+  "theme_color": "#101722",
+  "categories": [
+    "games",
+    "entertainment"
+  ],
+  "icons": [
+    {
+      "src": "/assets/app/partygame-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/app/partygame-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/app/partygame-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "던전엔드레곤",
+      "short_name": "던전엔드레곤",
+      "description": "횡스크롤 액션 로그라이트",
+      "url": "/arcade/rift-blade.html",
+      "icons": [
+        {
+          "src": "/assets/app/rift-blade-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "1945EX",
+      "short_name": "1945EX",
+      "description": "세로 스크롤 비행기 슈팅",
+      "url": "/arcade/space-shooter.html",
+      "icons": [
+        {
+          "src": "/assets/app/space-shooter-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "구글광고에나오는게임",
+      "short_name": "구글광고에나오는게임",
+      "description": "연산 관문 함대 증식 슈팅",
+      "url": "/arcade/missile-rush.html",
+      "icons": [
+        {
+          "src": "/assets/app/missile-rush-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "운빨좆망겜",
+      "short_name": "운빨좆망겜",
+      "description": "안개 정찰 타워 디펜스",
+      "url": "/arcade/fog-front.html",
+      "icons": [
+        {
+          "src": "/assets/app/fog-front-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "뱀파이어 온라인",
+      "short_name": "뱀파이어 온라인",
+      "description": "10분 생존 로그라이트",
+      "url": "/arcade/lantern-keeper.html",
+      "icons": [
+        {
+          "src": "/assets/app/lantern-keeper-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "들키면 재수",
+      "short_name": "들키면 재수",
+      "description": "AI 수능 컨닝 게임",
+      "url": "/arcade/exam-sneak.html",
+      "icons": [
+        {
+          "src": "/assets/app/exam-sneak-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "윌리를 찾아 보자",
+      "short_name": "윌리를 찾아 보자",
+      "description": "군중 속 숨은 그림 저격",
+      "url": "/arcade/shadow-sniper.html",
+      "icons": [
+        {
+          "src": "/assets/app/shadow-sniper-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "무료 타로점",
+      "short_name": "무료 타로점",
+      "description": "타로 카드 78장 무료 해석",
+      "url": "/fortune/tarot.html",
+      "icons": [
+        {
+          "src": "/assets/app/tarot-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}

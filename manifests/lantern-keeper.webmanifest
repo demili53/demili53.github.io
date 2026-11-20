@@ -1,0 +1,41 @@
+{
+  "id": "/arcade/lantern-keeper.html",
+  "name": "뱀파이어 온라인",
+  "short_name": "뱀파이어 온라인",
+  "description": "10분 생존 로그라이트",
+  "lang": "ko",
+  "dir": "ltr",
+  "start_url": "/arcade/lantern-keeper.html",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ],
+  "background_color": "#0c1117",
+  "theme_color": "#101722",
+  "categories": [
+    "games",
+    "entertainment"
+  ],
+  "icons": [
+    {
+      "src": "/assets/app/lantern-keeper-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/app/lantern-keeper-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/app/lantern-keeper-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

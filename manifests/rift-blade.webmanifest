@@ -1,0 +1,41 @@
+{
+  "id": "/arcade/rift-blade.html",
+  "name": "던전엔드레곤",
+  "short_name": "던전엔드레곤",
+  "description": "횡스크롤 액션 로그라이트",
+  "lang": "ko",
+  "dir": "ltr",
+  "start_url": "/arcade/rift-blade.html",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ],
+  "background_color": "#0c1117",
+  "theme_color": "#101722",
+  "categories": [
+    "games",
+    "entertainment"
+  ],
+  "icons": [
+    {
+      "src": "/assets/app/rift-blade-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/app/rift-blade-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/app/rift-blade-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

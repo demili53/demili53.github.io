@@ -1,0 +1,41 @@
+{
+  "id": "/fortune/tarot.html",
+  "name": "무료 타로점",
+  "short_name": "무료 타로점",
+  "description": "타로 카드 78장 무료 해석",
+  "lang": "ko",
+  "dir": "ltr",
+  "start_url": "/fortune/tarot.html",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ],
+  "background_color": "#0c1117",
+  "theme_color": "#101722",
+  "categories": [
+    "games",
+    "entertainment"
+  ],
+  "icons": [
+    {
+      "src": "/assets/app/tarot-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/app/tarot-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/app/tarot-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

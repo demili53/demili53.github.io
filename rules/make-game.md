@@ -11,6 +11,7 @@
 - 무료 타로점 `fortune/tarot.html`은 1909 라이더-웨이트 78장 카드로 보는 운세 페이지입니다. 동작은 `scripts/tarot.js`, 카드 이미지와 이름·뜻은 `assets/tarot/cards.json`, 카드별 주제 해석문(연애·재물·일·학업·건강·인간관계, 상대 마음, 역방향, 조언)은 `scripts/tarot-readings.js`입니다. 고민 글의 주제·질문 유형·감정 낱말 목록은 `scripts/tarot.js`의 TOPICS, QTYPES, EMOTIONS에서, 세부 상황과 상황별 결과 5단계, 사람·시점 낱말, 카드 두 장 조합 해석은 `scripts/tarot-ai.js`에서 관리하며 고민 글은 브라우저 밖으로 보내지 않습니다. 카드 이미지는 원본 세트 `C:\claudeSession\assets\tarot\rws1909\`의 제목을 잘라낸 버전에서 만들고, 대체 그림(`youtube_image_crop`)이 있는 카드는 대체 그림을 씁니다. 변경 후 `node scripts/test-tarot.cjs`를 실행합니다.
 - 사용자 요청 없이 블로그·순위 콘텐츠·생활 도구·다른 게임을 추가하지 않습니다.
 - 메뉴와 로그인·푸터는 `scripts/site-layout.js`, 인증은 `scripts/firebase-client.js`에서 공통 관리합니다.
+- 공유 버튼·홈 화면 추가 버튼과 웹앱(매니페스트·아이콘·오프라인 서비스 워커 `sw.js`)도 공통입니다. 게임을 추가하거나 이름을 바꾸면 `rules/site-layout.md`의 웹앱 항목을 따릅니다.
 - `sitemap.xml`에는 메인·비행기·윌리를 찾아 보자·던전엔드레곤·구글광고에나오는게임·뱀파이어 온라인·운빨좆망겜·들키면 재수 게임, 무료 타로점과 EXAONE의 대표 URL만 포함합니다. 대표 URL, OG·Twitter 메타, 실제 내용과 일치하는 VideoGame 구조화 데이터를 유지합니다.
 - 이전 디펜스·게임 목록 주소는 메인으로 이동하고, 제공이 종료된 콘텐츠는 404로 처리합니다. 관련 없는 예전 페이지를 일괄 메인 리다이렉트하지 않습니다.
 - 게임 구현 변경 후 `node scripts/test-dawn-bastion.cjs`, 사이트 변경 후 `node scripts/test-site-layout.cjs`와 `node scripts/test-site-seo.cjs`를 실행합니다.
