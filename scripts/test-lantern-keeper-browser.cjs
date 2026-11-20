@@ -77,6 +77,32 @@ const mode = page => page.evaluate(() => window.__lanternKeeper.mode);
     assert(s.gems > 0 || s.level > 4, 'shadows drop embers');
     await page.screenshot({ path: path.join(out, 'lantern-keeper-arts.png') });
 
+    // New arts and all nine evolutions run in the real loop and draw their effects.
+    const seen = await page.evaluate(() => {
+      const k = window.__lanternKeeper; k.clear(); k.setTime(420); // tougher shadows live long enough to show stun and slow
+      for (const id of ['chain', 'wing', 'whip', 'beacon', 'seed']) k.grant('weapon', id, 5);
+      for (const id of ['ember', 'halo', 'firefly', 'sunbeam', 'pool', 'flare']) k.grant('weapon', id, 5 - (k.snapshot().weapons[id] || 0));
+      for (const id of ['oil', 'wick', 'boots', 'shade', 'lodestone', 'cloak']) k.grant('charm', id, 1);
+      for (const id of Object.keys(k.snapshot().weapons)) k.evolve(id);
+      const seen = { arcs: 0, slashes: 0, blasts: 0, stun: 0, slow: 0, seeds: 0 }, kills = k.snapshot().kills;
+      for (let i = 0; i < 40; i++) {
+        if (i % 8 === 0) { k.spawn('vine', 16, 80); k.spawn('golem', 6, 140); }
+        k.step(.1); if (k.mode === 'levelup') k.choose(0);
+        const s = k.snapshot(); seen.arcs += s.arcs; seen.slashes += s.slashes; seen.blasts += s.blasts; seen.seeds += s.seeds;
+        for (const e of k.enemyStatus()) { seen.stun += e.stun; seen.slow += e.slow; }
+      }
+      seen.kills = k.snapshot().kills - kills; seen.evolved = Object.keys(k.snapshot().evolved).length;
+      return seen;
+    });
+    assert.equal(seen.evolved, 11);
+    assert(seen.seeds > 0, 'seeds are planted');
+    const dmg = await page.evaluate(() => window.__lanternKeeper.snapshot().dmgBy);
+    for (const id of ['beacon', 'seed', 'chain', 'wing', 'whip']) assert(dmg[id] > 0, id + ' deals damage ' + JSON.stringify(dmg));
+    assert(seen.arcs > 0 && seen.slashes > 0 && seen.blasts > 0, 'chain, whip and comet effects appear ' + JSON.stringify(seen));
+    assert(seen.stun > 0 && seen.slow > 0, 'dawn wave stuns, lava slows');
+    assert(seen.kills > 20, 'evolved arts kill');
+    await page.screenshot({ path: path.join(out, 'lantern-keeper-evolved.png') });
+
     // Bosses: spawn, show, and leave a starlight chest.
     await page.evaluate(() => { const k = window.__lanternKeeper; k.clear(); k.spawnBoss(2); let left = 3.1; while (left > 0) { const t = k.snapshot().t; k.step(left); left -= k.snapshot().t - t; if (k.mode === 'levelup') k.choose(0); } });
     s = await game(page);
@@ -85,9 +111,15 @@ const mode = page => page.evaluate(() => window.__lanternKeeper.mode);
     await page.evaluate(() => window.__lanternKeeper.killBoss());
     await page.waitForTimeout(100);
     assert.equal((await game(page)).boss, null);
+    // The boss's starlight chest gives three upgrades at once, shown on the canvas.
+    const chest = await page.evaluate(() => { const k = window.__lanternKeeper, lv = Object.values(k.snapshot().weapons).reduce((a, b) => a + b, 0) + Object.values(k.snapshot().polish).reduce((a, b) => a + b, 0) + Object.values(k.snapshot().charms).reduce((a, b) => a + b, 0); k.openChest(); const s = k.snapshot(); return { items: s.chest, gained: Object.values(s.weapons).reduce((a, b) => a + b, 0) + Object.values(s.polish).reduce((a, b) => a + b, 0) + Object.values(s.charms).reduce((a, b) => a + b, 0) - lv }; });
+    assert(chest.items && chest.items.length >= 1, 'chest panel lists upgrades');
+    await page.waitForTimeout(1300);
+    await page.screenshot({ path: path.join(out, 'lantern-keeper-chest.png') });
 
     // Pause with P, stays paused, resumes.
     await page.keyboard.press('KeyP'); assert.equal(await mode(page), 'paused');
+    assert.match(await page.locator('#lkText').innerText(), /\d+%\)/, 'pause shows damage by art');
     await page.keyboard.press('KeyP'); assert.equal(await mode(page), 'play');
 
     // Dawn: reaching 10:00 wins with the dawn bonus and reports the score.
@@ -98,6 +130,7 @@ const mode = page => page.evaluate(() => window.__lanternKeeper.mode);
     s = await game(page);
     assert(s.score >= 5000 + 5990, 'dawn bonus');
     assert.match(await page.locator('#lkTitle').innerText(), /새벽이 밝았다/);
+    assert.match(await page.locator('#lkText').innerText(), /치명타 \d+[\s\S]*%\)/, 'results list crits and damage by art');
     assert.equal((await page.evaluate(() => window.lastScore)).gameId, 'lantern-keeper');
     assert.match(await page.locator('#lkBest').innerText(), /점 · 10:00/);
 
@@ -121,7 +154,7 @@ const mode = page => page.evaluate(() => window.__lanternKeeper.mode);
     await phone.screenshot({ path: path.join(out, 'lantern-keeper-mobile.png') });
 
     assert.deepEqual(errors, []);
-    console.log('PASS: lantern keeper browser — menu, auto attack, movement, level-up choices, all arts, boss, pause, dawn, defeat, mobile drag');
+    console.log('PASS: lantern keeper browser — menu, auto attack, movement, level-up choices, 11 arts + evolutions, effects, boss, chest, pause stats, dawn, defeat, mobile drag');
   } finally {
     await browser?.close(); server.close();
   }
