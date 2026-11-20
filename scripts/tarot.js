@@ -581,16 +581,16 @@
   }
   async function shareResult() {
     const url = location.origin + location.pathname;
-    const text = `[타로점] ${state.spread.label}\n${state.picks.map((p, i) => `${state.spread.positions[i].name}: ${p.card.ko}${p.rev ? '(역방향)' : ''}`).join(' · ')}\n${state.summary}`;
+    const text = `[무료 타로점] ${state.spread.label}\n${state.picks.map((p, i) => `${state.spread.positions[i].name}: ${p.card.ko}${p.rev ? '(역방향)' : ''}`).join(' · ')}\n${state.summary}`;
     try {
       let files;
       try { const blob = await resultImage(); const f = new File([blob], `tarot-${today()}.png`, { type: 'image/png' }); if (navigator.canShare && navigator.canShare({ files: [f] })) files = [f]; } catch { /* share text only */ }
-      await navigator.share(files ? { title: '타로점 결과', text, url, files } : { title: '타로점 결과', text, url });
+      await navigator.share(files ? { title: '무료 타로점 결과', text, url, files } : { title: '무료 타로점 결과', text, url });
     } catch { /* closed the share sheet */ }
   }
 
   function resultText() {
-    const lines = [`[타로점] ${state.spread.label}`];
+    const lines = [`[무료 타로점] ${state.spread.label}`];
     if (state.question) lines.push(`고민: ${state.question}`);
     state.picks.forEach((p, i) => lines.push(`${slotName(state.spread, i, state.analysis)}: ${p.card.ko}${p.rev ? '(역방향)' : ''} - ${p.card.meaning}`));
     lines.push(state.summary, `조언: ${state.tip}`, location.origin + location.pathname);
