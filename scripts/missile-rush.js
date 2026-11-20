@@ -27,7 +27,7 @@
   function fresh() {
     return {
       time: 0, player: { x: W / 2, y: 660, vx: 0, vy: 0, inv: 0 },
-      units: C.START_UNITS, shown: C.START_UNITS, peak: C.START_UNITS, tier: 1, weapon: 'missile', wlevels: { missile: 1 },
+      units: C.START_UNITS, shown: C.START_UNITS, peak: C.START_UNITS, tier: 1, weapon: 'missile', wlevels: { missile: 1 }, mods: { rate: 0, crit: 0, size: 0 }, od: { charge: 0, time: 0 }, booms: [],
       score: 0, kills: 0, combo: 0, comboTimer: 0, bestCombo: 0, caught: 0,
       wave: 0, script: null, cursor: 0, waveT: 0, looped: false, hold: false, intermission: 0.6, pending: [],
       rows: [], crates: [], enemies: [], shots: [], bullets: [], bolts: [], parts: [], texts: [], ripples: [],
@@ -35,7 +35,7 @@
       fx: { shake: 0, flash: 0, flashColor: '#ffffff' }
     };
   }
-  const stats = () => C.squadStats(S.units, S.tier, S.weapon, S.wlevels[S.weapon]);
+  const stats = () => C.squadStats(S.units, S.tier, S.weapon, S.wlevels[S.weapon], { rate: S.mods.rate, crit: S.mods.crit, size: S.mods.size, overdrive: S.od.time > 0 });
 
   // ---------- Audio (generated, optional) ----------
   let audio = null, lastShot = 0;
@@ -60,6 +60,10 @@
     for (let i = 0; i < n; i++) { const a = Math.random() * 6.283, sp = 60 + Math.random() * 200; part({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 30, life: .6 + Math.random() * .5, max: 1.1, r: 2 + Math.random() * Math.min(5, r / 5), color, chunk: true, rot: Math.random() * 6, spin: (Math.random() - .5) * 14 }); }
     for (let i = 0; i < Math.min(8, 2 + r / 8); i++) part({ x: x + (Math.random() - .5) * r, y: y + (Math.random() - .5) * r, vx: (Math.random() - .5) * 40, vy: -20 - Math.random() * 30, life: .7 + Math.random() * .5, max: 1.2, r: r * (.5 + Math.random() * .5), color: '#1a2233', smoke: true });
   }
+  // Bigger moments: radial light rays, a pillar of light over the fleet, a ring of sparks closing in.
+  function rays(x, y, r, color) { part({ x, y, vx: 0, vy: 0, life: .32, max: .32, r, color, rays: true, rot: Math.random() * 6.283 }); }
+  function pillar(x, y, color, w = 34) { part({ x, y, vx: 0, vy: 0, life: .55, max: .55, r: w, color, pillar: true }); }
+  function gather(x, y, color, n = 14) { for (let i = 0; i < n; i++) { const a = i / n * 6.283, d = 70 + Math.random() * 30; part({ x: x + Math.cos(a) * d, y: y + Math.sin(a) * d, vx: -Math.cos(a) * d * 4.2, vy: -Math.sin(a) * d * 4.2, life: .4, max: .4, r: 2.6, color }); } }
   function floatText(x, y, text, color, size) { if (S.texts.length < 30) S.texts.push({ x, y, text, color, size: size || 13, life: .9 }); }
   const shake = v => { S.fx.shake = Math.max(S.fx.shake, v); };
   const flash = (a, color) => { S.fx.flash = Math.max(S.fx.flash, a); S.fx.flashColor = color; };
@@ -114,7 +118,7 @@
   function dropSolo(gate, x, y, vy) { S.rows.push({ y, vy, lanes: 1, solo: clamp(x, SOLO_W / 2, W - SOLO_W / 2), age: 0, gates: [{ ...gate, shifts: C.MAX_SHIFTS, dmg: 0, flash: 0 }] }); }
   const gateSpan = (row, i) => row.solo ? [row.solo - SOLO_W / 2, row.solo + SOLO_W / 2] : [i * W / row.lanes, (i + 1) * W / row.lanes];
   function gateAt(row, x) { for (let i = 0; i < row.gates.length; i++) { const [a, b] = gateSpan(row, i); if (x >= a && x < b) return i; } return row.solo ? -1 : C.laneOf(x, row.lanes); }
-  function dropCrate(id, x, y) { S.crates.push({ id: id || C.rollWeapon(S.weapon), x: x ?? 60 + Math.random() * (W - 120), y: y ?? -24, vy: 86, t: Math.random() * 6 }); }
+  function dropCrate(id, x, y) { S.crates.push({ id: id || C.rollCrate(S.weapon, S.mods), x: x ?? 60 + Math.random() * (W - 120), y: y ?? -24, vy: 86, t: Math.random() * 6 }); }
 
   // ---------- Fleet ----------
   function setUnits(n, reason) {
@@ -139,19 +143,31 @@
     row.dead = true; S.caught++;
     burst(cx, row.y, color, 22); blastFx(cx, row.y, 70, color);
     beep(good ? 700 : 200, good ? .2 : .3, 'triangle', .05, good ? 500 : -120);
-    if (good) { S.score += Math.max(0, after - before) * 5; S.freeze = Math.max(S.freeze, .03); } else { shake(8); S.combo = 0; }
+    if (good) { S.score += Math.max(0, after - before) * 5; S.freeze = Math.max(S.freeze, .03); pillar(S.player.x, S.player.y, '#4fe39a'); gather(S.player.x, S.player.y, '#b9ffd9', gate.op === '×' ? 24 : 12); if (gate.op === '×') { rays(S.player.x, S.player.y, 120, '#3fd7ff'); flash(.18, '#3fd7ff'); } } else { shake(8); S.combo = 0; }
     banner(`${C.gateLabel(gate)} · ${before} → ${after}기`, .9);
     setUnits(after, `${C.OPERATORS[gate.op].name} 관문 ${C.gateLabel(gate)} 통과 · ${before}기 → ${after}기`);
     renderLoadout();
   }
+  function catchModule(c) {
+    const r = C.pickModule(S.mods, c.id), m = C.MODULES[c.id], p = S.player;
+    S.mods = r.mods; c.dead = true; S.score += 30;
+    burst(c.x, c.y, m.color, 20); blastFx(c.x, c.y, 60, m.color); pillar(p.x, p.y, m.color); gather(p.x, p.y, m.color); beep(620, .25, 'triangle', .05, 500);
+    banner(r.leveled ? `${m.name} Lv.${S.mods[c.id]}` : `${m.name} 최대 · 증원 +${r.bonus}`, 1.2);
+    say(r.leveled ? `${m.name} Lv.${S.mods[c.id]}. ${m.desc}. 무기를 바꿔도 유지됩니다.` : `${m.name} 최대 레벨. 증원 ${r.bonus}기.`);
+    if (r.bonus) setUnits(S.units + r.bonus);
+    renderLoadout();
+  }
   function catchCrate(c) {
+    if (C.MODULES[c.id]) return catchModule(c);
     const r = C.pickWeapon({ weapon: S.weapon, levels: S.wlevels }, c.id), w = C.WEAPONS[c.id], swapped = S.weapon !== r.weapon;
     S.weapon = r.weapon; S.wlevels = r.levels; S.beam = null; S.fireTimer = 0;
     c.dead = true; S.score += 30;
     burst(c.x, c.y, w.color, 20); blastFx(c.x, c.y, 60, w.color); beep(520, .25, 'triangle', .05, 700);
-    const lv = S.wlevels[S.weapon];
-    banner(swapped ? `${w.name} Lv.${lv}` : r.leveled ? `${w.name} 강화 Lv.${lv}` : `${w.name} 최대 · 증원 +${r.bonus}`, 1.2);
-    say(swapped ? `${w.name}(으)로 교체. ${w.desc}.` : r.leveled ? `${w.name} Lv.${lv} 강화. 피해 +20%.` : `${w.name} 최대 레벨. 증원 ${r.bonus}기.`);
+    const lv = S.wlevels[S.weapon], awoke = r.leveled && lv >= C.WEAPON_MAX_LEVEL, p = S.player;
+    pillar(p.x, p.y, w.color, awoke ? 60 : 34); gather(p.x, p.y, w.color, awoke ? 28 : 14);
+    if (awoke) { rays(p.x, p.y, 170, w.color); blastFx(p.x, p.y, 130, w.color); blastFx(p.x, p.y, 80, '#ffffff'); flash(.35, w.color); shake(6); S.freeze = Math.max(S.freeze, .08); beep(660, .5, 'triangle', .06, 900); }
+    banner(awoke ? `${w.name} 각성!` : swapped ? `${w.name} Lv.${lv}` : r.leveled ? `${w.name} 강화 Lv.${lv}` : `${w.name} 최대 · 증원 +${r.bonus}`, awoke ? 1.8 : 1.2);
+    say(awoke ? `${w.name} 각성. ${w.awaken}.` : swapped ? `${w.name}(으)로 교체. ${w.desc}.` : r.leveled ? `${w.name} Lv.${lv} 강화. 피해 +15%.` : `${w.name} 최대 레벨. 증원 ${r.bonus}기.`);
     if (r.bonus) setUnits(S.units + r.bonus);
     renderLoadout();
   }
@@ -163,22 +179,31 @@
     S.recoil = 1;
     if (st.beam) return fireBeam(st);
     if (st.chain) return fireChain(st);
+    if (st.flame) return fireFlame(st);
+    if (st.nova) {
+      const y = p.y - st.radius * .6 - 10;
+      S.shots.push({ kind: 'nova', x: p.x, y, vx: 0, vy: -st.speed, dmg: st.damage / 6, full: st.damage, field: st.nova, burst: st.novaBurst, life: 3.2, tick: 0, hit: new Set(), r: 11 * st.scale, color: st.color, pierce: 99 });
+      blastFx(p.x, y, 40, st.color); beep(200, .3, 'sine', .04, 260);
+      return;
+    }
     const y0 = p.y - st.radius * .6 - 10;
     if (st.wave) {
-      S.shots.push({ kind: 'wave', x: p.x, y: y0, vx: 0, vy: -st.speed, w: 18, maxW: st.wave, dmg: st.damage, hit: new Set(), color: st.color, r: 6 });
+      const n2 = st.twin ? 2 : 1; // an awakened wave cannon fires two crests that share the damage
+      for (let i = 0; i < n2; i++) S.shots.push({ kind: 'wave', x: p.x, y: y0 + i * 34, vx: 0, vy: -st.speed, w: 18, maxW: st.wave * (i ? .7 : 1), dmg: st.damage / n2, hit: new Set(), color: st.color, r: 6 });
       part({ x: p.x, y: y0, vx: 0, vy: 0, life: .1, max: .1, r: 26, color: st.color, flash: true });
     } else {
       const width = Math.min(st.radius * 1.6, n * 9);
       for (let i = 0; i < n; i++) {
         const k = n === 1 ? 0 : i / (n - 1) - .5;
-        const a = -Math.PI / 2 + (st.spread ? k * st.spread * 2 : st.homing ? k * 1.1 : 0);
-        const m = { kind: st.weapon, x: p.x + k * width, y: y0, vx: Math.cos(a) * st.speed + (st.spread || st.homing ? 0 : k * 40), vy: Math.sin(a) * st.speed, dmg: st.damage, pierce: st.pierce, homing: st.homing, blast: st.blast, hit: new Set(), r: (st.blast ? 6 : st.spread ? 3 : 3.5) + S.tier * .6 + Math.min(3, st.damage / 8), color: st.color };
+        const a = -Math.PI / 2 + (st.spread ? k * st.spread * 2 : st.homing ? k * 1.1 : st.bounce ? k * 1.5 : 0);
+        const m = { kind: st.weapon, x: p.x + k * width, y: y0, vx: Math.cos(a) * st.speed + (st.spread || st.homing || st.bounce ? 0 : k * 40), vy: Math.sin(a) * st.speed, dmg: st.damage, pierce: st.pierce, homing: st.homing, blast: st.blast, hit: new Set(), r: ((st.rail ? st.rail : st.blast ? 6 : st.spread ? 3 : 3.5) + S.tier * .6 + Math.min(3, st.damage / 8)) * st.scale, color: st.color, bounce: st.bounce };
         if (st.spread) m.life = .85; // pellets fade out, so the shotgun rewards getting close
+        if (st.rail) { blastFx(m.x, m.y, 46, st.color); rays(m.x, m.y, 60, st.color); shake(2); }
         S.shots.push(m);
         if (i % 2 === 0 || n < 5) part({ x: m.x, y: m.y + 4, vx: 0, vy: 0, life: .09, max: .09, r: 15, color: st.color, flash: true });
       }
     }
-    if (S.time - lastShot > .09) { beep((st.blast ? 240 : st.wave ? 320 : 520) + S.tier * 60, .06, 'triangle', .025, -260); lastShot = S.time; }
+    if (S.time - lastShot > .09) { beep((st.rail ? 150 : st.blast ? 240 : st.wave ? 320 : st.bounce ? 700 : 520) + S.tier * 60, .06, 'triangle', .025, -260); lastShot = S.time; }
   }
   // The lowest bendable gate over a column soaks up shots aimed through it.
   function blockerAt(x, half, below) {
@@ -201,10 +226,26 @@
   }
   function fireBeam(st) {
     const p = S.player, half = st.beam / 2, block = blockerAt(p.x, half, p.y), top = block ? block.row.y : -10;
-    for (const e of S.enemies) if (!e.dead && e.y < p.y && e.y + e.r > top && Math.abs(e.x - p.x) < e.r + half) { damage(e, st.damage); if (Math.random() < .3) spark(p.x + (Math.random() - .5) * st.beam, e.y + e.r * .6, st.color); }
+    for (const e of S.enemies) if (!e.dead && e.y < p.y && e.y + e.r > top && Math.abs(e.x - p.x) < e.r + half) { strike(e, st.damage, 'laser'); if (Math.random() < .3) spark(p.x + (Math.random() - .5) * st.beam, e.y + e.r * .6, st.color); }
     if (block) hitGate(block.row, block.i, st.damage, st);
     S.beam = { top: block ? top + GATE_H / 2 : -10, w: st.beam, color: st.color, life: .14 };
     if (S.time - lastShot > .2) { beep(900 + S.tier * 40, .12, 'sawtooth', .012, -100); lastShot = S.time; }
+  }
+  // Flamethrower: a short cone, hotter up close, that leaves enemies burning.
+  function fireFlame(st) {
+    const p = S.player, y0 = p.y - st.radius * .6, range = st.flame;
+    S.flameAt = S.time;
+    for (const e of S.enemies) {
+      const dy = y0 - e.y;
+      if (e.dead || dy < -e.r || dy > range + e.r || Math.abs(e.x - p.x) > 20 + Math.max(0, dy) * .42 + e.r) continue;
+      strike(e, st.damage * (1.3 - .6 * Math.max(0, Math.min(1, dy / range))), 'flame');
+      e.burn = 1.2; e.burnDps = st.dps * st.burn;
+    }
+    const block = blockerAt(p.x, 20, p.y);
+    if (block && block.row.y > y0 - range) hitGate(block.row, block.i, st.damage, st);
+    const hot = ['#ffd43b', '#ff922b', '#ff6b35', '#ff6b35'];
+    for (let i = 0; i < 3; i++) { const a = -Math.PI / 2 + (Math.random() - .5) * .8, sp = range / .42 * (.7 + Math.random() * .4); part({ x: p.x + (Math.random() - .5) * 14, y: y0, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: .42, max: .42, r: 16 + Math.random() * 14, color: hot[i + (Math.random() < .5 ? 1 : 0)], flash: true, keep: true }); }
+    if (S.time - lastShot > .12) { beep(110 + Math.random() * 50, .14, 'sawtooth', .014, 60); lastShot = S.time; }
   }
   // Lightning: instant bolts to the nearest enemies, each jumping on to neighbours for 60% damage.
   function fireChain(st) {
@@ -221,7 +262,7 @@
       let cur = near[k], dmg = st.damage;
       const pts = [[p.x + (k - (st.count - 1) / 2) * 12, y0]];
       for (let j = 0; cur && j <= st.chain; j++) {
-        used.add(cur); pts.push([cur.x, cur.y]); damage(cur, dmg); spark(cur.x, cur.y, st.color); dmg *= .6;
+        used.add(cur); pts.push([cur.x, cur.y]); strike(cur, dmg, 'chain'); spark(cur.x, cur.y, st.color); dmg *= .6;
         let next = null, bd = 130 * 130;
         for (const e of S.enemies) { if (e.dead || used.has(e)) continue; const d = (e.x - cur.x) ** 2 + (e.y - cur.y) ** 2; if (d < bd) { bd = d; next = e; } }
         cur = next;
@@ -230,12 +271,43 @@
     }
     if (near.length && S.time - lastShot > .15) { beep(1300, .08, 'square', .018, -900); lastShot = S.time; }
   }
-  function damage(e, amount) { e.hp -= amount; e.flash = .08; if (e.hp <= 0 && !e.dead) kill(e); }
+  function damage(e, amount, by) { if (by) e.by = by; e.hp -= amount; e.flash = .08; if (e.hp <= 0 && !e.dead) kill(e); }
+  // A hit from the fleet's weapon: may be critical, and remembers what landed it for the death effect.
+  function strike(e, amount, by) {
+    const chance = S.mods.crit * .06;
+    if (chance && Math.random() < chance) {
+      amount *= C.CRIT_MULT;
+      part({ x: e.x, y: e.y, vx: 0, vy: 0, life: .28, max: .28, r: e.r * 1.6 + 8, color: '#ffd43b', star: true, rot: Math.random() * 1.57 });
+      if (!(e.critCd > S.time)) { e.critCd = S.time + .35; floatText(e.x + (Math.random() - .5) * 16, e.y - e.r - 4, Math.max(1, Math.round(amount)) + '!', '#ffd43b', 13); }
+    }
+    damage(e, amount, by);
+  }
+  function startOverdrive() {
+    const p = S.player;
+    S.od.charge = 0; S.od.time = C.OVERDRIVE.time;
+    rays(p.x, p.y, 200, '#ffb347'); blastFx(p.x, p.y, 150, '#ffb347'); pillar(p.x, p.y, '#ffb347', 70); flash(.3, '#ffb347'); shake(5); S.freeze = Math.max(S.freeze, .06);
+    banner('오버드라이브!', 1.4); say(`오버드라이브 발동. ${C.OVERDRIVE.time}초 동안 연사 속도 ${C.OVERDRIVE.rate}배.`); beep(440, .45, 'sawtooth', .05, 880);
+    renderLoadout();
+  }
+  // How an enemy dies depends on what killed it.
+  function deathFx(e) {
+    const x = e.x, y = e.y, r = e.r;
+    switch (e.by) {
+      case 'chain': for (let i = 0; i < 3; i++) { const a = Math.random() * 6.283, d = r * 2 + Math.random() * 30; S.bolts.push({ pts: [[x, y], [x + Math.cos(a) * d, y + Math.sin(a) * d]], life: .14, color: '#ffe066' }); } break;
+      case 'flame': for (let i = 0; i < 8; i++) part({ x: x + (Math.random() - .5) * r, y, vx: (Math.random() - .5) * 60, vy: -60 - Math.random() * 120, life: .5 + Math.random() * .4, max: .9, r: 2 + Math.random() * 2.5, color: i % 2 ? '#ffd43b' : '#ff922b', keep: true }); break;
+      case 'laser': case 'rail': part({ x, y, vx: 0, vy: 0, life: .25, max: .25, r: 10, color: e.by === 'rail' ? '#a5d8ff' : '#7ce8ff', pillar: true, short: r * 5 }); break;
+      case 'blast': case 'nova': blastFx(x, y, r * 3.4, e.by === 'nova' ? '#b197fc' : '#ff7b6b'); break;
+      case 'wave': part({ x, y, vx: 0, vy: -90, life: .3, max: .3, r: r * 2.4, color: '#63e6be', ring: true }); break;
+      case 'bounce': rays(x, y, r * 2.6, '#ff8fd8'); break;
+    }
+  }
   function kill(e) {
     const boss = e.type === 'boss';
     e.dead = true; S.kills++; S.combo++; S.comboTimer = 2.5; S.bestCombo = Math.max(S.bestCombo, S.combo);
     S.score += Math.round(e.score * C.comboMultiplier(S.combo));
-    burst(e.x, e.y, e.color, boss ? 70 : 12 + e.r * .6); blastFx(e.x, e.y, e.r * (boss ? 3.2 : 2.2), e.color); debris(e.x, e.y, e.color, boss ? 26 : Math.round(3 + e.r / 5), e.r);
+    burst(e.x, e.y, e.color, boss ? 70 : 12 + e.r * .6); blastFx(e.x, e.y, e.r * (boss ? 3.2 : 2.2), e.color); if (boss || e.r > 16) { rays(e.x, e.y, e.r * (boss ? 5 : 3.2), boss ? '#ffffff' : e.color); blastFx(e.x, e.y, e.r * (boss ? 5 : 3.4), '#ffffff'); } debris(e.x, e.y, e.color, boss ? 26 : Math.round(3 + e.r / 5), e.r);
+    if (S.od.time <= 0 && (S.od.charge += C.overdriveCharge(e.type)) >= C.OVERDRIVE.need) startOverdrive();
+    deathFx(e);
     if (S.combo >= 5 && S.combo % 5 === 0) floatText(e.x, e.y - e.r - 8, `${S.combo} COMBO`, '#ffe27a', 14);
     shake(boss ? 16 : e.r > 18 ? 4 : 0);
     beep(boss ? 90 : 180 + Math.random() * 60, boss ? .7 : .14, 'sawtooth', .035, -120);
@@ -243,6 +315,8 @@
     if (boss) {
       flash(.5, '#ffffff'); S.freeze = .12;
       for (let i = 0; i < 5; i++) blastFx(e.x + (Math.random() - .5) * e.r * 2, e.y + (Math.random() - .5) * e.r, e.r * (1 + Math.random()), '#ffd27a');
+      for (let i = 0; i < 9; i++) S.booms.push({ t: .1 + i * .11, x: e.x + (Math.random() - .5) * e.r * 3, y: e.y + (Math.random() - .5) * e.r * 1.6, r: e.r * (.6 + Math.random() * 1.2), color: i % 2 ? e.color : '#ffd27a' });
+      S.booms.push({ t: 1.15, x: e.x, y: e.y, r: e.r * 4.5, color: '#ffffff', big: true });
       for (const o of S.enemies) if (!o.dead && o !== e) { o.dead = true; burst(o.x, o.y, o.color, 8); }
       S.bullets = []; S.pending = []; S.cursor = S.script ? S.script.events.length : 0;
       S.score += 500 * S.wave;
@@ -270,6 +344,14 @@
     if (S.warn > 0) S.warn -= dt;
     if (S.comboTimer > 0 && (S.comboTimer -= dt) <= 0) S.combo = 0;
     S.shown += (S.units - S.shown) * Math.min(1, dt * 10);
+    if (S.od.time > 0) {
+      const p = S.player;
+      if (Math.random() < .6) part({ x: p.x + (Math.random() - .5) * 50, y: p.y + 10, vx: (Math.random() - .5) * 30, vy: 120 + Math.random() * 80, life: .35, max: .35, r: 2.5, color: '#ffb347', keep: true });
+      if ((S.od.time -= dt) <= 0) { S.od.time = 0; say('오버드라이브 종료. 적을 격파하면 다시 충전됩니다.'); renderLoadout(); }
+    }
+    for (const b of S.booms) if ((b.t -= dt) <= 0) { b.life = 0; blastFx(b.x, b.y, b.r, b.color); burst(b.x, b.y, b.color, b.big ? 60 : 14); shake(b.big ? 14 : 5); if (b.big) { rays(b.x, b.y, b.r * 1.3, '#ffffff'); flash(.4, '#ffffff'); debris(b.x, b.y, '#ffd27a', 20, 40); } beep(b.big ? 70 : 140 + Math.random() * 80, b.big ? .6 : .16, 'sawtooth', .03, -60); } else b.life = 1;
+    S.booms = S.booms.filter(b => b.life > 0);
+    for (const e of S.enemies) if (e.burn > 0 && !e.dead) { e.burn -= dt; damage(e, e.burnDps * dt, 'flame'); e.flash = 0; if (Math.random() < .25) part({ x: e.x + (Math.random() - .5) * e.r, y: e.y, vx: 0, vy: -70, life: .3, max: .3, r: 7, color: '#ff922b', flash: true, keep: true }); }
     let st = stats();
 
     S.fireTimer -= dt;
@@ -299,7 +381,7 @@
       if ((b.x - p.x) ** 2 + (b.y - p.y) ** 2 < (b.r + st.radius * .7) ** 2) { b.dead = true; if (p.inv <= 0) { p.inv = .3; loseUnits(1, '피격!'); if (mode === 'over') return; st = stats(); } }
       if (b.y > H + 12 || b.x < -12 || b.x > W + 12) b.dead = true;
     }
-    for (const q of S.parts) { q.x += q.vx * dt; q.y += q.vy * dt; q.vx *= .94; q.vy *= .94; q.life -= dt; if (q.chunk) { q.rot += q.spin * dt; q.vy += 260 * dt; } }
+    for (const q of S.parts) { q.x += q.vx * dt; q.y += q.vy * dt; if (!q.keep) { q.vx *= .94; q.vy *= .94; } q.life -= dt; if (q.chunk) { q.rot += q.spin * dt; q.vy += 260 * dt; } }
     for (const t of S.texts) { t.y -= 30 * dt; t.life -= dt; }
     for (const b of S.bolts) b.life -= dt;
     for (const r of S.ripples) r.life -= dt;
@@ -322,7 +404,21 @@
         }
       }
       m.x += m.vx * dt; m.y += m.vy * dt;
-      if (m.life !== undefined && (m.life -= dt) <= 0) { m.dead = true; continue; }
+      if (m.bounce > 0) { // ricochet off the side walls and the ceiling, free to hit the same enemy again afterwards
+        const side = m.x < 6 && m.vx < 0 || m.x > W - 6 && m.vx > 0, top = m.y < 6 && m.vy < 0;
+        if (side || top) { if (side) m.vx = -m.vx; else m.vy = -m.vy; m.bounce--; m.hit.clear(); blastFx(m.x, m.y, 16, m.color); spark(m.x, m.y, '#ffffff'); }
+      }
+      if (m.kind === 'rail') part({ x: m.x, y: m.y + 10, vx: (Math.random() - .5) * 20, vy: 0, life: .3, max: .3, r: 3.2, color: m.color });
+      if (m.life !== undefined && (m.life -= dt) <= 0) {
+        m.dead = true;
+        if (m.kind === 'nova' && m.burst) { blastFx(m.x, m.y, m.field * 2.2, m.color); blastFx(m.x, m.y, m.field * 1.4, '#ffffff'); rays(m.x, m.y, m.field * 2.4, m.color); shake(5); for (const e of S.enemies) if (!e.dead && (e.x - m.x) ** 2 + (e.y - m.y) ** 2 < (m.field * 2.2 + e.r) ** 2) strike(e, m.full * .6, 'nova'); }
+        continue;
+      }
+      if (m.kind === 'nova' && (m.tick -= dt) <= 0) { // the orb gnaws at everything inside its field
+        m.tick = .2; let any = false;
+        for (const e of S.enemies) if (!e.dead && e.y > -20 && (e.x - m.x) ** 2 + (e.y - m.y) ** 2 < (m.field + e.r) ** 2) { strike(e, m.dmg, 'nova'); spark(e.x, e.y, m.color); any = true; }
+        if (any) part({ x: m.x, y: m.y, vx: 0, vy: m.vy, life: .2, max: .2, r: m.field, color: m.color, ring: true });
+      }
       const wave = m.kind === 'wave', half = wave ? (m.w = Math.min(m.maxW, m.w + 170 * dt)) : m.r;
       if (!wave && Math.random() < .35) part({ x: m.x, y: m.y + 6, vx: (Math.random() - .5) * 30, vy: 60, life: .22, max: .22, r: 2, color: m.color });
       for (const row of S.rows) { // bendable gates absorb shots
@@ -330,12 +426,12 @@
         for (let i = 0; i < row.gates.length; i++) { const [a, b] = gateSpan(row, i); if (m.x + half > a && m.x - half < b && C.shiftable(row.gates[i])) { m.dead = true; spark(m.x, m.y, '#e6f0ff'); hitGate(row, i, m.dmg, st); break; } }
         if (m.dead) break;
       }
-      if (m.dead) continue;
+      if (m.dead || m.kind === 'nova') continue;
       for (const e of S.enemies) {
         if (e.dead || m.hit.has(e)) continue;
         if (wave ? Math.abs(e.x - m.x) > half + e.r || Math.abs(e.y - m.y) > 10 + e.r : (e.x - m.x) ** 2 + (e.y - m.y) ** 2 > (e.r + m.r) ** 2) continue;
-        m.hit.add(e); damage(e, m.dmg); spark(wave ? e.x : m.x, m.y, m.color);
-        if (m.blast) { blastFx(m.x, m.y, m.blast, m.color); for (const o of S.enemies) if (o !== e && !o.dead && (o.x - m.x) ** 2 + (o.y - m.y) ** 2 < (m.blast + o.r) ** 2) damage(o, m.dmg * .6); }
+        m.hit.add(e); strike(e, m.dmg, m.kind); spark(wave ? e.x : m.x, m.y, m.color);
+        if (m.blast) { blastFx(m.x, m.y, m.blast, m.color); for (const o of S.enemies) if (o !== e && !o.dead && (o.x - m.x) ** 2 + (o.y - m.y) ** 2 < (m.blast + o.r) ** 2) strike(o, m.dmg * .6, 'blast'); }
         if (!wave && --m.pierce < 0) { m.dead = true; break; }
       }
       if (m.y < -30 || m.x < -30 || m.x > W + 30 || m.y > H + 30) m.dead = true;
@@ -425,11 +521,11 @@
   }
   function renderLoadout() {
     const st = stats(), evo = C.evolution(S.tier), w = C.WEAPONS[st.weapon], f = C.composition(S.units);
-    ui.weapon.textContent = `${w.name} Lv.${st.level} / ${C.WEAPON_MAX_LEVEL}`; ui.weapon.style.color = w.color; ui.weaponDesc.textContent = w.desc;
+    ui.weapon.textContent = st.awakened ? `${w.name} 각성 (Lv.${st.level})` : `${w.name} Lv.${st.level} / ${C.WEAPON_MAX_LEVEL}`; ui.weapon.style.color = w.color; ui.weaponDesc.textContent = `${w.desc} · ${st.awakened ? '각성' : 'Lv.' + C.WEAPON_MAX_LEVEL + ' 각성'}: ${w.awaken}`;
     ui.tier.textContent = evo.name; ui.tier.style.color = evo.color;
     document.querySelectorAll('#evoTrack span').forEach((el, i) => { el.style.background = i < S.tier ? C.EVOLUTIONS[i].color : ''; });
-    const rows = [['초당 피해', Math.round(st.dps).toLocaleString('ko-KR')], ['중포함', f.heavy + '척'], ['전투기', f.fighter + '기'], ['포대', f.light + '기']];
-    ui.stats.replaceChildren(...rows.map(([k, v]) => { const li = document.createElement('li'); const a = document.createElement('span'), b = document.createElement('b'); a.textContent = k; b.textContent = v; li.append(a, b); return li; }));
+    const rows = [['초당 피해', Math.round(st.dps).toLocaleString('ko-KR')], ['모듈', `연사 ${S.mods.rate} · 치명 ${S.mods.crit} · 증폭 ${S.mods.size}`], ['중포함', f.heavy + '척'], ['전투기', f.fighter + '기'], ['포대', f.light + '기']];
+    ui.stats.replaceChildren(...rows.map(([k, v]) => { const li = document.createElement('li'); const a = document.createElement('span'), b = document.createElement('b'); a.textContent = k; b.textContent = v; li.append(a, b); if (k === '모듈') li.style.gridColumn = '1 / -1'; return li; }));
   }
   function renderBest() { const b = readBest(); ui.best.textContent = `${b.score.toLocaleString('ko-KR')}점 · ${b.wave}웨이브 · 최대 ${b.peak}기`; }
   function showOverlay(kicker, title, text, button) { ui.kicker.textContent = kicker; ui.title.textContent = title; ui.text.textContent = text; ui.start.textContent = button; ui.overlay.hidden = false; }
@@ -510,7 +606,7 @@
   // Test hooks: a read-only snapshot plus deterministic helpers for the automated browser checks.
   window.__missileRush = {
     get mode() { return mode; },
-    snapshot: () => S && { wave: S.wave, tier: S.tier, score: S.score, units: S.units, peak: S.peak, combo: S.combo, weapon: S.weapon, wlevel: S.wlevels[S.weapon], enemies: S.enemies.length, shots: S.shots.length + (S.beam ? 1 : 0) + S.bolts.length, bullets: S.bullets.length, rows: S.rows.map(r => r.gates.map(g => C.gateLabel(g))), crates: S.crates.map(c => c.id), boss: S.enemies.find(e => e.type === 'boss')?.boss || null, fleet: C.composition(S.units) },
+    snapshot: () => S && { wave: S.wave, tier: S.tier, score: S.score, units: S.units, peak: S.peak, combo: S.combo, weapon: S.weapon, wlevel: S.wlevels[S.weapon], mods: { ...S.mods }, overdrive: S.od.time > 0, charge: S.od.charge, enemies: S.enemies.length, shots: S.shots.length + (S.beam ? 1 : 0) + S.bolts.length + (S.time - S.flameAt < .2 ? 1 : 0), bullets: S.bullets.length, rows: S.rows.map(r => r.gates.map(g => C.gateLabel(g))), crates: S.crates.map(c => c.id), boss: S.enemies.find(e => e.type === 'boss')?.boss || null, fleet: C.composition(S.units) },
     player: () => S && { x: S.player.x, y: S.player.y },
     freeze: () => { if (mode === 'play') mode = 'frozen'; },
     hold: () => { S.hold = true; S.intermission = 0; S.rows = []; S.crates = []; S.pending = []; S.enemies = []; S.bullets = []; S.shots = []; }, // stop the wave script
@@ -521,6 +617,7 @@
     pickWeapon: id => catchCrate({ id, x: S.player.x, y: S.player.y }),
     dropCrate: id => dropCrate(id, S.player.x, S.player.y - 150),
     spawnAbove: (type, dy = 380) => spawn(type, S.player.x, S.player.y - dy),
+    chargeOverdrive: () => { S.od.charge = C.OVERDRIVE.need - 1; },
     killBoss: () => { const b = S.enemies.find(e => e.type === 'boss') || spawn('boss'); damage(b, b.hp + 1); }
   };
 

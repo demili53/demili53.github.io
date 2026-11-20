@@ -81,7 +81,7 @@ const mode = page => page.evaluate(() => window.__missileRush.mode);
     assert(s.units >= 28, `shot gate lost its bite (units ${s.units})`);
 
     // Weapon crates: every weapon fires, the same crate levels it up, a falling crate is caught on contact.
-    const weapons = ['scatter', 'laser', 'homing', 'blast', 'chain', 'wave', 'missile'];
+    const weapons = ['scatter', 'laser', 'homing', 'blast', 'chain', 'wave', 'rail', 'bounce', 'flame', 'nova', 'missile'];
     for (const id of weapons) {
       const before = await page.evaluate(w => { const m = window.__missileRush; m.hold(); m.setUnits(40); m.pickWeapon(w); m.spawnAbove('drone', 300); m.spawnAbove('tank', 380); return m.snapshot().score; }, id);
       let fired = false;
@@ -97,10 +97,39 @@ const mode = page => page.evaluate(() => window.__missileRush.mode);
     await page.evaluate(() => window.__missileRush.pickWeapon('missile'));
     assert.equal((await game(page)).wlevel, 2);
     assert.match(await page.locator('#weaponName').innerText(), /미사일 Lv\.2/);
+    // The fifth level awakens the weapon.
+    await page.evaluate(() => { const m = window.__missileRush; for (let i = 0; i < 3; i++) m.pickWeapon('missile'); });
+    assert.equal((await game(page)).wlevel, 5);
+    assert.match(await page.locator('#weaponName').innerText(), /미사일 각성/);
+    await page.waitForTimeout(200);
+    await page.locator('.rush-stage').screenshot({ path: path.join(out, 'missile-rush-awaken.png') });
+    const units = (await game(page)).units;
+    await page.evaluate(() => window.__missileRush.pickWeapon('missile'));
+    assert.equal((await game(page)).units, units + 3, 'a crate at the top level pays units instead');
     await page.evaluate(() => window.__missileRush.dropCrate('laser'));
     assert.deepEqual((await game(page)).crates, ['laser']);
     await page.waitForFunction(() => window.__missileRush.snapshot().weapon === 'laser', null, { timeout: 5000 });
     assert.match(await page.locator('#weaponName').innerText(), /관통 레이저 Lv\.1/);
+
+    // Modules stack on the weapon and survive a swap; kills charge the overdrive.
+    await page.evaluate(() => { const m = window.__missileRush; m.hold(); m.setUnits(60); });
+    await page.waitForTimeout(200);
+    const slow = await power();
+    await page.evaluate(() => { const m = window.__missileRush; m.pickWeapon('rate'); m.pickWeapon('rate'); m.pickWeapon('crit'); m.dropCrate('size'); });
+    await page.waitForFunction(() => window.__missileRush.snapshot().mods.size === 1, null, { timeout: 5000 });
+    assert.deepEqual((await game(page)).mods, { rate: 2, crit: 1, size: 1 });
+    await page.waitForTimeout(200);
+    assert(await power() > slow * 1.1, 'rate modules raise the firepower');
+    await page.evaluate(() => window.__missileRush.pickWeapon('chain'));
+    assert.deepEqual((await game(page)).mods, { rate: 2, crit: 1, size: 1 }, 'modules survive a weapon swap');
+    assert.match(await page.locator('#weaponStats').innerText(), /연사 2 · 치명 1 · 증폭 1/);
+    await page.evaluate(() => { const m = window.__missileRush; m.chargeOverdrive(); m.spawnAbove('drone', 200); });
+    await page.waitForFunction(() => window.__missileRush.snapshot().overdrive, null, { timeout: 6000 });
+    await page.waitForTimeout(250);
+    assert(await power() > slow * 2, 'overdrive doubles the fire rate');
+    await page.evaluate(() => { const m = window.__missileRush; for (let i = 0; i < 5; i++) m.spawnAbove(i % 2 ? 'tank' : 'drone', 220 + i * 40); });
+    await page.waitForTimeout(700);
+    await page.locator('.rush-stage').screenshot({ path: path.join(out, 'missile-rush-overdrive.png') });
 
     // Kills in a row build a combo.
     await page.evaluate(() => { const m = window.__missileRush; m.hold(); m.setUnits(60); for (let i = 0; i < 4; i++) m.spawnAbove('drone', 200 + i * 40); });
@@ -182,6 +211,6 @@ const mode = page => page.evaluate(() => window.__missileRush.mode);
       await share.screenshot({ path: path.join(root, 'assets/games/missile-rush/share.png') });
     }
     assert.deepEqual(errors, [], 'no page errors');
-    console.log('PASS: missile rush auto-fire, waves, operator gate rows (+ − × ÷, lane pass, shot shifting), unit-proportional firepower, fleet composition, 7 weapons and crates, combo, 4 bosses, boss evolution, pause freeze, game-over score event, mobile drag and layout');
+    console.log('PASS: missile rush auto-fire, waves, operator gate rows (+ − × ÷, lane pass, shot shifting), unit-proportional firepower, fleet composition, 11 weapons, crates and awakening, modules, overdrive, combo, 4 bosses, boss evolution, pause freeze, game-over score event, mobile drag and layout');
   } finally { await browser?.close(); server.close(); }
 })().catch(e => { console.error(e); process.exit(1); });

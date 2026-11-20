@@ -7,7 +7,7 @@
   const MAX_SHIFTS = 3; // how many times gunfire can bend one gate
   const BOSS_EVERY = 5;
   const BOSS_REWARD_UNITS = 5;
-  const WEAPON_MAX_LEVEL = 3;
+  const WEAPON_MAX_LEVEL = 5;
   const BASE_INTERVAL = 0.34;
 
   const OPERATORS = {
@@ -24,16 +24,32 @@
     { tier: 5, name: 'Mk.V 성운 탄두', color: '#9dffb4', mult: 3.2 }
   ];
   // mult is total damage relative to the plain missile, traded against what the weapon is good at.
+  // awaken describes the extra trait a weapon gains at the top level.
   const WEAPONS = {
-    missile: { name: '미사일', icon: 'M', color: '#ffd27a', mult: 1, volley: 12, interval: 0.34, desc: '균형 잡힌 직사 미사일. 레벨마다 관통 +1' },
-    scatter: { name: '산탄포', icon: 'S', color: '#ffb35c', mult: 1.3, volley: 14, interval: 0.4, desc: '넓게 퍼지는 산탄. 가까운 무리에 강함' },
-    laser: { name: '관통 레이저', icon: 'L', color: '#7ce8ff', mult: 0.6, volley: 1, interval: 0.1, desc: '세로 한 줄의 적 전부를 지속 관통' },
-    homing: { name: '유도탄', icon: 'H', color: '#c891ff', mult: 0.8, volley: 8, interval: 0.4, desc: '적을 추적. 빗나가지 않지만 약함' },
-    blast: { name: '폭발탄', icon: 'B', color: '#ff7b6b', mult: 0.9, volley: 4, interval: 0.62, desc: '느리지만 명중 지점 주변을 휩쓺' },
-    chain: { name: '전격포', icon: 'Z', color: '#ffe066', mult: 0.85, volley: 3, interval: 0.45, desc: '가까운 적에 즉시 꽂히고 주변으로 번짐' },
-    wave: { name: '파동포', icon: 'W', color: '#63e6be', mult: 0.7, volley: 1, interval: 0.5, desc: '점점 넓어지며 닿는 적을 모두 관통' }
+    missile: { name: '미사일', icon: 'M', color: '#ffd27a', mult: 1, volley: 12, interval: 0.34, desc: '균형 잡힌 직사 미사일. 레벨마다 관통 +1', awaken: '명중할 때마다 소형 폭발' },
+    scatter: { name: '산탄포', icon: 'S', color: '#ffb35c', mult: 1.3, volley: 14, interval: 0.4, desc: '넓게 퍼지는 산탄. 가까운 무리에 강함', awaken: '산탄이 적 하나를 관통' },
+    laser: { name: '관통 레이저', icon: 'L', color: '#7ce8ff', mult: 0.6, volley: 1, interval: 0.1, desc: '세로 한 줄의 적 전부를 지속 관통', awaken: '광선 폭 1.5배' },
+    homing: { name: '유도탄', icon: 'H', color: '#c891ff', mult: 0.8, volley: 8, interval: 0.4, desc: '적을 추적. 빗나가지 않지만 약함', awaken: '한 번에 4발 더 발사' },
+    blast: { name: '폭발탄', icon: 'B', color: '#ff7b6b', mult: 0.9, volley: 4, interval: 0.62, desc: '느리지만 명중 지점 주변을 휩쓺', awaken: '폭발 범위 1.35배' },
+    chain: { name: '전격포', icon: 'Z', color: '#ffe066', mult: 0.85, volley: 3, interval: 0.45, desc: '가까운 적에 즉시 꽂히고 주변으로 번짐', awaken: '번개가 2번 더 번짐' },
+    wave: { name: '파동포', icon: 'W', color: '#63e6be', mult: 0.7, volley: 1, interval: 0.5, desc: '점점 넓어지며 닿는 적을 모두 관통', awaken: '파동을 두 겹으로 발사' },
+    rail: { name: '레일건', icon: 'R', color: '#a5d8ff', mult: 1.05, volley: 1, interval: 0.8, desc: '느리게 장전하지만 닿는 적을 전부 꿰뚫는 초고속탄', awaken: '꿰뚫은 자리마다 폭발' },
+    flame: { name: '화염 방사', icon: 'F', color: '#ff6b35', mult: 1.5, volley: 1, interval: 0.08, desc: '짧은 부채꼴을 태우고 화상을 남김. 가까울수록 강함', awaken: '사거리 1.3배, 화상 2배' },
+    nova: { name: '성운포', icon: 'N', color: '#b197fc', mult: 0.95, volley: 1, interval: 1.1, desc: '천천히 떠가며 주변 적을 계속 깎는 구체', awaken: '사라질 때 대폭발' },
+    bounce: { name: '반사탄', icon: 'X', color: '#ff8fd8', mult: 0.9, volley: 6, interval: 0.42, desc: '벽에 튕기며 화면 구석까지 휩쓰는 탄. 레벨마다 반사 +1', awaken: '반사 +2, 관통 +1' }
   };
   const WEAPON_IDS = Object.keys(WEAPONS);
+  // Modules stack on top of whatever weapon is equipped and survive a weapon swap.
+  const MODULE_MAX_LEVEL = 5;
+  const MODULES = {
+    rate: { name: '연사 모듈', icon: '»', color: '#74c0fc', desc: '발사 간격 −7%' },
+    crit: { name: '치명 모듈', icon: '✦', color: '#ffd43b', desc: '치명타 확률 +6% (피해 2.5배)' },
+    size: { name: '증폭 모듈', icon: '◎', color: '#da77f2', desc: '탄 크기와 범위 +10%' }
+  };
+  const MODULE_IDS = Object.keys(MODULES);
+  const CRIT_MULT = 2.5;
+  // Overdrive: kills charge a gauge; when full the fleet fires twice as fast for a few seconds.
+  const OVERDRIVE = { need: 40, time: 6, rate: 2, bossCharge: 12 };
   // The fleet is drawn as mixed craft: 25 units fold into a gunship, 5 into a fighter. Visual only.
   const CRAFTS = { heavy: { name: '중포함', units: 25 }, fighter: { name: '전투기', units: 5 }, light: { name: '포대', units: 1 } };
   const ENEMIES = {
@@ -73,7 +89,7 @@
   }
   const pick = (list, rng) => list[Math.floor(rng() * list.length)];
 
-  function hpScale(wave) { const n = Math.max(0, wave - 1); return 1 + n * 0.9 + n * n * 0.2; }
+  function hpScale(wave) { const n = Math.max(0, wave - 1); return 1 + n * 0.9 + n * n * 0.26; }
   function isBossWave(wave) { return wave % BOSS_EVERY === 0; }
   function bossFor(wave) { return BOSSES[(Math.max(1, Math.round(wave / BOSS_EVERY)) - 1) % BOSSES.length]; }
   function evolution(tier) { return EVOLUTIONS[Math.max(0, Math.min(EVOLUTIONS.length - 1, tier - 1))]; }
@@ -131,25 +147,37 @@
   }
   // Every unit adds the same damage per second whatever the weapon. Volleys are capped for
   // readability, so each shot carries the share of the units it stands for.
-  function squadStats(units, tier, weapon, level) {
+  function squadStats(units, tier, weapon, level, opts) {
     const evo = evolution(tier || 1);
     const id = WEAPONS[weapon] ? weapon : 'missile';
     const w = WEAPONS[id], lv = clampLevel(level);
     const n = Math.max(0, units);
-    const count = Math.min(n, w.volley);
-    const unitDamage = 1.2 * evo.mult * w.mult * (1 + (lv - 1) * 0.2);
+    const awakened = lv >= WEAPON_MAX_LEVEL;
+    const o = opts || {}, modLv = k => Math.max(0, Math.min(MODULE_MAX_LEVEL, o[k] || 0));
+    const rateK = (1 - 0.07 * modLv('rate')) / (o.overdrive ? OVERDRIVE.rate : 1); // interval multiplier
+    const scale = 1 + 0.1 * modLv('size');
+    const count = Math.min(n, w.volley + (awakened && id === 'homing' ? 4 : 0));
+    const unitDamage = 1.2 * evo.mult * w.mult * (1 + (lv - 1) * 0.15);
     return {
-      units: n, weapon: id, level: lv, interval: w.interval, count,
+      units: n, weapon: id, level: lv, awakened, interval: w.interval * rateK, count, scale, overdrive: !!o.overdrive,
+      crit: 0.06 * modLv('crit'), critMult: CRIT_MULT,
       damage: count ? unitDamage * n * w.interval / BASE_INTERVAL / count : 0,
-      dps: unitDamage * n / BASE_INTERVAL,
-      speed: (id === 'blast' ? 380 : id === 'homing' ? 460 : id === 'wave' ? 420 : 580) + ((tier || 1) - 1) * 40,
-      pierce: id === 'missile' ? Math.min(4, Math.floor(n / 40) + lv - 1) : 0,
-      spread: id === 'scatter' ? 0.34 + lv * 0.06 : 0,
-      beam: id === 'laser' ? 16 + lv * 8 : 0,
+      dps: unitDamage * n / BASE_INTERVAL / rateK,
+      speed: (id === 'blast' ? 380 : id === 'homing' ? 460 : id === 'wave' ? 420 : id === 'rail' ? 1150 : id === 'bounce' ? 520 : id === 'nova' ? 150 : 580) + ((tier || 1) - 1) * 40,
+      pierce: id === 'missile' ? Math.min(4, Math.floor(n / 40) + lv - 1) : id === 'rail' ? 99 : id === 'bounce' ? (awakened ? 2 : 1) : id === 'scatter' && awakened ? 1 : 0,
+      spread: id === 'scatter' ? 0.34 + lv * 0.04 : 0,
+      beam: id === 'laser' ? (16 + lv * 6) * (awakened ? 1.5 : 1) * scale : 0,
       homing: id === 'homing' ? 2 + lv : 0,
-      blast: id === 'blast' ? 40 + lv * 10 : 0,
-      chain: id === 'chain' ? 1 + lv : 0,
-      wave: id === 'wave' ? 50 + lv * 22 : 0,
+      blast: (id === 'blast' ? (40 + lv * 8) * (awakened ? 1.35 : 1) : awakened && id === 'missile' ? 26 : awakened && id === 'rail' ? 42 : 0) * scale,
+      chain: id === 'chain' ? 1 + lv + (awakened ? 2 : 0) : 0,
+      wave: id === 'wave' ? (50 + lv * 16) * scale : 0,
+      flame: id === 'flame' ? (210 + lv * 12) * (awakened ? 1.3 : 1) * scale : 0,
+      burn: id === 'flame' ? (awakened ? 0.3 : 0.15) : 0, // share of dps that keeps burning for a moment
+      nova: id === 'nova' ? (54 + lv * 6) * scale : 0,
+      novaBurst: id === 'nova' && awakened,
+      twin: id === 'wave' && awakened,
+      rail: id === 'rail' ? 5 + lv : 0,
+      bounce: id === 'bounce' ? 1 + lv + (awakened ? 2 : 0) : 0,
       radius: 14 + 4.6 * Math.sqrt(Math.min(n, 110)),
       color: id === 'missile' ? evo.color : w.color
     };
@@ -162,9 +190,23 @@
     levels[id] = same ? Math.min(WEAPON_MAX_LEVEL, had + 1) : (had || 1);
     return { weapon: id, levels, bonus: same && had >= WEAPON_MAX_LEVEL ? 3 : 0, leveled: same && had < WEAPON_MAX_LEVEL };
   }
+  // Catching a module crate: one more level, or bonus units once it is maxed.
+  function pickModule(mods, id) {
+    if (!MODULES[id]) throw new Error('unknown module ' + id);
+    const next = Object.assign({ rate: 0, crit: 0, size: 0 }, mods), had = next[id];
+    next[id] = Math.min(MODULE_MAX_LEVEL, had + 1);
+    return { mods: next, bonus: had >= MODULE_MAX_LEVEL ? 2 : 0, leveled: had < MODULE_MAX_LEVEL };
+  }
+  // A third of the crates carry a module, preferring ones that still have levels to gain.
+  function rollCrate(current, mods, rng) {
+    const random = rng || Math.random;
+    if (random() < 0.34) { const open = MODULE_IDS.filter(k => ((mods || {})[k] || 0) < MODULE_MAX_LEVEL); return pick(open.length ? open : MODULE_IDS, random); }
+    return rollWeapon(current, random);
+  }
+  function overdriveCharge(type) { return type === 'boss' ? OVERDRIVE.bossCharge : 1; }
   function rollWeapon(current, rng) {
     const random = rng || Math.random;
-    if (random() < 0.3) return current;
+    if (random() < 0.45) return current; // nearly half the crates upgrade what is equipped
     return pick(WEAPON_IDS.filter(w => w !== current), random);
   }
   // Units lost when an enemy rams the fleet or slips past the defense line.
@@ -227,7 +269,7 @@
 
   const api = {
     FIELD, START_UNITS, MAX_UNITS, MAX_SHIFTS, BOSS_EVERY, BOSS_REWARD_UNITS, WEAPON_MAX_LEVEL,
-    OPERATORS, EVOLUTIONS, WEAPONS, WEAPON_IDS, CRAFTS, ENEMIES, BOSSES, FORMATIONS, FORMATION_IDS,
+    OPERATORS, EVOLUTIONS, WEAPONS, WEAPON_IDS, MODULES, MODULE_IDS, MODULE_MAX_LEVEL, CRIT_MULT, OVERDRIVE, pickModule, rollCrate, overdriveCharge, CRAFTS, ENEMIES, BOSSES, FORMATIONS, FORMATION_IDS,
     seeded, hpScale, isBossWave, bossFor, evolution, clampUnits,
     applyOperator, gateLabel, isGood, shiftable, shiftGate, shiftCost, rollRow, laneOf,
     composition, squadStats, pickWeapon, rollWeapon, contactLoss, breachLoss,

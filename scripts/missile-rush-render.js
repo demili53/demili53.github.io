@@ -126,7 +126,7 @@ window.MissileRushRender = function (canvas, C, opt) {
     ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
   }
   function drawCrate(S, c) {
-    const w = C.WEAPONS[c.id], r = 19;
+    const mod = C.MODULES[c.id], w = mod || C.WEAPONS[c.id], r = 19;
     const hexPath = (rad, rot) => { ctx.beginPath(); for (let i = 0; i < 6; i++) { const a = i / 6 * TAU + rot; ctx.lineTo(Math.cos(a) * rad, Math.sin(a) * rad); } ctx.closePath(); };
     ctx.save(); ctx.translate(c.x, c.y);
     const pillar = ctx.createLinearGradient(0, -120, 0, 0); pillar.addColorStop(0, w.color + '00'); pillar.addColorStop(1, w.color + '38');
@@ -134,10 +134,11 @@ window.MissileRushRender = function (canvas, C, opt) {
     lighter(); stamp(glow(w.color), 0, 0, 1.25 + .15 * Math.sin(c.t * 4)); normal();
     ctx.strokeStyle = w.color + '99'; ctx.lineWidth = 1.5; ctx.setLineDash([6, 5]); hexPath(r + 7, c.t * 1.2); ctx.stroke(); ctx.setLineDash([]);
     const body = ctx.createLinearGradient(0, -r, 0, r); body.addColorStop(0, '#22344f'); body.addColorStop(1, '#0b1322');
-    hexPath(r, Math.PI / 6); ctx.fillStyle = body; ctx.fill(); ctx.strokeStyle = w.color; ctx.lineWidth = 3; ctx.stroke();
+    if (mod) { ctx.beginPath(); ctx.moveTo(0, -r - 2); ctx.lineTo(r + 2, 0); ctx.lineTo(0, r + 2); ctx.lineTo(-r - 2, 0); ctx.closePath(); } else hexPath(r, Math.PI / 6);
+    ctx.fillStyle = body; ctx.fill(); ctx.strokeStyle = w.color; ctx.lineWidth = 3; ctx.stroke();
     ctx.fillStyle = w.color; ctx.font = `900 18px ${FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(w.icon, 0, 1);
     ctx.font = `800 10px ${FONT}`;
-    outlined(c.id === S.weapon ? (S.wlevels[c.id] >= C.WEAPON_MAX_LEVEL ? w.name + ' +3기' : w.name + ' 강화') : w.name, 0, r + 14, '#e6f0ff');
+    outlined(mod ? (S.mods[c.id] >= C.MODULE_MAX_LEVEL ? w.name + ' +2기' : `${w.name} Lv.${S.mods[c.id] + 1}`) : c.id === S.weapon ? (S.wlevels[c.id] >= C.WEAPON_MAX_LEVEL ? w.name + ' +3기' : w.name + ' 강화') : w.name, 0, r + 14, '#e6f0ff');
     ctx.restore(); ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
   }
 
@@ -199,6 +200,17 @@ window.MissileRushRender = function (canvas, C, opt) {
     ctx.save(); ctx.scale(1, ry / rx); ctx.fillStyle = field; ctx.beginPath(); ctx.arc(0, 0, rx, 0, TAU); ctx.fill();
     ctx.strokeStyle = st.color + '66'; ctx.lineWidth = 1.2; ctx.setLineDash([10, 7]); ctx.lineDashOffset = -clock * 30; ctx.beginPath(); ctx.arc(0, 0, rx * .96 * scale, 0, TAU); ctx.stroke(); ctx.setLineDash([]);
     ctx.restore();
+    if (st.overdrive) { // overdrive: a hot halo and a faster orbit ring
+      lighter(); ctx.globalAlpha = .45 + .2 * Math.sin(clock * 18); ctx.drawImage(glow('#ffb347'), -rx * 1.8, -ry * 1.9, rx * 3.6, ry * 3.8);
+      ctx.globalAlpha = .9; ctx.strokeStyle = '#ffd08a'; ctx.lineWidth = 2; ctx.setLineDash([14, 10]); ctx.lineDashOffset = clock * 160; ctx.beginPath(); ctx.ellipse(0, 0, rx * 1.15, ry * 1.15, 0, 0, TAU); ctx.stroke(); ctx.setLineDash([]);
+      normal();
+    }
+    if (st.awakened) { // an awakened weapon wraps the fleet in orbiting motes
+      lighter();
+      for (let i = 0; i < 6; i++) { const a = clock * 2.6 + i / 6 * TAU, wob = 1 + .08 * Math.sin(clock * 5 + i); ctx.globalAlpha = .55 + .35 * Math.sin(clock * 6 + i * 2); stamp(glow(st.color), Math.cos(a) * rx * wob, Math.sin(a) * ry * wob, .42); stamp(glow('#ffffff'), Math.cos(a) * rx * wob, Math.sin(a) * ry * wob, .16); }
+      ctx.globalAlpha = .28 + .1 * Math.sin(clock * 4); ctx.drawImage(glow(st.color), -rx * 1.5, -ry * 1.6, rx * 3, ry * 3.2);
+      normal();
+    }
     const tilt = Math.max(-.2, Math.min(.2, p.vx * .0006)); // the whole fleet leans into a turn
     const crafts = layout(Math.round(S.shown));
     for (let i = 0; i < crafts.length; i++) {
@@ -222,8 +234,8 @@ window.MissileRushRender = function (canvas, C, opt) {
   function drawShots(S) {
     lighter(); ctx.lineCap = 'round';
     for (const m of S.shots) { // light streak behind every shot
-      if (m.kind === 'wave') continue;
-      const len = m.kind === 'scatter' ? .045 : m.kind === 'homing' ? .09 : .06, tx = m.x - m.vx * len, ty = m.y - m.vy * len;
+      if (m.kind === 'wave' || m.kind === 'rail' || m.kind === 'nova') continue;
+      const len = m.kind === 'scatter' ? .045 : m.kind === 'homing' || m.kind === 'bounce' ? .09 : .06, tx = m.x - m.vx * len, ty = m.y - m.vy * len;
       const g = ctx.createLinearGradient(m.x, m.y, tx, ty); g.addColorStop(0, m.color); g.addColorStop(1, m.color + '00');
       ctx.strokeStyle = g; ctx.lineWidth = m.kind === 'blast' ? m.r * 1.5 : m.r * .9; ctx.globalAlpha = m.life !== undefined ? Math.min(1, m.life * 4) : .85;
       ctx.beginPath(); ctx.moveTo(m.x, m.y); ctx.lineTo(tx, ty); ctx.stroke();
@@ -235,7 +247,7 @@ window.MissileRushRender = function (canvas, C, opt) {
         ctx.strokeStyle = m.color; ctx.lineWidth = 5; ctx.globalAlpha = .9; ctx.beginPath(); ctx.moveTo(m.x - m.w, m.y + 8); ctx.quadraticCurveTo(m.x, m.y - 14, m.x + m.w, m.y + 8); ctx.stroke();
         ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(m.x - m.w, m.y + 8); ctx.quadraticCurveTo(m.x, m.y - 14, m.x + m.w, m.y + 8); ctx.stroke();
         ctx.globalAlpha = .35; ctx.drawImage(glow(m.color), m.x - m.w - 14, m.y - 22, m.w * 2 + 28, 44); ctx.globalAlpha = 1;
-      } else stamp(glow(m.color), m.x, m.y, (m.kind === 'blast' ? .62 : .4) + m.r * .03);
+      } else if (m.kind !== 'rail' && m.kind !== 'nova') stamp(glow(m.color), m.x, m.y, (m.kind === 'blast' ? .62 : .4) + m.r * .03);
     }
     for (const b of S.bullets) stamp(glow(b.bomb ? '#ffd43b' : '#ff7b9c'), b.x, b.y, b.bomb ? .7 : .5);
     for (const b of S.bolts) { // lightning: a jagged line redrawn every frame
@@ -255,6 +267,23 @@ window.MissileRushRender = function (canvas, C, opt) {
     for (const m of S.shots) {
       if (m.kind === 'wave') continue;
       if (m.kind === 'scatter') { ctx.globalAlpha = Math.min(1, m.life * 4); ctx.fillStyle = '#fff6e0'; ctx.beginPath(); ctx.arc(m.x, m.y, m.r * .8, 0, TAU); ctx.fill(); ctx.globalAlpha = 1; continue; }
+      if (m.kind === 'nova') { // a dark core inside a swirling field
+        lighter(); ctx.globalAlpha = .22 + .08 * Math.sin(clock * 9); ctx.drawImage(glow(m.color), m.x - m.field * 1.25, m.y - m.field * 1.25, m.field * 2.5, m.field * 2.5);
+        ctx.globalAlpha = .8; ctx.strokeStyle = m.color; ctx.lineWidth = 1.6;
+        for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.arc(m.x, m.y, m.field * (.45 + i * .27), clock * (3 - i) + i * 2, clock * (3 - i) + i * 2 + 2.2); ctx.stroke(); }
+        ctx.globalAlpha = 1; stamp(glow(m.color), m.x, m.y, 1); stamp(glow('#ffffff'), m.x, m.y, .45); normal();
+        ctx.fillStyle = '#1a1033'; ctx.beginPath(); ctx.arc(m.x, m.y, m.r * .55, 0, TAU); ctx.fill(); continue;
+      }
+      if (m.kind === 'rail') { // a long slug of light with a hard white core
+        lighter(); const len = 70 + m.r * 6, g = ctx.createLinearGradient(0, m.y - len * .3, 0, m.y + len); g.addColorStop(0, '#ffffff'); g.addColorStop(.25, m.color); g.addColorStop(1, m.color + '00');
+        ctx.fillStyle = g; ctx.fillRect(m.x - m.r, m.y - len * .3, m.r * 2, len * 1.3); ctx.fillStyle = '#ffffff'; ctx.fillRect(m.x - m.r * .3, m.y - len * .3, m.r * .6, len * .9);
+        stamp(glow(m.color), m.x, m.y - len * .3, 1 + m.r * .08); stamp(glow('#ffffff'), m.x, m.y - len * .3, .5); normal(); continue;
+      }
+      if (m.kind === 'bounce') { // a spinning diamond that reads differently from straight shots
+        ctx.save(); ctx.translate(m.x, m.y); ctx.rotate(clock * 14 + m.x * .05); const q = m.r * 1.5;
+        ctx.fillStyle = m.color; ctx.beginPath(); ctx.moveTo(0, -q); ctx.lineTo(q * .7, 0); ctx.lineTo(0, q); ctx.lineTo(-q * .7, 0); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(0, 0, q * .32, 0, TAU); ctx.fill(); ctx.restore(); continue;
+      }
       if (m.kind === 'blast') { const g = ctx.createRadialGradient(m.x - 2, m.y - 2, 0, m.x, m.y, m.r); g.addColorStop(0, '#fff3e6'); g.addColorStop(.5, m.color); g.addColorStop(1, shade(m.color, -.5)); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(m.x, m.y, m.r, 0, TAU); ctx.fill(); continue; }
       const L = 9 + S.tier * 2, w = 2.2 + S.tier * .45;
       ctx.save(); ctx.translate(m.x, m.y); ctx.rotate(Math.atan2(m.vy, m.vx) + Math.PI / 2);
@@ -374,6 +403,22 @@ window.MissileRushRender = function (canvas, C, opt) {
     ctx.restore(); ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
   }
 
+  // Overdrive gauge on the left edge; while it runs the whole frame gets a hot rim.
+  function drawOverdrive(S) {
+    const on = S.od.time > 0, k = on ? S.od.time / C.OVERDRIVE.time : Math.min(1, S.od.charge / C.OVERDRIVE.need), x = 10, y0 = 300, h = 150;
+    roundRect(ctx, x - 2, y0 - 2, 10, h + 4, 5); ctx.fillStyle = '#050a16b0'; ctx.fill();
+    const g = ctx.createLinearGradient(0, y0 + h, 0, y0); g.addColorStop(0, '#ff922b'); g.addColorStop(1, on ? '#fff3bf' : '#ffd43b');
+    if (k > 0) { roundRect(ctx, x, y0 + h * (1 - k), 6, Math.max(4, h * k), 3); ctx.fillStyle = g; ctx.fill(); }
+    if (on || k > .85) { lighter(); ctx.globalAlpha = on ? .7 : .25 + .2 * Math.sin(clock * 8); ctx.drawImage(glow('#ffb347'), x - 14, y0 + h * (1 - k) - 16, 34, 32); normal(); }
+    ctx.save(); ctx.translate(x + 3, y0 - 8); ctx.font = `900 9px ${FONT}`; ctx.textAlign = 'center'; outlined('OD', 0, 0, on ? '#fff3bf' : '#ffd0a5'); ctx.restore(); ctx.textAlign = 'left';
+    const rim = on ? ['#ffb347', .3 + .12 * Math.sin(clock * 16)] : S.combo >= 15 ? ['#ffe27a', Math.min(.22, (S.combo - 10) * .012) * Math.min(1, S.comboTimer / 1.2)] : null;
+    if (rim) { // screen rim: orange in overdrive, gold on a long combo
+      lighter(); ctx.globalAlpha = rim[1];
+      for (const [gx0, gy0, gx1, gy1, rx0, ry0, rw, rh] of [[0, 0, 46, 0, 0, 0, 46, H], [W, 0, W - 46, 0, W - 46, 0, 46, H], [0, 0, 0, 46, 0, 0, W, 46]]) { const e = ctx.createLinearGradient(gx0, gy0, gx1, gy1); e.addColorStop(0, rim[0]); e.addColorStop(1, rim[0] + '00'); ctx.fillStyle = e; ctx.fillRect(rx0, ry0, rw, rh); }
+      normal();
+    }
+  }
+
   // ---------- Frame ----------
   function draw(S, v) {
     clock += v.mode === 'play' || !S ? v.dt : 0;
@@ -401,7 +446,21 @@ window.MissileRushRender = function (canvas, C, opt) {
       if (q.smoke || q.chunk) continue;
       const k = Math.max(0, q.life / q.max);
       ctx.globalAlpha = k;
-      if (q.ring) { ctx.strokeStyle = q.color; ctx.lineWidth = 1 + 4 * k; ctx.beginPath(); ctx.arc(q.x, q.y, q.r * (1.15 - k * .7), 0, TAU); ctx.stroke(); }
+      if (q.star) { // critical hit: a four-point glint
+        const len = q.r * (1.3 - k * .5); ctx.fillStyle = q.color; ctx.save(); ctx.translate(q.x, q.y); ctx.rotate(q.rot);
+        for (let i = 0; i < 4; i++) { ctx.rotate(Math.PI / 2); ctx.beginPath(); ctx.moveTo(0, -len); ctx.lineTo(len * .09, 0); ctx.lineTo(-len * .09, 0); ctx.closePath(); ctx.fill(); }
+        ctx.restore(); stamp(glow('#ffffff'), q.x, q.y, .5 * k);
+      } else if (q.rays) { // radial streaks that stretch outward as they fade
+        ctx.strokeStyle = q.color; ctx.lineCap = 'round'; const inner = q.r * (.25 + (1 - k) * .45), outer = q.r * (.55 + (1 - k) * .75);
+        for (let i = 0; i < 10; i++) { const a = q.rot + i / 10 * TAU, w = i % 2 ? 1.5 : 3; ctx.lineWidth = w * k + .5; ctx.beginPath(); ctx.moveTo(q.x + Math.cos(a) * inner, q.y + Math.sin(a) * inner); ctx.lineTo(q.x + Math.cos(a) * outer * (i % 2 ? .8 : 1), q.y + Math.sin(a) * outer * (i % 2 ? .8 : 1)); ctx.stroke(); }
+        ctx.lineCap = 'butt';
+      } else if (q.pillar) { // a column of light rising from the fleet
+        const w = q.r * (.5 + k * .5), tall = q.short || 420, g = ctx.createLinearGradient(q.x - w, 0, q.x + w, 0); g.addColorStop(0, q.color + '00'); g.addColorStop(.5, q.color); g.addColorStop(1, q.color + '00');
+        const top = q.short ? q.y - tall / 2 : q.y - tall * (1.2 - k), hgt = q.short ? tall : tall * (1.2 - k) + 20;
+        ctx.globalAlpha = k * .75; ctx.fillStyle = g; ctx.fillRect(q.x - w, top, w * 2, hgt);
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(q.x - w * .12, top, w * .24, hgt);
+        stamp(glow(q.color), q.x, q.y, (q.short ? 1 : 2.2) * k);
+      } else if (q.ring) { ctx.strokeStyle = q.color; ctx.lineWidth = 1 + 4 * k; ctx.beginPath(); ctx.arc(q.x, q.y, q.r * (1.15 - k * .7), 0, TAU); ctx.stroke(); }
       else if (q.flash) stamp(glow(q.color), q.x, q.y, q.r / 32 * (1.3 - k * .5));
       else { ctx.fillStyle = q.color; ctx.beginPath(); ctx.arc(q.x, q.y, q.r * (.4 + k * .6), 0, TAU); ctx.fill(); }
     }
@@ -420,6 +479,7 @@ window.MissileRushRender = function (canvas, C, opt) {
     }
     ctx.textAlign = 'left';
     stamp(vignette(), W / 2, H / 2);
+    drawOverdrive(S);
     const boss = S.enemies.find(e => e.type === 'boss');
     if (boss) drawBossBar(boss);
     if (S.warn > 0) drawWarning(S);

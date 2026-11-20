@@ -39,7 +39,7 @@ assert.deepEqual(C.composition(87), { heavy: 3, fighter: 2, light: 2 });
 for (let n = 0; n <= C.MAX_UNITS; n++) { const f = C.composition(n); assert.equal(f.heavy * 25 + f.fighter * 5 + f.light, n); }
 
 // Firepower is proportional to the number of units for every weapon.
-assert.equal(C.WEAPON_IDS.length, 7);
+assert.equal(C.WEAPON_IDS.length, 11); assert.equal(C.WEAPON_MAX_LEVEL, 5);
 for (const id of C.WEAPON_IDS) {
   const a = C.squadStats(10, 1, id, 1), b = C.squadStats(30, 1, id, 1);
   assert(Math.abs(b.dps / a.dps - 3) < 1e-9, `${id}: three times the units, three times the damage`);
@@ -50,15 +50,52 @@ for (const id of C.WEAPON_IDS) {
 }
 assert.equal(C.squadStats(0, 1, 'missile', 1).dps, 0);
 assert.equal(C.squadStats(5, 1, 'nope', 1).weapon, 'missile');
-assert(C.squadStats(5, 1, 'laser', 1).beam > 0 && C.squadStats(5, 1, 'chain', 2).chain === 3 && C.squadStats(5, 1, 'wave', 1).wave > 0 && C.squadStats(5, 1, 'blast', 1).blast > 0 && C.squadStats(5, 1, 'homing', 1).homing > 0 && C.squadStats(5, 1, 'scatter', 1).spread > 0);
+assert(C.squadStats(5, 1, 'laser', 1).beam > 0 && C.squadStats(5, 1, 'chain', 2).chain === 3 && C.squadStats(5, 1, 'rail', 1).pierce > 50 && C.squadStats(5, 1, 'bounce', 2).bounce === 3 && C.squadStats(5, 1, 'wave', 1).wave > 0 && C.squadStats(5, 1, 'blast', 1).blast > 0 && C.squadStats(5, 1, 'homing', 1).homing > 0 && C.squadStats(5, 1, 'scatter', 1).spread > 0);
 assert(C.squadStats(200, 1, 'missile', 1).radius > C.squadStats(5, 1, 'missile', 1).radius, 'a bigger fleet is a bigger target');
+
+// The top level awakens a weapon: each one gains its own extra trait on top of the damage.
+for (const id of C.WEAPON_IDS) { assert(C.WEAPONS[id].awaken, id); assert(C.squadStats(20, 1, id, 5).awakened && !C.squadStats(20, 1, id, 4).awakened); }
+const top = id => C.squadStats(20, 1, id, 5), under = id => C.squadStats(20, 1, id, 4);
+assert(top('missile').blast > 0 && !under('missile').blast);
+assert(top('scatter').pierce === 1 && under('scatter').pierce === 0);
+assert(top('laser').beam > under('laser').beam * 1.3);
+assert(top('homing').count === under('homing').count + 4);
+assert(top('blast').blast > under('blast').blast * 1.3);
+assert(top('chain').chain === under('chain').chain + 3);
+assert(top('wave').twin && !under('wave').twin);
+assert(top('rail').blast > 0 && !under('rail').blast);
+assert(top('bounce').bounce === under('bounce').bounce + 3 && top('bounce').pierce === 2);
+assert(top('flame').flame > under('flame').flame * 1.25 && top('flame').burn === under('flame').burn * 2);
+assert(top('nova').novaBurst && !under('nova').novaBurst && under('nova').nova > 0);
+
+// Modules stack on any weapon: faster fire, critical hits, bigger shots. They cap at MODULE_MAX_LEVEL.
+assert.deepEqual(C.MODULE_IDS, ['rate', 'crit', 'size']);
+for (const id of C.WEAPON_IDS) {
+  const base = C.squadStats(20, 1, id, 1), fast = C.squadStats(20, 1, id, 1, { rate: 5 });
+  assert(fast.interval < base.interval && fast.dps > base.dps * 1.5, `${id}: rate module`);
+  assert(Math.abs(fast.damage * fast.count / fast.interval - fast.dps) < 1e-9);
+  assert(Math.abs(C.squadStats(20, 1, id, 1, { overdrive: true }).dps / base.dps - C.OVERDRIVE.rate) < 1e-9, `${id}: overdrive doubles the fire rate`);
+}
+assert.equal(C.squadStats(20, 1, 'missile', 1).crit, 0);
+assert(Math.abs(C.squadStats(20, 1, 'missile', 1, { crit: 3 }).crit - 0.18) < 1e-9); assert.equal(C.CRIT_MULT, 2.5);
+assert(C.squadStats(20, 1, 'blast', 1, { size: 5 }).blast > C.squadStats(20, 1, 'blast', 1).blast * 1.4);
+assert.equal(C.squadStats(20, 1, 'missile', 1, { rate: 99 }).interval, C.squadStats(20, 1, 'missile', 1, { rate: 5 }).interval);
+let mod = { mods: { rate: 0, crit: 0, size: 0 } };
+for (let i = 1; i <= 5; i++) { mod = C.pickModule(mod.mods, 'crit'); assert(mod.leveled && mod.mods.crit === i && mod.bonus === 0); }
+mod = C.pickModule(mod.mods, 'crit'); assert(!mod.leveled && mod.bonus === 2 && mod.mods.crit === 5 && mod.mods.rate === 0);
+assert.throws(() => C.pickModule({}, 'nope'));
+let sawModule = 0, sawWeapon = 0;
+for (let i = 0; i < 300; i++) { const id = C.rollCrate('laser', { rate: 5, crit: 0, size: 0 }, rng); if (C.MODULES[id]) { sawModule++; assert.notEqual(id, 'rate', 'maxed modules are skipped'); } else { assert(C.WEAPONS[id]); sawWeapon++; } }
+assert(sawModule > 50 && sawWeapon > 120);
+assert(C.MODULES[C.rollCrate('laser', { rate: 5, crit: 5, size: 5 }, () => 0)], 'all maxed: still a module, paying units');
+assert.equal(C.overdriveCharge('drone'), 1); assert(C.overdriveCharge('boss') > 5); assert(C.OVERDRIVE.need > 0 && C.OVERDRIVE.time > 0);
 
 // Weapon crates: swap, level up to the cap, bonus units at the cap, levels remembered.
 let w = { weapon: 'missile', levels: { missile: 1 } };
 let r = C.pickWeapon(w, 'missile'); assert(r.leveled && r.levels.missile === 2 && r.bonus === 0);
-r = C.pickWeapon({ weapon: 'missile', levels: r.levels }, 'missile'); assert.equal(r.levels.missile, 3);
-r = C.pickWeapon({ weapon: 'missile', levels: r.levels }, 'missile'); assert(r.bonus === 3 && !r.leveled && r.levels.missile === 3);
-r = C.pickWeapon({ weapon: 'missile', levels: r.levels }, 'chain'); assert(r.weapon === 'chain' && r.levels.chain === 1 && r.levels.missile === 3 && !r.leveled);
+for (let lv = 3; lv <= 5; lv++) { r = C.pickWeapon({ weapon: 'missile', levels: r.levels }, 'missile'); assert(r.leveled); assert.equal(r.levels.missile, lv); }
+r = C.pickWeapon({ weapon: 'missile', levels: r.levels }, 'missile'); assert(r.bonus === 3 && !r.leveled && r.levels.missile === 5);
+r = C.pickWeapon({ weapon: 'missile', levels: r.levels }, 'chain'); assert(r.weapon === 'chain' && r.levels.chain === 1 && r.levels.missile === 5 && !r.leveled);
 assert.throws(() => C.pickWeapon(w, 'nope'));
 for (let i = 0; i < 100; i++) assert(C.WEAPON_IDS.includes(C.rollWeapon('laser', rng)));
 
@@ -93,4 +130,4 @@ const a = C.seeded(3), b = C.seeded(3); assert.deepEqual(C.buildWave(7, a), C.bu
 assert.equal(C.comboMultiplier(0), 1); assert.equal(C.comboMultiplier(25), 1.5); assert.equal(C.comboMultiplier(999), 2);
 assert.deepEqual([1, 5, 10, 15, 20].map(C.grade), ['D', 'C', 'B', 'A', 'S']);
 assert.equal(C.evolution(1).tier, 1); assert.equal(C.evolution(99).tier, 5);
-console.log('PASS: missile rush core (operators, gate rows, fleet composition, 7 weapons, crates, enemies, 4 bosses, wave scripts, combo, grade)');
+console.log('PASS: missile rush core (operators, gate rows, fleet composition, 11 weapons with awakening, modules, overdrive, crates, enemies, 4 bosses, wave scripts, combo, grade)');
