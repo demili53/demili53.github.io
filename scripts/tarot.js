@@ -338,6 +338,9 @@
     return pos.name;
   }
   function renderSlots(spread, a) {
+    const chosen = document.querySelector('input[name=spread]:checked');
+    const small = chosen && chosen.parentElement.querySelector('small');
+    if (small) $('spreadDesc').innerHTML = `<b>${esc(spread.label)}</b> · ${esc(small.textContent)} · 고민을 적으면 알맞은 배열로 바뀝니다`;
     slotsEl.className = 'slots' + (spread.positions.length === 1 ? ' one' : '');
     slotsEl.innerHTML = spread.positions.map((p, i) => `<div class="slot"><div class="pos">${esc(slotName(spread, i, a))}</div>
       <button class="flip empty" type="button" data-slot="${i}" disabled aria-label="${esc(p.name)} 자리, 아직 카드 없음"><span class="inner"><span class="face back"><img src="${BASE}back.jpg" alt=""></span><span class="face front"><img alt=""></span></span></button>
@@ -351,10 +354,10 @@
     state = { key, spread, analysis, question: questionEl.value.trim(), choiceNames: analysis.choices, reversed: $('useReversed').checked, pool: shuffled(cards).slice(0, DECK_SIZE), picks: [], opened: 0 };
     reading.hidden = true;
     flipAllBtn.hidden = true;
-    deckEl.innerHTML = state.pool.map((_, i) => `<button type="button" data-i="${i}" aria-label="엎어 놓은 카드 ${i + 1}번" style="--dx:${randomInt(40) - 20}px;--dy:${randomInt(24) - 12}px;--rot:${randomInt(24) - 12}deg"><img src="${BASE}back.jpg" alt=""></button>`).join('');
+    deckEl.innerHTML = state.pool.map((_, i) => `<button type="button" data-i="${i}" aria-label="엎어 놓은 카드 ${i + 1}번" style="--i:${i};--dx:${randomInt(40) - 20}px;--dy:${randomInt(24) - 12}px;--rot:${randomInt(24) - 12}deg"><img src="${BASE}back.jpg" alt=""></button>`).join('');
     deckEl.classList.remove('shuffling'); void deckEl.offsetWidth; deckEl.classList.add('shuffling');
     renderSlots(spread, analysis);
-    shuffleBtn.textContent = '카드 다시 섞기';
+    shuffleBtn.textContent = '↻ 다시 섞기';
     setStatus(`고민을 떠올리며 끌리는 카드를 ${spread.positions.length}장 고르세요.`);
   }
 
@@ -395,6 +398,7 @@
     const box = slot.parentElement;
     box.querySelector('.name').textContent = name;
     box.querySelector('.en').textContent = p.card.en;
+    sparkle(box, p.card.arcana === 'major');
     state.opened++;
     const total = state.spread.positions.length;
     if (state.opened === total) flipAllBtn.hidden = true;
@@ -445,6 +449,20 @@
     ], { duration: 520, easing: 'cubic-bezier(.3,.7,.3,1)' });
     const done = () => { ghost.remove(); slot.style.visibility = ''; slot.classList.remove('landed'); void slot.offsetWidth; slot.classList.add('landed'); };
     anim.onfinish = done; anim.oncancel = done;
+  }
+
+  // A small burst of light when a card turns over; gold for major arcana.
+  function sparkle(box, major) {
+    if (calm()) return;
+    const n = major ? 18 : 12;
+    for (let k = 0; k < n; k++) {
+      const s = document.createElement('i');
+      s.className = 'spark' + (major ? ' gold' : '');
+      const a = Math.PI * 2 * k / n + Math.random() * 0.4, d = 100 + randomInt(major ? 110 : 70);
+      s.style.cssText = `--x:${(Math.cos(a) * d).toFixed(1)}px;--y:${(Math.sin(a) * d).toFixed(1)}px;animation-delay:${120 + randomInt(140)}ms`;
+      box.appendChild(s);
+      setTimeout(() => s.remove(), 1500);
+    }
   }
 
   function flipAll() {
@@ -627,6 +645,17 @@
     $('cardDialogBody').innerHTML = `<img src="${BASE + c.img}" alt="${esc(c.ko)} 카드" width="300" height="434"><div><h3>${esc(c.ko)} <small>${esc(c.en)}</small></h3><p class="core">${esc(c.meaning)}</p><dl>${DETAIL_ROWS.map(([f, label]) => data(c, f) ? `<dt>${label}</dt><dd>${esc(data(c, f))}.</dd>` : '').join('')}</dl></div>`;
     dialog.showModal();
   }
+  // Gentle 3D tilt that follows the pointer over dictionary cards.
+  if (matchMedia('(hover: hover)').matches && !calm()) {
+    const grid = $('dictGrid');
+    grid.addEventListener('pointermove', e => {
+      const li = e.target.closest('li'); if (!li) return;
+      const r = li.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+      li.style.transform = `perspective(700px) translateY(-4px) rotateX(${(-y * 10).toFixed(1)}deg) rotateY(${(x * 12).toFixed(1)}deg)`;
+      li.style.setProperty('--gx', `${((x + 0.5) * 100).toFixed(0)}%`); li.style.setProperty('--gy', `${((y + 0.5) * 100).toFixed(0)}%`);
+    });
+    grid.addEventListener('pointerout', e => { const li = e.target.closest('li'); if (li && !li.contains(e.relatedTarget)) li.style.transform = ''; });
+  }
   $('dictGrid').addEventListener('click', e => { const b = e.target.closest('.dict-card'); if (b) showCard(b.dataset.id); });
   $('cardDialogClose').addEventListener('click', () => dialog.close());
   dialog.addEventListener('click', e => { if (e.target === dialog) dialog.close(); });
@@ -636,24 +665,25 @@
   function storedDaily() {
     try { const v = JSON.parse(localStorage.getItem('tarotDaily') || 'null'); return v && v.date === today() ? v : null; } catch { return null; }
   }
-  function showDaily(id) {
+  function showDaily(id, reveal) {
     const c = cards.find(x => x.id === id);
     if (!c) return;
     $('dailyResult').innerHTML = `<button type="button" class="dict-card daily-card" data-id="${c.id}" aria-label="${esc(c.ko)} 카드 자세히 보기"><img src="${BASE + c.img}" alt="${esc(c.ko)} 카드" width="300" height="434"></button><div><b>${esc(c.ko)}</b> <small>${esc(c.en)}</small><p>오늘의 기운은 ‘${esc(c.meaning)}’입니다.</p><p class="daily-advice">${esc(data(c, 'advice') || '')}.</p><p class="note">오늘의 카드는 하루에 한 장이며 내일 새 카드로 바뀝니다.</p></div>`;
     $('dailyResult').hidden = false;
     $('dailyBtn').hidden = true;
+    if (reveal && !calm()) $('dailyResult').classList.add('reveal');
   }
   $('dailyBtn').addEventListener('click', () => {
     if (!cards.length) return;
     const id = (storedDaily() || {}).id || cards[randomInt(cards.length)].id;
     try { localStorage.setItem('tarotDaily', JSON.stringify({ date: today(), id })); } catch { /* private mode: show without saving */ }
-    showDaily(id);
+    showDaily(id, true);
   });
   $('dailyResult').addEventListener('click', e => { const b = e.target.closest('.dict-card'); if (b) showCard(b.dataset.id); });
 
   shuffleBtn.disabled = true;
   refreshAnalysis();
-  fetch(BASE + 'cards.json?v=20261120').then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(json => {
+  fetch(BASE + 'cards.json?v=20261122').then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(json => {
     cards = json.cards;
     shuffleBtn.disabled = false;
     renderDict('major');

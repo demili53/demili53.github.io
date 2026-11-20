@@ -10,7 +10,7 @@
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-T2KDKBN8');</script>
 <meta name="google-adsense-account" content="ca-pub-1087435977438565"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1087435977438565" crossorigin="anonymous"></script>
 <script src="/scripts/site-layout.js" defer></script><link rel="stylesheet" href="/styles/site-design.css">
-<script src="/scripts/tarot-readings.js?v=20261120" defer></script><script src="/scripts/tarot-ai.js?v=20261120" defer></script><script src="/scripts/tarot.js?v=20261120" defer></script>
+<script src="/scripts/tarot-readings.js?v=20261122" defer></script><script src="/scripts/tarot-ai.js?v=20261122" defer></script><script src="/scripts/tarot.js?v=20261122" defer></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"무료 타로점","url":"https://partygame.pe.kr/fortune/tarot.html","description":"고민을 글로 적고 1909년 라이더-웨이트 타로 78장 중에서 카드를 직접 고르면 주제와 질문에 맞춰 해석해 주는 무료 타로점.","inLanguage":"ko","applicationCategory":"EntertainmentApplication","operatingSystem":"Web browser","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"}}</script>
 <style>
 body{margin:0}button{font:inherit;cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}[hidden]{display:none!important}
@@ -97,31 +97,121 @@ body{margin:0}button{font:inherit;cursor:pointer}button:disabled{opacity:.45;cur
 .meter-bar{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}.meter-bar i{height:8px;border-radius:4px;background:#2b3250}
 .meter-bar i.on{background:linear-gradient(90deg,#8f6ad8,#d9b8ff)}.meter.t2 .meter-bar i.on,.meter.t1 .meter-bar i.on{background:linear-gradient(90deg,#4fbf9b,#9df0d2)}.meter.t-2 .meter-bar i.on,.meter.t-1 .meter-bar i.on{background:linear-gradient(90deg,#c0566f,#ff9fb4)}
 .meter-scale{display:flex;justify-content:space-between;font-size:10px;color:#7f8aa5;margin-top:6px}
+/* ---------- Graphics: night sky, gilded frames, velvet table ---------- */
+.sky{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;background:radial-gradient(ellipse 70% 45% at 78% -5%,#4a2d7a66,transparent 70%),radial-gradient(ellipse 60% 40% at 5% 30%,#1d3f6a44,transparent 70%),radial-gradient(ellipse 80% 50% at 50% 110%,#3a1f5c55,transparent 70%),linear-gradient(#0b0d1c,#0d111a 60%,#0a0c16)}
+.stars{position:absolute;inset:-50%;background-repeat:repeat}
+.stars.s1{background-image:radial-gradient(1px 1px at 20px 30px,#fff,transparent),radial-gradient(1px 1px at 140px 80px,#ffe9c4,transparent),radial-gradient(1px 1px at 90px 160px,#dcd2ff,transparent),radial-gradient(1px 1px at 220px 210px,#fff,transparent),radial-gradient(1px 1px at 260px 40px,#fff,transparent);background-size:300px 260px;opacity:.55}
+.stars.s2{background-image:radial-gradient(1.5px 1.5px at 60px 120px,#fff,transparent),radial-gradient(1.5px 1.5px at 330px 60px,#ffe1a8,transparent),radial-gradient(1.5px 1.5px at 210px 300px,#e2d6ff,transparent);background-size:420px 380px;animation:twinkle 5s ease-in-out infinite alternate}
+.stars.s3{background-image:radial-gradient(2px 2px at 120px 200px,#fff8e0,transparent),radial-gradient(2px 2px at 500px 90px,#fff,transparent);background-size:640px 520px;animation:twinkle 7s ease-in-out 1.5s infinite alternate;filter:drop-shadow(0 0 3px #fff)}
+@keyframes twinkle{from{opacity:.25}to{opacity:.95}}
+.tarot-heading{position:relative}.moon{position:absolute;right:170px;top:-22px;width:110px;height:110px;opacity:.9;filter:drop-shadow(0 0 18px #f4dca455);animation:float 9s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-8px) rotate(-4deg)}}
+.kicker{color:#e8c98a;letter-spacing:.26em}
+.tarot-heading h1{-webkit-text-fill-color:transparent;background:linear-gradient(100deg,#fff4dc 0%,#f0cf8c 35%,#e6d4ff 70%,#c9a2ff 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 14px #c9a2ff33)}
+.classification{border-color:#5a4a2e;color:#e8c98a;background:#1a1526aa}
+.tarot-shell .panel{position:relative;background:linear-gradient(160deg,#1b1934e8,#131729f0 55%,#10131fe8);border:1px solid #3a335c;box-shadow:inset 0 1px 0 #ffffff0d,0 18px 40px #0007;backdrop-filter:blur(6px)}
+.tarot-shell .panel::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(135deg,#e8c98a55,transparent 30%,transparent 70%,#c9a2ff44);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.field textarea{background:#0c0f1fcc;border-color:#3d3763;box-shadow:inset 0 2px 8px #0006}
+.spread span{background:linear-gradient(150deg,#1e1d3a,#171a30);border-color:#3a3660;transition:border-color .2s,transform .2s,box-shadow .2s}
+.spread span:hover{transform:translateY(-2px);border-color:#6d5a9e}
+.spread input:checked+span{border-color:#e8c98a;background:linear-gradient(140deg,#3a2858,#1f1d3c);box-shadow:0 0 0 1px #e8c98a55,0 8px 22px #8a5cd033}
+.mini{display:flex;gap:3px;margin-bottom:7px}.mini i{width:9px;height:13px;border-radius:2px;background:linear-gradient(160deg,#6d4fa3,#3b2a64);border:1px solid #e8c98a88}
+.spread input:checked+span .mini i{background:linear-gradient(160deg,#f0d394,#b98c4a);border-color:#fff2cf}
+.btn{background:linear-gradient(#262a48,#1e2240);border-color:#454a75}
+.btn.primary{background:linear-gradient(135deg,#f3dba6,#d6b4ff 55%,#b48cf5);border-color:#f0d9a8;color:#21153a;box-shadow:0 6px 18px #b48cf544,inset 0 1px 0 #fff8}
+.btn.primary:hover:not(:disabled){background:linear-gradient(135deg,#fae6bd,#e2c6ff 55%,#c29ffa);box-shadow:0 8px 24px #c9a2ff66,inset 0 1px 0 #fff8}
+.table{overflow:hidden;background:radial-gradient(ellipse at 50% 38%,#3b2462 0,#24193f 38%,#151329 72%,#100f1f 100%)!important;box-shadow:inset 0 0 0 1px #e8c98a22,inset 0 0 120px #000a,0 18px 40px #0008!important}
+.table::after{content:"";position:absolute;left:50%;top:50%;width:min(720px,120%);aspect-ratio:1;transform:translate(-50%,-50%);background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' fill='none' stroke='%23e8c98a' stroke-width='.6'%3E%3Ccircle cx='100' cy='100' r='96'/%3E%3Ccircle cx='100' cy='100' r='88' stroke-dasharray='2 3'/%3E%3Ccircle cx='100' cy='100' r='60'/%3E%3Cpath d='M100 4 113 87 196 100 113 113 100 196 87 113 4 100 87 87Z'/%3E%3Cpath d='M32 32 104 96 168 32 104 104 168 168 96 104 32 168 96 96Z' stroke-width='.4'/%3E%3C/svg%3E") center/contain no-repeat;opacity:.08;pointer-events:none;animation:spin 140s linear infinite;z-index:0}
+@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.table>*{position:relative;z-index:1}
+.table-head h2,.reading h2,.daily h2,.dict h2,.guide h2{color:#f6ead0}
+.deck button img{box-shadow:0 4px 10px #000a,0 0 0 1px #e8c98a33}
+.deck button:hover:not(:disabled) img,.deck button:focus-visible img{box-shadow:0 10px 22px #000c,0 0 16px #e8c98a88,0 0 0 1px #f0d394}
+.deck button:hover:not(:disabled),.deck button:focus-visible{box-shadow:none}
+.slots{margin-top:34px}
+.slot{position:relative}
+.slot::after{content:"";position:absolute;left:8%;right:8%;bottom:34px;height:26px;border-radius:50%;background:radial-gradient(#c9a2ff55,transparent 70%);filter:blur(4px);z-index:-1}
+.slot .pos{display:inline-block;padding:4px 12px;border-radius:20px;border:1px solid #e8c98a66;background:#1b1530cc;color:#f0d394;font-size:11.5px}
+.flip.empty .inner{border:1px dashed #e8c98a55;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40' fill='none' stroke='%23e8c98a' stroke-width='.8' opacity='.45'%3E%3Ccircle cx='20' cy='20' r='9'/%3E%3Cpath d='M20 6v28M6 20h28'/%3E%3C/svg%3E") center/38% no-repeat,#ffffff06}
+.flip .face{border-radius:11px}
+.flip .face::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 2px #e2bf78,inset 0 0 0 4px #1a1328aa,inset 0 0 0 5px #e2bf7866;pointer-events:none}
+.flip.open.major .face::after{box-shadow:inset 0 0 0 2px #ffe3a1,inset 0 0 0 4px #1a1328aa,inset 0 0 0 5px #ffe3a1aa,inset 0 0 26px #ffd98a55}
+.flip .front::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(115deg,transparent 35%,#fff6 48%,transparent 60%);background-size:250% 100%;background-position:150% 0;pointer-events:none;mix-blend-mode:screen}
+.flip.open .front::before{animation:sheen 1.4s .35s ease-out}
+@keyframes sheen{from{background-position:150% 0}to{background-position:-60% 0}}
+.slot .name{color:#fff4dc}
+.reading li{background:linear-gradient(120deg,#211d3c,#191a31);border-color:#3a3460;position:relative;overflow:hidden}
+.reading li::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(#f0d394,#b48cf5)}
+.reading li img{box-shadow:0 0 0 1.5px #e2bf78,0 6px 14px #000a;border-radius:6px}
+.reading li .tag{color:#f0d394}
+.summary{position:relative;background:linear-gradient(120deg,#271e43,#1b1834);border-left-color:#e8c98a;padding-left:46px}
+.summary::before{content:"“";position:absolute;left:14px;top:4px;font-size:44px;line-height:1;color:#e8c98a88;font-family:Georgia,serif}
+.meter{background:linear-gradient(120deg,#1f1c39,#181a30);border-color:#3a3460}
+.daily{overflow:hidden}.daily::after{content:"";position:absolute;right:-60px;top:-80px;width:260px;height:260px;border-radius:50%;background:radial-gradient(#f0d39433,transparent 65%);pointer-events:none}
+.daily-result .daily-card{position:relative;border-radius:9px;box-shadow:0 0 0 2px #e2bf78,0 0 30px #f0d39444,0 10px 24px #000a}
+.tabs button{background:#1b1a33;border-color:#3a3660}.tabs button[aria-pressed=true]{background:linear-gradient(135deg,#f3dba6,#d6b4ff);border-color:#f0d9a8;color:#21153a}
+.dict-grid li{background:linear-gradient(160deg,#1e1c38,#171a2e);border-color:#35305a;transition:transform .2s,box-shadow .2s}
+.dict-grid li:hover{transform:translateY(-4px);box-shadow:0 12px 26px #0009,0 0 0 1px #e8c98a77}
+.dict-grid img{box-shadow:0 0 0 1.5px #e2bf7899,0 6px 14px #0009}
+.dict-card:hover,.dict-card:focus-visible{background:none;box-shadow:none}
+.card-dialog{background:linear-gradient(160deg,#1e1a38,#131729);border-color:#5a4a2e;box-shadow:0 30px 80px #000c,0 0 0 1px #e8c98a33}
+.card-dialog-body img{box-shadow:0 0 0 2px #e2bf78,0 0 30px #c9a2ff44}
+.card-dialog-body h3{color:#fff4dc}
+.guide{background:linear-gradient(160deg,#16182c,#121624);border-color:#2f3150}
+.flight{box-shadow:0 14px 30px #000a,0 0 18px #e8c98a66}
+/* ---------- Simpler controls: compact spread chips, quiet secondary buttons ---------- */
+.spreads{display:flex;flex-wrap:wrap;gap:7px}
+.spread span{display:flex;align-items:center;gap:8px;height:auto;padding:8px 13px;border-radius:999px}
+.spread span small{display:none}.spread .mini{margin:0}.spread b{font-size:12.5px;white-space:nowrap}
+.spread-desc{margin-top:9px}.spread-desc b{color:#f0d394;font-weight:700}
+.options{gap:10px 16px;margin-top:10px}
+.btn.ghost{background:transparent;border-color:#3d3a62;color:#cfc7ec;min-height:38px;padding:7px 14px;font-size:12.5px}
+.btn.ghost:hover:not(:disabled){background:#ffffff0d;border-color:#6d5a9e}
+.reading .actions{align-items:center}.share-row{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}
+@media(max-width:580px){.share-row{margin-left:0;width:100%}.spread span{padding:7px 11px}}
+/* ---------- Round 3: fanned deck, sparks, daily reveal, dictionary shine ---------- */
+@media(min-width:901px){
+.deck{display:flex;align-items:flex-start;justify-content:center;max-width:none;height:172px;padding-top:26px;margin:0 auto 6px}
+.deck button{flex:0 0 76px;width:76px;margin:0 -31px;transform-origin:50% 420%;rotate:calc((var(--i) - 12.5) * 1.5deg);transition:transform .2s,opacity .25s,translate .2s}
+.deck button:hover:not(:disabled),.deck button:focus-visible{transform:translateY(-24px);z-index:2}
+.deck button.taken{transform:translateY(16px) scale(.92)}
+}
+.slot .pos{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:top}
+.spark{position:absolute;left:50%;top:48%;width:11px;height:11px;box-shadow:0 0 10px 2px #c9a2ff88;border-radius:50%;pointer-events:none;z-index:3;background:radial-gradient(circle,#fff 0 30%,#d9b8ff 55%,transparent 72%);opacity:0;animation:spark .95s ease-out forwards}
+.spark.gold{width:13px;height:13px;box-shadow:0 0 12px 3px #ffd98a99;background:radial-gradient(circle,#fff 0 30%,#ffd98a 55%,transparent 72%)}
+@keyframes spark{0%{opacity:1;transform:translate(-50%,-50%) scale(.5)}70%{opacity:.9}100%{opacity:0;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) scale(0)}}
+.daily-result.reveal .daily-card{animation:dailyIn .9s cubic-bezier(.3,.7,.3,1) both}
+.daily-result.reveal>div{animation:rise .6s .45s both}
+@keyframes dailyIn{0%{opacity:0;transform:perspective(700px) rotateY(-160deg) scale(.7)}60%{opacity:1}100%{transform:none}}
+.dict-grid li{position:relative;transform-style:preserve-3d;will-change:transform;transition:transform .25s ease-out,box-shadow .2s}
+.dict-grid li::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(circle at var(--gx,50%) var(--gy,0%),#ffffff1c,transparent 55%);opacity:0;transition:opacity .2s}
+.dict-grid li:hover::after{opacity:1}
 @media(max-width:900px){.setup{grid-template-columns:1fr}.deck{grid-template-columns:repeat(9,minmax(0,1fr))}}
-@media(max-width:580px){.tarot-shell{padding:18px 12px 0}.classification{display:none}.tarot-heading{margin-bottom:16px}.tarot-heading h1{font-size:30px}.sub{font-size:12px}
+@media(max-width:580px){.moon{right:-6px;top:-14px;width:72px;height:72px;opacity:.7}.tarot-shell{padding:18px 12px 0}.classification{display:none}.tarot-heading{margin-bottom:16px}.tarot-heading h1{font-size:30px}.sub{font-size:12px}
 .setup,.table,.reading,.dict{padding:16px 14px}.spreads{grid-template-columns:repeat(2,minmax(0,1fr))}.deck{grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
 .slots{gap:8px}.slot{width:calc((100% - 16px)/3)}.slots.one .slot{width:52%}.slot .name{font-size:12px}.guide-grid{grid-template-columns:1fr;gap:6px}.guide{padding:18px}.daily{padding:16px 14px}.daily-result{grid-template-columns:92px 1fr;gap:12px}.card-dialog-body{grid-template-columns:1fr}.card-dialog-body img{max-width:150px}.card-dialog-body dl{grid-template-columns:76px 1fr}.dict-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(prefers-reduced-motion:reduce){.flip .inner,.deck button{transition:none}.deck.shuffling button,.flip.landed .inner,.flip.open .front,.reading.reveal *{animation:none!important}}
+@media(prefers-reduced-motion:reduce){.flip .inner,.deck button{transition:none}.deck.shuffling button,.flip.landed .inner,.stars,.moon,.table::after,.flip.open .front::before,.spark,.daily-result.reveal *,.flip.open .front,.reading.reveal *{animation:none!important}}
 </style>
 </head><body><site-header></site-header><noscript><p>타로점을 보려면 JavaScript를 켜 주세요.</p><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T2KDKBN8" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<div class="sky" aria-hidden="true"><i class="stars s1"></i><i class="stars s2"></i><i class="stars s3"></i></div>
 <main class="tarot-shell" id="mainContent" tabindex="-1">
-<header class="tarot-heading"><div><div class="kicker">RIDER–WAITE TAROT · 1909</div><h1>무료 타로점</h1><p class="sub">고민을 편하게 적고, 펼쳐진 카드 중에서 끌리는 카드를 직접 고르세요.<br>78장 라이더-웨이트 덱으로 당신의 고민에 맞춘 해석을 드립니다.</p></div><span class="classification">78 CARDS / 6 SPREADS</span></header>
+<header class="tarot-heading"><svg class="moon" viewBox="0 0 120 120" aria-hidden="true"><defs><radialGradient id="moonGlow"><stop offset="0" stop-color="#ffe7b0" stop-opacity=".55"/><stop offset="1" stop-color="#ffe7b0" stop-opacity="0"/></radialGradient></defs><circle cx="60" cy="60" r="58" fill="url(#moonGlow)"/><path d="M74 26a36 36 0 1 0 20 58A30 30 0 1 1 74 26Z" fill="#f4dca4"/><g fill="#fff3d0"><circle cx="96" cy="30" r="1.8"/><circle cx="104" cy="52" r="1.2"/><circle cx="20" cy="22" r="1.4"/></g></svg><div><div class="kicker">✦ RIDER–WAITE TAROT · 1909 ✦</div><h1>무료 타로점</h1><p class="sub">고민을 편하게 적고, 펼쳐진 카드 중에서 끌리는 카드를 직접 고르세요.<br>78장 라이더-웨이트 덱으로 당신의 고민에 맞춘 해석을 드립니다.</p></div></header>
 
 <section class="panel setup" aria-label="타로점 준비">
   <div class="field"><label for="question">나의 고민 <span class="count" id="charCount">0 / 300</span></label>
     <textarea id="question" maxlength="300" rows="5" placeholder="지금 마음에 걸리는 고민을 편하게 적어 주세요. 누구와의 일인지, 무엇이 궁금한지 적을수록 해석이 고민에 맞춰집니다."></textarea>
     <div class="detect" hidden><label>주제 <select id="topicSelect" aria-label="고민 주제"></select></label><label>질문 <select id="qtypeSelect" aria-label="질문 유형"></select></label><span class="ai-found" id="aiFound"></span></div>
     <p class="hint">적은 글은 이 화면 안에서만 해석에 쓰이고 어디에도 저장되거나 전송되지 않습니다.</p></div>
-  <div class="field"><fieldset><legend>카드 배열 <span style="font-weight:400;color:#8d9cb8">(고민에 맞춰 자동 선택)</span></legend>
+  <div class="field"><fieldset><legend>카드 배열</legend>
     <div class="spreads" id="spreads">
-      <label class="spread"><input type="radio" name="spread" value="one" checked><span><b>한 장 답</b><small>한 장으로 바로 답 보기</small></span></label>
-      <label class="spread"><input type="radio" name="spread" value="time"><span><b>과거 · 현재 · 미래</b><small>세 장으로 흐름 보기</small></span></label>
-      <label class="spread"><input type="radio" name="spread" value="advice"><span><b>상황 · 조언 · 결과</b><small>세 장으로 고민 풀기</small></span></label>
-      <label class="spread"><input type="radio" name="spread" value="choice"><span><b>두 갈래 선택</b><small>선택 A · 선택 B · 조언</small></span></label>
-      <label class="spread"><input type="radio" name="spread" value="relation"><span><b>나 · 상대 · 관계</b><small>상대의 속마음 보기</small></span></label>
-      <label class="spread"><input type="radio" name="spread" value="five"><span><b>다섯 장 깊이 보기</b><small>과거 · 현재 · 숨은 영향 · 조언 · 결과</small></span></label>
-    </div></fieldset>
-    <div class="options"><label><input type="checkbox" id="useReversed"> 역방향 카드 포함</label><button class="btn" id="shuffleBtn" type="button">카드 다시 섞기</button></div></div>
+      <label class="spread"><input type="radio" name="spread" value="one" checked><span><em class="mini" aria-hidden="true"><i></i></em><b>한 장 답</b><small>한 장으로 바로 답 보기</small></span></label>
+      <label class="spread"><input type="radio" name="spread" value="time"><span><em class="mini" aria-hidden="true"><i></i><i></i><i></i></em><b>과거 · 현재 · 미래</b><small>세 장으로 흐름 보기</small></span></label>
+      <label class="spread"><input type="radio" name="spread" value="advice"><span><em class="mini" aria-hidden="true"><i></i><i></i><i></i></em><b>상황 · 조언 · 결과</b><small>세 장으로 고민 풀기</small></span></label>
+      <label class="spread"><input type="radio" name="spread" value="choice"><span><em class="mini" aria-hidden="true"><i></i><i></i><i></i></em><b>두 갈래 선택</b><small>선택 A · 선택 B · 조언</small></span></label>
+      <label class="spread"><input type="radio" name="spread" value="relation"><span><em class="mini" aria-hidden="true"><i></i><i></i><i></i></em><b>나 · 상대 · 관계</b><small>상대의 속마음 보기</small></span></label>
+      <label class="spread"><input type="radio" name="spread" value="five"><span><em class="mini" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></em><b>다섯 장 깊이 보기</b><small>과거 · 현재 · 숨은 영향 · 조언 · 결과</small></span></label>
+    </div><p class="hint spread-desc" id="spreadDesc"></p></fieldset>
+    <div class="options"><label><input type="checkbox" id="useReversed"> 역방향 카드 포함</label><button class="btn ghost" id="shuffleBtn" type="button">↻ 다시 섞기</button></div></div>
 </section>
 
 <section class="panel table" aria-labelledby="tableTitle">
@@ -137,7 +227,7 @@ body{margin:0}button{font:inherit;cursor:pointer}button:disabled{opacity:.45;cur
   <div class="meter" id="readingMeter" hidden></div>
   <p class="summary" id="readingSummary"></p>
   <p class="tip" id="readingTip"></p>
-  <div class="actions"><button class="btn primary" id="againBtn" type="button">같은 고민으로 다시 뽑기</button><button class="btn" id="newBtn" type="button">새 고민 적기</button><button class="btn" id="copyBtn" type="button">결과 복사</button><button class="btn" id="imageBtn" type="button">이미지로 저장</button><button class="btn" id="shareBtn" type="button" hidden>공유하기</button></div>
+  <div class="actions"><button class="btn primary" id="againBtn" type="button">같은 고민으로 다시 뽑기</button><button class="btn" id="newBtn" type="button">새 고민 적기</button><span class="share-row"><button class="btn ghost" id="copyBtn" type="button">결과 복사</button><button class="btn ghost" id="imageBtn" type="button">이미지로 저장</button><button class="btn ghost" id="shareBtn" type="button" hidden>공유하기</button></span></div>
   <p class="note">타로점은 재미와 자기 성찰을 위한 콘텐츠입니다. 건강·법률·금전 같은 중요한 결정은 전문가와 상의하세요.</p>
 </section>
 
