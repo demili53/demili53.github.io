@@ -1,13 +1,14 @@
 // Shared site header, navigation, account status and footer. Page content stays in <main>.
 (() => {
   const menus = [
-    { url: '/', label: '새벽의 요새', description: '타워 디펜스', group: 'games', paths: '<path d="M4 21V7h4V3h8v4h4v14M3 21h18M8 11h1m6 0h1M10 21v-6h4v6"/>' },
-    { url: '/arcade/rift-blade.html', label: '균열의 검 RPG', description: '액션 · 성장', group: 'games', paths: '<path d="m4 3 7 7m2 3 7 7M3 3l1 5 12 12 4-4L8 4 3 3Zm0 18 5-5m8-8 5-5m-5 0h5v5M3 16l5 5"/>' },
-    { url: '/arcade/space-shooter.html', label: '비행기 슈팅', description: '우주 아케이드', group: 'games', paths: '<path d="m12 3 8 17-8-4-8 4 8-17Zm0 0v13"/>' },
-    { url: '/arcade/missile-rush.html', label: '미사일 러시', description: '연산 캡슐 부대 증식', group: 'games', paths: '<path d="M12 2c2 2 3 5 3 9v6H9v-6c0-4 1-7 3-9Zm-3 11-3 3v4l3-2m6-5 3 3v4l-3-2m-5 2v4m4-4v4"/>' },
-    { url: '/arcade/lantern-keeper.html', label: '등불지기', description: '10분 생존 액션', group: 'games', paths: '<path d="M9 3h6M12 3v2M7 9a5 5 0 0 1 10 0v7a3 3 0 0 1-3 3h-4a3 3 0 0 1-3-3V9Zm0 0h10M12 12c1.4 1.3 1.4 3 0 4-1.4-1-1.4-2.7 0-4ZM9 21h6"/>' },
-    { url: '/arcade/shadow-sniper.html', label: '윌리 저격', description: '관찰 · 저격', group: 'games', paths: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 1v4m0 14v4M1 12h4m14 0h4"/>' },
-    { url: '/fortune/tarot.html', label: '타로점', description: '오늘의 카드', group: 'games', paths: '<rect x="6" y="3" width="12" height="18" rx="2"/><path d="m12 8 1.2 2.6 2.8.3-2.1 1.9.6 2.8L12 14.2l-2.5 1.4.6-2.8L8 10.9l2.8-.3L12 8Z"/>' },
+    { url: '/', label: '랜덤타워디펜스', description: '타워 디펜스', group: 'games', paths: '<path d="M4 21V7h4V3h8v4h4v14M3 21h18M8 11h1m6 0h1M10 21v-6h4v6"/>' },
+    { url: '/arcade/rift-blade.html', label: '던전엔드레곤 RPG', description: '액션 · 성장', group: 'games', paths: '<path d="m4 3 7 7m2 3 7 7M3 3l1 5 12 12 4-4L8 4 3 3Zm0 18 5-5m8-8 5-5m-5 0h5v5M3 16l5 5"/>' },
+    { url: '/arcade/space-shooter.html', label: '1945EX', description: '비행기 슈팅', group: 'games', paths: '<path d="m12 3 8 17-8-4-8 4 8-17Zm0 0v13"/>' },
+    { url: '/arcade/missile-rush.html', label: '구글광고에나오는게임', description: '연산 캡슐 부대 증식', group: 'games', paths: '<path d="M12 2c2 2 3 5 3 9v6H9v-6c0-4 1-7 3-9Zm-3 11-3 3v4l3-2m6-5 3 3v4l-3-2m-5 2v4m4-4v4"/>' },
+    { url: '/arcade/fog-front.html', label: '운빨좆망겜', description: '정찰 타워 디펜스', group: 'games', paths: '<path d="M3 10h18M3 15h18M7 5v14M17 5v14"/><path d="M4 7c2-2 4 0 6-1s3-2 5-1 3 1 5 0"/>' },
+    { url: '/arcade/lantern-keeper.html', label: '뱀파이어 온라인', description: '10분 생존 액션', group: 'games', paths: '<path d="M9 3h6M12 3v2M7 9a5 5 0 0 1 10 0v7a3 3 0 0 1-3 3h-4a3 3 0 0 1-3-3V9Zm0 0h10M12 12c1.4 1.3 1.4 3 0 4-1.4-1-1.4-2.7 0-4ZM9 21h6"/>' },
+    { url: '/arcade/shadow-sniper.html', label: '윌리를 찾아 보자', description: '관찰 · 저격', group: 'games', paths: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 1v4m0 14v4M1 12h4m14 0h4"/>' },
+    { url: '/fortune/tarot.html', label: '무료 타로점', description: '오늘의 카드', group: 'games', paths: '<rect x="6" y="3" width="12" height="18" rx="2"/><path d="m12 8 1.2 2.6 2.8.3-2.1 1.9.6 2.8L12 14.2l-2.5 1.4.6-2.8L8 10.9l2.8-.3L12 8Z"/>' },
     { url: '/exaone/', label: 'EXAONE Agent', description: '로컬 AI 도구', group: 'tools', paths: '<rect x="5" y="5" width="14" height="14" rx="3"/><path d="M9 1v4m6-4v4M9 19v4m6-4v4M1 9h4m-4 6h4m14-6h4m-4 6h4M9 9h6v6H9z"/>' }
   ];
   const menuGroups = [{ id: 'games', label: '게임' }, { id: 'tools', label: 'AI 도구' }];
@@ -195,7 +196,7 @@
         footer{padding-top:22px!important;padding-bottom:24px!important}nav{display:flex;gap:12px 22px;flex-wrap:wrap}p{margin:16px 0 0;line-height:1.6}
 
         :host{margin-top:42px;background:#101722;border-color:#293448;color:#8396b2}footer{display:flex;justify-content:space-between;gap:24px;align-items:center;min-height:100px}nav{gap:10px 20px}nav a{font-size:11px;color:#a5b6cf}nav a:hover{color:#ffbf8a}p{font-size:10px;line-height:1.8;margin:0;max-width:245px;text-align:right}@media(max-width:650px){footer{align-items:start;flex-direction:column;gap:18px;padding-top:24px!important;padding-bottom:24px!important}p{text-align:left;max-width:none}nav{gap:10px 18px}}
-      </style><footer class="wrap"><nav aria-label="사이트 안내"><a href="/privacy.html">개인정보처리방침</a><a href="/terms.html">이용약관</a><a href="/contact.html">문의하기</a><a href="/account.html">회원 계정</a><a href="/">새벽의 요새</a><a href="/arcade/shadow-sniper.html">윌리를 찾아서 저격해라</a></nav><p>© ${new Date().getFullYear()} PartyGame. 새벽의 요새 · 무료 타워 디펜스 게임.</p></footer>`;
+      </style><footer class="wrap"><nav aria-label="사이트 안내"><a href="/privacy.html">개인정보처리방침</a><a href="/terms.html">이용약관</a><a href="/contact.html">문의하기</a><a href="/account.html">회원 계정</a><a href="/">랜덤타워디펜스</a><a href="/arcade/shadow-sniper.html">윌리를 찾아 보자</a></nav><p>© ${new Date().getFullYear()} PartyGame. 랜덤타워디펜스 · 무료 타워 디펜스 게임.</p></footer>`;
     }
   }
   customElements.define('site-header', SiteHeader);

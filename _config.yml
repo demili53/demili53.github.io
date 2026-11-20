@@ -1,5 +1,5 @@
-title: "새벽의 요새 · PartyGame"
-description: "무료 타워 디펜스 게임 새벽의 요새와 비행기 슈팅 게임"
+title: "랜덤타워디펜스 · PartyGame"
+description: "무료 타워 디펜스 게임 랜덤타워디펜스와 비행기 슈팅 게임 1945EX"
 url: "https://partygame.pe.kr"
 baseurl: ""
 exclude:
@@ -44,4 +44,6 @@ exclude:
   - scripts/test-missile-rush-browser.cjs
   - scripts/test-lantern-keeper.cjs
   - scripts/test-lantern-keeper-browser.cjs
+  - scripts/test-fog-front.cjs
+  - scripts/test-fog-front-browser.cjs
   - scripts/test-tarot.cjs
