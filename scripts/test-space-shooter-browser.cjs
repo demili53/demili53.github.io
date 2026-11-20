@@ -1,3 +1,5 @@
+// 비행기 게임 브라우저 검증: node scripts/test-space-shooter-browser.cjs
+// 오프라인이면 TAILWIND_LOCAL_CSS에 미리 만든 CSS 경로를 준다.
 const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -14,214 +16,141 @@ const root = path.resolve(__dirname, '..');
     } catch { res.writeHead(404).end(); }
   });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
-  let browser;
+  let browser, n = 0;
+  const pass = name => { n += 1; console.log(`PASS ${n}. ${name}`); };
   try {
     browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_EXECUTABLE_PATH ? { executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH } : {}) });
-    const page = await browser.newPage({ viewport: { width: 1280, height: 1000 } });
-    const errors = [];
-    page.on('pageerror', e => errors.push(e.message));
-    await page.route(/googletagmanager|googlesyndication|google-analytics/, route => route.abort());
-    // 오프라인 검증: EXCALIBUR_LOCAL에 엔진 파일 경로를 주면 CDN 대신 그 파일을 사용한다.
-    if (process.env.EXCALIBUR_LOCAL) await page.route('**/excalibur.min.js', route => route.fulfill({ contentType: 'text/javascript', body: fs.readFileSync(process.env.EXCALIBUR_LOCAL) }));
-    if (process.env.TAILWIND_LOCAL_CSS) await page.route(/cdn\.tailwindcss\.com/, route => route.fulfill({ contentType: 'text/javascript', body: `document.head.appendChild(Object.assign(document.createElement('style'),{textContent:${JSON.stringify(fs.readFileSync(process.env.TAILWIND_LOCAL_CSS, 'utf8'))}}));` }));
-    await page.route('**/scripts/firebase-client.js', route => route.fulfill({ contentType: 'text/javascript', body: 'export const app={},auth={currentUser:null},authReady=Promise.resolve();export function onAuthStateChanged(a,cb){queueMicrotask(()=>cb(null));return()=>{}}export async function signOut(){}' }));
-    await page.route('**/scripts/firebase-game-ranking.js*', route => route.fulfill({ contentType: 'text/javascript', body: 'export function initializeGameRanking(){}' }));
-    await page.goto(`http://127.0.0.1:${server.address().port}/arcade/space-shooter.html`);
-    await page.waitForFunction(() => typeof player !== 'undefined' && player && game.isRunning());
-    await page.click('#overlayStartBtn');
-    await page.waitForFunction(() => pBullets.length > 0);
-    // Freeze the engine; exercise deterministic simulation steps against the real page.
-    await page.evaluate(() => game.stop());
-    const check = async (label, fn) => { assert.equal(await page.evaluate(fn), true, label); console.log('PASS:', label); };
-    await check('1. movement, focus, input loss and pause freeze', () => {
-      resetGame(); startGame(); keys.KeyD = true; update(.1); const straight = player.x - W / 2;
-      resetGame(); startGame(); keys.KeyD = true; keys.KeyS = true; update(.1);
-      const diagonal = Math.hypot(player.x - W / 2, player.y - (H - 90));
-      resetGame(); startGame(); keys.KeyD = true; focusMode = true; update(.1);
-      const slow = player.x - W / 2;
-      suspendInput(); const before = JSON.stringify([player, stars, particles, waveTimer]); update(1);
-      return Math.abs(straight - diagonal) < .001 && slow < straight / 2 && state === 'paused' && !keys.KeyD && before === JSON.stringify([player, stars, particles, waveTimer]);
-    });
-    await check('2. nine weapons preserve level and cooldown, HUD tracks state', () => {
-      resetGame(); startGame(); player.level = 7; player.cooldown = .3;
-      for (const key of WEAPON_KEYS) { changeWeapon(key); pBullets = []; playerFire(); if (!pBullets.length || player.level !== 7 || player.cooldown !== .3) return false; }
-      return el('weaponSelect').options.length === 9 && levelEl.textContent.includes('Lv.7') && el('bombBtn').textContent.includes('2');
-    });
-    await check('3. shield blocks one hit then health takes damage', () => {
-      resetGame(); startGame(); applyItem('shield'); const hp = player.lives; hitPlayer();
-      if (player.lives !== hp || player.shield !== 0 || hitsTaken !== 0) return false;
-      player.invuln = 0; hitPlayer(); return player.lives === hp - 1 && hitsTaken === 1;
-    });
-    await check('4. nearby items attract and distant items do not', () => {
-      resetGame(); startGame(); items = [{ x: player.x + 60, y: player.y, vy: 0, kind: 'power' }, { x: 20, y: 20, vy: 0, kind: 'life' }];
-      update(.1); if (!(items[0].x < player.x + 60) || items[1].x !== 20) return false;
-      for (let i = 0; i < 10; i++) update(.05);
-      return player.level === 2;
-    });
-    await check('5. boss overdrive and defeat advance exactly once', () => {
-      resetGame(); startGame(); wave = 5; spawnBoss(); const b = enemies[0]; b.entering = false; b.y = 90; b.hp = b.maxHp * .4; b.fireCd = 0;
-      update(.01); if (!b.enraged || b.fireCd >= 1) return false;
-      b.hp = 0; update(.01);
-      return wave === 6 && !bossActive && state === 'reward' && rewardWave === 5 && kills === 1 && eBullets.length === 0;
-    });
-    await check('6. boss attack warning has a readable lead-in', () => {
-      resetGame(); startGame(); wave = 10; spawnBoss(); const b = enemies[0]; b.entering = false; b.y = 90; b.fireCd = .35;
-      update(.1); if (eBullets.length || b.fireCd >= .4) return false;
-      update(.3); return eBullets.length > 0 && b.fireCd > .4;
-    });
-    await check('7. wave reward pauses and cannot be bypassed', () => {
-      resetGame(); startGame(); wave = 3; waveTimer = WAVE_LEN - .01; update(.02);
-      startGame(); bomb(); const before = JSON.stringify([player, enemies, items]); update(2);
-      return state === 'reward' && wave === 4 && rewardWave === 3 && before === JSON.stringify([player, enemies, items]) && el('rewardChoices').children.length === 4;
-    });
-    await page.locator('#rewardChoices button').first().click();
-    assert.equal(await page.evaluate(() => state === 'playing' && player.level === 2 && player.invuln >= 1), true);
-    await check('8. combo expiry and bomb score are consistent', () => {
-      resetGame(); startGame(); spawnEnemy(); bomb();
-      if (score <= 0 || combo !== 1 || kills !== 1) return false;
-      spawnTimer = 99; update(2.6); return combo === 0 && maxCombo === 1;
-    });
-    await check('9. game over emits once and reports run statistics', () => {
-      resetGame(); startGame(); window.testScores = [];
-      window.addEventListener('partygame:score', e => window.testScores.push(e.detail));
-      score = 1234; kills = 8; maxCombo = 6; elapsed = 42; player.lives = 1;
-      hitPlayer(); gameOver();
-      return state === 'over' && window.testScores.length === 1 && window.testScores[0].score === 1234 && overlayText.textContent.includes('격추 8대') && overlayText.textContent.includes('42초');
-    });
-    await check('10. loadout storage and restart reset temporary upgrades', () => {
-      selectedShip = 'speed'; preferredWeapon = 'railgun'; saveLoadout(); resetGame();
-      const saved = JSON.parse(localStorage.getItem('spaceShooterLoadout'));
-      return saved.ship === 'speed' && player.ship === 'speed' && player.weapon === 'railgun' && player.shield === 0 && kills === 0 && maxCombo === 0 && !focusMode;
-    });
-    await require('./test-space-shooter-expansion.cjs')(check, page);
-    await require('./test-space-shooter-tactics.cjs')(check, page);
-    await require('./test-space-shooter-sectors.cjs')(check, page);
-    await require('./test-space-shooter-polish.cjs')(check, page);
-    await require('./test-space-shooter-sixth.cjs')(check, page);
-    await require('./test-space-shooter-seventh.cjs')(check, page);
-    await require('./test-space-shooter-eighth.cjs')(check, page);
-    await page.evaluate(() => { selectedShip = 'speed'; preferredWeapon = 'railgun'; saveLoadout(); });
-    await page.reload();
-    await page.waitForFunction(() => typeof player !== 'undefined' && player && game.isRunning());
-    assert.equal(await page.evaluate(() => player.ship === 'speed' && player.weapon === 'railgun'), true);
-    await page.click('#overlayStartBtn');
-    await page.evaluate(() => { player.invuln = 3; wave = 10; spawnBoss(); player.level = 7; applyItem('shield'); });
-    await page.waitForTimeout(1600);
-    fs.mkdirSync(path.join(root, 'test-results'), { recursive: true });
-    await page.evaluate(() => { player.invuln = 0; });
-    await page.evaluate(() => scrollTo(0, 0));
-    await page.screenshot({ path: path.join(root, 'test-results/space-shooter-upgraded-desktop.png'), fullPage: true });
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.click('#combatPauseBtn');
-    await page.evaluate(() => scrollTo(0, 0));
-    await page.screenshot({ path: path.join(root, 'test-results/space-shooter-upgraded-mobile.png'), fullPage: true });
-    await page.evaluate(() => { el('lifetimeStats').closest('details').open = true; el('weaponLock').closest('details').open = true; });
-    await page.locator('aside section').first().screenshot({ path: path.join(root, 'test-results/space-shooter-career-mobile.png') });
-    await page.evaluate(() => { el('lifetimeStats').closest('details').open = false; el('weaponLock').closest('details').open = false; });
-    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
-    await page.click('#overlayStartBtn');
-    await page.click('#focusBtn');
-    assert.equal(await page.locator('#focusBtn').getAttribute('aria-pressed'), 'true');
-    await page.evaluate(() => { game.stop(); rewardWave = 10; showReward(); });
-    await page.evaluate(() => scrollTo(0, 0));
-    await page.screenshot({ path: path.join(root, 'test-results/space-shooter-upgraded-reward.png'), fullPage: true });
-    await page.locator('#rewardChoices button').last().click();
-    assert.equal(await page.evaluate(() => state), 'playing');
-    await page.setViewportSize({ width: 320, height: 740 });
-    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, '320px page has no horizontal overflow');
-    await page.evaluate(() => { rewardWave = 12; showReward(); });
-    const bounds = await page.locator('#gameOverlay').boundingBox();
-    const lastChoice = await page.locator('#rewardChoices button').last().boundingBox();
-    assert(lastChoice.y + lastChoice.height <= bounds.y + bounds.height, 'all four rewards fit at 320px');
-    await page.click('#rewardModeBtn');
-    assert.equal(await page.evaluate(() => rewardMode), 'modules');
-    const switchBounds = await page.locator('#rewardModeBtn').boundingBox();
-    assert(switchBounds.y + switchBounds.height <= bounds.y + bounds.height, 'refit switch fits at 320px');
-    await page.evaluate(() => scrollTo(0, 0));
-    await page.screenshot({ path: path.join(root, 'test-results/space-shooter-refit-mobile.png'), fullPage: true });
-    await page.click('#rewardModeBtn');
-    await page.locator('#rewardChoices button').last().click();
-    await page.evaluate(() => { el('gameCanvas').dispatchEvent(new PointerEvent('pointermove', { pointerType: 'touch' })); });
-    assert.equal(await page.evaluate(() => pointerIsTouch && pointerControlEnabled), true);
-    await page.evaluate(() => { el('gameCanvas').dispatchEvent(new PointerEvent('pointercancel')); });
-    assert.equal(await page.evaluate(() => pointerControlEnabled), false);
-    await page.locator('#gameCanvas').focus();
-    await page.evaluate(() => { dashCooldown = 0; charge = 100; });
-    await page.keyboard.press('r');
-    assert.equal(await page.evaluate(() => dashCooldown), 5);
-    await page.keyboard.press('c');
-    assert.equal(await page.evaluate(() => overdriveTime), 4);
-    await page.click('#fullscreenBtn');
-    await page.waitForFunction(() => document.fullscreenElement === el('gameShell'));
-    const fullscreenFit = await page.evaluate(() => {
-      const board = el('gameViewport').getBoundingClientRect(), controls = el('gameControls').getBoundingClientRect();
-      return Math.abs(board.width / board.height - .75) < .02 && board.top >= 0 && controls.bottom <= innerHeight && controls.width <= innerWidth;
-    });
-    assert.equal(fullscreenFit, true, 'mobile fullscreen keeps board and controls within view');
-    await page.evaluate(() => document.exitFullscreen());
-    await page.setViewportSize({ width: 1280, height: 1000 });
-    for (const number of [1, 6, 11]) {
-      await page.evaluate(number => {
-        resetGame(); startGame(); wave = number; player.invuln = 999; reducedEffects = true;
-        spawnFormation(); spawnCarrier();
-        enemies.forEach((enemy, i) => { enemy.y = 140 + i % 3 * 65; });
-        if (number >= 6) { enemies[0].armored = true; }
-        syncUi(); return game.start();
-      }, number);
-      await page.waitForTimeout(160);
-      await page.evaluate(() => game.stop());
-      await page.locator('#gameCanvas').screenshot({ path: path.join(root, `test-results/space-shooter-sector-${number}.png`) });
-    }
-    await page.evaluate(() => {
-      resetGame(); startGame(); wave = 15; player.invuln = 999; player.level = 9; charge = 100;
-      spawnBoss(); const boss = enemies[0]; boss.entering = false; boss.y = 90; boss.beamCooldown = 0; boss.escortCooldown = .1;
-      update(.01); player.x = 80; syncUi(); return game.start();
-    });
-    await page.waitForFunction(() => enemies.some(e => e.beam?.phase === 'warning'));
-    await page.locator('#gameCanvas').screenshot({ path: path.join(root, 'test-results/space-shooter-beam-warning.png') });
-    await page.waitForFunction(() => enemies.some(e => e.beam?.phase === 'active'));
-    await page.locator('#gameCanvas').screenshot({ path: path.join(root, 'test-results/space-shooter-beam-active.png') });
-    await page.evaluate(() => { game.stop(); charge = 100; });
-    await page.click('#empBtn');
-    assert.equal(await page.evaluate(() => charge === 50 && empCooldown === 4), true, 'actual EMP control works');
-    await page.evaluate(() => { resetGame(); el('trainingWave').closest('details').open = true; });
-    await page.selectOption('#trainingWave', '20');
-    await page.fill('#trainingLevel', '7');
-    await page.click('#trainingTargetsBtn');
-    assert.equal(await page.evaluate(() => runMode === 'training' && wave === 20 && player.level === 7 && enemies.length === 3), true, 'actual range controls apply configuration');
-    await page.evaluate(() => game.start());
-    await page.waitForTimeout(500);
-    await page.evaluate(() => game.stop());
-    await page.locator('#gameCanvas').screenshot({ path: path.join(root, 'test-results/space-shooter-training-targets.png') });
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.locator('#trainingWave').evaluate(el => el.closest('details').scrollIntoView());
-    await page.locator('#trainingWave').locator('..').locator('..').screenshot({ path: path.join(root, 'test-results/space-shooter-training-mobile.png') });
-    await page.setViewportSize({ width: 320, height: 740 });
-    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, 'training controls fit 320px');
-    await page.click('#trainingBossBtn');
-    assert.equal(await page.evaluate(() => runMode === 'training' && enemies[0].type === 'boss' && enemies[0].tier === 4), true, 'actual boss redeploy uses selected wave');
-    await page.evaluate(() => { el('highContrast').closest('details').open = true; });
-    await page.check('#highContrast');
-    await page.setViewportSize({ width: 1280, height: 1000 });
-    await page.evaluate(() => { enemies[0].fireCd = 0; return game.start(); });
-    await page.waitForTimeout(650);
-    await page.evaluate(() => game.stop());
-    await page.locator('#gameCanvas').screenshot({ path: path.join(root, 'test-results/space-shooter-training-boss.png') });
-    await page.click('#combatPauseBtn');
-    await page.click('#finishRunBtn');
-    assert.equal(await page.evaluate(() => state === 'over' && runMode === 'training' && overlayTitle.textContent === '훈련 종료'), true, 'actual paused training finish opens report');
-    await page.click('#normalRunBtn');
-    assert.equal(await page.evaluate(() => state === 'playing' && runMode === 'normal' && wave === 1 && player.level === 1), true, 'actual normal return starts fresh');
-    await check('120-second combat simulation has bounded entities and valid progression', () => {
-      resetGame(); startGame(); player.level = 10; player.invuln = 999;
-      for (let frame = 0; frame < 2400; frame++) {
-        update(.05);
-        if (state === 'reward') el('rewardChoices').firstElementChild.click();
-        if (state !== 'playing' || !Number.isFinite(player.x + player.y + score) || enemies.length > 40 || eBullets.length > 180 || notices.length > 20) return false;
+    const open = async (viewport) => {
+      const page = await browser.newPage({ viewport });
+      page.errors = []; page.on('pageerror', e => page.errors.push(e.message));
+      await page.route(/googletagmanager|googlesyndication|google-analytics/, route => route.abort());
+      if (process.env.TAILWIND_LOCAL_CSS) await page.route(/cdn\.tailwindcss\.com/, route => route.fulfill({ contentType: 'text/javascript', body: `document.head.appendChild(Object.assign(document.createElement('style'),{textContent:${JSON.stringify(fs.readFileSync(process.env.TAILWIND_LOCAL_CSS, 'utf8'))}}));` }));
+      await page.route('**/scripts/firebase-game-ranking.js*', route => route.fulfill({ contentType: 'text/javascript', body: 'export function initializeGameRanking(o){window.__ranking=o}' }));
+      await page.addInitScript(() => { window.__scores = []; window.addEventListener('partygame:score', e => window.__scores.push(e.detail)); });
+      await page.goto(`http://127.0.0.1:${server.address().port}/arcade/space-shooter.html`);
+      await page.waitForFunction(() => window.ShooterGame);
+      return page;
+    };
+    const page = await open({ width: 1280, height: 1000 });
+    const run = (fn, arg) => page.evaluate(fn, arg);
+
+    assert.equal(await run(() => ShooterGame.state), 'title');
+    assert.deepEqual(await run(() => window.__ranking), { gameId: 'space-shooter', gameName: '우주 슈팅' });
+    assert.equal(await page.locator('h1').count(), 1);
+    assert.equal(await page.locator('#gameOverlay').isVisible(), true);
+    pass('대기 화면과 순위 연결');
+
+    await page.locator('.ship-choice[data-ship="speed"]').click();
+    await page.locator('#overlayStartBtn').click();
+    assert.deepEqual(await run(() => [ShooterGame.state, ShooterGame.run.ship, ShooterGame.run.wave, ShooterGame.run.lives]), ['playing', 'speed', 1, 3]);
+    assert.equal(await page.locator('#gameOverlay').isVisible(), false);
+    pass('기체를 고르고 출격');
+
+    await run(() => ShooterGame.freeze(true));   // 이후는 직접 시간을 진행한다
+    const tick = (seconds) => run(s => { for (let i = 0; i < Math.round(s * 60); i += 1) ShooterGame.update(1 / 60); ShooterGame.draw(); }, seconds);
+
+    await run(() => { const G = ShooterGame.run; G.plan.events = []; G.planI = 0; G.enemies = []; ShooterGame.spawn('grunt', G.player.x, 300, { move: 'hover', holdY: 300 }).hp = 3; });
+    await tick(1.5);
+    assert.deepEqual(await run(() => { const G = ShooterGame.run; return [G.kills, G.chain >= 1, G.score > 0, G.shots.length > 0]; }), [1, true, true, true]);
+    pass('자동 발사로 격추하면 점수와 연쇄가 오른다');
+
+    await run(() => { const G = ShooterGame.run; G.plan = { boss: false, events: [{ t: 99, type: 'grunt', x: 0, y: 0 }] }; G.planI = 0; G.planT = 0; G.gems = []; G.items = [{ x: G.player.x, y: G.player.y - 30, kind: 'power', age: 0, offset: 0 }]; });
+    await tick(.5);
+    assert.equal(await run(() => ShooterGame.run.level), 2);
+    await run(() => { const G = ShooterGame.run; G.weapon = 'vulcan'; G.items = [{ x: G.player.x, y: G.player.y - 30, kind: 'weapon', age: 1.5, offset: 0 }]; });   // 1.4초가 지나 확산으로 바뀐 상자
+    await tick(.4);
+    assert.equal(await run(() => ShooterGame.run.weapon), 'spread');
+    pass('강화 아이템과 무기 교체 아이템');
+
+    await run(() => { const G = ShooterGame.run; G.player.invuln = 0; G.level = 3; G.chain = 9; G.bullets = [{ x: G.player.x, y: G.player.y, vx: 0, vy: 0, r: 5 }]; });
+    await tick(.05);
+    assert.deepEqual(await run(() => { const G = ShooterGame.run; return [G.lives, G.level, G.chain, G.bullets.length, G.player.invuln > 1]; }), [2, 2, 0, 0, true]);
+    await run(() => { const G = ShooterGame.run; G.bullets = [{ x: G.player.x, y: G.player.y, vx: 0, vy: 0, r: 5 }]; });
+    await tick(.05);
+    assert.equal(await run(() => ShooterGame.run.lives), 2);
+    pass('피격하면 라이프와 화력이 줄고 잠시 무적이 된다');
+
+    await run(() => { const G = ShooterGame.run; G.player.invuln = 0; G.shield = true; ShooterGame.hitPlayer(); });
+    assert.deepEqual(await run(() => [ShooterGame.run.lives, ShooterGame.run.shield]), [2, false]);
+    pass('방어막은 한 번 막아 준다');
+
+    await run(() => { const G = ShooterGame.run; G.player.invuln = 0; G.gems = []; G.bullets = Array.from({ length: 12 }, (_, i) => ({ x: 40 + i * 30, y: 200, vx: 0, vy: 0, r: 5 })); ShooterGame.spawn('grunt', 100, 200, { move: 'hover', holdY: 200 }); });
+    await page.keyboard.press('KeyB');
+    assert.deepEqual(await run(() => { const G = ShooterGame.run; return [G.bombs, G.bullets.length, G.gems.length >= 12, G.player.invuln > 0]; }), [1, 0, true, true]);
+    assert.match(await page.locator('#bombBtn').textContent(), /1/);
+    pass('봄은 적탄을 보석으로 바꾼다');
+
+    await page.keyboard.press('KeyP');
+    assert.equal(await run(() => ShooterGame.state), 'paused');
+    assert.equal(await page.locator('#quitBtn').isVisible(), true);
+    const before = await run(() => ShooterGame.run.time);
+    await tick(.5);
+    assert.equal(await run(() => ShooterGame.run.time), before);
+    await page.keyboard.press('KeyP');
+    assert.equal(await run(() => ShooterGame.state), 'playing');
+    pass('일시정지 중에는 시간이 멈춘다');
+
+    await run(() => { const G = ShooterGame.run; G.enemies = []; G.bullets = []; ShooterGame.startWave(5); G.player.invuln = 999; G.level = 1; });
+    await tick(6);
+    assert.deepEqual(await run(() => { const b = ShooterGame.run.boss; return [b.kind, b.entering]; }), ['destroyer', false]);
+    await run(() => { ShooterGame.run.boss.hp = 0; });
+    await tick(4);
+    assert.equal(await run(() => ShooterGame.state), 'upgrade');
+    assert.equal(await page.locator('.upgrade-card').count(), 3);
+    const scoreBefore = await run(() => ShooterGame.run.score);
+    assert.ok(scoreBefore >= 7500);
+    await page.keyboard.press('Digit2');
+    assert.deepEqual(await run(() => [ShooterGame.state, ShooterGame.run.wave, Object.keys(ShooterGame.run.owned).length]), ['playing', 6, 1]);
+    pass('보스 격파 후 강화를 고르면 다음 웨이브');
+
+    await run(() => { const G = ShooterGame.run; G.enemies = []; G.bullets = []; G.plan = { boss: false, events: [] }; G.planI = 0; G.waveHits = 0; });
+    await tick(.1);
+    assert.equal(await run(() => ShooterGame.run.wave), 7);
+    pass('적을 모두 정리하면 다음 웨이브');
+
+    await run(() => { const G = ShooterGame.run; G.player.invuln = 0; G.shield = false; G.lives = 1; G.score = 4321; ShooterGame.hitPlayer(); });
+    await tick(2);
+    assert.equal(await run(() => ShooterGame.state), 'over');
+    assert.deepEqual(await run(() => window.__scores), [{ gameId: 'space-shooter', score: 4321, wave: 7 }]);
+    assert.equal(await run(() => localStorage.getItem('spaceShooterBest')), '4321');
+    assert.match(await page.locator('#overlayTitle').textContent(), /게임 오버/);
+    pass('게임 오버에 점수를 한 번만 보내고 최고 기록을 저장');
+
+    await page.keyboard.press('Enter');
+    assert.deepEqual(await run(() => [ShooterGame.state, ShooterGame.run.score, ShooterGame.run.wave]), ['playing', 0, 1]);
+    pass('다시 출격');
+
+    // 2분 자동 진행: 값이 깨지거나 개체가 한도를 넘지 않는지 본다.
+    const sim = await run(() => {
+      const S = ShooterGame; let maxBullets = 0, maxParticles = 0;
+      for (let i = 0; i < 120 * 60; i += 1) {
+        if (S.state === 'over') S.start('balanced');
+        if (S.state === 'upgrade') { S.pickUpgrade('damage'); continue; }
+        const G = S.run; G.player.x = 240 + Math.sin(i / 40) * 180; if (i % 600 === 0) G.player.invuln = 6;
+        S.update(1 / 60); if (i % 30 === 0) S.draw();
+        maxBullets = Math.max(maxBullets, G.bullets.length); maxParticles = Math.max(maxParticles, G.particles.length);
       }
-      return elapsed > 110 && wave >= 5 && kills > 10;
+      const G = S.run; return { maxBullets, maxParticles, finite: [G.player.x, G.player.y, G.score, G.time].every(Number.isFinite), wave: G.wave };
     });
-    assert.deepEqual(errors, []);
-    console.log('PASS: real engine render, reload persistence, mobile layout, reward buttons and no runtime errors');
-  } finally { if (browser) await browser.close(); await new Promise(resolve => server.close(resolve)); }
-})().catch(error => { console.error(error); process.exitCode = 1; });
+    assert.ok(sim.finite && sim.maxBullets <= 260 && sim.maxParticles <= 300, JSON.stringify(sim));
+    pass(`2분 자동 진행 (웨이브 ${sim.wave}, 적탄 최대 ${sim.maxBullets})`);
+    assert.deepEqual(page.errors, []);
+    pass('스크립트 오류 없음');
+
+    const phone = await open({ width: 360, height: 740 });
+    assert.equal(await phone.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true);
+    const box = await phone.locator('#gameCanvas').boundingBox();
+    assert.ok(Math.abs(box.height / box.width - 4 / 3) < .02);
+    for (const id of ['bombBtn', 'pauseBtn', 'soundBtn', 'fullscreenBtn']) { const b = await phone.locator('#' + id).boundingBox(); assert.ok(b.width >= 44 && b.height >= 44, id); }
+    await phone.locator('#overlayStartBtn').click();
+    await phone.evaluate(() => { ShooterGame.freeze(true); ShooterGame.run.player.x = 240; ShooterGame.run.player.y = 500; });
+    await phone.locator('#gameCanvas').dispatchEvent('pointerdown', { pointerType: 'touch', pointerId: 7, clientX: box.x + 100, clientY: box.y + 300 });
+    await phone.locator('#gameCanvas').dispatchEvent('pointermove', { pointerType: 'touch', pointerId: 7, clientX: box.x + 40, clientY: box.y + 300 });
+    await phone.evaluate(() => { for (let i = 0; i < 30; i += 1) ShooterGame.update(1 / 60); });
+    const moved = await phone.evaluate(() => ShooterGame.run.player.x);
+    assert.ok(Math.abs(moved - (240 - 60 * 480 / box.width)) < 3, String(moved));
+    assert.deepEqual(phone.errors, []);
+    pass('휴대폰 폭에서 넘침 없이 터치 드래그로 이동');
+    console.log(`space-shooter browser: ${n} checks passed`);
+  } finally { await browser?.close(); server.close(); }
+})().catch(error => { console.error(error); process.exit(1); });
