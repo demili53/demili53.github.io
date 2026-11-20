@@ -15,7 +15,9 @@
     for (const s of SEGMENTS) { if (rest <= s.len) return { x: s.ax + s.dx * rest, y: s.ay + s.dy * rest, dx: s.dx, dy: s.dy }; rest -= s.len; }
     const last = SEGMENTS[SEGMENTS.length - 1]; return { x: TRACK[TRACK.length - 1][0], y: TRACK[TRACK.length - 1][1], dx: last.dx, dy: last.dy };
   }
-  const CELLS = []; for (let row = 0; row < 4; row++) for (let col = 0; col < 4; col++) CELLS.push({ x: 183 + col * 118, y: 183 + row * 118 });
+  // 타워 칸: 5×5. 바깥 고리, 안쪽 고리, 한가운데 순으로 길에서 멀어집니다.
+  const GRID = 5, PITCH = 96, CELL_HALF = 39, TOWER_SCALE = .8;
+  const CELLS = []; for (let row = 0; row < GRID; row++) for (let col = 0; col < GRID; col++) CELLS.push({ x: 360 + (col - (GRID - 1) / 2) * PITCH, y: 360 + (row - (GRID - 1) / 2) * PITCH });
   const distanceToTrack = (x, y) => { let best = Infinity; for (const s of SEGMENTS) { const t = Math.max(0, Math.min(s.len, (x - s.ax) * s.dx + (y - s.ay) * s.dy)); best = Math.min(best, Math.hypot(x - s.ax - s.dx * t, y - s.ay - s.dy * t)); } return best; };
 
   const TIERS = [{ name: '일반', color: '#b9c7c2' }, { name: '고급', color: '#8fe0a0' }, { name: '희귀', color: '#7fb8ff' }, { name: '영웅', color: '#c79bff' }, { name: '전설', color: '#ffb561' }, { name: '신화', color: '#ff6f7d' }];
@@ -57,7 +59,7 @@
   // 상태가 겹칠 때 일어나는 조합 반응
   const REACTIONS = { shock: '열충격', conduct: '감전', shatter: '파쇄', ignite: '인화', mark: '급소' };
   const AWAKEN_TIER = 5;
-  const RESEARCH_MAX = 4, NEIGHBORS = CELLS.map((c, i) => CELLS.flatMap((o, j) => j !== i && Math.abs(o.x - c.x) < 130 && Math.abs(o.y - c.y) < 130 ? [j] : []));
+  const RESEARCH_MAX = 4, NEIGHBORS = CELLS.map((c, i) => CELLS.flatMap((o, j) => j !== i && Math.abs(o.x - c.x) < PITCH * 1.1 && Math.abs(o.y - c.y) < PITCH * 1.1 ? [j] : []));
   const DECK = Object.keys(TOWERS);
   const ENEMIES = {
     grunt: { name: '그림자 병사', hp: 1, speed: 67, r: 13, gold: 6, leak: 1, tip: '기본 보병' },
@@ -328,5 +330,5 @@
     }
     fade(dt) { let keep = 0; for (const f of this.effects) { f.life -= dt; if (f.life > 0) this.effects[keep++] = f; } this.effects.length = keep; }
   }
-  return { Game, REACTIONS, AWAKEN, AWAKEN_TIER, RESEARCH, RESEARCH_MAX, NEIGHBORS, SIZE, TRACK, TRACK_LENGTH, CORE, CORE_MAX, CELLS, TOWERS, DECK, TIERS, MAX_TIER, GROWTH, ENEMIES, BOSSES, PERKS, THEMES, THEME_NAMES, FLASH_COOLDOWN, trackPoint, distanceToTrack, roster, depth, bossOf, themeOf };
+  return { Game, REACTIONS, AWAKEN, AWAKEN_TIER, RESEARCH, RESEARCH_MAX, NEIGHBORS, GRID, PITCH, CELL_HALF, TOWER_SCALE, SIZE, TRACK, TRACK_LENGTH, CORE, CORE_MAX, CELLS, TOWERS, DECK, TIERS, MAX_TIER, GROWTH, ENEMIES, BOSSES, PERKS, THEMES, THEME_NAMES, FLASH_COOLDOWN, trackPoint, distanceToTrack, roster, depth, bossOf, themeOf };
 });

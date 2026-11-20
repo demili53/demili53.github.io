@@ -11,12 +11,12 @@ let count = 0;
 const test = (name, fn) => { fn(); count++; };
 
 test('길과 칸 배치', () => {
-  assert.equal(D.CELLS.length, 16);
+  assert.equal(D.CELLS.length, 25); assert.equal(D.GRID, 5);
   assert.ok(D.TRACK_LENGTH > 2000);
   const start = D.trackPoint(0), end = D.trackPoint(D.TRACK_LENGTH);
   assert.deepEqual([start.x, start.y], D.TRACK[0]);
   assert.deepEqual([end.x, end.y], D.TRACK[D.TRACK.length - 1]);
-  for (const c of D.CELLS) assert.ok(D.distanceToTrack(c.x, c.y) > 100, '칸은 길과 겹치지 않는다');
+  for (const c of D.CELLS) assert.ok(D.distanceToTrack(c.x, c.y) > 90, '칸은 길과 겹치지 않는다');
 });
 
 test('시작 전에는 아무것도 할 수 없다', () => {
@@ -64,7 +64,8 @@ test('등급과 강화가 능력치를 올린다', () => {
   assert.ok(Math.abs(b.damage / a.damage - D.GROWTH) < 1e-9); assert.ok(b.range > a.range); assert.ok(b.interval < a.interval);
   g.gold = 500; assert.equal(g.amplify(), true); assert.equal(g.gold, 380); assert.equal(g.amplifyCost, 180);
   assert.ok(Math.abs(g.towerStats('arrow', 1).damage / a.damage - 1.06) < 1e-9);
-  assert.equal(g.reaches(0, 'frost', 1), true); assert.equal(g.reaches(5, 'frost', 1), false, '안쪽 칸의 냉기탑은 길에 닿지 않는다'); assert.equal(g.reaches(5, 'laser', 1), true);
+  assert.equal(g.reaches(0, 'frost', 1), true); assert.equal(g.reaches(6, 'frost', 1), false, '안쪽 칸의 냉기탑은 길에 닿지 않는다'); assert.equal(g.reaches(6, 'laser', 1), true);
+  assert.equal(g.reaches(12, 'laser', 1), false, '한가운데는 저격탑과 별빛탑만 닿는다'); assert.equal(g.reaches(12, 'sniper', 1), true); assert.equal(g.reaches(12, 'star', 1), true);
 });
 
 test('공격 타워가 모두 적에게 피해를 준다', () => {

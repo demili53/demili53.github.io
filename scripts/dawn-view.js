@@ -14,7 +14,7 @@
       this.scale = size / D.SIZE;
     }
     toBoard(clientX, clientY) { const rect = this.canvas.getBoundingClientRect(); return { x: (clientX - rect.left) / rect.width * D.SIZE, y: (clientY - rect.top) / rect.height * D.SIZE }; }
-    cellAt(x, y) { for (let i = 0; i < D.CELLS.length; i++) if (Math.abs(D.CELLS[i].x - x) <= 56 && Math.abs(D.CELLS[i].y - y) <= 56) return i; return -1; }
+    cellAt(x, y) { for (let i = 0; i < D.CELLS.length; i++) if (Math.abs(D.CELLS[i].x - x) <= D.PITCH / 2 && Math.abs(D.CELLS[i].y - y) <= D.PITCH / 2) return i; return -1; }
 
     spark(x, y, color, count, speed = 120, life = .5, size = 2.4, gravity = 0) {
       if (this.reduced) return;
@@ -95,15 +95,15 @@
       const t = this.clock, drag = ui.drag;
       if (ui.hints && game.state === 'running' && !drag) {
         const groups = new Map(); game.cells.forEach((c, i) => { if (c.tower && c.tower.tier < D.MAX_TIER) { const key = c.tower.type + c.tower.tier; if (!groups.has(key)) groups.set(key, []); groups.get(key).push(i); } });
-        for (const list of groups.values()) if (list.length > 1) for (const i of list) { const c = game.cells[i], col = D.TIERS[c.tower.tier - 1].color, pulse = .45 + .3 * Math.sin(t * 4); g.strokeStyle = alpha(col, pulse); g.lineWidth = 2.5; rounded(g, c.x - 47, c.y - 47, 94, 94, 18); g.stroke(); }
+        for (const list of groups.values()) if (list.length > 1) for (const i of list) { const c = game.cells[i], col = D.TIERS[c.tower.tier - 1].color, pulse = .45 + .3 * Math.sin(t * 4); g.strokeStyle = alpha(col, pulse); g.lineWidth = 2.5; rounded(g, c.x - D.CELL_HALF, c.y - D.CELL_HALF, D.CELL_HALF * 2, D.CELL_HALF * 2, 15); g.stroke(); }
       }
       if (drag) {
         game.cells.forEach((c, i) => {
           if (i === drag.from) return; const merge = game.canMerge(drag.from, i), over = drag.over === i;
-          if (merge) { g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = (over ? .8 : .35) + .15 * Math.sin(t * 6); g.drawImage(Art.glow('#ffe08a'), c.x - 66, c.y - 66, 132, 132); g.restore(); g.strokeStyle = '#ffe08a'; g.lineWidth = over ? 4 : 2.5; rounded(g, c.x - 47, c.y - 47, 94, 94, 18); g.stroke(); }
-          else if (over) { g.strokeStyle = 'rgba(255,255,255,.75)'; g.lineWidth = 2.5; rounded(g, c.x - 47, c.y - 47, 94, 94, 18); g.stroke(); }
+          if (merge) { g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = (over ? .8 : .35) + .15 * Math.sin(t * 6); g.drawImage(Art.glow('#ffe08a'), c.x - 66, c.y - 66, 132, 132); g.restore(); g.strokeStyle = '#ffe08a'; g.lineWidth = over ? 4 : 2.5; rounded(g, c.x - D.CELL_HALF, c.y - D.CELL_HALF, D.CELL_HALF * 2, D.CELL_HALF * 2, 15); g.stroke(); }
+          else if (over) { g.strokeStyle = 'rgba(255,255,255,.75)'; g.lineWidth = 2.5; rounded(g, c.x - D.CELL_HALF, c.y - D.CELL_HALF, D.CELL_HALF * 2, D.CELL_HALF * 2, 15); g.stroke(); }
         });
-      } else if (ui.selected >= 0 && game.cells[ui.selected]?.tower) { const c = game.cells[ui.selected]; g.strokeStyle = '#ffffff'; g.lineWidth = 3; rounded(g, c.x - 47, c.y - 47, 94, 94, 18); g.stroke(); }
+      } else if (ui.selected >= 0 && game.cells[ui.selected]?.tower) { const c = game.cells[ui.selected]; g.strokeStyle = '#ffffff'; g.lineWidth = 3; rounded(g, c.x - D.CELL_HALF, c.y - D.CELL_HALF, D.CELL_HALF * 2, D.CELL_HALF * 2, 15); g.stroke(); }
     }
 
     // 지휘탑이 강화하는 이웃 타워로 이어지는 빛줄
@@ -115,7 +115,7 @@
     tower(g, game, cell, index, ui) {
       const t = cell.tower, art = Art.tower(t.type, t.tier), tc = D.TIERS[t.tier - 1].color, now = this.clock, dragged = ui.drag && ui.drag.from === index;
       const pop = clamp((game.time - t.born) / .28, 0, 1), back = pop - 1, scale = pop < 1 ? .6 + .4 * (1 + 2.7 * back * back * back + 1.7 * back * back) : 1;
-      g.save(); g.translate(cell.x, cell.y); if (dragged) g.globalAlpha = .3; g.scale(scale, scale);
+      g.save(); g.translate(cell.x, cell.y); if (dragged) g.globalAlpha = .3; g.scale(scale * D.TOWER_SCALE, scale * D.TOWER_SCALE);
       if (t.tier >= 4 && !this.reduced) { g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = .28 + .1 * Math.sin(now * 3 + index); g.drawImage(Art.glow(tc), -66, -66, 132, 132); g.restore(); }
       if (t.tier === 6 && !this.reduced) { g.save(); g.rotate(now * .6); g.globalCompositeOperation = 'lighter'; g.fillStyle = alpha(tc, .5); for (let i = 0; i < 12; i++) { g.rotate(TAU / 12); poly(g, [43, -2.5, 54 + (i % 2) * 6, 0, 43, 2.5]); g.fill(); } g.restore(); }
       g.drawImage(art.base, -55, -55, 110, 110);
@@ -224,8 +224,8 @@
     }
     overlay(g, game, ui, P) {
       const drag = ui.drag, index = drag ? (drag.over >= 0 ? drag.over : -1) : ui.selected, source = drag ? game.cells[drag.from]?.tower : game.cells[ui.selected]?.tower;
-      if (source && index >= 0) { const c = game.cells[index], stats = game.towerStats(source.type, source.tier), col = D.TIERS[source.tier - 1].color; if (source.type === 'star') { } else if (source.type === 'beacon') { g.strokeStyle = alpha('#ffd66e', .9); g.lineWidth = 2.5; for (const j of D.NEIGHBORS[index]) { const o = game.cells[j]; rounded(g, o.x - 47, o.y - 47, 94, 94, 18); g.stroke(); } } else { g.fillStyle = alpha(col, .07); circle(g, c.x, c.y, stats.range); g.fill(); g.setLineDash([8, 7]); g.lineDashOffset = -this.clock * 18; g.strokeStyle = alpha(col, .75); g.lineWidth = 2; g.stroke(); g.setLineDash([]); } }
-      if (drag && source) { const art = Art.tower(source.type, source.tier); g.save(); g.translate(drag.x, drag.y - 8); g.scale(1.12, 1.12); g.globalAlpha = .95; g.drawImage(art.base, -55, -55, 110, 110); if (art.rotating) g.rotate(source.angle); g.drawImage(art.head, -55, -55, 110, 110); g.restore(); }
+      if (source && index >= 0) { const c = game.cells[index], stats = game.towerStats(source.type, source.tier), col = D.TIERS[source.tier - 1].color; if (source.type === 'star') { } else if (source.type === 'beacon') { g.strokeStyle = alpha('#ffd66e', .9); g.lineWidth = 2.5; for (const j of D.NEIGHBORS[index]) { const o = game.cells[j]; rounded(g, o.x - D.CELL_HALF, o.y - D.CELL_HALF, D.CELL_HALF * 2, D.CELL_HALF * 2, 15); g.stroke(); } } else { g.fillStyle = alpha(col, .07); circle(g, c.x, c.y, stats.range); g.fill(); g.setLineDash([8, 7]); g.lineDashOffset = -this.clock * 18; g.strokeStyle = alpha(col, .75); g.lineWidth = 2; g.stroke(); g.setLineDash([]); } }
+      if (drag && source) { const art = Art.tower(source.type, source.tier); g.save(); g.translate(drag.x, drag.y - 8); g.scale(1.2 * D.TOWER_SCALE, 1.2 * D.TOWER_SCALE); g.globalAlpha = .95; g.drawImage(art.base, -55, -55, 110, 110); if (art.rotating) g.rotate(source.angle); g.drawImage(art.head, -55, -55, 110, 110); g.restore(); }
       // 새벽빛과 경고
       g.save(); g.globalCompositeOperation = 'lighter'; g.fillStyle = radial(g, D.CORE.x, D.CORE.y, 520, [alpha(P.tint, .13), alpha(P.tint, .03), alpha(P.tint, 0)]); g.fillRect(0, 0, 720, 720); g.restore();
       const danger = game.core <= D.CORE_MAX * .25 && game.state === 'running' ? .18 + .1 * Math.sin(this.clock * 6) : 0, hit = game.coreHit > 0 ? game.coreHit / .4 * .4 : 0, red = Math.max(danger, hit);

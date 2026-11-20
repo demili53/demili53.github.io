@@ -76,7 +76,7 @@ const root = path.resolve(__dirname, '..');
     assert.equal(await page.evaluate(() => game.cells[10].tower), null);
 
     // 길에 닿지 않는 타워 경고
-    await page.evaluate(() => { game.place(5, 'frost', 1); selected = 5; sync(); });
+    await page.evaluate(() => { game.place(6, 'frost', 1); selected = 6; sync(); });
     assert.match(await page.locator('#selection').textContent(), /길에 닿지 않습니다/);
 
     // 화력 강화, 섬광, 배속, 일시정지

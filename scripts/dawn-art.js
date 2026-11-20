@@ -82,18 +82,18 @@
     g.fillStyle = linear(g, 0, 108, 0, 612, [tone(P.plaza, .16), P.plaza, tone(P.plaza, -.18)]); rounded(g, 108, 108, 504, 504, 30); g.fill();
     g.save(); rounded(g, 108, 108, 504, 504, 30); g.clip();
     for (let i = 0; i < 70; i++) { const x = 108 + random() * 504, y = 108 + random() * 504, r = 10 + random() * 40; g.fillStyle = random() < .5 ? 'rgba(0,0,0,.07)' : 'rgba(255,255,255,.035)'; ellipse(g, x, y, r, r * .6, random() * 3); g.fill(); }
-    g.strokeStyle = 'rgba(0,0,0,.18)'; g.lineWidth = 1.5; for (let i = 1; i < 4; i++) { const v = 124 + i * 118; g.beginPath(); g.moveTo(v, 120); g.lineTo(v, 600); g.moveTo(120, v); g.lineTo(600, v); g.stroke(); }
+    g.strokeStyle = 'rgba(0,0,0,.18)'; g.lineWidth = 1.5; for (let i = 1; i < D.GRID; i++) { const v = 360 + (i - D.GRID / 2) * D.PITCH; g.beginPath(); g.moveTo(v, 120); g.lineTo(v, 600); g.moveTo(120, v); g.lineTo(600, v); g.stroke(); }
     g.restore();
     g.strokeStyle = tone(P.plaza, .35); g.lineWidth = 2; rounded(g, 109, 109, 502, 502, 29); g.stroke();
     g.strokeStyle = alpha(P.accent, .28); g.lineWidth = 1.5; rounded(g, 116, 116, 488, 488, 23); g.stroke();
     for (const cell of D.CELLS) {
-      const x = cell.x - 47, y = cell.y - 47;
-      g.fillStyle = 'rgba(255,255,255,.06)'; rounded(g, x, y + 1.5, 94, 94, 18); g.fill();
-      g.fillStyle = linear(g, 0, y, 0, y + 94, [tone(P.plaza, -.52), tone(P.plaza, -.3)]); rounded(g, x, y, 94, 94, 18); g.fill();
+      const H = D.CELL_HALF, x = cell.x - H, y = cell.y - H, w = H * 2;
+      g.fillStyle = 'rgba(255,255,255,.06)'; rounded(g, x, y + 1.5, w, w, 15); g.fill();
+      g.fillStyle = linear(g, 0, y, 0, y + w, [tone(P.plaza, -.52), tone(P.plaza, -.3)]); rounded(g, x, y, w, w, 15); g.fill();
       g.strokeStyle = 'rgba(0,0,0,.45)'; g.lineWidth = 1.5; g.stroke();
-      g.fillStyle = radial(g, cell.x, cell.y, 44, [alpha(P.accent, .1), alpha(P.accent, 0)]); circle(g, cell.x, cell.y, 44); g.fill();
-      g.strokeStyle = alpha(P.accent, .22); g.lineWidth = 1.2; circle(g, cell.x, cell.y, 30); g.stroke();
-      g.strokeStyle = alpha(P.accent, .3); g.lineWidth = 2; for (const [sx, sy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) { g.beginPath(); g.moveTo(cell.x + sx * 38, cell.y + sy * 30); g.lineTo(cell.x + sx * 38, cell.y + sy * 38); g.lineTo(cell.x + sx * 30, cell.y + sy * 38); g.stroke(); }
+      g.fillStyle = radial(g, cell.x, cell.y, H, [alpha(P.accent, .1), alpha(P.accent, 0)]); circle(g, cell.x, cell.y, H); g.fill();
+      g.strokeStyle = alpha(P.accent, .22); g.lineWidth = 1.2; circle(g, cell.x, cell.y, H * .64); g.stroke();
+      g.strokeStyle = alpha(P.accent, .3); g.lineWidth = 1.8; for (const [sx, sy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) { g.beginPath(); g.moveTo(cell.x + sx * H * .8, cell.y + sy * H * .62); g.lineTo(cell.x + sx * H * .8, cell.y + sy * H * .8); g.lineTo(cell.x + sx * H * .62, cell.y + sy * H * .8); g.stroke(); }
     }
     // 가장자리 어둠
     g.fillStyle = radial(g, 360, 360, 540, ['rgba(0,0,0,0)', 'rgba(0,0,0,0)', 'rgba(3,6,10,.5)']); g.fillRect(0, 0, 720, 720);
