@@ -29,7 +29,7 @@ const tarot = read('fortune/tarot.html');
 assert(tarot.includes(`rel="canonical" href="${origin}/fortune/tarot.html"`));
 assert.match(tarot, /<meta name="description" content="[^"]{30,}"/);
 assert.equal((tarot.match(/<h1\b/g) || []).length, 1);
-assert([...tarot.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].some(m => { const d = JSON.parse(m[1]); return d['@type'] === 'WebApplication' && d.url === origin + '/fortune/tarot.html' && !d.aggregateRating; }));
+assert([...tarot.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].flatMap(m => { const d = JSON.parse(m[1]); return d['@graph'] || [d]; }).some(d => { return d['@type'] === 'WebApplication' && d.url === origin + '/fortune/tarot.html' && !d.aggregateRating; }));
 assert.deepEqual(urls.sort(), [...games.map(([, url]) => origin + url), origin + '/exaone/', origin + '/fortune/tarot.html'].sort());
 assert(!read('robots.txt').includes('blog'));
 assert.match(read('404.html'), /noindex, follow/);
@@ -43,6 +43,26 @@ for (const file of ['fortune/tarot.html', 'arcade/fog-front.html', 'arcade/missi
     assert(fs.existsSync(target), `${file}: broken local link ${url}`);
   }
 }
+for (const [file, url] of [...games, ['fortune/tarot.html', '/fortune/tarot.html']]) {
+  const html = read(file);
+  assert.match(html, /<meta property="og:locale" content="ko_KR">/, file);
+  const image = (html.match(/<meta property="og:image" content="([^"]+)">/) || [])[1];
+  assert(image && image.startsWith(origin + '/') && !(file !== 'index.html' && image === origin + '/site-share.png'), `${file}: own share image`);
+  assert(fs.existsSync(path.join(root, image.slice(origin.length))), `${file}: share image file`);
+  assert.match(html, /<meta property="og:image:width" content="1200">/, file);
+  assert.match(html, /<meta name="twitter:card" content="summary_large_image">/, file);
+  assert.match(html, /<meta name="twitter:image" content="https:\/\/partygame\.pe\.kr\/[^"]+">/, file);
+  const more = html.match(/<section class="pg-more"[\s\S]*?<\/section>/);
+  assert(more, `${file}: static links to other games`);
+  const linked = [...more[0].matchAll(/href="([^"]+)"/g)].map(m => m[1]);
+  assert.equal(linked.length, games.length, file);
+  assert(!linked.includes(url), `${file}: links to itself`);
+  const entities = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].flatMap(m => { const d = JSON.parse(m[1]); return d['@graph'] || [d]; });
+  const main = entities.find(d => d.url === origin + url && /VideoGame|WebApplication/.test(d['@type']));
+  assert(main.image && main.publisher && main.offers, `${file}: schema image/publisher/offers`);
+  if (url !== '/') assert(entities.some(d => d['@type'] === 'BreadcrumbList'), `${file}: breadcrumb`);
+}
+assert.equal((read('sitemap.xml').match(/<image:loc>/g) || []).length, games.length + 1);
 const shell = read('scripts/site-layout.js');
 assert(!/\/blog\/|\/ai-ranking\/|\/webtoon-ranking\//.test(shell));
-console.log('PASS: playable defense homepage, games and tarot sitemap, metadata/schema, legacy redirects, removed content, local links and 404');
+console.log('PASS: share images, og/twitter, schema, cross links, image sitemap, playable defense homepage, games and tarot sitemap, metadata/schema, legacy redirects, removed content, local links and 404');
