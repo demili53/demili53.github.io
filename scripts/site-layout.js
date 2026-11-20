@@ -5,6 +5,7 @@
     { url: '/arcade/rift-blade.html', label: '균열의 검 RPG', description: '액션 · 성장', group: 'games', paths: '<path d="m4 3 7 7m2 3 7 7M3 3l1 5 12 12 4-4L8 4 3 3Zm0 18 5-5m8-8 5-5m-5 0h5v5M3 16l5 5"/>' },
     { url: '/arcade/space-shooter.html', label: '비행기 슈팅', description: '우주 아케이드', group: 'games', paths: '<path d="m12 3 8 17-8-4-8 4 8-17Zm0 0v13"/>' },
     { url: '/arcade/missile-rush.html', label: '미사일 러시', description: '연산 캡슐 부대 증식', group: 'games', paths: '<path d="M12 2c2 2 3 5 3 9v6H9v-6c0-4 1-7 3-9Zm-3 11-3 3v4l3-2m6-5 3 3v4l-3-2m-5 2v4m4-4v4"/>' },
+    { url: '/arcade/lantern-keeper.html', label: '등불지기', description: '10분 생존 액션', group: 'games', paths: '<path d="M9 3h6M12 3v2M7 9a5 5 0 0 1 10 0v7a3 3 0 0 1-3 3h-4a3 3 0 0 1-3-3V9Zm0 0h10M12 12c1.4 1.3 1.4 3 0 4-1.4-1-1.4-2.7 0-4ZM9 21h6"/>' },
     { url: '/arcade/shadow-sniper.html', label: '윌리 저격', description: '관찰 · 저격', group: 'games', paths: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 1v4m0 14v4M1 12h4m14 0h4"/>' },
     { url: '/fortune/tarot.html', label: '타로점', description: '오늘의 카드', group: 'games', paths: '<rect x="6" y="3" width="12" height="18" rx="2"/><path d="m12 8 1.2 2.6 2.8.3-2.1 1.9.6 2.8L12 14.2l-2.5 1.4.6-2.8L8 10.9l2.8-.3L12 8Z"/>' },
     { url: '/exaone/', label: 'EXAONE Agent', description: '로컬 AI 도구', group: 'tools', paths: '<rect x="5" y="5" width="14" height="14" rx="3"/><path d="M9 1v4m6-4v4M9 19v4m6-4v4M1 9h4m-4 6h4m14-6h4m-4 6h4M9 9h6v6H9z"/>' }
